@@ -1,0 +1,54 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-scroll-area">
+  <ComponentDocs title="hp-scroll-area">
+    <p slot="description">
+      Custom-scrollbar wrapper. Hides the platform-native scrollbar inside and paints a
+      themed one on top. Native scroll event model preserved — wheel, keyboard
+      (Arrow / PageUp/Down / Home / End), and touch all work. The custom thumb is draggable.
+    </p>
+
+    <hp-demo caption="Auto visibility — visible when content overflows">
+      <hp-scroll-area style="height: 200px; width: 100%; max-width: 320px;">
+        <div style="padding: var(--hp-md)">
+          <p>One. Two. Three. Four. Five. Six. Seven. Eight. Nine. Ten.</p>
+          <p>Eleven. Twelve. Thirteen. Fourteen. Fifteen. Sixteen. Seventeen.</p>
+          <p>Eighteen. Nineteen. Twenty. Twenty-one. Twenty-two. Twenty-three.</p>
+          <p>Twenty-four. Twenty-five. Twenty-six. Twenty-seven. Twenty-eight.</p>
+          <p>Twenty-nine. Thirty. Thirty-one. Thirty-two. Thirty-three.</p>
+          <p>Thirty-four. Thirty-five. Thirty-six. Thirty-seven. Thirty-eight.</p>
+          <p>Thirty-nine. Forty. Forty-one. Forty-two. Forty-three. Forty-four.</p>
+        </div>
+      </hp-scroll-area>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-scroll-area style="height: 240px">
+      <p>Long content...</p>
+    </hp-scroll-area>
+
+    <!-- Visibility modes: auto (default) | always | hover -->
+    <hp-scroll-area visibility="hover">...</hp-scroll-area>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use for in-app content areas where the default platform scrollbar would compete with
+          the hexpunk chrome — sidebar trees, modal bodies, panel content.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Wrap document-level scrolling. The native <code>&lt;html&gt;</code> scrollbar should
+          stay native — users expect it to behave like every other site they use.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

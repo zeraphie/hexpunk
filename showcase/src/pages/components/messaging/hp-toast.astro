@@ -1,0 +1,50 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-toast">
+  <ComponentDocs title="hp-toast">
+    <p slot="description">
+      Transient notification. Slides in, auto-dismisses after <code>duration</code> ms (0 =
+      sticky), exposes a close button. <code>tone="alert" | "error"</code> upgrades the
+      aria-live region to assertive so urgent toasts announce immediately.
+    </p>
+
+    <hp-demo caption="Tones">
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 360px">
+        <hp-toast open>build complete</hp-toast>
+        <hp-toast open tone="positive">deployed to production</hp-toast>
+        <hp-toast open tone="warn">3 deprecation warnings</hp-toast>
+        <hp-toast open tone="alert">migration drift detected</hp-toast>
+        <hp-toast open tone="error">build failed: 2 type errors</hp-toast>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-toast id="t" tone="positive">deployed</hp-toast>
+
+    document.getElementById("t").show();
+    // auto-dismisses after 4 seconds (default)
+
+    <!-- sticky toast (no auto-dismiss) -->
+    <hp-toast tone="error" duration="0">
+      build failed — click to retry
+    </hp-toast>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Default <code>role="status"</code> + <code>aria-live="polite"</code> for non-urgent
+        notifications. <code>tone="alert"</code> / <code>"error"</code> upgrade to
+        <code>role="alert"</code> + <code>aria-live="assertive"</code> so failures announce
+        immediately. Close button has <code>aria-label="Close"</code>.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

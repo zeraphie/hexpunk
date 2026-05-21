@@ -1,0 +1,78 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-icon">
+  <ComponentDocs title="hp-icon">
+    <p slot="description">
+      Stroke-icon container. Slot in any SVG that uses <code>currentColor</code>. Size presets
+      align with the <code>icon-sm/md/lg</code> tokens (16 / 20 / 24px).
+    </p>
+
+    <hp-demo caption="Sizes">
+      <div style="display: flex; gap: 16px; align-items: center; color: var(--hp-primary)">
+        <hp-icon size="sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12,2 21,7 21,17 12,22 3,17 3,7"></polygon>
+          </svg>
+        </hp-icon>
+        <hp-icon>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12,2 21,7 21,17 12,22 3,17 3,7"></polygon>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </hp-icon>
+        <hp-icon size="lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="2" x2="12" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <polygon points="12,2 21,7 21,17 12,22 3,17 3,7"></polygon>
+          </svg>
+        </hp-icon>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-icon size="sm"> <svg viewBox="0 0 24 24" stroke="currentColor" ... /> </hp-icon>
+    <hp-icon>           <svg viewBox="0 0 24 24" stroke="currentColor" ... /> </hp-icon>
+    <hp-icon size="lg"> <svg viewBox="0 0 24 24" stroke="currentColor" ... /> </hp-icon>
+
+    <!-- From the mirrored Lucide set -->
+    import { scan } from "@hexpunk/core/icons";
+
+    <hp-icon>
+      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"
+        set:html={scan} />
+    </hp-icon>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Wrap stroke icons (Lucide-style) in <code>&lt;hp-icon&gt;</code> when sizing needs to
+          align with the system's <code>icon-sm/md/lg</code> tokens — inside an
+          <code>&lt;hp-cell variant="utility"&gt;</code>, next to a label in a toned
+          <code>&lt;hp-cell&gt;</code>, or as a section glyph.
+        </hp-banner>
+        <hp-banner tone="do">
+          Author your SVG with <code>stroke="currentColor"</code> so the icon picks up the
+          containing scope's colour — including hover swaps from the parent atom.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use <code>&lt;hp-icon&gt;</code> for pixel-art / sprite work — that's
+          <code>&lt;hp-pixel&gt;</code>'s territory (box-shadow grid, state morphing).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Slot a coloured / filled SVG. The icon container assumes <code>currentColor</code>
+          inheritance; hardcoded colours break theme switching and hover hue swaps.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

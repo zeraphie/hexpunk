@@ -1,0 +1,109 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-button">
+  <ComponentDocs title="hp-button">
+    <p slot="description">
+      Button primitive — thin shell over <code>&lt;hp-cell variant="action"&gt;</code> with the
+      semantics consumers expect from a button: <code>role="button"</code>, focusable by default,
+      Enter / Space activate, <code>disabled</code> blocks clicks and removes from tab order.
+      Inside a <code>&lt;form&gt;</code>, <code>type="submit"</code> / <code>"reset"</code> drive
+      the form lifecycle automatically. For non-action button styles, reach for
+      <code>&lt;hp-cell&gt;</code> directly.
+    </p>
+
+    <hp-demo caption="Default">
+      <hp-button>click me</hp-button>
+      <hp-button size="md">deploy</hp-button>
+      <hp-button size="lg">launch</hp-button>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button>click me</hp-button>
+    <hp-button size="md">deploy</hp-button>
+    <hp-button size="lg">launch</hp-button>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Filled (high-emphasis CTA)">
+      <hp-button filled>go live</hp-button>
+      <hp-button filled size="md">commit</hp-button>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button filled>go live</hp-button>
+    <hp-button filled size="md">commit</hp-button>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Disabled">
+      <hp-button disabled>can't click</hp-button>
+      <hp-button filled disabled>blocked</hp-button>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button disabled>can't click</hp-button>
+    <hp-button filled disabled>blocked</hp-button>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Form submit">
+      <form style="display: flex; gap: 8px; align-items: center;" onsubmit="event.preventDefault()">
+        <hp-button type="submit">subscribe</hp-button>
+        <hp-button type="reset">reset</hp-button>
+      </form>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <form>
+      <input name="email" type="email" />
+      <hp-button type="submit">subscribe</hp-button>
+      <hp-button type="reset">reset</hp-button>
+    </form>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use as the default button on any surface — the action variant's hue swap reads as
+          interactive. Add <code>filled</code> for the one high-emphasis CTA per view.
+        </hp-banner>
+        <hp-banner tone="do">
+          Set <code>type="submit"</code> inside forms to wire up the form lifecycle; the button
+          calls <code>form.requestSubmit()</code> on activation.
+        </hp-banner>
+        <hp-banner tone="do">
+          Use <code>disabled</code> for temporarily-unavailable actions — the button stays in the
+          layout (no shift) but is removed from the tab order and ignores activation.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for non-action chrome (cancel, back, edit, close, settings glyph). Those map to
+          <code>&lt;hp-cell variant="secondary|utility|anchor"&gt;</code>.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        Auto <code>role="button"</code> and <code>tabindex="0"</code> on the host so screen readers
+        announce the element correctly and keyboards can reach it. <code>disabled</code> stamps
+        <code>aria-disabled="true"</code> and sets <code>tabindex="-1"</code>. Enter and Space
+        both fire <code>click</code> events the same way a native button would.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

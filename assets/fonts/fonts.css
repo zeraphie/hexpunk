@@ -1,0 +1,94 @@
+/* fonts.css — self-hosted Hexpunk typeface stack.
+ *
+ * Generated from Google Fonts (latin subset only). Iceland is the wordmark face,
+ * Chakra Petch is the body / UI face, Fira Code is the mono face. To regenerate,
+ * re-run tools/build-fonts.ts (downloads from fonts.gstatic.com).
+ */
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("./chakra-petch-300.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./chakra-petch-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./chakra-petch-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./chakra-petch-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./chakra-petch-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("./fira-code-300.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fira-code-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./fira-code-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./fira-code-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fira-code-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Iceland";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./iceland-400.woff2") format("woff2");
+}

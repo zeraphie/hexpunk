@@ -1,0 +1,164 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-grid">
+  <ComponentDocs title="hp-grid">
+    <Fragment slot="description">
+      <p>
+        The invisible hex coordinate space — slotted children with <code>q</code> and
+        <code>r</code> attributes are positioned by CSS transforms. Drag any hex to move it; it
+        snaps to the nearest empty axial slot, BFS-searches for the nearest free neighbour when the
+        target is occupied, and fires <code>hp-grid-move</code> / <code>hp-grid-drop</code> /
+        <code>hp-grid-bond</code> events on a successful drop.
+      </p>
+      <p>
+        Drag a hex to move it. Drag empty space to pan the canvas (Miro/Figma style — the hexes
+        stay at their <code>q</code>/<code>r</code> coords; the viewport shifts).
+      </p>
+    </Fragment>
+
+    <p>
+      Drag any hex onto another and it BFS-snaps to the nearest empty axial neighbour. Empty
+      cells are direct drops. Drag is opt-in via the <code>draggable</code> attribute — without
+      it the grid is static and pointerdowns on empty space do nothing.
+    </p>
+    <hp-demo caption="Default — drag to move">
+      <hp-grid draggable>
+        <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
+        <hp-cell variant="action" q="1" r="0">east</hp-cell>
+        <hp-cell variant="action" q="-1" r="0">west</hp-cell>
+        <hp-cell variant="content" q="0" r="1" size="sm">south-east</hp-cell>
+        <hp-cell variant="content" q="0" r="-1" size="sm">north-west</hp-cell>
+        <hp-cell variant="utility" q="1" r="-1">ne</hp-cell>
+        <hp-cell variant="utility" q="-1" r="1">sw</hp-cell>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <!-- draggable on the grid enables both cell drag and canvas pan -->
+    <hp-grid draggable>
+      <hp-cell variant="anchor"  q="0"  r="0">centre</hp-cell>
+      <hp-cell variant="action"  q="1"  r="0">east</hp-cell>
+      <hp-cell variant="action"  q="-1" r="0">west</hp-cell>
+      <hp-cell variant="content" q="0"  r="1" size="sm">south-east</hp-cell>
+    </hp-grid>
+
+    <!-- Per-cell overrides: pin individual cells inside a draggable grid -->
+    <hp-grid draggable>
+      <hp-cell variant="anchor" q="0" r="0" draggable="false">pinned</hp-cell>
+      <hp-cell variant="action" q="1" r="0">draggable</hp-cell>
+    </hp-grid>
+
+    const grid = document.querySelector("hp-grid");
+    grid.addEventListener("hp-grid-drop", (ev) => {
+      console.log(ev.detail); // { element, from: {q, r}, to: {q, r} }
+    });
+    grid.addEventListener("hp-grid-bond", (ev) => {
+      console.log(ev.detail); // { moved, partner }
+    });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <p>
+      sm and lg are pointy-top variants of the same shape (lg is ×2 sm). md is the flat-top
+      rotation — sized between sm and lg, sits at a single axial slot, gives a distinct visual
+      "this one's different" against pointy-top neighbours. Spacing in this demo is generous so
+      every cell has clear breathing room; in real use, md and lg cells need 2-3 axial slots of
+      clearance from neighbours since their bbox extends beyond the sm slot footprint.
+    </p>
+    <hp-demo caption="Mixed sizes — sm, md (flat-top), lg on one grid">
+      <hp-grid draggable>
+        <!-- sm row (pointy-top, default size) -->
+        <hp-cell variant="anchor" q="-3" r="-1">sm</hp-cell>
+        <hp-cell variant="action" q="-3" r="0">sm</hp-cell>
+        <hp-cell variant="anchor" q="-3" r="1">sm</hp-cell>
+
+        <!-- md in centre (flat-top) -->
+        <hp-cell variant="anchor" size="md" q="0" r="0">md</hp-cell>
+
+        <!-- lg on the right (pointy-top, 2× sm) -->
+        <hp-cell variant="anchor" size="lg" q="4" r="0">lg</hp-cell>
+
+        <!-- mix of deco variants at different sizes -->
+        <hp-cell variant="content" q="-3" r="3" size="sm">sm content</hp-cell>
+        <hp-cell variant="content" q="0" r="3" size="md">md content</hp-cell>
+
+        <!-- status at md so it picks up the rotation -->
+        <hp-cell tone="positive" q="4" r="3" size="md" active>md status</hp-cell>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-grid draggable>
+      <hp-cell variant="anchor" q="-3" r="0">sm</hp-cell>
+      <hp-cell variant="anchor" size="md" q="0" r="0">md (flat-top)</hp-cell>
+      <hp-cell variant="anchor" size="lg" q="4" r="0">lg</hp-cell>
+    </hp-grid>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use as the root surface for any layout where hexes need axial coordinates: dashboards,
+          quest boards, node editors, game HUDs. Add <code>draggable</code> for surfaces that
+          should accept move / pan; omit it for static layouts.
+        </hp-banner>
+        <hp-banner tone="do">
+          Per-cell <code>draggable</code> attribute overrides the grid default. <code>draggable</code>
+          (presence) force-enables drag on a cell — useful for decorative cells you want to move.
+          <code>draggable="false"</code> force-disables drag on an interactive cell — useful for
+          pinned anchors that should still be clickable but not draggable.
+        </hp-banner>
+        <hp-banner tone="do">
+          Listen to <code>hp-grid-bond</code> / <code>hp-grid-unbond</code> to drive molecule
+          assembly logic — the grid does the adjacency math for you on every drop.
+        </hp-banner>
+        <hp-banner tone="do">
+          Mix sizes carefully. sm cells tile cleanly with each other; md (flat-top) and lg
+          cells sit at a single axial slot but their bbox extends beyond the sm slot footprint,
+          so reserve 2-3 axial units of clearance from neighbouring cells. The rotation on md
+          is the visual cue that it's deliberately different, not poorly positioned.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Wrap regular flow content in <code>&lt;hp-grid&gt;</code>. It expects children with
+          <code>q</code>/<code>r</code> attributes — anything else is laid out as if it had
+          <code>q=0, r=0</code>, which collapses overlapping at the origin.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Replace <code>&lt;hp-cluster&gt;</code> with a grid for static 5-hex rosettes. Cluster
+          is lighter (no occupancy map, no drag) and the right tool when you don't need
+          rearrangement.
+        </hp-banner>
+      
+
+      <h2>Events</h2>
+      <p>
+        <code>hp-grid-move</code> fires immediately on drop (axial coordinates accepted).
+        <code>hp-grid-drop</code> fires after the 90ms snap-back animation completes — use this
+        for "settled" semantics (autosave, server sync). <code>hp-grid-bond</code> /
+        <code>hp-grid-unbond</code> fire when adjacency changes, with the moved + partner atoms
+        in <code>detail</code>. <code>hp-grid-pan</code> fires while the canvas is being panned.
+        With <code>tetherable</code>, <code>hp-grid-tether</code> / <code>hp-grid-untether</code>
+        fire on drag-toggled arcs — covered on the
+        <a href="/hexpunk/components/tether/hp-tether">hp-tether page</a>.
+      </p>
+
+      <h2>Coordinate space</h2>
+      <p>
+        Pointy-top axial coordinates: <code>x = w·(q + r/2)</code>, <code>y = w·√3/2·r</code>,
+        where <code>w</code> is the effective cell width (<code>cell − hex-stroke</code> so
+        adjacent strokes share). Move budgets and BFS for occupancy collision use axial
+        Manhattan distance.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

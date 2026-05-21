@@ -1,0 +1,65 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-navigation-menu">
+  <ComponentDocs title="hp-navigation-menu">
+    <p slot="description">
+      Top-nav pattern with optional hover-revealed submenus. Slotted
+      <code>&lt;hp-nav-item&gt;</code> children are plain links when they have no
+      <code>content</code> slot, or dropdown triggers when they do. Arrow keys move between
+      top-level triggers. Single-open-at-a-time semantics.
+    </p>
+
+    <hp-demo caption="Mixed plain links + submenu">
+      <hp-navigation-menu>
+        <hp-nav-item href="#about">About</hp-nav-item>
+        <hp-nav-item>
+          Components
+          <div slot="content" style="display: grid; gap: 6px;">
+            <a href="#" style="color: var(--hp-primary); text-decoration: none;">Buttons</a>
+            <a href="#" style="color: var(--hp-primary); text-decoration: none;">Inputs</a>
+            <a href="#" style="color: var(--hp-primary); text-decoration: none;">Overlays</a>
+          </div>
+        </hp-nav-item>
+        <hp-nav-item>
+          Resources
+          <div slot="content" style="display: grid; gap: 6px;">
+            <a href="#" style="color: var(--hp-primary); text-decoration: none;">Docs</a>
+            <a href="#" style="color: var(--hp-primary); text-decoration: none;">Changelog</a>
+            <a href="#" style="color: var(--hp-primary); text-decoration: none;">GitHub</a>
+          </div>
+        </hp-nav-item>
+        <hp-nav-item href="#contact">Contact</hp-nav-item>
+      </hp-navigation-menu>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-navigation-menu>
+      <hp-nav-item href="/about">About</hp-nav-item>
+      <hp-nav-item>
+        Components
+        <div slot="content">
+          <a href="/buttons">Buttons</a>
+          <a href="/inputs">Inputs</a>
+        </div>
+      </hp-nav-item>
+      <hp-nav-item href="/contact">Contact</hp-nav-item>
+    </hp-navigation-menu>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Bar <code>role="menubar"</code>; items <code>role="menuitem"</code>. ArrowLeft /
+        Right move focus between siblings; Home / End jump. Plain-link items follow their
+        <code>href</code> on click or Enter; submenu items toggle their panel.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

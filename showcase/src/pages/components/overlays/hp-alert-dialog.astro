@@ -1,0 +1,57 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-alert-dialog">
+  <ComponentDocs title="hp-alert-dialog">
+    <p slot="description">
+      role="alertdialog" variant of <code>&lt;hp-dialog&gt;</code> for messages the user must
+      acknowledge or act on (delete confirmations, blocking errors). Backdrop clicks don't
+      dismiss — only an explicit action button or Escape closes it.
+    </p>
+
+    <hp-demo caption="Destructive confirmation">
+      <hp-button onclick="document.getElementById('demo-alert').show()">delete project</hp-button>
+
+      <hp-alert-dialog id="demo-alert">
+        <h3 style="margin: 0 0 8px; color: var(--hp-error)">Delete project?</h3>
+        <p style="margin: 0">This can't be undone. 47 files will be removed.</p>
+        <div slot="actions">
+          <hp-button onclick="document.getElementById('demo-alert').close()">cancel</hp-button>
+          <hp-button filled onclick="document.getElementById('demo-alert').close()">delete</hp-button>
+        </div>
+      </hp-alert-dialog>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button onclick="confirmDelete.show()">delete</hp-button>
+
+    <hp-alert-dialog id="confirmDelete">
+      <h3>Delete project?</h3>
+      <p>This can't be undone.</p>
+      <div slot="actions">
+        <hp-button onclick="confirmDelete.close()">cancel</hp-button>
+        <hp-button filled onclick="confirmDelete.close()">delete</hp-button>
+      </div>
+    </hp-alert-dialog>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Destructive confirmations, blocking errors, license / compliance acknowledgements —
+          anything the user must explicitly act on.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for ordinary dismissable modals — that's <code>&lt;hp-dialog&gt;</code>. The
+          alert dialog disables backdrop-click dismiss to force a deliberate choice.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

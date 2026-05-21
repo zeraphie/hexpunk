@@ -1,0 +1,67 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-collapsible">
+  <ComponentDocs title="hp-collapsible">
+    <p slot="description">
+      Trigger + content pair. The slotted <code>trigger</code> toggles the
+      <code>open</code> state; default-slot content expands / collapses via a smooth
+      grid-template-rows transition. Auto-stamps <code>aria-expanded</code> /
+      <code>aria-controls</code> on the trigger and <code>aria-labelledby</code> on the
+      content.
+    </p>
+
+    <hp-demo caption="Basic">
+      <hp-collapsible>
+        <hp-button slot="trigger" size="sm">show details</hp-button>
+        <div style="padding: 8px 0;">
+          <p>Hidden by default. The button toggles <code>open</code> on the host.</p>
+          <p>Smooth height transition uses <code>grid-template-rows: 0fr → 1fr</code>.</p>
+        </div>
+      </hp-collapsible>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-collapsible>
+      <hp-button slot="trigger">show details</hp-button>
+      <p>Revealed content goes here.</p>
+    </hp-collapsible>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Open by default">
+      <hp-collapsible open>
+        <hp-button slot="trigger" size="sm">hide details</hp-button>
+        <div style="padding: 8px 0;">
+          <p>Visible at mount because <code>open</code> is set as an attribute.</p>
+        </div>
+      </hp-collapsible>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-collapsible open>
+      <hp-button slot="trigger">hide details</hp-button>
+      <p>Visible at mount.</p>
+    </hp-collapsible>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Trigger gets <code>aria-expanded</code> + <code>aria-controls</code> pointing at the
+        content region's id; content gets <code>role="region"</code> +
+        <code>aria-labelledby</code> pointing back at the trigger. The browser exposes the
+        pair as a disclosure widget.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

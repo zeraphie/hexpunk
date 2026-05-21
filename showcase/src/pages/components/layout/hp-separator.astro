@@ -1,0 +1,68 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-separator">
+  <ComponentDocs title="hp-separator">
+    <p slot="description">
+      Visual + semantic divider. Horizontal (default) or vertical, with an optional centre
+      glyph (hex, dot, or none). <code>decorative</code> flips between
+      <code>role="separator"</code> and <code>role="presentation"</code> for screen readers.
+    </p>
+
+    <hp-demo caption="Horizontal">
+      <div style="max-width: 320px; display: flex; flex-direction: column; gap: 16px;">
+        <span>section one</span>
+        <hp-separator></hp-separator>
+        <span>section two</span>
+        <hp-separator mark="dot"></hp-separator>
+        <span>section three</span>
+        <hp-separator mark="none"></hp-separator>
+        <span>section four</span>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-separator></hp-separator>
+    <hp-separator mark="dot"></hp-separator>
+    <hp-separator mark="none"></hp-separator>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Vertical">
+      <div style="display: flex; flex-direction: row; height: 32px; gap: 12px; align-items: center;">
+        <span>left</span>
+        <hp-separator orientation="vertical"></hp-separator>
+        <span>middle</span>
+        <hp-separator orientation="vertical" mark="dot"></hp-separator>
+        <span>right</span>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-separator orientation="vertical"></hp-separator>
+    <hp-separator orientation="vertical" mark="dot"></hp-separator>
+
+    <!-- decorative — role="presentation" for screen readers -->
+    <hp-separator orientation="vertical" decorative></hp-separator>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Default <code>role="separator"</code> announces the divider as a structural break.
+          Use <code>decorative</code> when the surrounding hierarchy already conveys the
+          grouping (heading, landmark) and the line is purely visual.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

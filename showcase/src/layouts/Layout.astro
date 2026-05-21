@@ -1,0 +1,886 @@
+---
+import "../../../src/tokens/tokens.dark.css";
+import "../../../src/tokens/tokens.light.css";
+import "../styles/global.css";
+import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
+import { moon, search as searchIcon, sun } from "../../../src/icons/index.ts";
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+const fullPath = new URL(Astro.request.url).pathname.replace(/\/$/, "") || "/";
+const active = baseUrl && fullPath.startsWith(baseUrl)
+  ? (fullPath.slice(baseUrl.length) || "/")
+  : fullPath;
+
+function href(path: string): string {
+  return path === "/" ? baseUrl || "/" : `${baseUrl}${path}`;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+/** True iff `node` has the active path anywhere in its leaf descendants
+ *  (or is itself the active leaf). Used to auto-open the
+ *  <hp-sidebar-group> containing the current page. */
+function containsActive(node: SitemapNode): boolean {
+  if (isLeaf(node)) {
+    return node.path === active;
+  }
+  return node.children.some(containsActive);
+}
+
+/** Recursively emit composable sidebar markup. Leaves become
+ *  <hp-sidebar-item>, branches become <hp-sidebar-group>. */
+function sidebarNodeHtml(node: SitemapNode): string {
+  if (isLeaf(node)) {
+    const isActive = node.path === active;
+    return `<hp-sidebar-item href="${escapeHtml(href(node.path))}"${
+      isActive ? " active" : ""
+    }>${escapeHtml(node.title)}</hp-sidebar-item>`;
+  }
+  const inner = node.children.map(sidebarNodeHtml).join("");
+  const open = containsActive(node) ? " open" : "";
+  return `<hp-sidebar-group label="${escapeHtml(node.title)}"${open}>${inner}</hp-sidebar-group>`;
+}
+
+const sidebarNavHtml = SITEMAP.map(sidebarNodeHtml).join("");
+
+/** Flatten the sitemap to leaves with a section breadcrumb. The
+ *  search palette consumes this list directly — fuzzier indexes
+ *  (fuse.js, MiniSearch) can replace the inline JSON later. */
+interface SearchEntry {
+  title: string;
+  path: string;
+  section: string;
+}
+
+function flattenLeaves(nodes: SitemapNode[], trail: string[]): SearchEntry[] {
+  const out: SearchEntry[] = [];
+  for (const node of nodes) {
+    if (isLeaf(node)) {
+      out.push({ title: node.title, path: node.path, section: trail.join(" › ") });
+    } else {
+      out.push(...flattenLeaves(node.children, [...trail, node.title]));
+    }
+  }
+  return out;
+}
+
+const searchIndex = flattenLeaves(SITEMAP, []).map((e) => ({
+  ...e,
+  href: href(e.path),
+}));
+
+// Inline theme-init script — runs before paint so there's no
+// flash-of-wrong-theme. Reads localStorage; falls back to the OS
+// `prefers-color-scheme` query if no preference is stored. Setting
+// `data-theme` on <html> activates the matching token override
+// stylesheet ([data-theme="light"] for the light surface ladder;
+// no attribute → :root defaults, which are dark).
+const themeInit = `(function(){try{var s=localStorage.getItem('hp-theme');var t=s||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`;
+
+// Apply --hp-unfold-peak from sessionStorage before the cross-document
+// view-transition keyframes resolve their var() refs. Forward
+// navigation through hp-unfold-page (or any data-hp-unfold link)
+// stashes the computed peak so the destination's
+// ::view-transition-old/new(hp-unfold-source) keyframes can hit the
+// right scale. Don't clear here — playReverseArrival on back-nav
+// arrival also reads it; the click handler / navigate path
+// re-stamps on each forward.
+const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-peak');if(p)document.documentElement.style.setProperty('--hp-unfold-peak',p);}catch(e){}})();`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Hexpunk</title>
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
+    <link rel="stylesheet" href={`${baseUrl}/fonts/fonts.css`} />
+    <script is:inline set:html={themeInit}></script>
+    <script is:inline set:html={unfoldPeakInit}></script>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <a class="brand" href={href("/")}>
+          <svg class="brand-mark" viewBox="0 0 128 128" aria-hidden="true">
+            <path d="M 64 4.36 L 94 21.68 L 94 56.32 L 64 73.64 L 34 56.32 L 34 21.68 Z" />
+            <path d="M 34 56.32 L 64 73.64 L 64 108.28 L 34 125.6 L 4 108.28 L 4 73.64 Z" />
+            <path d="M 94 56.32 L 124 73.64 L 124 108.28 L 94 125.6 L 64 108.28 L 64 73.64 Z" />
+          </svg>
+          <span class="brand-text">Hexpunk</span>
+        </a>
+        <span class="tagline">Hexagonal-first, wireframe-cyberpunk Lit components.</span>
+        <div class="header-tools">
+          <button
+            type="button"
+            class="header-btn search-trigger"
+            id="search-trigger"
+            aria-label="Search (Ctrl+K)"
+            title="Search (Ctrl+K)"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+              aria-hidden="true"
+              set:html={searchIcon}
+            ></svg>
+            <span class="kbd-hint" aria-hidden="true">⌘K</span>
+          </button>
+          <button
+            type="button"
+            class="header-btn theme-toggle"
+            id="theme-toggle"
+            aria-label="Toggle theme"
+            title="Toggle theme"
+          >
+            <svg
+              class="icon icon-sun"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+              aria-hidden="true"
+              set:html={sun}
+            ></svg>
+            <svg
+              class="icon icon-moon"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+              aria-hidden="true"
+              set:html={moon}
+            ></svg>
+          </button>
+        </div>
+      </header>
+      <hp-sidebar
+        class="page-sidebar"
+        aria-label="Site map"
+        set:html={sidebarNavHtml}
+      ></hp-sidebar>
+      <main>
+        <hp-background></hp-background>
+        <slot />
+      </main>
+      <hp-sidebar
+        class="page-toc"
+        variant="secondary"
+        hidden
+        aria-label="Contents"
+      >
+        <h3 class="toc-title">Contents</h3>
+        <div id="page-toc-list"></div>
+      </hp-sidebar>
+    </div>
+
+    <dialog class="search-palette" id="search-palette" aria-label="Search">
+      <div class="search-palette-inner">
+        <div class="search-input-row">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"
+            aria-hidden="true"
+            set:html={searchIcon}
+          ></svg>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search components, pages…"
+            aria-label="Search query"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <kbd class="kbd-hint">esc</kbd>
+        </div>
+        <ul class="search-results" id="search-results" role="listbox"></ul>
+        <div class="search-empty" id="search-empty" hidden>No matches.</div>
+        <div class="search-footer">
+          <span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span>
+          <span><kbd>↵</kbd> open</span>
+          <span><kbd>esc</kbd> close</span>
+        </div>
+      </div>
+    </dialog>
+
+    <script id="search-index-data" type="application/json" set:html={JSON.stringify(searchIndex)}></script>
+
+    <script>
+      // Register every <hp-*> element on every page. Astro bundles
+      // this so each page ships only what it actually needs.
+      import { HpCode } from "../../../src/index.ts";
+
+      // ── Syntax highlighter (Shiki) ────────────────────────────
+      // hp-code itself ships no tokeniser — the showcase registers
+      // Shiki here so doc-page code blocks get themed output. Shiki
+      // emits inline-styled spans (not class names) so the bundled
+      // theme drives colours directly; hp-code's `.hljs-*` defaults
+      // are inert with Shiki and stay for consumers who pick
+      // highlight.js instead.
+      //
+      // Themes + langs are listed explicitly so Vite bundles them
+      // for prod. Shiki's "shorthand" `codeToHtml` lazy-loads via
+      // dynamic imports that Vite can't statically resolve, which
+      // worked in dev but silently dropped non-default themes from
+      // the prod build. `getSingletonHighlighter` accepts the
+      // explicit lists upfront and the bundler picks them all up.
+      //
+      // The adapter reads `data-theme` on every call so re-tokenising
+      // on theme toggle picks up the matching Shiki theme — no
+      // re-load, both themes are already in the singleton.
+      function shikiThemeFor(el?: HTMLElement): string {
+        // Prefer the effective theme at the element's position (so
+        // hp-code inside an hp-demo with a local theme override
+        // picks the matching Shiki variant). Falls back to the site
+        // theme when no element is passed.
+        let name: string | undefined;
+        if (el) {
+          name = getComputedStyle(el)
+            .getPropertyValue("--hp-theme-name")
+            .trim();
+        }
+        if (!name) {
+          name = document.documentElement.dataset.theme;
+        }
+        return name === "light" ? "github-light" : "night-owl";
+      }
+      const shikiHighlighter: Parameters<typeof HpCode.setHighlighter>[0] = async (
+        code,
+        lang,
+        el,
+      ) => {
+        if (!lang) {
+          return null;
+        }
+        const theme = shikiThemeFor(el);
+        try {
+          const { getSingletonHighlighter } = await import("shiki");
+          const highlighter = await getSingletonHighlighter({
+            themes: ["github-light", "night-owl"],
+            langs: [
+              "html",
+              "css",
+              "javascript",
+              "typescript",
+              "jsx",
+              "tsx",
+              "bash",
+              "json",
+            ],
+          });
+          const html = highlighter.codeToHtml(code, {
+            lang: lang as never,
+            theme,
+          });
+          return html
+            .replace(/^<pre[^>]*><code[^>]*>/, "")
+            .replace(/<\/code><\/pre>$/, "");
+        } catch (err) {
+          // Unknown language, theme, or load failure — surface the
+          // error so it's diagnosable, then fall back to plain
+          // monospaced text in hp-code.
+          console.warn(
+            `[hp-code] Shiki failed for lang="${lang}" theme="${theme}":`,
+            err,
+          );
+          return null;
+        }
+      };
+      HpCode.setHighlighter(shikiHighlighter);
+
+      // ── Theme toggle ──────────────────────────────────────────
+      const root = document.documentElement;
+      const themeToggle = document.getElementById("theme-toggle");
+      themeToggle?.addEventListener("click", () => {
+        const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+        const next = current === "light" ? "dark" : "light";
+        root.setAttribute("data-theme", next);
+        try {
+          localStorage.setItem("hp-theme", next);
+        } catch {
+          // localStorage unavailable (private mode, blocked) — theme
+          // still applies for this session, just won't persist.
+        }
+        // Re-register the highlighter so every connected hp-code
+        // re-tokenises against the new theme's Shiki variant.
+        HpCode.setHighlighter(shikiHighlighter);
+      });
+
+      // ── Search palette ────────────────────────────────────────
+      interface SearchEntry {
+        title: string;
+        path: string;
+        section: string;
+        href: string;
+      }
+
+      const indexEl = document.getElementById("search-index-data");
+      const SEARCH_INDEX: SearchEntry[] = indexEl ? JSON.parse(indexEl.textContent ?? "[]") : [];
+
+      const palette = document.getElementById("search-palette") as HTMLDialogElement | null;
+      const trigger = document.getElementById("search-trigger");
+      const input = document.getElementById("search-input") as HTMLInputElement | null;
+      const resultsEl = document.getElementById("search-results");
+      const emptyEl = document.getElementById("search-empty");
+
+      let selected = 0;
+      let current: SearchEntry[] = [];
+
+      /** Substring + token-prefix scoring. Lower-is-better, with the
+       *  earliest-match position as the tiebreaker. Tokens are
+       *  whitespace-separated; an entry matches if every token is
+       *  found as a substring in `title` or `section`. */
+      function rank(entry: SearchEntry, tokens: string[]): number | null {
+        if (!tokens.length) {
+          return 0;
+        }
+        const haystack = (entry.title + " " + entry.section).toLowerCase();
+        let total = 0;
+        for (const tok of tokens) {
+          const idx = haystack.indexOf(tok);
+          if (idx < 0) {
+            return null;
+          }
+          total += idx;
+        }
+        return total;
+      }
+
+      function render(query: string): void {
+        const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+        const matches: { entry: SearchEntry; score: number }[] = [];
+        for (const entry of SEARCH_INDEX) {
+          const score = rank(entry, tokens);
+          if (score !== null) {
+            matches.push({ entry, score });
+          }
+        }
+        matches.sort((a, b) => a.score - b.score);
+        current = matches.map((m) => m.entry);
+        selected = 0;
+        if (!current.length) {
+          if (resultsEl) {
+            resultsEl.innerHTML = "";
+          }
+          emptyEl?.removeAttribute("hidden");
+          return;
+        }
+        emptyEl?.setAttribute("hidden", "");
+        if (!resultsEl) {
+          return;
+        }
+        resultsEl.innerHTML = current
+          .map(
+            (e, i) => `
+              <li role="option" data-index="${i}" data-href="${e.href}" class="${
+                i === selected ? "selected" : ""
+              }">
+                <span class="result-title">${e.title}</span>
+                ${e.section ? `<span class="result-section">${e.section}</span>` : ""}
+              </li>`,
+          )
+          .join("");
+      }
+
+      function highlight(): void {
+        if (!resultsEl) {
+          return;
+        }
+        const items = resultsEl.querySelectorAll<HTMLLIElement>("li");
+        items.forEach((li, i) => {
+          li.classList.toggle("selected", i === selected);
+          if (i === selected) {
+            li.scrollIntoView({ block: "nearest" });
+          }
+        });
+      }
+
+      function open(): void {
+        if (!palette) {
+          return;
+        }
+        palette.showModal();
+        if (input) {
+          input.value = "";
+          input.focus();
+        }
+        render("");
+      }
+
+      function close(): void {
+        palette?.close();
+      }
+
+      function activate(entry: SearchEntry): void {
+        close();
+        window.location.href = entry.href;
+      }
+
+      trigger?.addEventListener("click", open);
+
+      input?.addEventListener("input", () => render(input.value));
+
+      input?.addEventListener("keydown", (ev) => {
+        if (ev.key === "ArrowDown") {
+          ev.preventDefault();
+          if (current.length) {
+            selected = (selected + 1) % current.length;
+            highlight();
+          }
+        } else if (ev.key === "ArrowUp") {
+          ev.preventDefault();
+          if (current.length) {
+            selected = (selected - 1 + current.length) % current.length;
+            highlight();
+          }
+        } else if (ev.key === "Enter") {
+          ev.preventDefault();
+          const pick = current[selected];
+          if (pick) {
+            activate(pick);
+          }
+        }
+      });
+
+      resultsEl?.addEventListener("click", (ev) => {
+        const li = (ev.target as HTMLElement).closest<HTMLLIElement>("li[data-href]");
+        if (!li) {
+          return;
+        }
+        const idx = Number(li.dataset.index);
+        const entry = current[idx];
+        if (entry) {
+          activate(entry);
+        }
+      });
+
+      // Cmd/Ctrl-K opens the palette anywhere on the page; clicking
+      // outside the inner panel closes (native <dialog> doesn't do
+      // this by default — backdrop clicks land on the dialog itself).
+      window.addEventListener("keydown", (ev) => {
+        if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") {
+          ev.preventDefault();
+          if (palette?.open) {
+            close();
+          } else {
+            open();
+          }
+        }
+      });
+
+      palette?.addEventListener("click", (ev) => {
+        if (ev.target === palette) {
+          close();
+        }
+      });
+
+      // ── Right-rail TOC + scrollspy ────────────────────────────
+      // Scans visible h2/h3 headings inside <main>, builds a list of
+      // <hp-sidebar-item> entries inside the page TOC, and highlights
+      // the section currently in view via an IntersectionObserver.
+      // Headings inside `[data-tab-panel][hidden]` are skipped — only
+      // the active tab's structure contributes. Rebuilt on tab switch
+      // (listening for the `hp-tabs-change` custom event) so the list
+      // always matches what's shown.
+      //
+      // Tabs route via `?tab=…` (route="query") now, leaving the hash
+      // free for heading anchors — clicking a TOC item updates
+      // location.hash without disturbing the active tab.
+      const tocAside = document.querySelector<HTMLElement>(".page-toc");
+      const tocList = document.getElementById("page-toc-list");
+      const pageEl = document.querySelector<HTMLElement>(".page");
+      const mainEl = document.querySelector<HTMLElement>("main");
+      let tocObserver: IntersectionObserver | null = null;
+      const tocItemById = new Map<string, HTMLElement>();
+
+      function clearTocActive(): void {
+        tocItemById.forEach((el) => el.removeAttribute("active"));
+      }
+
+      function escapeAttr(s: string): string {
+        return s
+          .replaceAll("&", "&amp;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
+
+      function rebuildTOC(): void {
+        if (!tocAside || !tocList || !mainEl) {
+          return;
+        }
+        tocObserver?.disconnect();
+        tocItemById.clear();
+
+        const all = mainEl.querySelectorAll<HTMLHeadingElement>("h2, h3");
+        const visible: HTMLHeadingElement[] = [];
+        all.forEach((h) => {
+          // Walk ancestors: skip if any ancestor is hidden.
+          let el: HTMLElement | null = h;
+          let hidden = false;
+          while (el && el !== mainEl) {
+            if (el.hasAttribute("hidden")) {
+              hidden = true;
+              break;
+            }
+            el = el.parentElement;
+          }
+          if (!hidden) {
+            visible.push(h);
+          }
+        });
+
+        if (visible.length < 2) {
+          // A single h2 isn't worth a TOC — skip.
+          tocList.innerHTML = "";
+          tocAside.setAttribute("hidden", "");
+          pageEl?.classList.remove("has-toc");
+          return;
+        }
+
+        const items: string[] = [];
+        visible.forEach((h, i) => {
+          if (!h.id) {
+            // Slugify from text content; fall back to a stable index
+            // so the IntersectionObserver target is consistent.
+            const slug = h.textContent
+              ?.toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-|-$/g, "");
+            h.id = slug || `section-${i}`;
+          }
+          const tag = h.tagName.toLowerCase();
+          items.push(
+            `<hp-sidebar-item class="toc-${tag}" href="#${h.id}">${escapeAttr(h.textContent ?? "")}</hp-sidebar-item>`,
+          );
+        });
+        tocList.innerHTML = items.join("");
+
+        tocList
+          .querySelectorAll<HTMLElement>("hp-sidebar-item")
+          .forEach((el) => {
+            const id = el.getAttribute("href")?.slice(1);
+            if (id) {
+              tocItemById.set(id, el);
+            }
+          });
+
+        tocAside.removeAttribute("hidden");
+        pageEl?.classList.add("has-toc");
+
+        // Observer with a narrow band near the top of the viewport —
+        // a heading is "active" once its top passes that band. The
+        // band is offset by the fixed navbar height so the trigger
+        // sits visibly below the navbar.
+        tocObserver = new IntersectionObserver(
+          (entries) => {
+            // Pick the entry whose bounding rect is highest while
+            // still below the trigger line. If multiple are
+            // intersecting, the last one (deepest into the page) wins.
+            let activeId: string | null = null;
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                activeId = entry.target.id;
+              }
+            });
+            if (activeId) {
+              clearTocActive();
+              tocItemById.get(activeId)?.setAttribute("active", "");
+            }
+          },
+          (() => {
+            // rootMargin can't reference CSS custom properties, so
+            // resolve --hp-navbar-height from computed style and bake
+            // a literal pixel offset (+16px breathing room).
+            const navH =
+              parseInt(
+                getComputedStyle(document.documentElement).getPropertyValue(
+                  "--hp-navbar-height",
+                ),
+                10,
+              ) || 64;
+            return {
+              rootMargin: `-${navH + 16}px 0px -70% 0px`,
+              threshold: 0,
+            };
+          })(),
+        );
+        visible.forEach((h) => tocObserver?.observe(h));
+      }
+
+      // Defer the initial build by a microtask so hp-tabs has run its
+      // own connectedCallback microtask first (which hides non-active
+      // panels). Otherwise the TOC sees every heading across every
+      // tab panel on first paint.
+      queueMicrotask(rebuildTOC);
+      // Tab switch hides / reveals sections — the TOC has to follow.
+      // hp-tabs dispatches `hp-tabs-change` after every value update
+      // regardless of route mode; listen for that. Also listen for
+      // hashchange so back/forward heading-anchor navigation refreshes
+      // the active highlight if needed.
+      window.addEventListener("hp-tabs-change", rebuildTOC);
+      window.addEventListener("hashchange", rebuildTOC);
+
+      // ── hp-unfold-page for text links ──────────────────────────
+      // Any <a data-hp-unfold> link triggers the same view-transition
+      // expand animation as <hp-unfold-page>. The link's own CSS
+      // color becomes the overlay's fill so the brand colour floods
+      // the viewport at peak expansion. Created as a fixed-position
+      // hex-clipped div at the link's bbox with view-transition-name
+      // set to "hp-unfold-source" — the same name hp-unfold-page
+      // uses, so the existing ::view-transition-old keyframes
+      // (defined in global.css) drive the animation.
+      const HEX_CLIP =
+        "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
+      const UNFOLD_TARGET_KEY = "hp-unfold-target";
+      const UNFOLD_PEAK_KEY = "hp-unfold-peak";
+      const MIN_PEAK = 25;
+
+      function computePeak(rect: { width: number }): number {
+        const target = 2 * Math.max(window.innerWidth, window.innerHeight);
+        const w = Math.max(rect.width, 1);
+        return Math.max(MIN_PEAK, target / w);
+      }
+
+      function buildOverlay(
+        rect: DOMRect,
+        color: string,
+      ): HTMLDivElement {
+        const seed = Math.max(rect.width, rect.height, 32);
+        const hexHeight = seed * 1.1547;
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const overlay = document.createElement("div");
+        overlay.setAttribute("aria-hidden", "true");
+        overlay.dataset.hpUnfoldOverlay = "";
+        Object.assign(overlay.style, {
+          position: "fixed",
+          left: `${cx - seed / 2}px`,
+          top: `${cy - hexHeight / 2}px`,
+          width: `${seed}px`,
+          height: `${hexHeight}px`,
+          background: color || "var(--hp-primary)",
+          clipPath: HEX_CLIP,
+          zIndex: "9999",
+          pointerEvents: "none",
+          willChange: "transform, opacity",
+        });
+        return overlay;
+      }
+
+      document.addEventListener("click", (ev) => {
+        const target = ev.target as Element | null;
+        const link = target?.closest<HTMLAnchorElement>("a[data-hp-unfold]");
+        if (!link?.href || link.target === "_blank") {
+          return;
+        }
+        try {
+          if (new URL(link.href).origin !== window.location.origin) {
+            return;
+          }
+        } catch {
+          return;
+        }
+        if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) {
+          return;
+        }
+        ev.preventDefault();
+
+        const rect = link.getBoundingClientRect();
+        const color = window.getComputedStyle(link).color || "";
+        const overlay = buildOverlay(rect, color);
+        overlay.style.viewTransitionName = "hp-unfold-source";
+        document.body.appendChild(overlay);
+
+        const peak = computePeak(rect);
+        document.documentElement.style.setProperty(
+          "--hp-unfold-peak",
+          String(peak),
+        );
+
+        try {
+          const pathname = new URL(link.href, location.origin).pathname;
+          sessionStorage.setItem(UNFOLD_TARGET_KEY, pathname);
+          sessionStorage.setItem(UNFOLD_PEAK_KEY, String(peak));
+        } catch {
+          // sessionStorage unavailable — forward still works, back
+          // animation will just fall back to the default fade.
+        }
+
+        window.location.href = link.href;
+      });
+
+      // ── Back-nav reverse animation ────────────────────────────
+      // On page load, if we're returning from a hp-unfold-page /
+      // data-hp-unfold forward navigation, replay the reverse: a
+      // viewport-sized overlay shrinks back to where the source
+      // sits on this page. Detected via the Performance Navigation
+      // Timing API (type === "back_forward") + a sessionStorage
+      // marker stamped at the forward click.
+      function findReturningSource(): {
+        sourceEl: HTMLElement;
+        color: string;
+      } | null {
+        const target = sessionStorage.getItem(UNFOLD_TARGET_KEY);
+        if (!target) {
+          return null;
+        }
+        // Only consume storage on a confirmed back/forward arrival
+        // — if this pageshow is the FORWARD nav landing, we want
+        // the target to persist so the eventual back nav can read
+        // it. Previously this was removed up-front, which cleared
+        // the marker on /B's forward pageshow and left /A with
+        // nothing to animate against on the way back.
+        const entries = performance.getEntriesByType(
+          "navigation",
+        ) as PerformanceNavigationTiming[];
+        const navType = entries[0]?.type;
+        // pageshow's persisted flag also signals a bfcache restore,
+        // which we treat the same as back_forward — the user got
+        // here via history traversal either way.
+        const isHistoryTraversal =
+          navType === "back_forward" || performanceNavPersistedHint();
+        if (!isHistoryTraversal) {
+          return null;
+        }
+
+        // 1) Look for an hp-unfold-page whose href resolves to the
+        //    stored target — that's the exact source we navigated
+        //    from.
+        const unfolds = document.querySelectorAll<HTMLElement>(
+          "hp-unfold-page[href]",
+        );
+        for (const el of unfolds) {
+          try {
+            const href = el.getAttribute("href");
+            if (!href) {
+              continue;
+            }
+            if (new URL(href, location.origin).pathname !== target) {
+              continue;
+            }
+            const source = el.querySelector<HTMLElement>('[slot="source"]');
+            if (!source) {
+              continue;
+            }
+            const computed = window.getComputedStyle(source);
+            const color =
+              computed.getPropertyValue("--hp-stroke-color").trim() ||
+              computed.color ||
+              "var(--hp-primary)";
+            sessionStorage.removeItem(UNFOLD_TARGET_KEY);
+            return { sourceEl: source, color };
+          } catch {
+            // Skip and continue searching.
+          }
+        }
+
+        // 2) Fall back to a data-hp-unfold link whose href matches.
+        const links =
+          document.querySelectorAll<HTMLAnchorElement>("a[data-hp-unfold]");
+        for (const link of links) {
+          try {
+            if (new URL(link.href, location.origin).pathname !== target) {
+              continue;
+            }
+            const color = window.getComputedStyle(link).color || "";
+            sessionStorage.removeItem(UNFOLD_TARGET_KEY);
+            return { sourceEl: link, color };
+          } catch {
+            // Skip and continue searching.
+          }
+        }
+        return null;
+      }
+
+      // Used inside findReturningSource — pageshow's persisted flag
+      // gets passed down via a module-scoped slot so the function
+      // can stay synchronous without re-querying the event.
+      let lastPageshowPersisted = false;
+      function performanceNavPersistedHint(): boolean {
+        return lastPageshowPersisted;
+      }
+
+      function playReverseArrival(): void {
+        const match = findReturningSource();
+        if (!match) {
+          return;
+        }
+        const rect = match.sourceEl.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) {
+          return;
+        }
+        const peak = computePeak(rect);
+        const overlay = buildOverlay(rect, match.color);
+        overlay.style.transform = `scale(${peak})`;
+        document.body.appendChild(overlay);
+        // Force the initial scale to commit before animating, so the
+        // overlay is visible covering the viewport before the shrink
+        // animation begins (avoids a single-frame flash of the
+        // destination page).
+        void overlay.getBoundingClientRect();
+        overlay
+          .animate(
+            [{ transform: `scale(${peak})` }, { transform: "scale(1)" }],
+            {
+              duration: 280,
+              easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+              fill: "forwards",
+            },
+          )
+          .finished.then(() =>
+            overlay
+              .animate([{ opacity: 1 }, { opacity: 0 }], {
+                duration: 120,
+                fill: "forwards",
+              })
+              .finished.then(() => overlay.remove()),
+          );
+      }
+
+      // Listen for every pageshow (no { once: true }) so bfcache
+      // restores fire it too — bfcache leaves the existing
+      // listeners attached and re-fires pageshow on restore, but
+      // a { once: true } listener was already consumed by the
+      // initial load. Capture the persisted flag so findReturningSource
+      // can treat a bfcache restore as equivalent to a back/forward
+      // nav (`performance.getEntriesByType("navigation")[0].type`
+      // doesn't always re-report "back_forward" on restore).
+      window.addEventListener("pageshow", (ev) => {
+        lastPageshowPersisted = (ev as PageTransitionEvent).persisted === true;
+        if (document.body) {
+          playReverseArrival();
+        } else {
+          window.addEventListener("DOMContentLoaded", playReverseArrival, {
+            once: true,
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

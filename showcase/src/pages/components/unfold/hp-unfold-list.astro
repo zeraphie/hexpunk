@@ -1,0 +1,170 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-unfold-list">
+  <ComponentDocs title="hp-unfold-list">
+    <Fragment slot="description">
+      <p>
+        Ring-expanding unfold primitive. The source hex stays on the surface; detail children
+        explode outward into the 6-ring of axial neighbours, aligned with the surrounding grid's
+        lattice when nested inside <code>&lt;hp-grid&gt;</code> / <code>&lt;hp-cluster&gt;</code>.
+      </p>
+      <p>
+        Default is <strong>ordered</strong> — children land in clockwise spiral order with a
+        matching stagger, mirroring an <code>&lt;ol&gt;</code>'s sense of sequence. The
+        <code>unordered</code> boolean shuffles position + stagger together (stable per-mount,
+        so the random layout doesn't reshuffle when reopened), reading like a <code>&lt;ul&gt;</code>.
+      </p>
+      <p>
+        Two more primitives are coming as siblings, not modes:
+        <code>&lt;hp-unfold-overlay&gt;</code> (lightbox-style hex popover) and
+        <code>&lt;hp-unfold-page&gt;</code> (View Transitions to a new route).
+      </p>
+    </Fragment>
+
+    <p>
+      The source is a grid cell at axial <code>(0, 0)</code>. On open, children fill the six
+      axial neighbours clockwise from the top-left, with a matching stagger. All children share
+      the source's hex size so the spiral lattice stays clean — mixed sizes break the step
+      math and overlap.
+    </p>
+    <hp-demo caption="Ordered (spiral) — inside hp-grid">
+      <hp-grid draggable>
+        <hp-unfold-list q="0" r="0">
+          <hp-cell variant="anchor" slot="source">pipeline</hp-cell>
+          <hp-cell variant="content" size="sm">ingest</hp-cell>
+          <hp-cell variant="content" size="sm">validate</hp-cell>
+          <hp-cell variant="content" size="sm">transform</hp-cell>
+          <hp-cell variant="content" size="sm">enrich</hp-cell>
+          <hp-cell variant="content" size="sm">emit</hp-cell>
+          <hp-cell variant="content" size="sm">log</hp-cell>
+        </hp-unfold-list>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-grid>
+      <hp-unfold-list q="0" r="0">
+        <hp-cell variant="anchor" slot="source">pipeline</hp-cell>
+        <hp-cell variant="content">stage 1 — ingest</hp-cell>
+        <hp-cell variant="content">stage 2 — transform</hp-cell>
+        <hp-cell variant="content">stage 3 — emit</hp-cell>
+        <hp-cell tone="positive">online</hp-cell>
+      </hp-unfold-list>
+    </hp-grid>
+
+    const unfold = document.querySelector("hp-unfold-list");
+    unfold.addEventListener("hp-unfold-open", () => { /* … */ });
+    unfold.addEventListener("hp-unfold-close", () => { /* … */ });
+    unfold.toggle();    // flip open / closed
+    unfold.close();     // close if open
+    unfold.open = true; // direct property write also works
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <p>
+      Three children, randomly assigned to three of the six ring slots. The shuffle is stable —
+      close + reopen lands them at the same positions.
+    </p>
+    <hp-demo caption="Unordered — random positions, random stagger">
+      <hp-grid draggable style="height: 320px">
+        <hp-unfold-list unordered q="0" r="0">
+          <hp-cell variant="anchor" slot="source">tags</hp-cell>
+          <hp-cell variant="content" size="sm">cyberpunk</hp-cell>
+          <hp-cell variant="content" size="sm">wireframe</hp-cell>
+          <hp-cell variant="content" size="sm">hex-first</hp-cell>
+        </hp-unfold-list>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-unfold-list unordered>
+      <hp-cell variant="anchor" slot="source">tags</hp-cell>
+      <hp-cell variant="content" size="sm">cyberpunk</hp-cell>
+      <hp-cell variant="content" size="sm">wireframe</hp-cell>
+      <hp-cell variant="content" size="sm">hex-first</hp-cell>
+    </hp-unfold-list>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use the default <strong>ordered</strong> mode for detail molecules where sequence
+          matters — pipeline stages, step lists, breadcrumbs, anything where "first" through
+          "last" has meaning.
+        </hp-banner>
+        <hp-banner tone="do">
+          Use <code>unordered</code> for tag clouds, related-item ribbons, faceted filters, or
+          any set where the children are peers and order shouldn't be implied. The random
+          stagger reads as "all at once" rather than "in this order".
+        </hp-banner>
+        <hp-banner tone="do">
+          Place inside <code>&lt;hp-grid&gt;</code> so the 6-ring lands on the grid's axial
+          lattice — the unfold inherits the grid's <code>--hp-col-step</code> /
+          <code>--hp-row-step</code> so children sit exactly where neighbouring grid cells would.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for navigation between routes — that's <code>&lt;hp-unfold-page&gt;</code>. Ring
+          expansion is for in-place detail, not page transitions.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Pack more than 6 children into a single unfold-list. Extras stay slotted but hidden in
+          this phase. The future spiral-fill pattern will extend into the second ring (12 more
+          positions) for longer lists.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Nest deeper than 3 levels of unfold. Per DESIGN.md, the tether-chain becomes
+          navigationally hostile past <code>unfold-depth-max: 3</code>.
+        </hp-banner>
+      
+
+      <h2>Grid alignment</h2>
+      <p>
+        Inside <code>&lt;hp-grid&gt;</code>, the unfold-list's children land at the axial
+        neighbours of the source's <code>(q, r)</code>. The grid's occupancy map doesn't
+        currently know about them, so consumers should keep neighbour cells empty — or accept
+        visual overlap until a later phase wires the <code>hp-unfold-open</code> event to a
+        grid-level dim / occupancy hook.
+      </p>
+
+      <h2>Drag handle (inside the source)</h2>
+      <p>
+        When mounted in light DOM, <code>&lt;hp-unfold-list&gt;</code> auto-inserts an
+        <code>&lt;hp-module-handle slot="handle"&gt;</code> centred inside the source hex and
+        sets <code>drag-handle="[slot='handle']"</code> on itself. Inside an
+        <code>&lt;hp-grid&gt;</code>, only the handle initiates the grid's drag — the rest of
+        the source's hex polygon stays clickable for toggling open / closed. Bbox corners
+        outside the source's polygon fall through to the grid for pan-passthrough as usual.
+      </p>
+      <p>
+        To opt out, the consumer can remove the auto-inserted handle and clear the
+        <code>drag-handle</code> attribute after mount, or render the unfold-list outside any
+        grid (the handle is harmless decoration in that context).
+      </p>
+
+      <h2>Keyboard</h2>
+      <p>
+        The source slot auto-gets <code>tabindex="0"</code> on slotchange (consumers can override
+        explicitly). <kbd>Enter</kbd> / <kbd>Space</kbd> on the focused source toggles open.
+        <kbd>Esc</kbd> closes if open and returns focus to the source.
+      </p>
+
+      <h2>Reduced motion</h2>
+      <p>
+        Children appear / disappear instantly with no stagger when
+        <code>prefers-reduced-motion: reduce</code> is active. The blue → green hue swap on the
+        source (driven by <code>aria-pressed</code>) remains, since hue change is a state signal
+        rather than decorative motion.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

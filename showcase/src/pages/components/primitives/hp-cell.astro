@@ -1,0 +1,218 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-cell">
+  <ComponentDocs title="hp-cell">
+    <p slot="description">
+      The universal labelled hex. Subsumes anchor / action / secondary / utility (interactive),
+      content / support / slot (decorative), and positive / warn / alert / error (tone overlay)
+      into one element. Picks behaviour via <code>variant</code>; layers semantic colour via
+      <code>tone</code>; flips to filled emphasis with <code>active</code>. Focus indicator is
+      the rotating-trace animation, built in — no separate <code>hp-trace</code> element needed.
+    </p>
+
+    <hp-demo caption="Interactive — anchor">
+      <hp-cell variant="anchor">profile</hp-cell>
+      <hp-cell variant="anchor" size="md">deploy</hp-cell>
+      <hp-cell variant="anchor" size="lg">archive</hp-cell>
+      <hp-cell variant="anchor" tabindex="0">tab me</hp-cell>
+      <hp-cell variant="anchor" aria-pressed="true">active</hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell variant="anchor">profile</hp-cell>
+    <hp-cell variant="anchor" size="md">deploy</hp-cell>
+    <hp-cell variant="anchor" size="lg">archive</hp-cell>
+    <hp-cell variant="anchor" tabindex="0">tab me</hp-cell>
+    <hp-cell variant="anchor" aria-pressed="true">active</hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Interactive — action">
+      <hp-cell variant="action" tabindex="0">deploy</hp-cell>
+      <hp-cell variant="action" size="md" tabindex="0">launch</hp-cell>
+      <hp-cell variant="action" filled tabindex="0">go live</hp-cell>
+      <hp-cell variant="action" filled size="md" tabindex="0">commit</hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell variant="action" tabindex="0">deploy</hp-cell>
+    <hp-cell variant="action" filled tabindex="0">go live</hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Interactive — secondary & utility">
+      <hp-cell variant="secondary" tabindex="0">cancel</hp-cell>
+      <hp-cell variant="secondary" size="md" tabindex="0">undo</hp-cell>
+      <hp-cell variant="utility" tabindex="0">edit</hp-cell>
+      <hp-cell variant="utility" tabindex="0">close</hp-cell>
+      <hp-cell variant="utility" tabindex="0">filter</hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell variant="secondary" tabindex="0">cancel</hp-cell>
+    <hp-cell variant="utility" tabindex="0">edit</hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>Decorative — content</h2>
+    <p>Labelled presentational hex with <code>body-sm</code> typography. Use for readable prose snippets, version markers, info pills.</p>
+    <hp-demo>
+      <hp-cell variant="content" size="sm">v2.1.3</hp-cell>
+      <hp-cell variant="content">2 of 18 quests</hp-cell>
+      <hp-cell variant="content" size="lg">build #4421 · all green · 24s</hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell variant="content" size="sm">v2.1.3</hp-cell>
+    <hp-cell variant="content">2 of 18 quests</hp-cell>
+    <hp-cell variant="content" size="lg">build #4421 · all green · 24s</hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>Decorative — support &amp; slot</h2>
+    <p>Unlabelled framing hexes. <code>support</code> is faint structure (auto <code>aria-hidden</code>); <code>slot</code> is an empty-position marker for permanent drop targets.</p>
+    <hp-demo>
+      <hp-cell variant="support" size="sm"></hp-cell>
+      <hp-cell variant="support" size="md"></hp-cell>
+      <hp-cell variant="support" size="lg"></hp-cell>
+      <hp-cell variant="slot" size="sm"></hp-cell>
+      <hp-cell variant="slot" size="md"></hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell variant="support"></hp-cell>
+    <hp-cell variant="slot"></hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>Tone — semantic indicator</h2>
+    <p>Sets <code>variant="content"</code> automatically when no variant is given. Hollow at rest with the tone stroke; pair with <code>active</code> for the filled tone-container fill.</p>
+    <hp-demo caption="At rest">
+      <hp-cell tone="positive">online</hp-cell>
+      <hp-cell tone="warn">pending</hp-cell>
+      <hp-cell tone="alert">restricted</hp-cell>
+      <hp-cell tone="error">failed</hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell tone="positive">online</hp-cell>
+    <hp-cell tone="warn">pending</hp-cell>
+    <hp-cell tone="alert">restricted</hp-cell>
+    <hp-cell tone="error">failed</hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Active (filled)">
+      <hp-cell tone="positive" active>online</hp-cell>
+      <hp-cell tone="warn" active>pending</hp-cell>
+      <hp-cell tone="alert" active>restricted</hp-cell>
+      <hp-cell tone="error" active>failed</hp-cell>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cell tone="positive" active>online</hp-cell>
+    <hp-cell tone="warn" active>pending</hp-cell>
+    <hp-cell tone="alert" active>restricted</hp-cell>
+    <hp-cell tone="error" active>failed</hp-cell>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          <strong>anchor</strong> for identity / section markers / drag handles. The hollow blue
+          stroke reads as a stable identifier, not a call to action.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>action</strong> for the one primary CTA on a surface. Add <code>filled</code>
+          when the action is destructive / committal and needs maximum emphasis.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>secondary</strong> for the alternate path next to an action — typically
+          <em>Cancel</em>, <em>Back</em>, <em>Skip</em>.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>utility</strong> for short adjacent actions (edit / close / filter / recover)
+          where 2-4 character labels or icons fit naturally.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>content</strong> for labelled presentational hexes (version markers, info pills,
+          stage labels in pipelines). Uses <code>body-sm</code> typography for readable prose.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>support</strong> for faint framing hexes that decorate a surface without
+          carrying meaning. Auto <code>aria-hidden</code>, no focus, no pointer interaction.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>slot</strong> for empty-position markers — permanent drop targets in dashboards,
+          game HUD inventories, widget areas.
+        </hp-banner>
+        <hp-banner tone="do">
+          <strong>tone</strong> for any semantic colour overlay (positive / warn / alert / error).
+          Layers on top of any variant. By itself it implies a decorative status indicator
+          (variant defaults to <code>content</code>); combined with an interactive variant it
+          makes a toned button.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Stack two <code>filled</code> actions on the same surface — at most one wireframe-
+          breaking emphasis cell per view.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use <code>anchor</code> as a button. The label colour stays <code>on-surface</code> at
+          rest; readers won't recognise it as actionable.
+        </hp-banner>
+      
+
+      <h2>Focus indicator</h2>
+      <p>
+        Every interactive cell renders the three trapezoidal trace edges in its shadow root,
+        animating in via a staggered grow-in transition on <code>:focus-visible</code> and
+        unwinding in reverse on blur. Stagger driven by <code>--hp-unfold-stagger</code>; respects
+        <code>prefers-reduced-motion</code>.
+      </p>
+
+      <h2>Accessibility</h2>
+      <p>
+        <code>&lt;hp-cell&gt;</code> is non-focusable by default. The consumer (or a parent
+        <code>&lt;hp-module&gt;</code>) sets <code>tabindex="0"</code> when keyboard focus is
+        required. For toggle / pressed semantics, set <code>aria-pressed="true|false"</code> —
+        the system reads this attribute for state styling AND screen readers announce it
+        correctly. Decorative variants (<code>support</code>, <code>slot</code>) auto-stamp
+        <code>aria-hidden="true"</code>.
+      </p>
+
+      <h2>Composition</h2>
+      <p>
+        Slot into <code>&lt;hp-cluster&gt;</code> for the 5-hex rosette pattern, or into
+        <code>&lt;hp-grid&gt;</code> with <code>q</code>/<code>r</code> attributes for free axial
+        placement. Inside both, <code>--hp-cursor</code> overrides to <code>grab</code> /
+        <code>grabbing</code> during drag — no extra wiring.
+      </p>
+    </Fragment>
+
+  </ComponentDocs>
+</Layout>

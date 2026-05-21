@@ -1,0 +1,64 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-tag">
+  <ComponentDocs title="hp-tag">
+    <p slot="description">
+      Hex tag / chip with optional dismiss button. <code>removable</code> stamps an inline ×
+      that fires <code>hp-tag-remove</code> on activation. Pairs with <code>&lt;hp-badge&gt;</code>
+      for non-dismissable status indicators.
+    </p>
+
+    <hp-demo caption="Tones">
+      <hp-tag>react</hp-tag>
+      <hp-tag tone="positive">stable</hp-tag>
+      <hp-tag tone="warn">beta</hp-tag>
+      <hp-tag tone="alert">deprecated</hp-tag>
+      <hp-tag tone="error">removed</hp-tag>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-tag>react</hp-tag>
+    <hp-tag tone="positive">stable</hp-tag>
+    <hp-tag tone="warn">beta</hp-tag>
+    <hp-tag tone="alert">deprecated</hp-tag>
+    <hp-tag tone="error">removed</hp-tag>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Removable">
+      <hp-tag removable>lit</hp-tag>
+      <hp-tag tone="positive" removable>typescript</hp-tag>
+      <hp-tag tone="warn" removable>vite</hp-tag>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-tag removable>lit</hp-tag>
+    <hp-tag tone="positive" removable>typescript</hp-tag>
+    <hp-tag tone="warn" removable>vite</hp-tag>
+
+    document.querySelector("hp-tag")
+      .addEventListener("hp-tag-remove", (ev) => {
+        ev.currentTarget.remove();
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use <code>hp-tag</code> when the user can dismiss / remove the item. For static
+          status indicators, use <code>&lt;hp-badge&gt;</code>.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

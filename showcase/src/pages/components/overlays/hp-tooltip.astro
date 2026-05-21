@@ -1,0 +1,57 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-tooltip">
+  <ComponentDocs title="hp-tooltip">
+    <p slot="description">
+      Lightweight tooltip — wraps a trigger and shows the slotted <code>content</code> on hover
+      / focus. Auto-stamps <code>aria-describedby</code> on the trigger while open. Positioning
+      is "side relative to trigger" only; for anchored / flipped popovers reach for the
+      forthcoming <code>hp-popover</code>.
+    </p>
+
+    <hp-demo caption="Sides">
+      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <hp-tooltip side="top">
+          <hp-button size="sm">top</hp-button>
+          <span slot="content">tooltip above</span>
+        </hp-tooltip>
+        <hp-tooltip side="right">
+          <hp-button size="sm">right</hp-button>
+          <span slot="content">tooltip right</span>
+        </hp-tooltip>
+        <hp-tooltip side="bottom">
+          <hp-button size="sm">bottom</hp-button>
+          <span slot="content">tooltip below</span>
+        </hp-tooltip>
+        <hp-tooltip side="left">
+          <hp-button size="sm">left</hp-button>
+          <span slot="content">tooltip left</span>
+        </hp-tooltip>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-tooltip side="top">
+      <hp-button>info</hp-button>
+      <span slot="content">More information</span>
+    </hp-tooltip>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        <code>role="tooltip"</code> on the content; <code>aria-describedby</code> linking the
+        trigger to the tooltip's id while open. Escape dismisses. Open / close delays are
+        configurable via <code>open-delay</code> / <code>close-delay</code> attributes
+        (default 300 / 100 ms).
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

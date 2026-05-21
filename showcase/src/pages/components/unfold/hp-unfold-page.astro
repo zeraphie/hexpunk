@@ -1,0 +1,192 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<Layout title="hp-unfold-page">
+  <ComponentDocs title="hp-unfold-page">
+    <Fragment slot="description">
+      <p>
+        Camera-zoom unfold to a new route. Click the source hex (or any
+        <code>&lt;a data-hp-unfold&gt;</code> text link) and the source's colour rapidly
+        expands to cover the viewport — then the destination page is revealed underneath.
+        Browser back reverses the animation: the destination fades out as a viewport-sized
+        hex shrinks back to the source's original position.
+      </p>
+      <p>
+        Backed by cross-document View Transitions
+        (<code>@view-transition: navigation: auto</code> in <code>global.css</code>). Browsers
+        without support navigate without the animation — the link still works. Filled / saturated
+        sources work best; outline-style sources still animate but the colour read is dominated
+        by the canvas-coloured interior at scale.
+      </p>
+    </Fragment>
+
+    <p>
+      The <code>preview</code> attribute plays the expand + hold + shrink cycle in place, no
+      navigation. Use this for showcase pages, dev workflow, or any context where you want to
+      demo the animation without leaving the page. The source's content (label) stays at its
+      original size — only the colour expands.
+    </p>
+    <hp-demo caption="Preview — animate without navigating">
+      <hp-unfold-page preview>
+        <hp-cell variant="action" filled slot="source">play</hp-cell>
+      </hp-unfold-page>
+
+      <hp-unfold-page preview>
+        <hp-cell variant="secondary" slot="source">play</hp-cell>
+      </hp-unfold-page>
+
+      <hp-unfold-page preview>
+        <hp-cell variant="anchor" slot="source">play</hp-cell>
+      </hp-unfold-page>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-unfold-page preview>
+      <hp-cell variant="action" filled slot="source">play</hp-cell>
+    </hp-unfold-page>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <p>Click <strong>palette</strong> — the action's primary colour floods the viewport, then the palette page appears. Browser back returns with the inverse shrink animation.</p>
+    <hp-demo caption="Hex source — real navigation">
+      <hp-unfold-page href={`${base}/palette`}>
+        <hp-cell variant="action" filled slot="source">palette</hp-cell>
+      </hp-unfold-page>
+
+      <hp-unfold-page href={`${base}/components/primitives/hp-cell`}>
+        <hp-cell variant="secondary" slot="source">hp-cell</hp-cell>
+      </hp-unfold-page>
+
+      <hp-unfold-page href={`${base}/animations`}>
+        <hp-cell variant="anchor" slot="source">motion</hp-cell>
+      </hp-unfold-page>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-unfold-page href="/palette">
+      <hp-cell variant="action" filled slot="source">palette</hp-cell>
+    </hp-unfold-page>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Text link with the same animation">
+      <p>
+        Any <code>&lt;a&gt;</code> with the <code>data-hp-unfold</code> attribute triggers the same
+        view-transition expand. The link's own CSS <code>color</code> becomes the overlay fill —
+        brand-coloured links flood the viewport in their brand colour. Try:
+        <a href={`${base}/palette`} data-hp-unfold style="color: var(--hp-secondary)">
+          go to palette
+        </a>
+        or
+        <a href={`${base}/components/primitives/hp-cell`} data-hp-unfold style="color: var(--hp-warn)">
+          jump to hp-cell
+        </a>.
+      </p>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <a href="/palette" data-hp-unfold style="color: var(--hp-secondary)">
+      go to palette
+    </a>
+
+    <!-- Animation keyframes (global.css) -->
+    @view-transition {
+      navigation: auto;
+    }
+
+    ::view-transition-old(hp-unfold-source) {
+      animation: hp-unfold-expand var(--hp-unfold-bloom) ease-out forwards;
+    }
+
+    ::view-transition-new(hp-unfold-source) {
+      animation: hp-unfold-shrink var(--hp-unfold-bloom) ease-out forwards;
+    }
+
+    @keyframes hp-unfold-expand {
+      from { transform: scale(1); }
+      to   { transform: scale(var(--hp-unfold-peak, 50)); }
+    }
+
+    @keyframes hp-unfold-shrink {
+      from { transform: scale(var(--hp-unfold-peak, 50)); }
+      to   { transform: scale(1); }
+    }
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use <code>&lt;hp-unfold-page&gt;</code> with a filled or saturated hex source
+          (<code>hp-cell variant="action" filled</code>, <code>variant="anchor"</code>, or
+          any toned cell) for high-impact navigation moments — entering a detail page,
+          launching a quest, opening a settings surface.
+        </hp-banner>
+        <hp-banner tone="do">
+          Use the <code>data-hp-unfold</code> attribute on regular text links to give them the
+          same brand-coloured expand. Set the link's CSS <code>color</code> deliberately —
+          that's the colour that floods the viewport.
+        </hp-banner>
+        <hp-banner tone="do">
+          Mix freely with non-unfold navigation. Sidebar / nav-rail links that don't have
+          <code>data-hp-unfold</code> get the default cross-document fade — both feel like
+          Hexpunk, the unfold is the flourish.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use on every link. The expand is a signal that "you're going somewhere important" —
+          firing on every nav dilutes the signal.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for in-place detail expansion (<code>&lt;hp-unfold-list&gt;</code>) or modal
+          detail views (<code>&lt;hp-unfold-overlay&gt;</code>). Reserve this for actual route
+          navigation.
+        </hp-banner>
+      
+
+      <h2>Browser support</h2>
+      <p>
+        Cross-document View Transitions are Chrome 126+ (stable). Firefox and Safari ship
+        same-document transitions but not cross-document yet (at the time of writing). On
+        unsupported browsers, the link still works — it just navigates without animation. The
+        showcase enables transitions globally via
+        <code>@view-transition: navigation: auto</code> in <code>global.css</code>.
+      </p>
+
+      <h2>Back navigation</h2>
+      <p>
+        When the user returns to a page that was the source of a forward
+        <code>&lt;hp-unfold-page&gt;</code> nav, this element detects the
+        back-or-forward navigation (via the Performance Navigation Timing API) and the previous
+        URL (via the Navigation API entries, falling back to <code>document.referrer</code>). If
+        the previous URL matches this element's <code>href</code>, the source receives the
+        <code>view-transition-name</code> at page load — and the
+        <code>::view-transition-new</code> shrink animation plays automatically.
+      </p>
+      <p>
+        Text-link sources (<code>data-hp-unfold</code>) currently only animate the forward
+        direction. Back navigation falls back to the default cross-document fade. A future
+        iteration can persist the last-clicked link's identity in <code>sessionStorage</code>
+        and recreate the overlay on the back-target page.
+      </p>
+
+      <h2>Reduced motion</h2>
+      <p>
+        With <code>prefers-reduced-motion: reduce</code>, the expand and shrink keyframes are
+        suppressed — the user sees a default cross-fade between pages, no scale tween.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

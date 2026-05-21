@@ -1,0 +1,75 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-spinner">
+  <ComponentDocs title="hp-spinner">
+    <p slot="description">
+      Indeterminate-progress spinner — a hex outline rotating at a constant rate. Default tone is
+      <code>--hp-primary</code> ("system busy"); pair with <code>tone="positive|warn|alert|error"</code>
+      when the wait is tone-specific. Respects <code>prefers-reduced-motion</code> by slowing the
+      rotation (rather than freezing it) so the visual still reads alive.
+    </p>
+
+    <hp-demo caption="Sizes">
+      <hp-spinner size="sm"></hp-spinner>
+      <hp-spinner size="md"></hp-spinner>
+      <hp-spinner size="lg"></hp-spinner>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-spinner size="sm"></hp-spinner>
+    <hp-spinner size="md"></hp-spinner>
+    <hp-spinner size="lg"></hp-spinner>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Tones">
+      <hp-spinner></hp-spinner>
+      <hp-spinner tone="positive"></hp-spinner>
+      <hp-spinner tone="warn"></hp-spinner>
+      <hp-spinner tone="alert"></hp-spinner>
+      <hp-spinner tone="error"></hp-spinner>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-spinner></hp-spinner>
+    <hp-spinner tone="positive"></hp-spinner>
+    <hp-spinner tone="warn"></hp-spinner>
+    <hp-spinner tone="alert"></hp-spinner>
+    <hp-spinner tone="error"></hp-spinner>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use for indeterminate waits — the system doesn't know how long until done. For
+          determinate progress (download, upload, multi-step task) reach for a dedicated
+          progress component instead.
+        </hp-banner>
+        <hp-banner tone="do">
+          Match <code>tone</code> to the operation's outcome / severity (positive for a sync,
+          warn for a check, alert / error for retries against failing endpoints).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Stack multiple spinners on the same surface — at most one per region.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        Auto <code>role="status"</code> and <code>aria-label="Loading"</code> so screen readers
+        announce the spinner as a live region. Override <code>aria-label</code> for context-
+        specific waits ("Syncing changes", "Compiling shaders", etc.).
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

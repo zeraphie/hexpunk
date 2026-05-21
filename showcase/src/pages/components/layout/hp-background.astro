@@ -1,0 +1,123 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-background">
+  <ComponentDocs title="hp-background">
+    <p slot="description">
+      Faint hex-grid backdrop that brightens softly around the pointer. Lives as an absolutely-
+      positioned child inside any container, sitting beneath the foreground content. Strokes are
+      <code>--hp-outline-faint</code> at rest; a radial mask reveals a brighter copy
+      (<code>--hp-outline</code>) only within a configurable pixel radius of the cursor.
+    </p>
+
+    <p>Move the cursor across the canvas to see the brightening trail.</p>
+    <hp-demo caption="Default — inside a demo canvas">
+      <div style="position: relative; width: 100%; min-height: 240px">
+        <hp-background></hp-background>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <div style="position: relative; min-height: 240px">
+      <hp-background></hp-background>
+      <!-- foreground content here -->
+    </div>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <p>
+      <code>hp-background</code> as a sibling of the grid cells inside an <code>hp-grid</code>.
+      The grid's drag / pan behaviour is unaffected — the backdrop has
+      <code>pointer-events: none</code>, so cells and pan still receive the pointer.
+    </p>
+    <hp-demo caption="Behind a layout grid">
+      <hp-grid draggable>
+        <hp-background></hp-background>
+        <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
+        <hp-cell variant="action" q="1" r="0">east</hp-cell>
+        <hp-cell variant="action" q="-1" r="0">west</hp-cell>
+        <hp-cell variant="content" q="0" r="-1" size="sm">north</hp-cell>
+        <hp-cell variant="content" q="0" r="1" size="sm">south</hp-cell>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-grid draggable>
+      <hp-background></hp-background>
+      <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
+      <hp-cell variant="action" q="1" r="0">east</hp-cell>
+    </hp-grid>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Denser pattern + tighter pointer radius">
+      <div style="position: relative; width: 100%; min-height: 240px">
+        <hp-background hex-size="9" pointer-radius="120"></hp-background>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <!-- Smaller hexes, smaller cursor halo -->
+    <hp-background hex-size="9" pointer-radius="120"></hp-background>
+
+    <!-- Larger hexes, wider halo -->
+    <hp-background hex-size="22" pointer-radius="320"></hp-background>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use as the backdrop for any surface that benefits from ambient hex texture — demo
+          canvases, dashboards, the document body. The pointer-aware brightening reads as
+          "this surface notices you" without competing with the foreground.
+        </hp-banner>
+        <hp-banner tone="do">
+          Tune <code>hex-size</code> to the surface scale. ~10-14 for small canvases, 18-24 for
+          full-viewport / hero areas.
+        </hp-banner>
+        <hp-banner tone="do">
+          Set the parent container <code>position: relative</code> so the backdrop's
+          <code>inset: 0</code> stretches to fill it.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Stack multiple <code>hp-background</code>s in the same stacking context — the
+          interference patterns get noisy and the pointer-following overlays compound visually.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use as foreground content. The element is <code>aria-hidden</code> and
+          <code>pointer-events: none</code> — it's never the thing the user is meant to interact
+          with.
+        </hp-banner>
+      
+
+      <h2>Performance</h2>
+      <p>
+        Polygons are rendered once on mount (and re-rendered on resize). Pointer tracking is a
+        single window-level <code>pointermove</code> listener that writes two CSS variables —
+        no per-frame DOM updates beyond the style set. The radial-gradient mask is GPU-
+        compositied. Several hundred hexes is comfortable; thousands start to show in paint
+        cost on lower-end hardware (increase <code>hex-size</code> to reduce density).
+      </p>
+
+      <h2>Accessibility</h2>
+      <p>
+        Auto <code>aria-hidden="true"</code> on the host — the element is purely decorative
+        and never announces. Respects <code>prefers-reduced-motion</code>: the bright cursor-
+        following layer is suppressed (faint base still renders), so the surface stays calm
+        for users who've opted out.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

@@ -1,0 +1,90 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-radio">
+  <ComponentDocs title="hp-radio">
+    <p slot="description">
+      Single radio button — pairs with <code>&lt;hp-radio-group&gt;</code> as a parent. The
+      group manages selection, arrow-key navigation, and dispatches the <code>change</code>
+      event. Individual <code>hp-radio</code> renders the hex chrome (hollow at rest, primary-
+      filled with a concentric dot when checked) and emits <code>hp-radio-select</code> on
+      activation.
+    </p>
+
+    <hp-demo caption="Group">
+      <hp-radio-group value="medium" style="gap: 12px;">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-radio value="small"></hp-radio>
+          <span>small</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-radio value="medium"></hp-radio>
+          <span>medium</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-radio value="large"></hp-radio>
+          <span>large</span>
+        </div>
+      </hp-radio-group>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-radio-group value="medium">
+      <hp-radio value="small"></hp-radio>
+      <hp-radio value="medium"></hp-radio>
+      <hp-radio value="large"></hp-radio>
+    </hp-radio-group>
+
+    document
+      .querySelector("hp-radio-group")
+      .addEventListener("change", (ev) => {
+        console.log(ev.detail.value);
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Disabled">
+      <hp-radio-group value="b" style="gap: 12px;">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-radio value="a"></hp-radio>
+          <span>a</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-radio value="b"></hp-radio>
+          <span>b</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-radio value="c" disabled></hp-radio>
+          <span style="opacity: 0.5">c (disabled)</span>
+        </div>
+      </hp-radio-group>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-radio-group value="b">
+      <hp-radio value="a"></hp-radio>
+      <hp-radio value="b"></hp-radio>
+      <hp-radio value="c" disabled></hp-radio>
+    </hp-radio-group>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Group exposes <code>role="radiogroup"</code>; each child <code>role="radio"</code> with
+        <code>aria-checked</code>. Arrow keys move focus + selection between children
+        (ArrowDown / ArrowUp for vertical, ArrowLeft / ArrowRight for horizontal); Home / End
+        jump to first / last. Only one radio is tabbable at a time (roving tabindex pattern).
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

@@ -1,0 +1,99 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface SwatchGroup {
+  name: string;
+  q: number;
+  r: number;
+  /** Up to 4 tokens — each lands in top / middle-left / middle-right / bottom. */
+  swatches: { token: string; slot: "top" | "middle-left" | "middle-right" | "bottom" }[];
+}
+
+// Cluster centres are placed at axial distance 4 from each other.
+// Each rosette occupies ±1 axial unit around its centre, so a 4-unit
+// gap between centres leaves a clean 1-unit corridor of empty axial
+// slots between any two clusters — no hex overlap, consistent gap.
+const GROUPS: SwatchGroup[] = [
+  {
+    name: "Engagement",
+    q: 0,
+    r: 0,
+    swatches: [
+      { token: "primary", slot: "top" },
+      { token: "primary-bright", slot: "middle-left" },
+      { token: "secondary", slot: "middle-right" },
+      { token: "tertiary", slot: "bottom" },
+    ],
+  },
+  {
+    name: "Status",
+    q: 4,
+    r: 0,
+    swatches: [
+      { token: "warn", slot: "top" },
+      { token: "alert", slot: "middle-left" },
+      { token: "error", slot: "middle-right" },
+    ],
+  },
+  {
+    name: "Surfaces",
+    q: 0,
+    r: 4,
+    swatches: [
+      { token: "surface", slot: "top" },
+      { token: "surface-container", slot: "middle-left" },
+      { token: "surface-container-high", slot: "middle-right" },
+      { token: "surface-container-highest", slot: "bottom" },
+    ],
+  },
+  {
+    name: "Outline & text",
+    q: 4,
+    r: 4,
+    swatches: [
+      { token: "outline", slot: "top" },
+      { token: "outline-variant", slot: "middle-left" },
+      { token: "on-surface", slot: "middle-right" },
+      { token: "on-surface-variant", slot: "bottom" },
+    ],
+  },
+];
+---
+
+<Layout title="Palette">
+  <h1>Palette</h1>
+  <p>
+    Token-driven colour system, arranged as drag-rearrangeable
+    <code>&lt;hp-cluster&gt;</code> rosettes on an <code>&lt;hp-grid&gt;</code>. Grab the centre
+    hex of any group to move it — the four outer swatches are inert and don't change colour on
+    hover.
+  </p>
+
+  <hp-grid class="demo-canvas" draggable>
+    {
+      GROUPS.map((group) => {
+        // Astro strips dynamic `slot=` from non-Astro children, so
+        // we still emit the swatches as raw HTML via set:html.
+        // Swatches keep the default --hp-outline stroke (no
+        // transparent override) so they share the centre's ring
+        // colour. With the cluster's hex-stroke overlap, that means
+        // adjacent atoms paint matching outline pixels in the
+        // overlap region — one continuous outline around each hex
+        // instead of a band of the centre's orphan outline showing
+        // between centre's canvas and the swatch's coloured interior.
+        const swatchHtml = group.swatches
+          .map(
+            (sw) =>
+              `<hp-hex slot="${sw.slot}" style="--hp-hex-fill: var(--hp-${sw.token})" title="--hp-${sw.token}"></hp-hex>`,
+          )
+          .join("");
+        return (
+          <hp-cluster q={group.q} r={group.r} drag-handle="[slot='centre']">
+            <hp-cell variant="anchor" slot="centre">{group.name}</hp-cell>
+            <Fragment set:html={swatchHtml} />
+          </hp-cluster>
+        );
+      })
+    }
+  </hp-grid>
+</Layout>

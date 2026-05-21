@@ -1,0 +1,50 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-visually-hidden">
+  <ComponentDocs title="hp-visually-hidden">
+    <p slot="description">
+      Content rendered inside this element is invisible on screen but readable by assistive
+      tech — useful for icon-only buttons that need an accessible name, status announcements,
+      or skip-to-main links that only appear on focus.
+    </p>
+
+    <h2>Icon button with hidden label</h2>
+    <p>
+      The button below has no visible text but announces "search" to screen readers.
+    </p>
+    <hp-demo caption="Icon button with hidden label">
+      <hp-button size="sm">
+        <span aria-hidden="true">🔍</span>
+        <hp-visually-hidden>search</hp-visually-hidden>
+      </hp-button>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button>
+      <svg aria-hidden="true">…</svg>
+      <hp-visually-hidden>Search</hp-visually-hidden>
+    </hp-button>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Wrap supplementary text that screen readers need but sighted users don't ("search",
+          "remove tag", live region announcements).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use to hide arbitrary content that shouldn't be announced — set
+          <code>aria-hidden="true"</code> on the element directly, or skip the markup
+          entirely.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

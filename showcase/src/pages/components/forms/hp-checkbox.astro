@@ -1,0 +1,58 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-checkbox">
+  <ComponentDocs title="hp-checkbox">
+    <p slot="description">
+      Hex checkbox — hollow at rest, primary-filled with a check glyph when <code>checked</code>.
+      <code>indeterminate</code> stamps a horizontal bar for mixed state. Click or Space toggles;
+      focus-ring on keyboard focus.
+    </p>
+
+    <hp-demo caption="States">
+      <hp-checkbox></hp-checkbox>
+      <hp-checkbox checked></hp-checkbox>
+      <hp-checkbox indeterminate></hp-checkbox>
+      <hp-checkbox disabled></hp-checkbox>
+      <hp-checkbox checked disabled></hp-checkbox>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-checkbox></hp-checkbox>
+    <hp-checkbox checked></hp-checkbox>
+    <hp-checkbox indeterminate></hp-checkbox>
+    <hp-checkbox disabled></hp-checkbox>
+    <hp-checkbox checked disabled></hp-checkbox>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="With label">
+      <hp-checkbox id="terms"></hp-checkbox>
+      <hp-label for="terms">accept terms</hp-label>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-checkbox id="terms"></hp-checkbox>
+    <hp-label for="terms">Accept terms</hp-label>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        <code>role="checkbox"</code>, <code>aria-checked</code> reflects state
+        (<code>true</code> / <code>false</code> / <code>mixed</code> for indeterminate). Space
+        toggles. <code>disabled</code> blocks the toggle and removes from tab order with
+        <code>aria-disabled="true"</code> + <code>tabindex="-1"</code>.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

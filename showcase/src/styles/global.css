@@ -1,0 +1,666 @@
+/* global.css — Showcase-wide light-DOM styles. */
+
+/* ── Cross-document View Transitions ───────────────────────────── */
+
+/* Enable native cross-document view transitions for same-origin
+ * navigation. Browsers without support (Safari, Firefox at the time
+ * of writing) silently navigate without animation. */
+@view-transition {
+  navigation: auto;
+}
+
+/* Suppress the default cross-document root cross-fade so the
+ * browser only has to composite the hp-unfold-source snapshot's
+ * transform. The full-viewport raster crossfade running concurrently
+ * with a 25× scale tween is what made the animation feel rough —
+ * killing it frees the GPU to focus on the one element that's
+ * actually moving. The destination page swaps in instantly under
+ * the expanding hex. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* hp-unfold-page wires its source to view-transition-name:
+ * hp-unfold-source just before navigation (forward) or on page load
+ * if the user is returning via back/forward (reverse). The animations
+ * below run on the snapshot the browser captures of the source hex
+ * — the source's own colour fills the viewport at peak expansion. */
+::view-transition-old(hp-unfold-source) {
+  animation: hp-unfold-expand var(--hp-unfold-bloom, 280ms) var(--hp-ease-default, ease-out)
+    forwards;
+}
+
+::view-transition-new(hp-unfold-source) {
+  animation: hp-unfold-shrink var(--hp-unfold-bloom, 280ms) var(--hp-ease-default, ease-out)
+    forwards;
+}
+
+/* Peak scale is computed at runtime from 2 × max(viewport dimension) /
+ * source.width and stashed in --hp-unfold-peak. The default of 50
+ * here covers up to ~4000px viewports from an 80px sm hex (80 × 50 =
+ * 4000), but JS overrides per-source so very small sources (text
+ * links, sub-32px hexes) still cover the viewport. The hp-unfold-page
+ * navigate path sets the var on document and in sessionStorage so the
+ * destination page can pick it up via Layout's inline init. */
+@keyframes hp-unfold-expand {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(var(--hp-unfold-peak, 50));
+  }
+}
+
+@keyframes hp-unfold-shrink {
+  from {
+    transform: scale(var(--hp-unfold-peak, 50));
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(hp-unfold-source),
+  ::view-transition-new(hp-unfold-source) {
+    animation: none;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--hp-background);
+  color: var(--hp-on-background);
+  font-family: var(--hp-typo-body-md-font-family);
+  font-size: var(--hp-typo-body-md-font-size);
+  line-height: var(--hp-typo-body-md-line-height);
+}
+
+h1 {
+  font-family: var(--hp-typo-display-lg-font-family);
+  font-size: var(--hp-typo-display-lg-font-size);
+  font-weight: var(--hp-typo-display-lg-font-weight);
+  line-height: var(--hp-typo-display-lg-line-height);
+  letter-spacing: var(--hp-typo-display-lg-letter-spacing);
+  color: var(--hp-primary);
+  text-transform: uppercase;
+  margin: 0 0 var(--hp-md);
+}
+
+h2 {
+  font-family: var(--hp-typo-label-md-font-family);
+  font-size: var(--hp-typo-label-md-font-size);
+  font-weight: var(--hp-typo-label-md-font-weight);
+  line-height: var(--hp-typo-label-md-line-height);
+  letter-spacing: var(--hp-typo-label-md-letter-spacing);
+  color: var(--hp-on-surface-variant);
+  text-transform: uppercase;
+  margin: var(--hp-xl) 0 var(--hp-md);
+}
+
+p {
+  color: var(--hp-on-surface-variant);
+}
+
+a {
+  color: var(--hp-secondary);
+}
+
+code {
+  font-family: var(--hp-typo-code-md-font-family);
+  font-size: var(--hp-typo-code-md-font-size);
+  color: var(--hp-primary-bright);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hp-lg);
+  align-items: center;
+  margin: var(--hp-md) 0;
+}
+
+/* Demo container shared by every page that drops an <hp-grid> or a
+   composite (palette, link demo, grid demo). Generous viewport-height
+   floor so the pannable canvas has somewhere meaningful to pan
+   within. */
+.demo-canvas {
+  position: relative;
+  height: max(500px, 70vh);
+  border: 1px dashed var(--hp-outline-faint);
+  margin: var(--hp-md) 0;
+}
+
+/* Page chrome — header / sidebar / main grid. Lives in light DOM so
+   the sitemap nav can use stable hex tokens. */
+:root {
+  /* Height of the fixed navbar. Both sidebars (hp-sidebar) stick
+   * to this offset so they park just below the navbar, and .page
+   * pads its top by the same value so content starts below the
+   * navbar instead of sliding under it. */
+  --hp-navbar-height: 64px;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: 16rem 1fr 14rem;
+  min-height: 100vh;
+  /* Cap the layout at a readable width and centre it so the TOC
+   * column always sits immediately right of main (no empty 1fr
+   * remainder pushing it to the viewport edge on wide screens). */
+  max-width: 94rem;
+  margin: 0 auto;
+  padding-top: var(--hp-navbar-height);
+  /* No grid gap — each cell's own padding provides visual breathing
+   * room. Keeps the hp-background backdrop visually continuous from
+   * the header's bottom edge through main with no body colour
+   * showing through between rows or columns. */
+  gap: 0;
+}
+
+/* The right-rail TOC track is always reserved (14rem) even on pages
+ * without h2 content. Otherwise the grid switched from 2-col to
+ * 3-col the moment JS populated the TOC, causing a visible main-
+ * content reflow on every page load. The reserved track is a small
+ * cost of empty right-margin on TOC-less pages vs. a noticeable
+ * layout shift on every TOC page. */
+
+.page > header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--hp-navbar-height);
+  display: flex;
+  align-items: center;
+  gap: var(--hp-md);
+  padding: 0 var(--hp-xl);
+  background: var(--hp-surface);
+  border-bottom: 1px solid var(--hp-outline-faint);
+}
+
+.page > header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  color: var(--hp-primary);
+  text-decoration: none;
+}
+
+.page > header .brand-mark {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 12;
+  stroke-linejoin: round;
+}
+
+.page > header .brand-text {
+  font-family: var(--hp-typo-display-md-font-family);
+  font-size: var(--hp-typo-display-md-font-size);
+  font-weight: var(--hp-typo-display-md-font-weight);
+  line-height: var(--hp-typo-display-md-line-height);
+  letter-spacing: var(--hp-typo-display-md-letter-spacing);
+  text-transform: uppercase;
+}
+
+.page > header .tagline {
+  color: var(--hp-on-surface-variant);
+  font-size: var(--hp-typo-body-sm-font-size);
+}
+
+.page > header .header-tools {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: var(--hp-sm);
+}
+
+.page > header .header-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hp-xs);
+  height: 36px;
+  padding: 0 var(--hp-sm);
+  border: 1px solid var(--hp-outline-variant);
+  border-radius: var(--hp-rounded-sm);
+  background: transparent;
+  color: var(--hp-on-surface-variant);
+  font: inherit;
+  font-size: var(--hp-typo-label-sm-font-size);
+  cursor: pointer;
+  transition:
+    color var(--hp-duration-fast) var(--hp-ease-default),
+    border-color var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+.page > header .header-btn:hover,
+.page > header .header-btn:focus-visible {
+  color: var(--hp-secondary);
+  border-color: var(--hp-secondary);
+}
+
+.page > header .header-btn .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.page > header .theme-toggle {
+  width: 36px;
+  padding: 0;
+}
+
+.page > header .search-trigger .kbd-hint {
+  font-family: var(--hp-typo-code-sm-font-family);
+  font-size: var(--hp-typo-code-sm-font-size);
+  color: var(--hp-on-surface-variant);
+  padding: 0 var(--hp-xs);
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+}
+
+/* Show one theme icon at a time — sun in dark mode (click → light),
+ * moon in light mode (click → dark). The data-theme attribute lives
+ * on <html>, set by the inline init script before paint. */
+:root:not([data-theme="light"]) .page > header .theme-toggle .icon-moon,
+[data-theme="dark"] .page > header .theme-toggle .icon-moon {
+  display: none;
+}
+
+[data-theme="light"] .page > header .theme-toggle .icon-sun {
+  display: none;
+}
+
+/* ── Search palette ─────────────────────────────────────────────── */
+
+.search-palette {
+  /* Native <dialog> centers itself via Top Layer — width capped, top-
+   * pinned a bit below viewport top so the cursor lands on the input
+   * rather than the screen middle. */
+  width: min(560px, calc(100vw - 2 * var(--hp-lg)));
+  max-width: none;
+  margin: 12vh auto auto;
+  padding: 0;
+  border: 1px solid var(--hp-outline-variant);
+  border-radius: var(--hp-rounded-md);
+  background: var(--hp-surface-container);
+  color: var(--hp-on-surface);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.search-palette::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.search-palette-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+}
+
+.search-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  padding: var(--hp-md);
+  border-bottom: 1px solid var(--hp-outline-faint);
+}
+
+.search-input-row .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--hp-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.search-input-row input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--hp-on-surface);
+  font: inherit;
+  font-size: var(--hp-typo-body-md-font-size);
+}
+
+.search-input-row input::placeholder {
+  color: var(--hp-on-surface-variant);
+  opacity: 0.6;
+}
+
+.search-input-row .kbd-hint {
+  font-family: var(--hp-typo-code-sm-font-family);
+  font-size: var(--hp-typo-code-sm-font-size);
+  color: var(--hp-on-surface-variant);
+  padding: 0 var(--hp-xs);
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+}
+
+.search-results {
+  list-style: none;
+  margin: 0;
+  padding: var(--hp-xs) 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.search-results li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--hp-md);
+  padding: var(--hp-sm) var(--hp-md);
+  cursor: pointer;
+  color: var(--hp-on-surface);
+  transition: background var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+.search-results li:hover,
+.search-results li.selected {
+  background: var(--hp-surface-container-high);
+  color: var(--hp-secondary);
+}
+
+.search-results .result-title {
+  font-weight: 500;
+}
+
+.search-results .result-section {
+  color: var(--hp-on-surface-variant);
+  font-size: var(--hp-typo-body-sm-font-size);
+  margin-left: auto;
+}
+
+.search-empty {
+  padding: var(--hp-lg) var(--hp-md);
+  color: var(--hp-on-surface-variant);
+  text-align: center;
+  font-size: var(--hp-typo-body-sm-font-size);
+}
+
+.search-footer {
+  display: flex;
+  gap: var(--hp-md);
+  padding: var(--hp-sm) var(--hp-md);
+  border-top: 1px solid var(--hp-outline-faint);
+  color: var(--hp-on-surface-variant);
+  font-size: var(--hp-typo-body-sm-font-size);
+}
+
+.search-footer kbd {
+  font-family: var(--hp-typo-code-sm-font-family);
+  font-size: var(--hp-typo-code-sm-font-size);
+  padding: 0 var(--hp-xs);
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+}
+
+/* ── Component docs header + tabs ──────────────────────────────── */
+
+.component-header {
+  margin-bottom: var(--hp-md);
+}
+
+.component-header h1 {
+  margin-bottom: var(--hp-sm);
+}
+
+.component-description p {
+  margin: 0 0 var(--hp-sm);
+}
+
+/* ComponentDocs tabs now use <hp-tabs route="hash"> — the bespoke
+ * .tab-bar / .tab / .tab-panel rules that drove the pre-migration
+ * markup were removed (commit b3eba86). .tab-stub is the only stub
+ * surface still in use by ComponentApi.astro / ComponentDocs.astro
+ * for empty-tab fallbacks. */
+.tab-stub {
+  color: var(--hp-on-surface-variant);
+  font-style: italic;
+  padding: var(--hp-xl) 0;
+  text-align: center;
+}
+
+/* ── ComponentApi tables (Code tab) ──────────────────────────────── */
+.api section {
+  margin: var(--hp-lg) 0;
+}
+
+.api section > h3 {
+  font-family: var(--hp-typo-label-md-font-family);
+  font-size: var(--hp-typo-label-md-font-size);
+  font-weight: var(--hp-typo-label-md-font-weight);
+  letter-spacing: var(--hp-typo-label-md-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+  margin: 0 0 var(--hp-sm);
+}
+
+.api table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--hp-typo-body-sm-font-size);
+}
+
+.api th,
+.api td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--hp-xs) var(--hp-sm);
+  border-bottom: 1px solid var(--hp-outline-faint);
+}
+
+.api th {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+  font-weight: 700;
+  border-bottom-color: var(--hp-outline-variant);
+}
+
+.api td code {
+  background: var(--hp-surface-container);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 0.9em;
+}
+
+.api-empty {
+  color: var(--hp-on-surface-variant);
+  font-style: italic;
+}
+
+.code-install {
+  margin: 0 0 var(--hp-lg);
+}
+
+.code-install pre {
+  margin: var(--hp-xs) 0;
+}
+
+/* ── Code blocks (Code tab content) ─────────────────────────────── */
+
+pre {
+  display: block;
+  padding: var(--hp-md);
+  margin: var(--hp-md) 0;
+  background: var(--hp-surface-container);
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+  overflow-x: auto;
+  font-family: var(--hp-typo-code-md-font-family);
+  font-size: var(--hp-typo-code-md-font-size);
+  line-height: 1.5;
+  color: var(--hp-on-surface);
+}
+
+pre code {
+  display: block;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* ── Changelog list (Changelog tab) ────────────────────────────── */
+
+.changelog-list {
+  list-style: none;
+  margin: var(--hp-md) 0;
+  padding: 0;
+  display: grid;
+  gap: var(--hp-md);
+}
+
+.changelog-list li {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: var(--hp-md);
+  padding-bottom: var(--hp-md);
+  border-bottom: 1px solid var(--hp-outline-faint);
+}
+
+.changelog-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.changelog-list .version {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hp-xxs);
+  font-family: var(--hp-typo-code-md-font-family);
+  font-size: var(--hp-typo-code-md-font-size);
+  color: var(--hp-primary);
+}
+
+.changelog-list .version .date {
+  font-family: var(--hp-typo-body-sm-font-family);
+  font-size: var(--hp-typo-body-sm-font-size);
+  color: var(--hp-on-surface-variant);
+}
+
+.changelog-list .summary p {
+  margin: 0 0 var(--hp-xs);
+}
+
+.changelog-list .summary p:last-child {
+  margin-bottom: 0;
+}
+
+.changelog-list .summary .changelog-section + .changelog-section {
+  margin-top: var(--hp-md);
+}
+
+.changelog-list .summary .changelog-section h3 {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: var(--hp-typo-label-sm-font-weight);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+  margin: 0 0 var(--hp-xs);
+}
+
+.changelog-list .summary .changelog-section ul {
+  list-style: disc;
+  margin: 0;
+  padding-left: var(--hp-lg);
+  color: var(--hp-on-surface);
+}
+
+.changelog-list .summary .changelog-section li {
+  display: list-item;
+  grid-template-columns: none;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  margin-bottom: var(--hp-xs);
+}
+
+.changelog-list .summary .changelog-section li:last-child {
+  margin-bottom: 0;
+}
+
+/* hp-sidebar owns its own chrome (border, padding, scroll, tree
+ * styling, mobile variant) — see src/elements/layout/hp-sidebar.ts.
+ * Its grid placement is implicit from document order in the .page
+ * grid (column 1, row 2). */
+
+.page > main {
+  position: relative;
+  isolation: isolate;
+  padding: var(--hp-md) var(--hp-xl) var(--hp-xxl);
+  /* No max-width — .page is now capped + centred, so the 1fr column
+   * already sits at a readable width. Letting main fill its column
+   * means the TOC immediately follows main's right edge with no gap. */
+  min-width: 0;
+}
+
+/* Push the hp-background backdrop behind whatever's slotted into main
+ * so foreground content always reads cleanly. The element itself stays
+ * position: absolute; inset: 0 — this rule just sets the stacking. */
+.page > main > hp-background {
+  z-index: -1;
+}
+
+/* Stack sidebar above main on phone-sized viewports only. A proper
+   hamburger / drawer pattern can land later; for now, ≥640px keeps
+   the side-by-side layout. hp-sidebar swaps its own border-right →
+   border-bottom internally at this breakpoint. */
+@media (max-width: 640px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .page > main {
+    padding-top: var(--hp-md);
+  }
+
+  /* TOC isn't useful on phone widths — hide it regardless of content. */
+  .page > .page-toc {
+    display: none;
+  }
+}
+
+/* ── Right-rail TOC ─────────────────────────────────────────────── */
+
+/* TOC chrome (border, padding, scroll, sticky) lives in hp-sidebar
+ * itself — see src/elements/layout/hp-sidebar.ts. The only thing
+ * tracked here is the h3 indent: hp-sidebar-item doesn't have a
+ * native depth concept, so we tag depth-2 items with .toc-h3 and
+ * push the inner anchor in via ::part. */
+.page > .page-toc {
+  font-family: var(--hp-typo-body-sm-font-family);
+  font-size: var(--hp-typo-body-sm-font-size);
+}
+
+.page > .page-toc .toc-title {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: var(--hp-typo-label-sm-font-weight);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface);
+  margin: 0 0 var(--hp-sm);
+  padding-left: var(--hp-sm);
+}
+
+.page > .page-toc hp-sidebar-item.toc-h3::part(link) {
+  padding-left: calc(var(--hp-sm) + var(--hp-md));
+  font-size: calc(var(--hp-typo-body-sm-font-size) * 0.95);
+}

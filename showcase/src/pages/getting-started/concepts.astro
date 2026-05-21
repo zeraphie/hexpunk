@@ -1,0 +1,46 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Concepts">
+  <h1>Concepts</h1>
+  <p>
+    Hexpunk is a hexagonal-first, wireframe-cyberpunk design system. Three concepts drive
+    everything that ships.
+  </p>
+
+  <h2>Atoms vs molecules vs primitives</h2>
+  <ul>
+    <li>
+      <strong>Atoms</strong> are single-hex elements. <code>hp-hex</code> is the primitive;
+      <code>hp-cell</code> is the universal labelled element, with interactive variants
+      (anchor / action / secondary / utility), decorative variants
+      (content / support / slot), and a <code>tone</code> overlay
+      (positive / warn / alert / error) that doubles as the semantic status indicator.
+    </li>
+    <li>
+      <strong>Molecules</strong> are composed structures: <code>hp-grid</code> (invisible axial
+      coordinate space), <code>hp-cluster</code> (5-hex rosette), <code>hp-tether</code> (arc
+      between molecules).
+    </li>
+    <li>
+      <strong>Spatial primitives</strong> are the bigger ideas the system is built on: grid,
+      bonding (adjacency), linking (arcs at distance), and unfolding (in-place / overlay /
+      camera-zoom).
+    </li>
+  </ul>
+
+  <h2>Pointy-top hex math</h2>
+  <p>
+    Every hex has a bounding box of <code>w × (w · 2/√3)</code>. Axial coordinates project to
+    pixels as <code>x = w · (q + r/2)</code>, <code>y = w · √3/2 · r</code>. The grid uses an
+    effective cell width of <code>w − hex-stroke</code> so adjacent hexes' stroke bands coincide
+    into a single shared edge.
+  </p>
+
+  <h2>Motion is signal</h2>
+  <p>
+    Every animation communicates something specific (state change, attention, routing, scanning,
+    snapping, unfolding). Decorative motion is forbidden — the idle state is still.
+  </p>
+</Layout>

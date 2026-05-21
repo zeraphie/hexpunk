@@ -1,0 +1,61 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-tabs">
+  <ComponentDocs title="hp-tabs">
+    <p slot="description">
+      Tabbed content container. <code>hp-tab</code> children render the trigger row;
+      <code>hp-tab-panel</code> children render the body. Matching <code>value</code>
+      attributes link a tab to its panel. Arrow keys cycle tabs, Home / End jump to first /
+      last, roving tabindex.
+    </p>
+
+    <hp-demo caption="Horizontal (default)">
+      <hp-tabs value="overview">
+        <hp-tab value="overview">overview</hp-tab>
+        <hp-tab value="details">details</hp-tab>
+        <hp-tab value="logs">logs</hp-tab>
+        <hp-tab-panel value="overview">
+          <p>High-level summary of the build.</p>
+        </hp-tab-panel>
+        <hp-tab-panel value="details">
+          <p>Step-by-step trace of every operation.</p>
+        </hp-tab-panel>
+        <hp-tab-panel value="logs">
+          <p>Raw output from the runner.</p>
+        </hp-tab-panel>
+      </hp-tabs>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-tabs value="overview">
+      <hp-tab value="overview">overview</hp-tab>
+      <hp-tab value="details">details</hp-tab>
+      <hp-tab-panel value="overview">…</hp-tab-panel>
+      <hp-tab-panel value="details">…</hp-tab-panel>
+    </hp-tabs>
+
+    document
+      .querySelector("hp-tabs")
+      .addEventListener("change", (ev) => {
+        console.log(ev.detail.value);
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Tablist exposes <code>role="tablist"</code> + <code>aria-orientation</code>; each tab
+        <code>role="tab"</code> + <code>aria-selected</code>; each panel
+        <code>role="tabpanel"</code>. Roving tabindex: only the active tab is in the tab
+        order. Arrow keys move focus + selection.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

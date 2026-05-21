@@ -1,0 +1,64 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-toggle-group">
+  <ComponentDocs title="hp-toggle-group">
+    <p slot="description">
+      Group of toggle buttons with single or multi-select semantics. Slotted children carry
+      <code>value</code> attributes; the group tracks <code>value</code> (string in single mode,
+      space-separated in multiple mode) and stamps <code>aria-pressed</code> on each pressed
+      child.
+    </p>
+
+    <hp-demo caption="Single (one at a time)">
+      <hp-toggle-group type="single" value="left">
+        <hp-button value="left" size="sm">left</hp-button>
+        <hp-button value="center" size="sm">center</hp-button>
+        <hp-button value="right" size="sm">right</hp-button>
+      </hp-toggle-group>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-toggle-group type="single" value="left">
+      <hp-button value="left">left</hp-button>
+      <hp-button value="center">center</hp-button>
+      <hp-button value="right">right</hp-button>
+    </hp-toggle-group>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Multiple (any combination)">
+      <hp-toggle-group type="multiple" value="bold italic">
+        <hp-button value="bold" size="sm"><b>B</b></hp-button>
+        <hp-button value="italic" size="sm"><i>I</i></hp-button>
+        <hp-button value="underline" size="sm"><u>U</u></hp-button>
+      </hp-toggle-group>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-toggle-group type="multiple" value="bold italic">
+      <hp-button value="bold">B</hp-button>
+      <hp-button value="italic">I</hp-button>
+      <hp-button value="underline">U</hp-button>
+    </hp-toggle-group>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Single mode uses <code>role="radiogroup"</code> (mutually-exclusive selection);
+        multiple uses <code>role="group"</code>. Each pressed child carries
+        <code>aria-pressed="true"</code>.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

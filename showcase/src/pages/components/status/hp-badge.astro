@@ -1,0 +1,69 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-badge">
+  <ComponentDocs title="hp-badge">
+    <p slot="description">
+      Small toned status / count badge. Thin shell over <code>&lt;hp-cell variant="content"
+      size="sm"&gt;</code> with an optional <code>tone</code> overlay and the <code>active</code>
+      filled state. For larger or more prominent indicators reach for hp-cell directly.
+    </p>
+
+    <hp-demo caption="Tones">
+      <hp-badge>5</hp-badge>
+      <hp-badge tone="positive">ok</hp-badge>
+      <hp-badge tone="warn">!</hp-badge>
+      <hp-badge tone="alert">7</hp-badge>
+      <hp-badge tone="error">err</hp-badge>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-badge>5</hp-badge>
+    <hp-badge tone="positive">ok</hp-badge>
+    <hp-badge tone="warn">!</hp-badge>
+    <hp-badge tone="alert">7</hp-badge>
+    <hp-badge tone="error">err</hp-badge>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Active (filled)">
+      <hp-badge tone="positive" active>online</hp-badge>
+      <hp-badge tone="warn" active>queued</hp-badge>
+      <hp-badge tone="alert" active>retry</hp-badge>
+      <hp-badge tone="error" active>down</hp-badge>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-badge tone="positive" active>online</hp-badge>
+    <hp-badge tone="warn" active>queued</hp-badge>
+    <hp-badge tone="alert" active>retry</hp-badge>
+    <hp-badge tone="error" active>down</hp-badge>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use for counts, short status pills, indicator chips next to text or hex chrome. The
+          sm size keeps the badge from competing with surrounding content.
+        </hp-banner>
+        <hp-banner tone="do">
+          Pair tone with state (positive = healthy, warn = needs attention, alert = elevated,
+          error = failed). Active fills the badge for in-effect states.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for primary content. If the badge needs to be the focal element, use
+          <code>&lt;hp-cell tone="..."&gt;</code> at <code>size="md"</code> or <code>"lg"</code>.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

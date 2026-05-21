@@ -1,0 +1,77 @@
+{
+  "name": "@hexpunk/core",
+  "version": "0.1.0-alpha",
+  "private": false,
+  "description": "Hexagonal-first, wireframe-cyberpunk Lit component design system.",
+  "keywords": [
+    "cyberpunk",
+    "design-system",
+    "hexagonal",
+    "hexpunk",
+    "lit",
+    "web-components"
+  ],
+  "license": "MIT",
+  "workspaces": [
+    "showcase"
+  ],
+  "files": [
+    "dist",
+    "DESIGN.md",
+    "custom-elements.json",
+    "vscode.html-custom-data.json",
+    "assets",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./DESIGN.md": "./DESIGN.md",
+    "./custom-elements.json": "./custom-elements.json",
+    "./vscode.html-custom-data.json": "./vscode.html-custom-data.json"
+  },
+  "scripts": {
+    "build": "bun run tools/build.ts && bun run types",
+    "build:showcase": "bun run analyze && cd showcase && bun run build",
+    "types": "tsc --emitDeclarationOnly --outDir dist/types",
+    "showcase": "cd showcase && bun run dev",
+    "test": "bun test --pass-with-no-tests",
+    "analyze": "cem analyze --litelement --globs 'src/**/*.ts' && bun run vscode-data",
+    "vscode-data": "bun run tools/build-vscode-data.ts",
+    "tokens": "bun run tools/build-tokens.ts",
+    "icons": "bun run tools/build-icons.ts",
+    "fonts": "bun run tools/build-fonts.ts",
+    "logos": "bun run tools/build-logos.ts",
+    "lint:design": "bun x @google/design.md lint DESIGN.md",
+    "lint": "oxlint src/ tools/",
+    "lint:fix": "oxlint --fix src/ tools/",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "check": "bun run format:check && bun run lint && bun run test",
+    "setup:bindings": "bun run tools/setup-bindings.ts"
+  },
+  "dependencies": {
+    "lit": "^3.2.0"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.10.0",
+    "@lit-labs/ssr": "^3.2.0",
+    "@types/bun": "^1.1.0",
+    "fontkit": "^2.0.4",
+    "lucide-static": "^1.16.0",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "typescript": "^5.6.0",
+    "yaml": "^2.9.0"
+  },
+  "customElements": "custom-elements.json",
+  "trustedDependencies": [
+    "rs-module-lexer"
+  ]
+}

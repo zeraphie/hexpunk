@@ -1,0 +1,55 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-dropdown-menu">
+  <ComponentDocs title="hp-dropdown-menu">
+    <p slot="description">
+      Click-triggered menu with role="menu" + slotted <code>&lt;hp-menu-item&gt;</code>
+      children. Arrow keys move focus between items; Home / End jump; Enter / Space activate;
+      Escape dismiss.
+    </p>
+
+    <hp-demo caption="Actions menu">
+      <hp-dropdown-menu side="bottom" align="start">
+        <hp-button>actions</hp-button>
+        <hp-menu-item slot="content">edit</hp-menu-item>
+        <hp-menu-item slot="content">duplicate</hp-menu-item>
+        <hp-menu-item slot="content">share</hp-menu-item>
+        <hp-menu-item slot="content" disabled>archive</hp-menu-item>
+      </hp-dropdown-menu>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-dropdown-menu side="bottom" align="start">
+      <hp-button>actions</hp-button>
+      <hp-menu-item slot="content">edit</hp-menu-item>
+      <hp-menu-item slot="content">duplicate</hp-menu-item>
+      <hp-menu-item slot="content">share</hp-menu-item>
+      <hp-menu-item slot="content" disabled>archive</hp-menu-item>
+    </hp-dropdown-menu>
+
+    <script>
+      document.querySelector("hp-dropdown-menu")
+        .addEventListener("hp-menu-select", (ev) => {
+          console.log(ev.detail.value); // "edit", "duplicate", ...
+        });
+    </${"script"}>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Trigger auto-stamps <code>aria-haspopup="menu"</code> + <code>aria-expanded</code>.
+        Menu exposes <code>role="menu"</code>; items <code>role="menuitem"</code>. First non-
+        disabled item receives focus on open. Selection closes the menu and restores focus to
+        the trigger.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

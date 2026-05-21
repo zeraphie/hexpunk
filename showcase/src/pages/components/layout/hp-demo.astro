@@ -1,0 +1,95 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-demo">
+  <ComponentDocs title="hp-demo">
+    <p slot="description">
+      Documentation envelope used to wrap each example on a component doc page. A faint hex
+      backdrop sits behind the demo so transparent elements read clearly; an action bar carries
+      the "copy code" button; the slotted code area shows the source. Authoring is a default
+      slot for the rendered demo plus a <code>code</code>-named slot for a
+      <code>&lt;pre&gt;&lt;code&gt;</code> block.
+    </p>
+
+    <h2>Bare envelope</h2>
+    <hp-demo>
+      <hp-button>Click me</hp-button>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button>Click me</hp-button>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>With caption</h2>
+    <hp-demo caption="Tones">
+      <hp-badge>info</hp-badge>
+      <hp-badge tone="positive">ok</hp-badge>
+      <hp-badge tone="warn">!</hp-badge>
+      <hp-badge tone="alert">restricted</hp-badge>
+      <hp-badge tone="error">failed</hp-badge>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-badge>info</hp-badge>
+    <hp-badge tone="positive">ok</hp-badge>
+    <hp-badge tone="warn">!</hp-badge>
+    <hp-badge tone="alert">restricted</hp-badge>
+    <hp-badge tone="error">failed</hp-badge>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>No copy button</h2>
+    <hp-demo no-copy caption="Loading">
+      <hp-spinner></hp-spinner>
+      <hp-spinner size="md"></hp-spinner>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-spinner></hp-spinner>
+    <hp-spinner size="md"></hp-spinner>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="code">
+      <h2>Basic shape</h2>
+      <pre><code>{`<hp-demo caption="Default">
+  <hp-button>Click me</hp-button>
+
+  <pre slot="code"><code>&lt;hp-button&gt;Click me&lt;/hp-button&gt;</code></pre>
+</hp-demo>`}</code></pre>
+    </Fragment>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Wrap every standalone example on a component doc page. The hex backdrop indicates
+          "this is a sandbox, not the page chrome"; the action bar makes the source one click
+          away from copy-paste.
+        </hp-banner>
+        <hp-banner tone="do">
+          Group related variants in the default slot (e.g., all tones of hp-badge side by side)
+          rather than wrapping each in its own hp-demo — keeps the page legible.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        The copy button has <code>aria-label="Copy code"</code>; the "copied" confirmation is an
+        <code>aria-live="polite"</code> region so screen readers announce after a successful
+        copy. The backdrop is decorative and inherits hp-background's <code>aria-hidden</code>.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

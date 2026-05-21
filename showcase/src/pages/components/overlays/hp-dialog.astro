@@ -1,0 +1,58 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-dialog">
+  <ComponentDocs title="hp-dialog">
+    <p slot="description">
+      Modal dialog backed by the native <code>&lt;dialog&gt;</code> + <code>showModal()</code>.
+      Browser handles focus trap, Escape dismiss, and <code>aria-modal</code>. Backdrop click
+      closes by default — set <code>no-backdrop-close</code> to disable. Imperative API:
+      <code>.show()</code> / <code>.close()</code> or the reflected <code>open</code> property.
+    </p>
+
+    <hp-demo caption="Basic">
+      <hp-button onclick="document.getElementById('demo-dialog').show()">open dialog</hp-button>
+      <hp-dialog id="demo-dialog">
+        <h3 style="margin-top: 0">Confirm</h3>
+        <p>Are you sure you want to deploy?</p>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <hp-button onclick="document.getElementById('demo-dialog').close()">cancel</hp-button>
+          <hp-button filled onclick="document.getElementById('demo-dialog').close()">deploy</hp-button>
+        </div>
+      </hp-dialog>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-button onclick="myDialog.show()">open</hp-button>
+
+    <hp-dialog id="myDialog">
+      <h3>Confirm</h3>
+      <p>Are you sure?</p>
+      <hp-button onclick="myDialog.close()">cancel</hp-button>
+      <hp-button filled onclick="myDialog.close()">ok</hp-button>
+    </hp-dialog>
+
+    document
+      .querySelector("hp-dialog")
+      .addEventListener("hp-dialog-close", () => {
+        // fires on backdrop click, Escape, or .close()
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Native <code>&lt;dialog&gt;</code> + <code>showModal()</code> handles focus trap and
+        <code>aria-modal="true"</code>; Escape dismisses. The element OUTSIDE the dialog
+        becomes inert while open. For non-modal popovers (no focus trap, no inert siblings),
+        use the forthcoming <code>hp-popover</code>.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

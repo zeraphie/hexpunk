@@ -1,0 +1,156 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-unfold-overlay">
+  <ComponentDocs title="hp-unfold-overlay">
+    <Fragment slot="description">
+      <p>
+        Lightbox-style hex overlay. Click / tap / <kbd>Enter</kbd> on the source opens a hex-
+        clipped native <code>&lt;dialog&gt;</code> at the viewport centre containing the slotted
+        detail content. <kbd>Esc</kbd> closes natively; a backdrop click closes via a manual
+        listener (native <code>&lt;dialog&gt;</code> doesn't ship light dismiss). Uses
+        <code>showModal()</code> so we inherit Top Layer, the <code>::backdrop</code> pseudo,
+        and a focus trap for free — no z-index management.
+      </p>
+      <p>
+        Companion to <a href="/hexpunk/components/unfold/hp-unfold-list"><code>&lt;hp-unfold-list&gt;</code></a>
+        (ring expansion in place) and the still-to-come
+        <code>&lt;hp-unfold-page&gt;</code> (camera-zoom into a new route via View Transitions).
+        Three separate primitives with three separate navigation contracts.
+      </p>
+    </Fragment>
+
+    <p>Click <strong>player</strong> to spotlight the profile detail. <kbd>Esc</kbd> or backdrop click to close.</p>
+    <hp-demo caption="Inside hp-grid">
+      <hp-grid draggable style="height: 320px">
+        <hp-unfold-overlay q="0" r="0">
+          <hp-cell variant="anchor" slot="source">player</hp-cell>
+          <h2 style="margin: 0; color: var(--hp-primary)">kira_chen</h2>
+          <p style="margin: 0; color: var(--hp-on-surface-variant)">
+            Level 42 hexcrafter — Western Loop division
+          </p>
+          <p style="margin: 0">
+            Recent: completed <em>Stardust Refactor</em> · 12 minutes ago
+          </p>
+          <hp-cell variant="action" filled tabindex="0">profile</hp-cell>
+        </hp-unfold-overlay>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-grid>
+      <hp-unfold-overlay q="0" r="0">
+        <hp-cell variant="anchor" slot="source">player</hp-cell>
+
+        <h2>kira_chen</h2>
+        <p>Level 42 hexcrafter — Western Loop division</p>
+        <p>Recent: completed "Stardust Refactor"</p>
+
+        <hp-cell variant="action" filled tabindex="0">profile</hp-cell>
+      </hp-unfold-overlay>
+    </hp-grid>
+
+    const overlay = document.querySelector("hp-unfold-overlay");
+    overlay.addEventListener("hp-unfold-open", () => { /* analytics, prefetch */ });
+    overlay.addEventListener("hp-unfold-close", () => { /* … */ });
+    overlay.toggle();    // flip open / closed
+    overlay.close();     // close if open
+    overlay.open = true; // direct property write also works
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <p>Same element outside a grid — the overlay still centers on the viewport.</p>
+    <hp-demo caption="Standalone">
+      <hp-unfold-overlay>
+        <hp-cell variant="action" slot="source" tabindex="0">details</hp-cell>
+        <h2 style="margin: 0; color: var(--hp-secondary)">Build #4082</h2>
+        <p style="margin: 0">
+          Pushed to <code>main</code> by <strong>kira_chen</strong>
+        </p>
+        <p style="margin: 0; color: var(--hp-on-surface-variant)">
+          24 commits · 8 files changed · all green
+        </p>
+        <hp-cell tone="positive" active>deployed</hp-cell>
+      </hp-unfold-overlay>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-unfold-overlay>
+      <hp-cell variant="action" slot="source" tabindex="0">details</hp-cell>
+      <h2>Build #4082</h2>
+      <p>Pushed to main by kira_chen</p>
+      <hp-cell tone="positive" active>deployed</hp-cell>
+    </hp-unfold-overlay>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Reach for <code>&lt;hp-unfold-overlay&gt;</code> when the detail view is rich enough
+          to demand the user's focused attention — profile cards, build details, item cards,
+          settings panels. The modal contract makes "you're in detail mode" unambiguous.
+        </hp-banner>
+        <hp-banner tone="do">
+          Slot the source as a single labelled hex (<code>hp-cell variant="anchor"</code> /
+          <code>variant="action"</code>) — it stays clickable as the trigger and the modal
+          opens centred on viewport.
+        </hp-banner>
+        <hp-banner tone="do">
+          Keep overlay content reasonably narrow. The hex clip-path cuts corners; wide
+          rectangular layouts will lose their edges. Centred prose + one or two action hexes
+          fits the shape naturally.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for in-place expansion where the surrounding context should stay readable —
+          that's <code>&lt;hp-unfold-list&gt;</code>'s job (ring bloom around the source).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for navigating to a new route — that's <code>&lt;hp-unfold-page&gt;</code>'s job
+          (cross-document camera-zoom via View Transitions).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Stack overlays. Modal-on-modal is navigationally hostile; close the current one and
+          re-open a different one.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        <code>showModal()</code> traps focus inside the dialog while it's open and returns focus
+        to the trigger on close — both native browser behaviours. The source gets
+        <code>tabindex="0"</code> on slotchange (consumers can override).
+        <code>aria-pressed</code> on the source mirrors the open state so hp-cell's hue swap
+        engages without separate wiring.
+      </p>
+
+      <h2>Reduced motion</h2>
+      <p>
+        With <code>prefers-reduced-motion: reduce</code>, the scale + opacity tweens are
+        suppressed — the overlay snaps open and closed instantly. The backdrop still appears,
+        focus trap still engages, hue swap on the source remains (state signal, not
+        decoration).
+      </p>
+
+      <h2>Roadmap</h2>
+              <hp-banner tone="do">
+          Source → overlay morph via View Transitions API — the source's bbox tweens into the
+          overlay's bbox, more "spotlight unfold" than "scale from centre". Falls back
+          gracefully to the current scale animation when View Transitions isn't supported.
+        </hp-banner>
+        <hp-banner tone="do">
+          Optional tether arc back to the source slot (the <code>unfold-tether</code> token
+          chain from DESIGN.md), drawn over the backdrop while the overlay is open.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

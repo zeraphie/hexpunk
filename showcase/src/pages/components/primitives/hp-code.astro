@@ -1,0 +1,183 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-code">
+  <ComponentDocs title="hp-code">
+    <p slot="description">
+      Monospaced code-block primitive with line numbers and per-line hover highlighting.
+      Syntax highlighting is opt-in: hp-code ships no bundled tokeniser. A consumer that
+      wants colours installs the tokeniser of their choice (highlight.js, Shiki, Prism, …)
+      and registers an adapter once at startup via <code>HpCode.setHighlighter(...)</code>.
+      This showcase has Shiki registered globally — omit the <code>language</code>
+      attribute (or pass an unsupported one) to see the un-tokenised fallback.
+    </p>
+
+    <hp-banner slot="notice" tone="neutral" label="Note">
+      The code blocks on this page are tokenised by Shiki — full docs and the available
+      theme catalogue at <a
+        href="https://shiki.style/"
+        target="_blank"
+        rel="noopener noreferrer">shiki.style</a>.
+    </hp-banner>
+
+    <hp-demo caption="Base usage — no language, no highlighting">
+      <hp-code>{`function hexGrid(rows, cols) {
+  return Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => ({ r, c })),
+  );
+}
+
+const grid = hexGrid(4, 6);
+console.log(grid);`}</hp-code>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+const code = \`function hexGrid(rows, cols) {
+  return Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => ({ r, c })),
+  );
+}\`;
+
+export default () => <hp-code>{code}</hp-code>;`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="With Shiki — language=&quot;javascript&quot;">
+      <hp-code language="javascript">{`function hexGrid(rows, cols) {
+  return Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => ({ r, c })),
+  );
+}
+
+const grid = hexGrid(4, 6);
+console.log(grid);`}</hp-code>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+const code = \`function hexGrid(rows, cols) {
+  return Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => ({ r, c })),
+  );
+}\`;
+
+export default () => <hp-code language="javascript">{code}</hp-code>;`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="No line numbers">
+      <hp-code no-line-numbers language="css">{`.hex {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: var(--hp-primary);
+}`}</hp-code>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+const code = \`.hex {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: var(--hp-primary);
+}\`;
+
+export default () => (
+  <hp-code no-line-numbers language="css">{code}</hp-code>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Adding syntax highlighting</h2>
+      <p>
+        hp-code ships no tokeniser to keep <code>@hexpunk/core</code> dependency-free. Pick
+        a library, install it in your project, and register it once at startup. Every
+        connected <code>&lt;hp-code&gt;</code> re-tokenises automatically when a new
+        highlighter is set.
+      </p>
+
+      <h3>highlight.js</h3>
+      <p>
+        Smallest of the popular options, batteries-included for ~190 languages, and
+        hp-code's default theme is built around its <code>.hljs-*</code> class names — so
+        you get the hexpunk palette with zero extra CSS.
+      </p>
+      <hp-code no-line-numbers language="bash">npm install highlight.js</hp-code>
+      <hp-code language="typescript">{`import hljs from "highlight.js/lib/core";
+import typescript from "highlight.js/lib/languages/typescript";
+import css from "highlight.js/lib/languages/css";
+import { HpCode } from "@hexpunk/core";
+
+hljs.registerLanguage("typescript", typescript);
+hljs.registerLanguage("css", css);
+
+HpCode.setHighlighter((code, language) => {
+  if (!language || !hljs.getLanguage(language)) {
+    return null;
+  }
+  return hljs.highlight(code, { language }).value;
+});`}</hp-code>
+
+      <h3>Shiki</h3>
+      <p>
+        Uses TextMate grammars + VS Code themes for the most faithful output. Heavier and
+        async — you'll likely want to override hp-code's default theme rules since Shiki
+        emits inline-styled spans, not class names. Docs at
+        <a
+          href="https://shiki.style/"
+          target="_blank"
+          rel="noopener noreferrer">shiki.style</a>.
+      </p>
+      <hp-code no-line-numbers language="bash">npm install shiki</hp-code>
+      <hp-code language="typescript">{`import { codeToHtml } from "shiki";
+import { HpCode } from "@hexpunk/core";
+
+HpCode.setHighlighter(async (code, language) => {
+  if (!language) return null;
+  try {
+    const html = await codeToHtml(code, { lang: language, theme: "night-owl" });
+    return html
+      .replace(/^<pre[^>]*><code[^>]*>/, "")
+      .replace(/<\\/code><\\/pre>$/, "");
+  } catch {
+    return null;
+  }
+});`}</hp-code>
+
+      <h3>Prism</h3>
+      <hp-code no-line-numbers language="bash">npm install prismjs</hp-code>
+      <hp-code language="typescript">{`import Prism from "prismjs";
+import "prismjs/components/prism-typescript";
+import { HpCode } from "@hexpunk/core";
+
+HpCode.setHighlighter((code, language) => {
+  const grammar = Prism.languages[language];
+  if (!grammar) return null;
+  return Prism.highlight(code, grammar, language);
+});`}</hp-code>
+      <p>
+        Prism emits <code>.token.keyword</code>-style classes. Add your own theme rules
+        targeting those — hp-code only ships <code>.hljs-*</code> by default.
+      </p>
+
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use for any code snippet shown to the reader: docs, examples, blog posts. The
+          line gutter and hover row make scanning long snippets easier.
+        </hp-banner>
+        <hp-banner tone="do">
+          Pass <code>language</code> matching whatever tokeniser is registered. Without a
+          tokeniser or a recognised language, the attribute is just a hint — text still
+          renders as plain monospace.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Stuff inline code into <code>&lt;hp-code&gt;</code>. For a one-word inline
+          mention, plain <code>&lt;code&gt;</code> in body text is correct;
+          <code>&lt;hp-code&gt;</code> is a block-level snippet.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        Line numbers are wrapped in <code>aria-hidden="true"</code> so they don't pollute
+        screen-reader output. The hover highlight is decorative — line content is the
+        primary signal.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

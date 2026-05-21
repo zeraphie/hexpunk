@@ -1,0 +1,78 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-progress">
+  <ComponentDocs title="hp-progress">
+    <p slot="description">
+      Determinate progress indicator. Track + fill bar with the current value as a percentage
+      of (max − min). <code>indeterminate</code> animates a sliding ribbon for known-progress-
+      but-unknown-percent waits. For "system busy" without progress info, prefer
+      <code>&lt;hp-spinner&gt;</code>.
+    </p>
+
+    <hp-demo caption="Determinate">
+      <div style="display: flex; flex-direction: column; gap: 12px; align-items: stretch; width: 100%;">
+        <hp-progress value="25"></hp-progress>
+        <hp-progress value="60"></hp-progress>
+        <hp-progress value="90"></hp-progress>
+        <hp-progress value="100"></hp-progress>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-progress value="25"></hp-progress>
+    <hp-progress value="60"></hp-progress>
+    <hp-progress value="90"></hp-progress>
+    <hp-progress value="100"></hp-progress>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Tones">
+      <div style="display: flex; flex-direction: column; gap: 12px; align-items: stretch; width: 100%;">
+        <hp-progress value="70"></hp-progress>
+        <hp-progress value="70" tone="positive"></hp-progress>
+        <hp-progress value="70" tone="warn"></hp-progress>
+        <hp-progress value="70" tone="alert"></hp-progress>
+        <hp-progress value="70" tone="error"></hp-progress>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-progress value="70"></hp-progress>
+    <hp-progress value="70" tone="positive"></hp-progress>
+    <hp-progress value="70" tone="warn"></hp-progress>
+    <hp-progress value="70" tone="alert"></hp-progress>
+    <hp-progress value="70" tone="error"></hp-progress>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Indeterminate">
+      <hp-progress indeterminate></hp-progress>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-progress indeterminate></hp-progress>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        <code>role="progressbar"</code> with <code>aria-valuemin / max / now</code>.
+        <code>indeterminate</code> drops <code>aria-valuenow</code> so assistive tech reports
+        progress as "in progress" without a misleading number.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

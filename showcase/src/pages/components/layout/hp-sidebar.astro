@@ -1,0 +1,95 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-sidebar">
+  <ComponentDocs title="hp-sidebar">
+    <p slot="description">
+      Navigation sidebar chrome. Compose with <code>&lt;hp-sidebar-item&gt;</code> leaves and
+      <code>&lt;hp-sidebar-group&gt;</code> collapsible sections. Each child element owns its
+      own visual identity inside its shadow root — the sidebar itself only provides the
+      sticky padding, border, scroll, and inherited typography.
+    </p>
+
+    <hp-demo caption="Minimal example" no-copy>
+      <hp-sidebar aria-label="Demo" style="max-height: 240px; min-width: 220px;">
+        <hp-sidebar-item href="#">Home</hp-sidebar-item>
+        <hp-sidebar-group label="Getting Started" open>
+          <hp-sidebar-item href="#" active>Install</hp-sidebar-item>
+          <hp-sidebar-item href="#">Concepts</hp-sidebar-item>
+        </hp-sidebar-group>
+        <hp-sidebar-group label="Components">
+          <hp-sidebar-group label="Layout">
+            <hp-sidebar-item href="#">hp-cluster</hp-sidebar-item>
+            <hp-sidebar-item href="#">hp-grid</hp-sidebar-item>
+          </hp-sidebar-group>
+          <hp-sidebar-group label="Overlays">
+            <hp-sidebar-item href="#">hp-dialog</hp-sidebar-item>
+            <hp-sidebar-item href="#">hp-tooltip</hp-sidebar-item>
+          </hp-sidebar-group>
+        </hp-sidebar-group>
+      </hp-sidebar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-sidebar aria-label="Site map">
+      <hp-sidebar-item href="/">Home</hp-sidebar-item>
+
+      <hp-sidebar-group label="Getting Started" open>
+        <hp-sidebar-item href="/install" active>Install</hp-sidebar-item>
+        <hp-sidebar-item href="/concepts">Concepts</hp-sidebar-item>
+      </hp-sidebar-group>
+
+      <hp-sidebar-group label="Components">
+        <hp-sidebar-group label="Layout">
+          <hp-sidebar-item href="/components/hp-cluster">hp-cluster</hp-sidebar-item>
+          <hp-sidebar-item href="/components/hp-grid">hp-grid</hp-sidebar-item>
+        </hp-sidebar-group>
+      </hp-sidebar-group>
+    </hp-sidebar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use as the root sidebar for any doc-style layout: navigation tree on the left,
+          content on the right. Compose the tree with <code>&lt;hp-sidebar-item&gt;</code>
+          and <code>&lt;hp-sidebar-group&gt;</code> children — no ad-hoc
+          <code>&lt;ul&gt;</code> / <code>&lt;details&gt;</code> markup needed.
+        </hp-banner>
+        <hp-banner tone="do">
+          Mark the current page by setting <code>active</code> on the matching
+          <code>hp-sidebar-item</code>, and pre-open the ancestor groups by setting
+          <code>open</code> on each so the active item is visible without a click.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Stack multiple <code>hp-sidebar</code> instances side by side. The component carries
+          its own border + padding — adjacent instances read as duplicated chrome.
+        </hp-banner>
+      
+
+      <h2>Nesting and visual hierarchy</h2>
+      <p>
+        Groups directly inside <code>hp-sidebar</code> render with the body-sm summary
+        style (e.g. "Getting Started", "Components"). Groups nested inside another group
+        switch to an uppercase label-sm summary so a long nav tree doesn't read as a wall
+        of equally-weighted branches. The switch is automatic via
+        <code>:host-context()</code> — no variant attribute to set.
+      </p>
+
+      <h2>Accessibility</h2>
+      <p>
+        <code>hp-sidebar</code> auto-stamps <code>role="navigation"</code> on its host. Set
+        <code>aria-label</code> on the host for a labelled landmark; screen readers
+        announce the sidebar by that label. <code>hp-sidebar-group</code> uses native
+        <code>&lt;details&gt;</code> / <code>&lt;summary&gt;</code> internally, so
+        disclosure semantics + keyboard handling come from the platform.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

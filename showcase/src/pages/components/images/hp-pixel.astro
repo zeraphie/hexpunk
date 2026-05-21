@@ -1,0 +1,100 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-pixel">
+  <ComponentDocs title="hp-pixel">
+    <p slot="description">
+      Box-shadow pixel art. Static, smooth state morph, or sprite-sheet (sprite mode comes later).
+      The two pixel icons below share the same nine logical pixels — hover them to see the smooth
+      interpolation.
+    </p>
+
+    <hp-demo caption="Static + interactive">
+      <div style="display: flex; gap: var(--hp-xxl); align-items: center; color: var(--hp-primary)">
+        <hp-pixel pixel-size="4" id="pixel-menu-static"></hp-pixel>
+        <hp-pixel pixel-size="6" id="pixel-menu-interactive" tabindex="0"></hp-pixel>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-pixel pixel-size="4" id="my-pixel"></hp-pixel>
+
+    document.getElementById("my-pixel").art =
+      "#.#.#\\n#.#.#\\n.....\\n#.#.#\\n#.#.#";
+
+    <!-- State morph (CodePen-style) -->
+    <hp-pixel pixel-size="6" id="menu" tabindex="0"></hp-pixel>
+
+    import { menu } from "@hexpunk/core/pixel-icons/menu";
+    const el = document.getElementById("menu");
+    el.states = menu;
+    el.interactive = true; // wires :hover / :focus-visible / :active / [aria-pressed]
+
+    <!-- Multi-colour palette -->
+    el.palette = [
+      "var(--hp-primary)",
+      "var(--hp-secondary)",
+      "var(--hp-warn)",
+    ];
+    el.art = "010\\n121\\n010"; // each digit indexes into palette
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <script>
+      import { menu } from "../../../../../src/pixel-icons/menu.ts";
+
+      interface PixelEl extends HTMLElement {
+        art?: string;
+        states?: typeof menu;
+        interactive?: boolean;
+      }
+
+      function setup(): void {
+        const staticEl = document.getElementById("pixel-menu-static") as PixelEl | null;
+        const interactiveEl = document.getElementById("pixel-menu-interactive") as PixelEl | null;
+        if (staticEl) {
+          staticEl.art = "#.#.#\n#.#.#\n.....\n#.#.#\n#.#.#";
+        }
+        if (interactiveEl) {
+          interactiveEl.states = menu;
+          interactiveEl.interactive = true;
+        }
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setup);
+      } else {
+        setup();
+      }
+    </script>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use the <strong>states</strong> mode for interactive icons that need to morph between
+          shapes (menu ↔ X, play ↔ pause). Setting <code>interactive</code> wires CSS-only
+          fallbacks for <code>:hover</code> / <code>:focus-visible</code> / <code>:active</code> /
+          <code>[aria-pressed]</code>.
+        </hp-banner>
+        <hp-banner tone="do">
+          Use <strong>art</strong> mode for purely decorative pixel marks that don't change —
+          favicons, achievement badges, tiny logos.
+        </hp-banner>
+        <hp-banner tone="do">
+          Override <code>--hp-pixel-shadow</code> at runtime if you need to script frames
+          imperatively (custom transitions, sprite playback). Don't set the shadow when
+          <code>interactive</code> is enabled — the inline override beats the CSS-driven swaps.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Reach for <code>&lt;hp-pixel&gt;</code> when you need stroke-icon parity. Use
+          <code>&lt;hp-icon&gt;</code> for Lucide-style icons that should match icon-sm/md/lg
+          tokens.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

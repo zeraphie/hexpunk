@@ -1,0 +1,33 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Home">
+  <h1>Hexpunk</h1>
+  <p>
+    Hexagonal-first, wireframe-cyberpunk Lit component design system. See
+    <a href="https://github.com/zeraphie/hexpunk/blob/main/DESIGN.md">DESIGN.md</a>
+    for the full spec.
+  </p>
+
+  <h2>Spatial primitives</h2>
+  <p>Three composable layouts that the rest of the system builds on:</p>
+  <ul>
+    <li>
+      <code>&lt;hp-grid&gt;</code> — invisible axial coordinate space with drag, snap, and bond detection.
+    </li>
+    <li>
+      <code>&lt;hp-cluster&gt;</code> — canonical 5-hex navigation rosette.
+    </li>
+    <li>
+      <code>&lt;hp-tether&gt;</code> — curved bezier connecting two distant molecules across the canvas.
+    </li>
+  </ul>
+
+  <h2>Quick links</h2>
+  <p>
+    Browse the side nav to jump into any atom or molecule demo. Each page lives at
+    its own URL — cross-document View Transitions will eventually glue them together
+    via <code>&lt;hp-unfold-page&gt;</code>.
+  </p>
+</Layout>

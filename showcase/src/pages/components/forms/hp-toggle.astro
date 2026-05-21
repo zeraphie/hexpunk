@@ -1,0 +1,51 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-toggle">
+  <ComponentDocs title="hp-toggle">
+    <p slot="description">
+      Two-state on / off switch. Hex thumb slides between the off and on positions inside a
+      pill-shaped track. <code>role="switch"</code>, Space / Enter activate, <code>aria-checked</code>
+      reflects state.
+    </p>
+
+    <hp-demo caption="States">
+      <hp-toggle></hp-toggle>
+      <hp-toggle checked></hp-toggle>
+      <hp-toggle disabled></hp-toggle>
+      <hp-toggle checked disabled></hp-toggle>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-toggle></hp-toggle>
+    <hp-toggle checked></hp-toggle>
+    <hp-toggle disabled></hp-toggle>
+    <hp-toggle checked disabled></hp-toggle>
+
+    document
+      .querySelector("hp-toggle")
+      .addEventListener("change", (ev) => {
+        console.log(ev.detail.checked);
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use for instantly-applied binary settings (notifications on / off, dark mode, autosave).
+          The flip animation reads as "this changed right now".
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for selections that require confirmation. Toggles imply the state is in effect the
+          moment they flip; if a "Save" step is needed, use a checkbox + button instead.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

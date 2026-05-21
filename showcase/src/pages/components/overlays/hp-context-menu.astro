@@ -1,0 +1,49 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-context-menu">
+  <ComponentDocs title="hp-context-menu">
+    <p slot="description">
+      Right-click triggered menu. Wraps a target region; right-click (or long-press on touch)
+      inside opens an <code>&lt;hp-menu-item&gt;</code> menu positioned at the cursor.
+      Otherwise identical to <code>&lt;hp-dropdown-menu&gt;</code>.
+    </p>
+
+    <hp-demo caption="Right-click the area below">
+      <hp-context-menu style="display: block; width: 100%;">
+        <div style="padding: var(--hp-xl); background: var(--hp-surface-container); border: 1px dashed var(--hp-outline-variant); text-align: center; color: var(--hp-on-surface-variant); user-select: none;">
+          right-click anywhere in this box
+        </div>
+        <hp-menu-item slot="content">cut</hp-menu-item>
+        <hp-menu-item slot="content">copy</hp-menu-item>
+        <hp-menu-item slot="content">paste</hp-menu-item>
+      </hp-context-menu>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-context-menu>
+      <div class="my-target">Right-click me</div>
+
+      <hp-menu-item slot="content">cut</hp-menu-item>
+      <hp-menu-item slot="content">copy</hp-menu-item>
+      <hp-menu-item slot="content">paste</hp-menu-item>
+    </hp-context-menu>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Menu exposes <code>role="menu"</code>; items <code>role="menuitem"</code>. Arrow / Home
+        / End / Enter / Space all work; Escape dismisses; focus returns to the previously
+        focused element on close. Shift + right-click falls through to the native browser
+        context menu (escape hatch for power users).
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

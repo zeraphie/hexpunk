@@ -1,0 +1,53 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-hover-card">
+  <ComponentDocs title="hp-hover-card">
+    <p slot="description">
+      Hover-/focus-triggered floating card. Like <code>&lt;hp-tooltip&gt;</code> but the body
+      can contain interactive content. Open delay avoids flashes while skimming, close delay
+      lets users move the pointer from trigger onto the card.
+    </p>
+
+    <hp-demo caption="Hover or focus the trigger">
+      <hp-hover-card side="bottom" align="start">
+        <hp-link href="#">@kira_chen</hp-link>
+        <div slot="content" style="display: grid; gap: 8px; min-width: 220px;">
+          <strong>Kira Chen</strong>
+          <span>Level 42 hexcrafter</span>
+          <span style="color: var(--hp-on-surface-variant)">Joined 2 years ago</span>
+        </div>
+      </hp-hover-card>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-hover-card side="bottom">
+      <hp-link href="/users/kira">@kira_chen</hp-link>
+
+      <div slot="content">
+        <strong>Kira Chen</strong>
+        <span>Level 42 hexcrafter</span>
+      </div>
+    </hp-hover-card>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Inline rich-content previews: user-card on a handle, version-info on a build hash,
+          metadata on a chip. Card content can include links and buttons.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use for tiny single-line labels — that's <code>&lt;hp-tooltip&gt;</code>. Use for
+          click-triggered or critical-content panels — that's <code>&lt;hp-popover&gt;</code>.
+        </hp-banner>
+      
+    </Fragment>
+  </ComponentDocs>
+</Layout>

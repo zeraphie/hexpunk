@@ -1,0 +1,53 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-form">
+  <ComponentDocs title="hp-form">
+    <p slot="description">
+      Form container — thin wrapper around the native <code>&lt;form&gt;</code> with the
+      hexpunk spacing defaults applied. Forwards <code>method</code>, <code>action</code>,
+      <code>name</code>, <code>novalidate</code>. Stub: form-level validation state and
+      submission lifecycle integration with the input atoms is a follow-up.
+    </p>
+
+    <hp-demo caption="Basic">
+      <hp-form>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-checkbox id="form-terms"></hp-checkbox>
+          <hp-label for="form-terms" required>accept terms</hp-label>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-toggle id="form-notif"></hp-toggle>
+          <hp-label for="form-notif">enable notifications</hp-label>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <hp-button type="submit" filled>save</hp-button>
+          <hp-button type="reset">reset</hp-button>
+        </div>
+      </hp-form>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-form>
+      <hp-checkbox id="terms"></hp-checkbox>
+      <hp-label for="terms">Accept terms</hp-label>
+      <hp-button type="submit">save</hp-button>
+    </hp-form>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Status</h2>
+      <p>
+        Stub — the form container ships the layout chrome; full FormData integration with
+        the hp-* input set (checkbox, toggle, radio, slider, hp-input when added) is on
+        the roadmap.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

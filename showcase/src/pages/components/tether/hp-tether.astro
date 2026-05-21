@@ -1,0 +1,133 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-tether">
+  <ComponentDocs title="hp-tether">
+    <p slot="description">
+      Arc-tether primitive — curved SVG bezier connecting two distant molecules. Drag any anchor;
+      the arc tracks the move, reroutes around obstacles, and re-settles on snap.
+      <code>directed</code> adds an arrowhead.
+    </p>
+
+    <p>
+      The classic shape: three hexes placed by axial coords, three
+      <code>&lt;hp-tether&gt;</code> elements authored next to the grid pointing at the endpoints
+      by selector. Drag any node — the arcs reroute around obstacles and re-settle on snap.
+    </p>
+    <hp-demo caption="Static tethers — authored manually">
+      <div style="position: relative; width: 100%; height: 100%;">
+        <hp-grid draggable style="height: 100%">
+          <hp-cell variant="anchor" q="-2" r="0" id="tether-node-a">node a</hp-cell>
+          <hp-cell variant="anchor" q="2" r="0" id="tether-node-b">node b</hp-cell>
+          <hp-cell variant="anchor" q="0" r="-1" id="tether-node-c">node c</hp-cell>
+        </hp-grid>
+        <hp-tether from="#tether-node-a" to="#tether-node-b"></hp-tether>
+        <hp-tether from="#tether-node-a" to="#tether-node-c" state="idle"></hp-tether>
+        <hp-tether from="#tether-node-b" to="#tether-node-c" directed></hp-tether>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-grid>
+      <hp-cell variant="anchor" q="-2" r="0" id="node-a">node a</hp-cell>
+      <hp-cell variant="anchor" q="2"  r="0" id="node-b">node b</hp-cell>
+      <hp-cell variant="anchor" q="0"  r="-1" id="node-c">node c</hp-cell>
+    </hp-grid>
+
+    <hp-tether from="#node-a" to="#node-b"></hp-tether>
+    <hp-tether from="#node-a" to="#node-c" state="idle"></hp-tether>
+    <hp-tether from="#node-b" to="#node-c" directed></hp-tether>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <p>
+      Same arc primitive, different authoring path. The grid carries
+      <code>tetherable</code>, so dropping any hex onto another toggles an
+      <code>&lt;hp-tether&gt;</code> arc between the pair — created with the draw-in animation,
+      removed if it already exists. No manual tether authoring; the grid handles
+      <code>from</code> / <code>to</code> selectors and dedup. Drop on an empty cell to move
+      a hex normally. The target hex highlights green while the source is hovering over it.
+    </p>
+    <hp-demo caption="Drag-to-tether — via hp-grid's tetherable mode">
+      <hp-grid draggable tetherable style="height: 100%">
+        <hp-cell variant="anchor" q="-2" r="0">a</hp-cell>
+        <hp-cell variant="anchor" q="2" r="0">b</hp-cell>
+        <hp-cell variant="anchor" q="0" r="-2">c</hp-cell>
+        <hp-cell variant="anchor" q="0" r="2">d</hp-cell>
+      </hp-grid>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <!-- Authoring: just the grid + its hexes. hp-tether elements
+         are auto-appended by the grid on drop. -->
+    <hp-grid draggable tetherable>
+      <hp-cell variant="anchor" q="-2" r="0">a</hp-cell>
+      <hp-cell variant="anchor" q="2"  r="0">b</hp-cell>
+      <hp-cell variant="anchor" q="0"  r="-2">c</hp-cell>
+      <hp-cell variant="anchor" q="0"  r="2">d</hp-cell>
+    </hp-grid>
+
+    document.querySelector("hp-grid")
+      .addEventListener("hp-grid-tether", (ev) => {
+        // ev.detail = { source, target, tether }
+        // tether.drawIn() has already been called for you.
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Connect distant molecules in node-editor / graph / pipeline surfaces. Arcs route around
+          obstacles automatically (36 candidate vertex pairs, scored by crossings × 1000 +
+          distance).
+        </hp-banner>
+        <hp-banner tone="do">
+          Use <code>directed</code> for flow / causality (data flow, prerequisite trees, signal
+          paths). Skip it for peer relationships where both ends are equivalent.
+        </hp-banner>
+        <hp-banner tone="do">
+          Differentiate states with <code>state="idle|active"</code>. Idle dims to
+          <code>secondary-container</code>; active uses the full <code>secondary</code> with the
+          pulse dot travelling along the arc.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Tether two atoms that are already axially adjacent. Use <code>&lt;hp-bond&gt;</code>
+          for shared-edge relationships and <code>&lt;hp-tether&gt;</code> for at-distance ones.
+        </hp-banner>
+        <hp-banner tone="do">
+          DOM placement of <code>&lt;hp-tether&gt;</code> is flexible. It tracks endpoints by
+          selector across the entire document, not by DOM ancestry — sibling-of-grid (manual
+          authoring) and child-of-grid (tetherable mode auto-appends here) both work. The
+          element's own <code>position: absolute; inset: 0</code> covers its positioned ancestor
+          so geometry resolves correctly either way.
+        </hp-banner>
+      
+
+      <h2>Geometry</h2>
+      <p>
+        Each endpoint contributes one of six hex vertices. Control points are pulled along the
+        outward radial direction from each vertex so the curve leaves and enters face-on (Rete
+        editor style). When endpoints move, the tether re-scores all 36 pairs and morphs over
+        ~60ms to the new pick — hysteresis (24px) prevents flapping near the decision boundary.
+      </p>
+
+      <h2>Performance</h2>
+      <p>
+        Tethers use a single <code>MutationObserver</code> per endpoint, watching the parent grid
+        for <code>q</code>/<code>r</code> and <code>data-hp-dragging</code> changes. Capture-mode
+        transition event listeners catch sibling movements without re-binding. Several hundred
+        tethers on a single surface is fine; thousands are not — for that scale, switch to a
+        canvas / WebGL renderer and apply Hexpunk tokens / classes on the canvas chrome.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

@@ -1,0 +1,78 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-cluster">
+  <ComponentDocs title="hp-cluster">
+    <p slot="description">
+      Canonical 5-hex navigation rosette. Centre surrounded by top / middle-left / middle-right /
+      bottom slots; positioned by CSS, not draggable.
+    </p>
+
+    <hp-demo>
+      <hp-cluster>
+        <hp-cell variant="action" slot="top" tabindex="0">deploy</hp-cell>
+        <hp-cell variant="secondary" slot="middle-left" tabindex="0">cancel</hp-cell>
+        <hp-cell variant="anchor" slot="centre">profile</hp-cell>
+        <hp-cell variant="utility" slot="middle-right" tabindex="0">edit</hp-cell>
+        <hp-cell variant="content" slot="bottom" size="sm">v2.1.3</hp-cell>
+      </hp-cluster>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-cluster>
+      <hp-cell variant="action"    slot="top"          tabindex="0">deploy</hp-cell>
+      <hp-cell variant="secondary" slot="middle-left"  tabindex="0">cancel</hp-cell>
+      <hp-cell variant="anchor"    slot="centre">profile</hp-cell>
+      <hp-cell variant="utility"   slot="middle-right" tabindex="0">edit</hp-cell>
+      <hp-cell variant="content"   slot="bottom" size="sm">v2.1.3</hp-cell>
+    </hp-cluster>
+
+    <!-- All five slots are optional. Sizes cascade from the cluster's
+         size attribute via --hp-cell and --hp-hex-stroke. -->
+    <hp-cluster size="md">
+      <hp-cell variant="anchor" slot="centre">profile</hp-cell>
+      <hp-cell variant="action" slot="top">save</hp-cell>
+    </hp-cluster>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Build navigation rails as columns of clusters — each cluster represents a section, with
+          its <code>centre</code> as the section label and the four outer slots as actions.
+        </hp-banner>
+        <hp-banner tone="do">
+          Use the <strong>same atom type</strong> for all outer slots when possible. Mixed atom
+          types (e.g., <code>&lt;hp-cell&gt;</code> + raw <code>&lt;hp-hex&gt;</code>) require
+          careful stroke / fill matching to avoid orphan-ring gaps in the overlap region.
+          DESIGN.md's bonding rules cover this in detail.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Treat the cluster as draggable. <code>&lt;hp-cluster&gt;</code> is a static layout —
+          if you need drag-snap behaviour for a 5-hex group, place the cluster inside
+          <code>&lt;hp-grid&gt;</code> with a <code>drag-handle</code> attribute pointing at the
+          centre.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Pack more than 5 slots. The rosette is intentionally 5 — adding more breaks the
+          surrounding-the-centre semantic. For larger groups, use multiple clusters or drop to
+          <code>&lt;hp-grid&gt;</code>.
+        </hp-banner>
+      
+
+      <h2>Layout math</h2>
+      <p>
+        Outer slots sit at axial coordinates <code>(0,-1)</code>, <code>(-1,0)</code>,
+        <code>(1,0)</code>, <code>(0,1)</code> relative to the centre. The cluster uses the same
+        effective-cell math as <code>&lt;hp-grid&gt;</code> (<code>col_step = cell − hex-stroke</code>)
+        so adjacent strokes share cleanly.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

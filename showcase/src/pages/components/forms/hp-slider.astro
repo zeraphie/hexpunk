@@ -1,0 +1,68 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-slider">
+  <ComponentDocs title="hp-slider">
+    <p slot="description">
+      Single-thumb continuous-value slider. Track + hex thumb; arrow keys step by
+      <code>step</code> (PageUp / PageDown step by 10×; Home / End jump to min / max), drag the
+      thumb with the pointer. <code>role="slider"</code>, <code>aria-valuenow / min / max</code>
+      reflect state.
+    </p>
+
+    <hp-demo caption="Default (0–100)">
+      <hp-slider value="30"></hp-slider>
+      <hp-slider value="65"></hp-slider>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-slider min="0" max="100" step="1" value="30"></hp-slider>
+    <hp-slider value="65"></hp-slider>
+
+    document
+      .querySelector("hp-slider")
+      .addEventListener("change", (ev) => {
+        console.log(ev.detail.value);
+      });
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Stepped (0–10, step 2)">
+      <hp-slider min="0" max="10" step="2" value="4"></hp-slider>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-slider min="0" max="10" step="2" value="4"></hp-slider>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Disabled">
+      <hp-slider value="50" disabled></hp-slider>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-slider value="50" disabled></hp-slider>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Full keyboard support: Arrow keys (±step), PageUp / PageDown (±10× step), Home / End
+        (min / max). <code>aria-valuenow</code> updates on every change so screen readers
+        announce the new value.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

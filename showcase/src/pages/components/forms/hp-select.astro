@@ -1,0 +1,55 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-select">
+  <ComponentDocs title="hp-select">
+    <p slot="description">
+      Custom listbox select — trigger button shows the current value; click opens a popover
+      list of <code>&lt;hp-option&gt;</code> children. Arrow keys move focus; Enter / Space
+      select; Escape dismiss; type-ahead jumps to options starting with the typed letters.
+      Uncontrolled mode — internal value state, fires `change`.
+    </p>
+
+    <hp-demo caption="Basic">
+      <hp-select value="medium" placeholder="Choose a size" style="min-width: 220px">
+        <hp-option value="small">small</hp-option>
+        <hp-option value="medium">medium</hp-option>
+        <hp-option value="large">large</hp-option>
+        <hp-option value="xlarge" disabled>xlarge (sold out)</hp-option>
+      </hp-select>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-select value="medium" placeholder="Choose a size">
+      <hp-option value="small">small</hp-option>
+      <hp-option value="medium">medium</hp-option>
+      <hp-option value="large">large</hp-option>
+      <hp-option value="xlarge" disabled>xlarge (sold out)</hp-option>
+    </hp-select>
+
+    <script>
+      document.querySelector("hp-select")
+        .addEventListener("change", (ev) => {
+          console.log(ev.detail.value);
+        });
+    </${"script"}>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Trigger exposes <code>role="combobox"</code> + <code>aria-haspopup="listbox"</code> +
+        <code>aria-expanded</code>. Listbox <code>role="listbox"</code>; options
+        <code>role="option"</code> + <code>aria-selected</code>. Type-ahead resets after
+        500ms of silence. Tab on an open listbox closes it (focus moves to the next tab
+        stop on the page).
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

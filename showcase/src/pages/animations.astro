@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Animations">
+  <h1>Animations</h1>
+  <p>
+    The six motion metaphors. Each communicates something specific — no ambient drift, no
+    decorative motion.
+  </p>
+
+  <h2>Snapping</h2>
+  <p>
+    Hex slides into place over <code>--hp-unfold-trigger</code> (90ms). Used by
+    <code>&lt;hp-grid&gt;</code> when a dragged hex releases onto its target slot.
+  </p>
+
+  <h2>Routing</h2>
+  <p>
+    Three trapezoidal segments draw along alternating hex edges, staggered by
+    <code>--hp-unfold-stagger</code> (60ms). The trace is the focus indicator on any
+    interactive <code>&lt;hp-cell&gt;</code> — it grows in on
+    <code>:focus-visible</code> and unwinds in reverse on blur.
+  </p>
+
+  <h2>Hue swap</h2>
+  <p>
+    Blue → green on hover/focus across every interactive atom. Tied to
+    <code>--hp-duration-medium</code> (280ms) so it reads as deliberate rather than instant.
+  </p>
+
+  <h2>Pulse</h2>
+  <p>
+    The only ambient motion the system allows — a dot travelling along an active
+    <code>&lt;hp-tether&gt;</code> arc to signal "this connection is live". <em>Note:</em> pulse is
+    currently off pending a redesign — the directed arrow carries directedness for now.
+  </p>
+
+  <h2>Bloom</h2>
+  <p>
+    Children appear staggered around a source hex during an unfold. <code>&lt;hp-unfold-list&gt;</code>
+    when shipped will play this on toggle.
+  </p>
+
+  <h2>Scanning</h2>
+  <p>
+    Skeleton sweep for loading states; vertical lift for masked overflow. Both pending dedicated
+    atoms.
+  </p>
+</Layout>

@@ -1,0 +1,64 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-menubar">
+  <ComponentDocs title="hp-menubar">
+    <p slot="description">
+      Horizontal / vertical bar of dropdown triggers with roving tabindex. Slotted children are
+      <code>&lt;hp-dropdown-menu&gt;</code> instances (or any element with
+      <code>role="menuitem"</code> + <code>aria-haspopup="menu"</code>). Arrow keys move focus
+      between bar entries; Home / End jump.
+    </p>
+
+    <hp-demo caption="File / Edit / View">
+      <hp-menubar>
+        <hp-dropdown-menu>
+          <hp-button>File</hp-button>
+          <hp-menu-item slot="content">New</hp-menu-item>
+          <hp-menu-item slot="content">Open</hp-menu-item>
+          <hp-menu-item slot="content">Save</hp-menu-item>
+        </hp-dropdown-menu>
+        <hp-dropdown-menu>
+          <hp-button>Edit</hp-button>
+          <hp-menu-item slot="content">Undo</hp-menu-item>
+          <hp-menu-item slot="content">Redo</hp-menu-item>
+          <hp-menu-item slot="content">Find</hp-menu-item>
+        </hp-dropdown-menu>
+        <hp-dropdown-menu>
+          <hp-button>View</hp-button>
+          <hp-menu-item slot="content">Zoom in</hp-menu-item>
+          <hp-menu-item slot="content">Zoom out</hp-menu-item>
+        </hp-dropdown-menu>
+      </hp-menubar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-menubar>
+      <hp-dropdown-menu>
+        <hp-button>File</hp-button>
+        <hp-menu-item slot="content">New</hp-menu-item>
+        <hp-menu-item slot="content">Open</hp-menu-item>
+      </hp-dropdown-menu>
+      <hp-dropdown-menu>
+        <hp-button>Edit</hp-button>
+        <hp-menu-item slot="content">Undo</hp-menu-item>
+      </hp-dropdown-menu>
+    </hp-menubar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Bar exposes <code>role="menubar"</code> + <code>aria-orientation</code>. Only the first
+        trigger is in the tab order initially; arrow keys move focus between siblings; Home /
+        End jump to first / last. The individual dropdowns handle their own menuitem nav.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

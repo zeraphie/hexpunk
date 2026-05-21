@@ -1,0 +1,112 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-hex">
+  <ComponentDocs title="hp-hex">
+    <p slot="description">
+      Base hex atom — a hollow stencil hex with consumer-overridable stroke colour. No hover, no
+      focus, no events. <code>pointer-events: none</code> by default, so it's safe as a backdrop
+      inside composites (palette swatches, badges, decorative plates) without intercepting clicks.
+    </p>
+
+    <hp-demo caption="Sizes">
+      <hp-hex></hp-hex>
+      <hp-hex size="md"></hp-hex>
+      <hp-hex size="lg"></hp-hex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-hex></hp-hex>
+    <hp-hex size="md"></hp-hex>
+    <hp-hex size="lg"></hp-hex>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>Custom stroke colour</h2>
+    <p>Override <code>--hp-stroke-color</code> for a coloured outline; the interior stays canvas.</p>
+    <hp-demo>
+      <hp-hex style="--hp-stroke-color: var(--hp-primary)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: var(--hp-secondary)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: var(--hp-warn)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: var(--hp-alert)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: var(--hp-error)"></hp-hex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-hex style="--hp-stroke-color: var(--hp-primary)"></hp-hex>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <h2>Filled (transparent stroke)</h2>
+    <p>
+      Set <code>--hp-stroke-color: transparent</code> and <code>--hp-hex-fill</code> to a token for
+      a solid-colour swatch. Used in the <a href="/hexpunk/palette">Palette</a> page.
+    </p>
+    <hp-demo>
+      <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-primary)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-secondary)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-warn)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-alert)"></hp-hex>
+      <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-error)"></hp-hex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-primary)"></hp-hex>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Reach for <code>&lt;hp-hex&gt;</code> directly only when you need a bare hex shape —
+          palette swatches, decorative plates inside composites, custom layouts where the system's
+          composite atoms don't fit.
+        </hp-banner>
+        <hp-banner tone="do">
+          Compose it inside your own custom atom when you need the SVG stencil + hex-shaped hit
+          area without authoring the geometry yourself.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use <code>&lt;hp-hex&gt;</code> for buttons or interactive cells. The host is
+          <code>pointer-events: none</code> and there's no built-in hover or focus state.
+          Use <code>&lt;hp-cell&gt;</code> instead.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Place adjacent <code>&lt;hp-hex&gt;</code>es in a cluster with
+          <code>--hp-stroke-color: transparent</code> next to a stencil atom — the centre's outline
+          ring will show through the overlap as an orphan band. Pick one paradigm: solid swatches
+          or stencil rings, not both adjacent.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        Decorative by default. If <code>&lt;hp-hex&gt;</code> is the only visual signal for some
+        meaning (a colour swatch, a status pill), add a <code>title</code> attribute so the
+        meaning is announced. For real interactive surfaces or toned status indicators, use
+        <code>&lt;hp-cell&gt;</code> — it carries the appropriate roles, hover / focus state,
+        and tone overlay.
+      </p>
+
+      <h2>Customisation hooks</h2>
+      <p>
+        <code>--hp-stroke-color</code> (default <code>--hp-outline</code>) paints the outer ring;
+        <code>--hp-hex-fill</code> (default <code>--hp-canvas</code>) paints the inner. The hex
+        SVG handles the stencil geometry; the inner polygon's inset scales with size so the
+        visible stroke is roughly proportional (sm 2px, md 4px, lg 6px).
+      </p>
+    </Fragment>
+
+  </ComponentDocs>
+</Layout>

@@ -1,0 +1,62 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-module-handle">
+  <ComponentDocs title="hp-module-handle">
+    <p slot="description">
+      Hex grip at a molecule centroid. Default six-dot mark; <code>active</code> is the grabbed
+      state.
+    </p>
+
+    <hp-demo>
+      <hp-module-handle></hp-module-handle>
+      <hp-module-handle active></hp-module-handle>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-module-handle></hp-module-handle>
+
+    <!-- active = currently grabbed -->
+    <hp-module-handle active></hp-module-handle>
+
+    <!-- override the default 6-dot grip with a custom icon -->
+    <hp-module-handle>
+      <svg viewBox="0 0 24 24" stroke="currentColor" ...>
+        <path d="..." />
+      </svg>
+    </hp-module-handle>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Place at the centroid of a bonded molecule when consumers need to drag the whole group
+          as a rigid body. Once <code>&lt;hp-module&gt;</code> lands, it'll inject this
+          automatically for any bonded set.
+        </hp-banner>
+        <hp-banner tone="do">
+          Slot a custom grip glyph if the default six-dot doesn't match your context (e.g.,
+          a directional arrow for movement, an icon matching the molecule's role).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use as a regular button. Keyboard activation behaves like a drag-handle (space to grab,
+          arrow keys to move) — repurposing it for other actions breaks the keyboard contract.
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        Auto-applies <code>tabindex="0"</code>, <code>role="button"</code>, and
+        <code>aria-label="Drag handle"</code> on connect (consumers can override any of these
+        explicitly). 36px bounding box hits the 44×44 minimum target via surrounding tap area on
+        touch devices.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

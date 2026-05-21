@@ -1,0 +1,177 @@
+---
+// ComponentApi.astro — Render API tables for one custom element.
+//
+// Reads custom-elements.json via `getApiFor(tagName)` and produces
+// tables for properties / attributes, events, slots, CSS custom
+// properties, CSS parts. Sections with no entries are suppressed so
+// the Code tab doesn't fill with empty placeholders.
+//
+// To populate events / slots / CSS custom properties / parts, the
+// element's class JSDoc needs the matching tags:
+//
+//   /**
+//    * @fires hp-thing-change - When the thing changes
+//    * @slot - Default slot description
+//    * @slot trigger - Trigger slot description
+//    * @cssproperty --hp-thing - The thing's main colour
+//    * @csspart container - The outer container
+//    */
+//   @customElement("hp-thing")
+//   export class HpThing extends LitElement { ... }
+//
+// Properties / attributes derive automatically from the `@property`
+// decorator on each class member.
+
+import { getApiFor, type ApiField } from "../lib/api.ts";
+
+interface Props {
+  tagName: string;
+}
+const { tagName } = Astro.props;
+const api = getApiFor(tagName);
+
+function renderAttrCell(f: ApiField): string {
+  if (!f.attribute) {
+    return "—";
+  }
+  return f.attribute;
+}
+
+function renderTypeCell(t?: string): string {
+  if (!t) {
+    return "—";
+  }
+  return t;
+}
+---
+
+<div class="api">
+  {api == null ? (
+    <p class="api-empty">
+      No API surface available — run <code>bun run analyze</code> to regenerate
+      <code>custom-elements.json</code>.
+    </p>
+  ) : (
+    <>
+      {api.properties.length > 0 && (
+        <section>
+          <h3>Properties</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Attribute</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {api.properties.map((f) => (
+                <tr>
+                  <td><code>{f.name}</code></td>
+                  <td><code>{renderAttrCell(f)}</code></td>
+                  <td><code>{renderTypeCell(f.type)}</code></td>
+                  <td>{f.default ? <code>{f.default}</code> : "—"}</td>
+                  <td>{f.description ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {api.events.length > 0 && (
+        <section>
+          <h3>Events</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {api.events.map((e) => (
+                <tr>
+                  <td><code>{e.name}</code></td>
+                  <td><code>{e.type ?? "Event"}</code></td>
+                  <td>{e.description ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {api.slots.length > 0 && (
+        <section>
+          <h3>Slots</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Slot</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {api.slots.map((s) => (
+                <tr>
+                  <td><code>{s.name || "(default)"}</code></td>
+                  <td>{s.description ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {api.cssProperties.length > 0 && (
+        <section>
+          <h3>CSS Custom Properties</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {api.cssProperties.map((c) => (
+                <tr>
+                  <td><code>{c.name}</code></td>
+                  <td>{c.default ? <code>{c.default}</code> : "—"}</td>
+                  <td>{c.description ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {api.cssParts.length > 0 && (
+        <section>
+          <h3>CSS Parts</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {api.cssParts.map((p) => (
+                <tr>
+                  <td><code>{p.name}</code></td>
+                  <td>{p.description ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+    </>
+  )}
+</div>

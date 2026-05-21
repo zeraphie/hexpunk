@@ -1,0 +1,74 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-link">
+  <ComponentDocs title="hp-link">
+    <p slot="description">
+      Inline text link. Wraps a native <code>&lt;a&gt;</code> so middle-click, prefetch, keyboard
+      activation, and screen-reader semantics all work for free. Hue swap on hover / focus
+      matches the rest of the system: primary at rest, secondary on hover, focus-ring on
+      keyboard focus. Distinct from <code>&lt;hp-tether&gt;</code> (arc between hexes) and
+      <code>&lt;hp-button&gt;</code> (block-level interactive hex).
+    </p>
+
+    <hp-demo caption="Default">
+      <p>
+        Read the <hp-link href="/hexpunk/getting-started/concepts">concepts overview</hp-link> or
+        jump to <hp-link href="/hexpunk/components/primitives/hp-cell">hp-cell</hp-link> to see the
+        primitives in action.
+      </p>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-link href="/docs">read the docs</hp-link>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="External (target=&quot;_blank&quot;)">
+      <p>
+        Source on <hp-link href="https://github.com/zeraphie/hexpunk" target="_blank">GitHub</hp-link>
+        — <code>rel="noopener"</code> is added automatically.
+      </p>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-link href="https://example.com" target="_blank">
+      external page
+    </hp-link>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Use for inline navigation in prose — the underline + hue read as a regular text link.
+        </hp-banner>
+        <hp-banner tone="do">
+          For at-distance graph relationships (one molecule referring to another), use
+          <code>&lt;hp-tether&gt;</code>. For block-level CTAs / action hexes, use
+          <code>&lt;hp-button&gt;</code> or <code>&lt;hp-cell variant="action"&gt;</code>.
+        </hp-banner>
+        <hp-banner tone="dont">
+          Embed a button-styled <code>hp-cell</code> in prose where a text link would do. The
+          inline anchor reads more naturally for "click to navigate".
+        </hp-banner>
+      
+
+      <h2>Accessibility</h2>
+      <p>
+        Native <code>&lt;a&gt;</code> internals give the right role, keyboard activation, and
+        announce text automatically. <code>target="_blank"</code> auto-stamps
+        <code>rel="noopener"</code>. Focus ring uses <code>--hp-focus-ring</code> with the
+        2px offset shared with the rest of the system.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

@@ -1,0 +1,29 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Install">
+  <h1>Install</h1>
+  <p>
+    Hexpunk ships as <code>@hexpunk/core</code> on npm. Install alongside <code>lit</code>:
+  </p>
+
+  <pre><code>bun add @hexpunk/core lit</code></pre>
+
+  <p>
+    Then import the elements you want (or the full barrel for everything):
+  </p>
+
+  <pre><code>import "@hexpunk/core";</code></pre>
+
+  <p>
+    The package side-effects-registers every <code>&lt;hp-*&gt;</code> tag via Lit's
+    <code>@customElement</code> decorator on import.
+  </p>
+
+  <h2>Tokens</h2>
+  <p>
+    The dark-theme token set ships as <code>@hexpunk/core/tokens.dark.css</code>. Link or import it
+    once at the app root.
+  </p>
+</Layout>

@@ -1,0 +1,67 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-avatar">
+  <ComponentDocs title="hp-avatar">
+    <p slot="description">
+      Hex-shaped user avatar. Image clips into the hex; falls back to the slotted content
+      (typically initials) on load error or while pending. Pure display element — wrap in
+      <code>&lt;hp-button&gt;</code> or <code>&lt;hp-link&gt;</code> for interactive avatars.
+    </p>
+
+    <hp-demo caption="With image">
+      <hp-avatar src="https://i.pravatar.cc/100?u=a" alt="Alice">AL</hp-avatar>
+      <hp-avatar size="md" src="https://i.pravatar.cc/120?u=b" alt="Bob">BO</hp-avatar>
+      <hp-avatar size="lg" src="https://i.pravatar.cc/160?u=c" alt="Cara">CA</hp-avatar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-avatar src="/me.jpg" alt="Izzy">IZ</hp-avatar>
+    <hp-avatar size="md" src="/bob.jpg" alt="Bob">BO</hp-avatar>
+    <hp-avatar size="lg" src="/cara.jpg" alt="Cara">CA</hp-avatar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Initials fallback (no src)">
+      <hp-avatar>IZ</hp-avatar>
+      <hp-avatar size="md">JS</hp-avatar>
+      <hp-avatar size="lg">CY</hp-avatar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-avatar>IZ</hp-avatar>
+    <hp-avatar size="md">JS</hp-avatar>
+    <hp-avatar size="lg">CY</hp-avatar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Image error → fallback">
+      <hp-avatar src="https://invalid.example/missing.png" alt="Missing">??</hp-avatar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-avatar src="/missing.png" alt="Missing">??</hp-avatar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Set <code>alt</code> on every avatar that conveys identity. For purely decorative
+        avatars (filler in a wireframe demo), pass <code>alt=""</code> to skip the
+        announcement.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

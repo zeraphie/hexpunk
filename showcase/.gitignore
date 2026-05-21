@@ -1,0 +1,3 @@
+# Astro build cache + generated types
+.astro/
+node_modules/

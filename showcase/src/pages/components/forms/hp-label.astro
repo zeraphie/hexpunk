@@ -1,0 +1,57 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-label">
+  <ComponentDocs title="hp-label">
+    <p slot="description">
+      Form label primitive. Wraps a native <code>&lt;label&gt;</code> so click-to-focus and
+      screen-reader association work for free. <code>for</code> attribute references the
+      target input's <code>id</code>; <code>required</code> stamps a "*", <code>optional</code>
+      stamps a muted "(optional)".
+    </p>
+
+    <hp-demo caption="With inputs">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-checkbox id="a"></hp-checkbox>
+          <hp-label for="a">subscribe to updates</hp-label>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-checkbox id="b"></hp-checkbox>
+          <hp-label for="b" required>accept terms</hp-label>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <hp-checkbox id="c"></hp-checkbox>
+          <hp-label for="c" optional>marketing emails</hp-label>
+        </div>
+      </div>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-checkbox id="terms"></hp-checkbox>
+    <hp-label for="terms">Accept terms</hp-label>
+
+    <!-- with required marker -->
+    <hp-label for="email" required>Email</hp-label>
+
+    <!-- with optional hint -->
+    <hp-label for="phone" optional>Phone</hp-label>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        Inner native <code>&lt;label for="..."&gt;</code> wires click-to-focus and announces
+        the label text alongside the input value. The <code>required</code> "*" is
+        <code>aria-hidden</code> — set <code>aria-required="true"</code> on the input itself
+        for the semantic.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

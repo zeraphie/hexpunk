@@ -1,0 +1,48 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-link-node">
+  <ComponentDocs title="hp-link-node">
+    <p slot="description">
+      Tiny 4px dot at the endpoint of an arc-link. Filled primary at rest, secondary when bonded.
+    </p>
+
+    <hp-demo>
+      <hp-link-node></hp-link-node>
+      <hp-link-node bonded></hp-link-node>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-link-node></hp-link-node>
+    <hp-link-node bonded></hp-link-node>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Let <code>&lt;hp-tether&gt;</code> place these for you. Each tether auto-positions a node
+          at the chosen vertex of its endpoint hex (it picks the best vertex pair from 36
+          candidates by crossings + distance).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Position <code>&lt;hp-link-node&gt;</code> manually unless you're building a custom
+          arc renderer. The host is <code>pointer-events: none</code>, so it doesn't intercept
+          drags on the underlying hex.
+        </hp-banner>
+      
+
+      <h2>States</h2>
+      <p>
+        Default: filled primary 4px dot. With <code>bonded</code>: filled secondary, signalling
+        that at least one arc is attached. The colour swap is the same hue language as the
+        rest of the system — primary at rest, secondary when engaged.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

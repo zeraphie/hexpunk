@@ -1,0 +1,61 @@
+/* tokens.light.css — Light theme overrides for surface / contrast tokens.
+ *
+ * Hand-authored (the token build pipeline only generates the dark
+ * canonical set today). Applied via `[data-theme="light"]` on the
+ * documentElement, so this file only redefines what changes: the
+ * surface ladder, foreground contrast, outline tints, inverse pair,
+ * and focus ring. Brand hues (primary cyan, secondary green, status
+ * tones) are unchanged — they read against either surface.
+ *
+ * Conceptually a "blueprint" inversion of the cyberpunk wireframe —
+ * the same hex stencils on paper-pale stock instead of carbon-dark.
+ */
+
+[data-theme="light"] {
+  /* Theme identity — readable from any descendant's computed style
+   * so JS (e.g. hp-code's Shiki adapter) can pick the matching
+   * variant for the effective theme at the element's position. */
+  --hp-theme-name: light;
+
+  /* ── Surface ladder ──────────────────────────────────────────── */
+  --hp-background: #f4f6f8;
+  --hp-on-background: #1d1f20;
+  --hp-surface: #ffffff;
+  --hp-on-surface: #1d1f20;
+  --hp-surface-variant: #e8ecf0;
+  --hp-on-surface-variant: #475158;
+  --hp-surface-container-lowest: #ffffff;
+  --hp-surface-container-low: #fafbfc;
+  --hp-surface-container: #eef2f6;
+  --hp-surface-container-high: #e2e8ee;
+  --hp-surface-container-highest: #d6dde5;
+
+  /* ── Outline (cyan stays the brand outline; tints fade to light) ─ */
+  --hp-outline: #006faa;
+  --hp-outline-variant: #b5dde8;
+  --hp-outline-faint: #d8eaf0;
+
+  /* ── Inverse pair (flip of new bg/fg) ────────────────────────── */
+  --hp-inverse-surface: #1d1f20;
+  --hp-inverse-on-surface: #eaeff2;
+  --hp-inverse-primary: #c9ecff;
+
+  /* ── Focus ring — dark on light backgrounds ──────────────────── */
+  --hp-focus-ring: #1d1f20;
+
+  /* ── Brand emphasis containers — lighter shades for legibility on
+   *    light surfaces (the dark-default containers are too saturated
+   *    and lose contrast against the paper-pale bg). ─────────────── */
+  --hp-primary-container: #c9ecff;
+  --hp-on-primary-container: #00305f;
+  --hp-secondary-container: #a6f0d2;
+  --hp-on-secondary-container: #003c28;
+  --hp-tertiary-container: #d4e4ff;
+  --hp-on-tertiary-container: #0f3666;
+  --hp-warn-container: #ffe0b5;
+  --hp-on-warn-container: #523000;
+  --hp-alert-container: #ffd9e8;
+  --hp-on-alert-container: #5c0036;
+  --hp-error-container: #ffd9d9;
+  --hp-on-error-container: #5c0000;
+}

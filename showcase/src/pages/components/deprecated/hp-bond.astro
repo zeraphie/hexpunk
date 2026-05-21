@@ -1,0 +1,55 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-bond">
+  <ComponentDocs title="hp-bond">
+    <p slot="description">
+      Small green hex on a shared edge. Visible while forming, fades to a hairline when settled.
+    </p>
+
+    <hp-demo>
+      <hp-bond></hp-bond>
+      <hp-bond state="settled"></hp-bond>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <!-- forming — full hex visible -->
+    <hp-bond></hp-bond>
+
+    <!-- settled — collapses to a hairline on the shared edge -->
+    <hp-bond state="settled"></hp-bond>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+              <hp-banner tone="do">
+          Let <code>&lt;hp-grid&gt;</code> render bonds for you — it fires
+          <code>hp-grid-bond</code> when two adjacent atoms become axial neighbours after a drop,
+          and the bond renders in the shared edge automatically.
+        </hp-banner>
+        <hp-banner tone="do">
+          Author <code>&lt;hp-bond&gt;</code> directly only when you're building a custom
+          molecule layout and need to mark a fixed edge as bonded (e.g., a `<hp-switch>` pair).
+        </hp-banner>
+        <hp-banner tone="dont">
+          Use <code>&lt;hp-bond&gt;</code> as a generic decoration — it's specifically the
+          edge-bond indicator, and overusing it dilutes the bonding metaphor.
+        </hp-banner>
+      
+
+      <h2>States</h2>
+      <p>
+        <code>state="forming"</code> (default) — the bond is being created right now, visible
+        as a 12px green hex on the shared edge.
+        <code>state="settled"</code> — the bond is stable; collapses opacity + scaleY so it reads
+        as a 1px hairline on the shared edge, present but quiet.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

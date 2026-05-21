@@ -1,0 +1,104 @@
+---
+// ComponentDocs.astro — Per-component documentation wrapper.
+//
+// Renders a fixed header (title + description) followed by a
+// tab bar with four panels: Examples / Code / Usage /
+// Changelog. The active panel is driven by the URL hash; the
+// switching script lives in Layout.astro since it's the same script
+// for every component page.
+//
+// Pages opt in by wrapping their content:
+//
+//     <ComponentDocs title="hp-cell">
+//       <p slot="description">Labelled interactive hex…</p>
+//       <h2>Anchor</h2>
+//       <div class="row">…</div>
+//       …
+//     </ComponentDocs>
+//
+// The default slot is the Examples tab content. Named slots `code`,
+// `usage`, `changelog` fill the other tabs; if a page doesn't supply
+// them, the stub / auto-generated fallback renders.
+//
+// **Changelog auto-generation.** The `changelog` slot defaults to the
+// per-component slice of the repo CHANGELOG.md (entries whose bullets
+// mention `<title>` — see `lib/changelog.ts`). Pages can still
+// override with their own `<Fragment slot="changelog">…` content for
+// hand-written histories.
+
+import { getChangelogFor, renderInline, titleCase } from "../lib/changelog.ts";
+import ComponentApi from "./ComponentApi.astro";
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const changelog = getChangelogFor(title);
+---
+
+<header class="component-header">
+  <h1>{title}</h1>
+  <div class="component-description">
+    <slot name="description" />
+  </div>
+</header>
+
+<slot name="notice" />
+
+<hp-tabs route="query" value="examples" aria-label={`${title} sections`}>
+  <hp-tab value="examples">Examples</hp-tab>
+  <hp-tab value="api">API</hp-tab>
+  <hp-tab value="intent">Intent</hp-tab>
+  <hp-tab value="changelog">Changelog</hp-tab>
+
+  <hp-tab-panel value="examples" id="examples" data-tab-panel="examples">
+    <slot />
+  </hp-tab-panel>
+
+  <hp-tab-panel value="api" id="api" data-tab-panel="api">
+    <section class="code-install">
+      <h3>Install</h3>
+      <pre><code>bun add @hexpunk/core lit</code></pre>
+      <pre><code>{`import "@hexpunk/core";`}</code></pre>
+    </section>
+    <ComponentApi tagName={title} />
+    <slot name="api" />
+  </hp-tab-panel>
+
+  <hp-tab-panel value="intent" id="intent" data-tab-panel="intent">
+    <slot name="intent">
+      <p class="tab-stub">Intent guidelines coming soon.</p>
+    </slot>
+  </hp-tab-panel>
+
+  <hp-tab-panel value="changelog" id="changelog" data-tab-panel="changelog">
+    <slot name="changelog">
+      {changelog.length === 0 ? (
+        <p class="tab-stub">
+          No per-component entries in <a href="/hexpunk/changelog">CHANGELOG.md</a> yet.
+        </p>
+      ) : (
+        <ul class="changelog-list">
+          {changelog.map((entry) => (
+            <li>
+              <span class="version">
+                {entry.version}
+                {entry.date ? <span class="date">{entry.date}</span> : null}
+              </span>
+              <div class="summary">
+                {Object.entries(entry.sections).map(([section, items]) => (
+                  <div class="changelog-section">
+                    <h3>{titleCase(section)}</h3>
+                    <ul>
+                      {items?.map((item) => <li set:html={renderInline(item)} />)}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </slot>
+  </hp-tab-panel>
+</hp-tabs>

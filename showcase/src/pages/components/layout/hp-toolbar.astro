@@ -1,0 +1,71 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-toolbar">
+  <ComponentDocs title="hp-toolbar">
+    <p slot="description">
+      Toolbar container with managed keyboard navigation. Slotted focusable children
+      (<code>hp-button</code>, <code>hp-toggle</code>, <code>hp-checkbox</code>,
+      <code>hp-link</code>, etc.) participate in a roving tabindex — Tab enters at the
+      currently-active child, arrow keys move between siblings, Home / End jump to first /
+      last. <code>hp-separator</code> children break the visual flow without consuming a
+      tab stop.
+    </p>
+
+    <hp-demo caption="Horizontal (default)">
+      <hp-toolbar>
+        <hp-button size="sm">save</hp-button>
+        <hp-button size="sm">share</hp-button>
+        <hp-separator orientation="vertical"></hp-separator>
+        <hp-toggle></hp-toggle>
+        <hp-separator orientation="vertical"></hp-separator>
+        <hp-button size="sm">settings</hp-button>
+      </hp-toolbar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-toolbar>
+      <hp-button>save</hp-button>
+      <hp-button>share</hp-button>
+      <hp-separator orientation="vertical"></hp-separator>
+      <hp-toggle></hp-toggle>
+    </hp-toolbar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Vertical">
+      <hp-toolbar orientation="vertical">
+        <hp-button size="sm">cut</hp-button>
+        <hp-button size="sm">copy</hp-button>
+        <hp-button size="sm">paste</hp-button>
+      </hp-toolbar>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-toolbar orientation="vertical">
+      <hp-button>cut</hp-button>
+      <hp-button>copy</hp-button>
+      <hp-button>paste</hp-button>
+    </hp-toolbar>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Accessibility</h2>
+      <p>
+        <code>role="toolbar"</code> + <code>aria-orientation</code>. Roving tabindex: one
+        focusable child has <code>tabindex="0"</code>, the rest <code>tabindex="-1"</code>.
+        Arrow keys navigate; Tab moves out of the toolbar (the next focusable element on
+        the page).
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>
