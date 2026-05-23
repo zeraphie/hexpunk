@@ -90,10 +90,12 @@ export class HpCopy extends LitElement {
         display: inline-flex;
         align-items: center;
         gap: var(--hp-xs);
-        font-family: var(--hp-typo-label-sm-font-family);
-        font-size: var(--hp-typo-label-sm-font-size);
-        font-weight: var(--hp-typo-label-sm-font-weight);
-        letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+        /* label-md (12px) rather than label-sm (10px) — bare text
+         * without an accompanying icon reads as cramped at 10px. */
+        font-family: var(--hp-typo-label-md-font-family);
+        font-size: var(--hp-typo-label-md-font-size);
+        font-weight: var(--hp-typo-label-md-font-weight);
+        letter-spacing: var(--hp-typo-label-md-letter-spacing);
         text-transform: uppercase;
       }
 
