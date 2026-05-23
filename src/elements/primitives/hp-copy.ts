@@ -5,13 +5,14 @@
 // hp-latex (copying LaTeX source) — anywhere the design system
 // needs a small "grab this text" affordance.
 //
-// Appearance: borderless text-labelled button reading "Copy" with
-// a sibling "copied" toast that fades in to its left for ~1.5s
-// after a successful write. Mirrors hp-demo's original copy affordance
-// — transparent chrome, colour shifts to --hp-primary on hover/focus,
-// no surface fill or border. Failure dispatches a bubbling
-// `hp-copy-error` event; success dispatches `hp-copy-success`. The
-// `icon` attribute switches to an icon-only variant for tight chrome.
+// Appearance: borderless button with Lucide's `copy` icon next to a
+// "Copy" text label, plus a sibling "copied" toast that fades in to
+// its left for ~1.5s after a successful write. Mirrors hp-demo's
+// original copy affordance — transparent chrome, colour shifts to
+// --hp-primary on hover/focus, no surface fill or border. Failure
+// dispatches a bubbling `hp-copy-error` event; success dispatches
+// `hp-copy-success`. The `icon-only` attribute drops the text label
+// for tight chrome where only the glyph fits.
 //
 // Built on Lit + shadow DOM. The button is fully self-contained;
 // the `value` text isn't visibly rendered (it's only flushed to the
@@ -19,7 +20,9 @@
 
 import { LitElement, css, html, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
+import { copy as copyIcon } from "../../icons/copy.js";
 import { hpBase } from "../../styles/hp-base.js";
 
 /**
@@ -28,7 +31,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @property value - Text to write to the clipboard on click
  * @property label - Idle button label (default: "Copy")
  * @property copiedLabel - Label after a successful copy (default: "Copied")
- * @property icon - Switch to icon-only variant
+ * @property iconOnly - Drop the text label and show only the icon
  * @fires hp-copy-success - Bubbling CustomEvent on successful clipboard write; detail = { value }
  * @fires hp-copy-error - Bubbling CustomEvent on failed clipboard write; detail = { error, value }
  * @csspart button - The internal <button> element
@@ -44,9 +47,11 @@ export class HpCopy extends LitElement {
   /** Label shown briefly after a successful copy. */
   @property({ type: String, attribute: "copied-label" }) copiedLabel = "Copied";
 
-  /** Icon-only variant — hides the text label, shows just the clipboard
-   * icon. Default is text-only. */
-  @property({ type: Boolean, reflect: true }) icon = false;
+  /** Icon-only variant — drops the text label so only the Lucide
+   * `copy` glyph shows. Default keeps both the icon and the label.
+   * Useful for tight chrome where the text doesn't fit. */
+  @property({ type: Boolean, reflect: true, attribute: "icon-only" })
+  iconOnly = false;
 
   @state() private _copied = false;
 
@@ -145,26 +150,30 @@ export class HpCopy extends LitElement {
         outline-offset: 2px;
       }
 
-      /* Icon variant — collapse padding around the icon. */
-      :host([icon]) button {
+      /* Icon-only variant — collapse padding around the icon. */
+      :host([icon-only]) button {
         padding: var(--hp-xs);
       }
 
+      /* Lucide's copy is designed at 24×24 with stroke-width 2. At
+       * 14px display the stroke scales to ~1.17px — render slightly
+       * larger to keep the glyph legible next to label-md text. */
       .icon {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         fill: none;
         stroke: currentColor;
-        stroke-width: 1.5;
+        stroke-width: 2;
+        stroke-linecap: round;
         stroke-linejoin: round;
+        flex-shrink: 0;
       }
     `,
   ];
 
   override render(): TemplateResult {
-    const iconSvg = html`<svg class="icon" viewBox="0 0 12 12" aria-hidden="true">
-      <rect x="3.5" y="3.5" width="6" height="6"></rect>
-      <path d="M2.5 8.5 V2.5 H8.5"></path>
+    const iconSvg = html`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+      ${unsafeSVG(copyIcon)}
     </svg>`;
 
     return html`
@@ -172,7 +181,7 @@ export class HpCopy extends LitElement {
         ${this.copiedLabel}
       </span>
       <button type="button" part="button" aria-label=${this.label} @click=${this._handleClick}>
-        ${this.icon ? iconSvg : this.label}
+        ${iconSvg}${this.iconOnly ? "" : this.label}
       </button>
     `;
   }

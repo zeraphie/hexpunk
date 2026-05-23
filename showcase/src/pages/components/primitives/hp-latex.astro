@@ -103,6 +103,56 @@ export default () => (
 );`}</hp-code>
     </hp-demo>
 
+    <hp-demo caption="Multi-line — aligned environment">
+      <hp-latex
+        block
+        background
+        value="\\begin{aligned}
+          e^{i\\pi} + 1 &= 0 \\\\
+          e^{i\\pi} &= -1 \\\\
+          \\ln(-1) &= i\\pi
+        \\end{aligned}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <hp-latex
+    block
+    background
+    value={\`\\\\begin{aligned}
+      e^{i\\\\pi} + 1 &= 0 \\\\\\\\
+      e^{i\\\\pi} &= -1 \\\\\\\\
+      \\\\ln(-1) &= i\\\\pi
+    \\\\end{aligned}\`}
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Multi-line — piecewise (cases)">
+      <hp-latex
+        block
+        background
+        value="f(x) = \\begin{cases}
+          x^2 & \\text{if } x \\geq 0 \\\\
+          -x & \\text{if } x < 0
+        \\end{cases}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <hp-latex
+    block
+    background
+    value={\`f(x) = \\\\begin{cases}
+      x^2 & \\\\text{if } x \\\\geq 0 \\\\\\\\
+      -x & \\\\text{if } x < 0
+    \\\\end{cases}\`}
+  />
+);`}</hp-code>
+    </hp-demo>
+
     <hp-demo caption="Without a backdrop — block only">
       <hp-latex
         block

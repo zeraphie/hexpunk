@@ -819,9 +819,42 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/icons/copy.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "copy",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />'",
+          "description": "Inner SVG content for the `copy` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "copy",
+          "declaration": {
+            "name": "copy",
+            "module": "src/icons/copy.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/icons/index.ts",
       "declarations": [],
       "exports": [
+        {
+          "kind": "js",
+          "name": "copy",
+          "declaration": {
+            "name": "copy",
+            "module": "./copy.js"
+          }
+        },
         {
           "kind": "js",
           "name": "moon",
@@ -1069,27 +1102,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/styles/hp-base.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "hpBase",
-          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "hpBase",
-          "declaration": {
-            "name": "hpBase",
-            "module": "src/styles/hp-base.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/pixel-icons/menu.ts",
       "declarations": [
         {
@@ -1164,6 +1176,27 @@
           "declaration": {
             "name": "menu",
             "module": "src/pixel-icons/menu.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/styles/hp-base.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "hpBase",
+          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "hpBase",
+          "declaration": {
+            "name": "hpBase",
+            "module": "src/styles/hp-base.ts"
           }
         }
       ]
@@ -5745,298 +5778,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/navigation/hp-link.ts",
       "declarations": [
         {
@@ -6905,6 +6646,298 @@
           "declaration": {
             "name": "HpTabPanel",
             "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
           }
         }
       ]
@@ -8975,13 +9008,13 @@
             },
             {
               "kind": "field",
-              "name": "icon",
+              "name": "iconOnly",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Switch to icon-only variant",
-              "attribute": "icon",
+              "description": "Drop the text label and show only the icon",
+              "attribute": "icon-only",
               "reflects": true
             },
             {
@@ -9049,13 +9082,13 @@
               "fieldName": "copiedLabel"
             },
             {
-              "name": "icon",
+              "name": "icon-only",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Switch to icon-only variant",
-              "fieldName": "icon"
+              "description": "Drop the text label and show only the icon",
+              "fieldName": "iconOnly"
             }
           ],
           "superclass": {
