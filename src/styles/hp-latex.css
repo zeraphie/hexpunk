@@ -24,12 +24,23 @@ hp-latex {
 
 hp-latex[block] {
   display: block;
+  /* Defensive: explicit width + border-box so block hp-latex fills
+   * its container's content width even inside flex parents (where
+   * `display: block` alone would shrink to content). */
+  width: 100%;
+  box-sizing: border-box;
   text-align: center;
   margin: var(--hp-md) 0;
 }
 
 hp-latex[block][background] {
   position: relative;
+  /* New stacking context so the z-index: -1 backdrop stays within
+   * hp-latex's bounds. Without isolation, `position: relative` +
+   * z-index: -1 child escapes the parent and paints behind the
+   * page's other content (often invisibly behind the body
+   * background). */
+  isolation: isolate;
   padding: var(--hp-md);
 }
 
@@ -37,6 +48,8 @@ hp-latex[block][background] .hp-latex-backdrop {
   position: absolute;
   inset: 0;
   z-index: -1;
+  /* Don't intercept pointer events targeted at the math content. */
+  pointer-events: none;
 }
 
 hp-latex .hp-latex-source {
