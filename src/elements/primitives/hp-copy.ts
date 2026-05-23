@@ -90,11 +90,22 @@ export class HpCopy extends LitElement {
         display: inline-flex;
         align-items: center;
         gap: var(--hp-xs);
-        /* label-md (12px) rather than label-sm (10px) — bare text
-         * without an accompanying icon reads as cramped at 10px. */
+      }
+
+      /* Apply the typography to both the toast span and the button
+       * directly rather than relying on host inheritance. When
+       * hp-copy sits inside a parent that sets its own font (e.g.
+       * hp-demo's .actions row at label-sm), declaring on each
+       * element guarantees the toast and the button render at the
+       * same size. label-md (12px) is the design target — bare
+       * text without an accompanying icon reads cramped at the
+       * label-sm 10px. */
+      .toast,
+      button {
         font-family: var(--hp-typo-label-md-font-family);
         font-size: var(--hp-typo-label-md-font-size);
         font-weight: var(--hp-typo-label-md-font-weight);
+        line-height: var(--hp-typo-label-md-line-height);
         letter-spacing: var(--hp-typo-label-md-letter-spacing);
         text-transform: uppercase;
       }
@@ -113,7 +124,6 @@ export class HpCopy extends LitElement {
       }
 
       button {
-        font: inherit;
         background: transparent;
         border: 1px solid transparent;
         color: var(--hp-on-surface-variant);
