@@ -1,0 +1,163 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Prose">
+  <h1>Prose</h1>
+  <p>
+    The bare reset from <a href="/getting-started/elements"><code>elements.css</code></a>
+    grounds raw HTML in the design system, but it deliberately ships zero vertical rhythm —
+    no heading margins, no paragraph spacing, no list padding. Drop
+    <code>class="hp-prose"</code> on any container to opt into rhythm for long-form content.
+  </p>
+
+  <hp-banner tone="neutral">
+    <strong>When to reach for it.</strong> Article bodies, README renders, MDX output,
+    docs prose, changelog summaries — anywhere a block of HTML wants to read like a
+    document. Not for app chrome (login forms, dashboards, settings panes).
+  </hp-banner>
+
+  <h2>Side-by-side</h2>
+  <p>
+    Same HTML, with and without the wrapper. Both screens use the same elements.css
+    baseline; <code>.hp-prose</code> only adds the rhythm.
+  </p>
+
+  <hp-demo caption="Without .hp-prose">
+    <div style="border: 1px dashed var(--hp-outline-faint); padding: 16px;">
+      <h3>The hex stencil</h3>
+      <p>
+        Every hex has a bounding box of <code>w × (w · 2/√3)</code>. Axial
+        coordinates project to pixels as <code>x = w · (q + r/2)</code>,
+        <code>y = w · √3/2 · r</code>.
+      </p>
+      <p>
+        The grid uses an effective cell width of <code>w − hex-stroke</code> so
+        adjacent hexes' stroke bands coincide into a single shared edge.
+      </p>
+      <ul>
+        <li>Pointy-top is the default orientation.</li>
+        <li>Flat-top kicks in at <code>size="md"</code>.</li>
+        <li>Bond detection is opt-in via the <code>bondable</code> attribute.</li>
+      </ul>
+    </div>
+    <hp-code slot="code" language="html">{`<div>
+  <h3>The hex stencil</h3>
+  <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
+  <p>The grid uses an effective cell width...</p>
+  <ul>
+    <li>Pointy-top is the default orientation.</li>
+    <li>Flat-top kicks in at <code>size="md"</code>.</li>
+  </ul>
+</div>`}</hp-code>
+  </hp-demo>
+
+  <hp-demo caption="With .hp-prose">
+    <div class="hp-prose" style="border: 1px dashed var(--hp-outline-faint); padding: 16px;">
+      <h3>The hex stencil</h3>
+      <p>
+        Every hex has a bounding box of <code>w × (w · 2/√3)</code>. Axial
+        coordinates project to pixels as <code>x = w · (q + r/2)</code>,
+        <code>y = w · √3/2 · r</code>.
+      </p>
+      <p>
+        The grid uses an effective cell width of <code>w − hex-stroke</code> so
+        adjacent hexes' stroke bands coincide into a single shared edge.
+      </p>
+      <ul>
+        <li>Pointy-top is the default orientation.</li>
+        <li>Flat-top kicks in at <code>size="md"</code>.</li>
+        <li>Bond detection is opt-in via the <code>bondable</code> attribute.</li>
+      </ul>
+    </div>
+    <hp-code slot="code" language="html">{`<div class="hp-prose">
+  <h3>The hex stencil</h3>
+  <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
+  <p>The grid uses an effective cell width...</p>
+  <ul>
+    <li>Pointy-top is the default orientation.</li>
+    <li>Flat-top kicks in at <code>size="md"</code>.</li>
+  </ul>
+</div>`}</hp-code>
+  </hp-demo>
+
+  <h2>What .hp-prose adds</h2>
+  <p>The rhythm rules in plain English:</p>
+  <ul class="hp-prose">
+    <li>
+      <strong>Block rhythm.</strong> <code>&gt; * + *</code> sets a top margin of
+      <code>--hp-md</code> between siblings, so paragraphs, lists, and blocks of code
+      breathe.
+    </li>
+    <li>
+      <strong>Heading margins.</strong> Headings get <code>--hp-xl</code> top + <code>--hp-sm</code> bottom,
+      so a new section visibly separates from the prose above it. The first child resets
+      to zero so a heading at the top of the wrapper doesn't push everything down.
+    </li>
+    <li>
+      <strong>List indentation.</strong> <code>ul</code> / <code>ol</code> get
+      <code>padding-left: --hp-lg</code> + bullet marker tint. Nested lists tighten so
+      they hug their parent item.
+    </li>
+    <li>
+      <strong>Blockquote + table + figure + pre margins.</strong> Each block-level
+      content surface gets matching <code>--hp-md</code> outer margins for consistent
+      cadence.
+    </li>
+    <li>
+      <strong>Max-width: 70ch.</strong> Caps the line length for readability. Override
+      on the wrapper itself if you need wider content.
+    </li>
+  </ul>
+
+  <h2>Heading rhythm in action</h2>
+  <hp-demo caption="Successive headings tighten">
+    <article class="hp-prose">
+      <h2>The Foundation</h2>
+      <h3>Subsection right under</h3>
+      <p>
+        Two headings stacked back-to-back don't get the full
+        <code>--hp-xl</code> gap — they tighten so a subtitle hugs its parent. Below the
+        second heading, paragraphs resume normal rhythm.
+      </p>
+      <p>
+        A follow-up paragraph spaces normally — <code>--hp-md</code> from the previous
+        block.
+      </p>
+      <h3>The next subsection</h3>
+      <p>And a new section starts again.</p>
+    </article>
+    <hp-code slot="code" language="html">{`<article class="hp-prose">
+  <h2>The Foundation</h2>
+  <h3>Subsection right under</h3>
+  <p>Two headings stacked back-to-back tighten...</p>
+  <p>A follow-up paragraph spaces normally...</p>
+  <h3>The next subsection</h3>
+  <p>And a new section starts again.</p>
+</article>`}</hp-code>
+  </hp-demo>
+
+  <h2>When NOT to use it</h2>
+  <ul class="hp-prose">
+    <li>
+      <strong>App chrome.</strong> A settings pane with a grid of toggles, a dashboard
+      KPI row, a form layout — these are bespoke per-screen and don't want forced
+      <code>70ch</code> caps or sibling margins.
+    </li>
+    <li>
+      <strong>Component internals.</strong> <code>&lt;hp-*&gt;</code> elements own their
+      shadow DOM; <code>.hp-prose</code> can't and shouldn't reach into them.
+    </li>
+    <li>
+      <strong>Marketing surfaces with bespoke layout.</strong> A landing-page hero with a
+      hex-grid backdrop and centred CTA isn't prose — author it as page chrome and
+      reach for hp-* components.
+    </li>
+  </ul>
+
+  <hp-banner tone="do">
+    Wrap the content surface, not the page shell. A typical MDX layout sets
+    <code>&lt;article class="hp-prose"&gt;</code> around the rendered body and leaves
+    nav / sidebar / footer outside the wrapper.
+  </hp-banner>
+</Layout>
