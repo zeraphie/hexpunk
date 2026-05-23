@@ -43,6 +43,7 @@ export const SITEMAP: SitemapNode[] = [
           { path: "/components/primitives/hp-cell", title: "hp-cell" },
           { path: "/components/primitives/hp-code", title: "hp-code" },
           { path: "/components/primitives/hp-hex", title: "hp-hex" },
+          { path: "/components/primitives/hp-latex", title: "hp-latex" },
           { path: "/components/primitives/hp-visually-hidden", title: "hp-visually-hidden" },
         ],
       },
