@@ -77,31 +77,18 @@ body {
   min-height: 100vh;
 }
 
-/* Showcase page chrome: h1 / h2 / p still get page-specific overrides
- * here because each showcase page uses raw HTML directly in <main>
- * rather than wrapping content in <article class="hp-prose">. A
- * follow-up can migrate these pages to opt into .hp-prose (and
- * delete these rules entirely); for now they preserve the existing
- * visual rhythm. h1 / h2 typography itself is in elements.css; the
- * blocks below only add the showcase-specific bottom-margin /
- * section-label treatment. */
+/* Page-title margin only. Headings and paragraph colour now come
+ * from elements.css; the previous h2-as-label-md override and the
+ * faded-paragraph override sat here as showcase-bespoke styling
+ * that contradicted the design system (h2 < h3 < h4 in the size
+ * ramp, body text always faded). Both removed so the showcase
+ * matches what a consumer of @hexpunk/core/elements.css gets. */
 h1 {
   margin: 0 0 var(--hp-md);
 }
 
 h2 {
-  font-family: var(--hp-typo-label-md-font-family);
-  font-size: var(--hp-typo-label-md-font-size);
-  font-weight: var(--hp-typo-label-md-font-weight);
-  line-height: var(--hp-typo-label-md-line-height);
-  letter-spacing: var(--hp-typo-label-md-letter-spacing);
-  color: var(--hp-on-surface-variant);
-  text-transform: uppercase;
   margin: var(--hp-xl) 0 var(--hp-md);
-}
-
-p {
-  color: var(--hp-on-surface-variant);
 }
 
 .row {

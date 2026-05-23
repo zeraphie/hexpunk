@@ -106,6 +106,13 @@ export default () => (
   </hp-demo>
 
   <h2>Code</h2>
+  <hp-banner tone="neutral">
+    For syntax-highlighted code with line numbers, per-line hover, and a copy button,
+    reach for <a href="/components/primitives/hp-code"><code>&lt;hp-code&gt;</code></a> —
+    it accepts a consumer-registered highlighter (Shiki, highlight.js, Prism). The raw
+    primitives below are the right call for short inline snippets and unhighlighted
+    block samples.
+  </hp-banner>
   <hp-demo caption="Inline and block">
     <div>
       <p>
@@ -127,12 +134,6 @@ export default () => (
   </>
 );`}</hp-code>
   </hp-demo>
-  <p>
-    For syntax-highlighted code with line numbers and per-line hover, use
-    <a href="/components/primitives/hp-code"><code>&lt;hp-code&gt;</code></a> instead — it
-    accepts a consumer-registered highlighter.
-  </p>
-
   <h2>Blockquote</h2>
   <hp-demo caption="Citation with attribution">
     <blockquote>
@@ -252,10 +253,20 @@ export default () => (
   <hp-demo caption="Native disclosure">
     <div>
       <details>
-        <summary>What's a soulslike boss?</summary>
+        <summary>Why hexagons?</summary>
         <p>
-          Stamina-gated melee fight with parry windows and phase escalation — see
-          <code>PLAN.soulslike-adr.md</code> in the snecko repo.
+          Hexagons are the densest regular tiling of the plane — six neighbours per cell,
+          uniform distance, and a directionality that maps cleanly to a six-state colour
+          system. Every Hexpunk component starts from that geometry.
+        </p>
+      </details>
+      <details>
+        <summary>What's the difference between hp-cell and hp-hex?</summary>
+        <p>
+          <code>&lt;hp-hex&gt;</code> is the raw geometric primitive — pure shape, no
+          semantics. <code>&lt;hp-cell&gt;</code> is the universal labelled atom built
+          on top, with interactive variants (anchor / action / secondary / utility) and
+          decorative variants (content / support / slot).
         </p>
       </details>
       <details open>
@@ -268,8 +279,8 @@ export default () => (
 export default () => (
   <>
     <details>
-      <summary>What's a soulslike boss?</summary>
-      <p>Stamina-gated melee fight with parry windows.</p>
+      <summary>Why hexagons?</summary>
+      <p>Hexagons are the densest regular tiling of the plane...</p>
     </details>
     <details open>
       <summary>Open by default</summary>
@@ -280,6 +291,12 @@ export default () => (
   </hp-demo>
 
   <h2>Horizontal rule</h2>
+  <hp-banner tone="neutral">
+    For dividers with orientation (horizontal / vertical), tone, and optional centred
+    marks, use <a href="/components/layout/hp-separator"><code>&lt;hp-separator&gt;</code></a>.
+    Raw <code>&lt;hr&gt;</code> stays useful for inline section breaks inside long-form
+    content.
+  </hp-banner>
   <hp-demo caption="Section divider">
     <div>
       <p>Above the rule.</p>
@@ -298,13 +315,21 @@ export default () => (
   </hp-demo>
 
   <h2>Form primitives</h2>
-  <p>
+  <hp-banner tone="neutral">
     Raw form inputs get tokenised typography, restrained borders, and a focus ring that
-    matches <code>hp-base</code>. They deliberately don't carry hex geometry — reach for
-    <a href="/components/forms/hp-button"><code>&lt;hp-button&gt;</code></a>,
-    <a href="/components/forms/hp-select"><code>&lt;hp-select&gt;</code></a>, etc. when
-    you want the full system aesthetic.
-  </p>
+    matches the rest of the system. They deliberately don't carry hex geometry — for
+    the full Hexpunk aesthetic (hex buttons, hex-bonded toggles, single/multi toggle
+    groups, sliders, labelled selects, form-association via
+    <a href="/components/forms/hp-form"><code>&lt;hp-form&gt;</code></a>), reach for:
+    <a href="/components/forms/hp-button"><code>hp-button</code></a> ·
+    <a href="/components/forms/hp-checkbox"><code>hp-checkbox</code></a> ·
+    <a href="/components/forms/hp-radio"><code>hp-radio</code></a> ·
+    <a href="/components/forms/hp-select"><code>hp-select</code></a> ·
+    <a href="/components/forms/hp-slider"><code>hp-slider</code></a> ·
+    <a href="/components/forms/hp-toggle"><code>hp-toggle</code></a> ·
+    <a href="/components/forms/hp-toggle-group"><code>hp-toggle-group</code></a> ·
+    <a href="/components/forms/hp-label"><code>hp-label</code></a>.
+  </hp-banner>
 
   <hp-demo caption="Text inputs">
     <form

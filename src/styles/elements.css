@@ -406,12 +406,19 @@ th {
 details {
   border: 1px solid var(--hp-outline-faint);
   border-radius: var(--hp-rounded-sm);
-  padding: var(--hp-sm) var(--hp-md);
+  padding: var(--hp-md);
   background: var(--hp-surface-container-low);
 }
 
 details[open] {
   border-color: var(--hp-outline-variant);
+}
+
+/* Sibling spacing — details elements are chrome-bearing disclosure
+ * widgets that need visible separation from one another, unlike
+ * plain prose blocks which inherit rhythm from `.hp-prose`. */
+details + details {
+  margin-top: var(--hp-sm);
 }
 
 summary {
@@ -422,6 +429,9 @@ summary {
   letter-spacing: var(--hp-typo-label-md-letter-spacing);
   text-transform: uppercase;
   color: var(--hp-on-surface);
+  /* Inset the disclosure marker from the details border so the
+   * triangle has breathing room from the chrome edge. */
+  padding-left: var(--hp-sm);
   list-style-position: outside;
 }
 
