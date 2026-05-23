@@ -46,9 +46,9 @@ export default () => (
     </hp-demo>
 
     <hp-demo caption="Block mode — integral, summation, limit">
-      <hp-latex block value="\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}"></hp-latex>
-      <hp-latex block value="\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}"></hp-latex>
-      <hp-latex block value="\lim_{x \to 0} \frac{\sin x}{x} = 1"></hp-latex>
+      <hp-latex block value="\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"></hp-latex>
+      <hp-latex block value="\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"></hp-latex>
+      <hp-latex block value="\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"></hp-latex>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
 
@@ -64,7 +64,7 @@ export default () => (
     <hp-demo caption="Matrix">
       <hp-latex
         block
-        value="A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}"
+        value="A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
       ></hp-latex>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
@@ -81,7 +81,7 @@ export default () => (
       <p>The roots of <hp-latex value="ax^2 + bx + c = 0"></hp-latex> are given by:</p>
       <hp-latex
         block
-        value="x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}"
+        value="x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
       ></hp-latex>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
@@ -103,7 +103,7 @@ export default () => (
       <hp-latex
         block
         background
-        value="\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}"
+        value="\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}"
       ></hp-latex>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
@@ -118,8 +118,8 @@ export default () => (
     </hp-demo>
 
     <hp-demo caption="Error handling — broken LaTeX">
-      <p>Good: <hp-latex value="\sqrt{x + 1}"></hp-latex></p>
-      <p>Bad: <hp-latex value="\notarealcommand{x}"></hp-latex></p>
+      <p>Good: <hp-latex value="\\sqrt{x + 1}"></hp-latex></p>
+      <p>Bad: <hp-latex value="\\notarealcommand{x}"></hp-latex></p>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
 
