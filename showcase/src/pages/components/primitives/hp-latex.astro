@@ -1,0 +1,333 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-latex">
+  <ComponentDocs title="hp-latex">
+    <p slot="description">
+      LaTeX math primitive. Render-only Lit element with a consumer-registered engine —
+      hp-latex ships no math engine. A consumer that wants math installs the engine of
+      their choice (<a href="https://katex.org/">KaTeX</a>,
+      <a href="https://docs.mathjax.org/">MathJax</a>,
+      <a href="https://github.com/ronkok/Temml">Temml</a>, …) and registers an adapter
+      once at startup via <code>HpLatex.setRenderer(...)</code>. Source comes from the
+      <code>value</code> attribute or the element's text content (attribute wins).
+      Without a registered renderer, the source renders as mono-spaced text — same
+      fallback shape as <a href="/components/primitives/hp-code"><code>&lt;hp-code&gt;</code></a>
+      with no tokeniser.
+    </p>
+
+    <hp-banner slot="notice" tone="neutral" label="Note">
+      This showcase has KaTeX registered globally with <code>throwOnError: false</code>
+      — every <code>&lt;hp-latex&gt;</code> on the page renders via KaTeX, and broken
+      LaTeX emits an inline red <code>.katex-error</code> span instead of throwing.
+      hp-latex is the only <strong>light-DOM</strong> hp-* element in the system — see
+      the Intent tab for the rationale.
+    </hp-banner>
+
+    <hp-demo caption="Inline math in a paragraph">
+      <p>
+        Einstein's mass-energy equivalence is <hp-latex value="E = mc^2"></hp-latex> —
+        one of the cleanest statements in physics. The Pythagorean identity
+        <hp-latex value="a^2 + b^2 = c^2"></hp-latex> sits in the same shape. Greek
+        letters work too: <hp-latex value="\\alpha + \\beta = \\gamma"></hp-latex>.
+      </p>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <p>
+    Mass-energy equivalence is <hp-latex value="E = mc^2" /> —
+    one of the cleanest statements in physics. Greek letters
+    work too: <hp-latex value="\\\\alpha + \\\\beta = \\\\gamma" />.
+  </p>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Block mode — integral, summation, limit">
+      <hp-latex block background value="\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"></hp-latex>
+      <hp-latex block background value="\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"></hp-latex>
+      <hp-latex block background value="\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <hp-latex block background value="\\\\int_{-\\\\infty}^{\\\\infty} e^{-x^2}\\\\,dx = \\\\sqrt{\\\\pi}" />
+    <hp-latex block background value="\\\\sum_{n=1}^{\\\\infty} \\\\frac{1}{n^2} = \\\\frac{\\\\pi^2}{6}" />
+    <hp-latex block background value="\\\\lim_{x \\\\to 0} \\\\frac{\\\\sin x}{x} = 1" />
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Matrix">
+      <hp-latex
+        block
+        background
+        value="A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <hp-latex
+    block
+    background
+    value="A = \\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}"
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Quadratic formula">
+      <p>The roots of <hp-latex value="ax^2 + bx + c = 0"></hp-latex> are given by:</p>
+      <hp-latex
+        block
+        background
+        value="x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <p>
+      The roots of <hp-latex value="ax^2 + bx + c = 0" /> are given by:
+    </p>
+    <hp-latex
+      block
+      background
+      value="x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a}"
+    />
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Multi-line — aligned environment">
+      <hp-latex
+        block
+        background
+        value="\\begin{aligned}
+          e^{i\\pi} + 1 &= 0 \\\\
+          e^{i\\pi} &= -1 \\\\
+          \\ln(-1) &= i\\pi
+        \\end{aligned}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <hp-latex
+    block
+    background
+    value={\`\\\\begin{aligned}
+      e^{i\\\\pi} + 1 &= 0 \\\\\\\\
+      e^{i\\\\pi} &= -1 \\\\\\\\
+      \\\\ln(-1) &= i\\\\pi
+    \\\\end{aligned}\`}
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Multi-line — piecewise (cases)">
+      <hp-latex
+        block
+        background
+        value="f(x) = \\begin{cases}
+          x^2 & \\text{if } x \\geq 0 \\\\
+          -x & \\text{if } x < 0
+        \\end{cases}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <hp-latex
+    block
+    background
+    value={\`f(x) = \\\\begin{cases}
+      x^2 & \\\\text{if } x \\\\geq 0 \\\\\\\\
+      -x & \\\\text{if } x < 0
+    \\\\end{cases}\`}
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Without a backdrop — block only">
+      <hp-latex
+        block
+        value="\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+// Omit the \`background\` attribute for naked block math — useful
+// when the surrounding surface already has its own chrome.
+export default () => (
+  <hp-latex
+    block
+    value="\\\\nabla \\\\cdot \\\\mathbf{E} = \\\\frac{\\\\rho}{\\\\varepsilon_0}"
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Copy-source button (block + background + copyable)">
+      <hp-latex
+        block
+        background
+        copyable
+        value="e^{i\\pi} + 1 = 0"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <hp-latex
+    block
+    background
+    copyable
+    value="e^{i\\\\pi} + 1 = 0"
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Error handling — broken LaTeX">
+      <p>Good: <hp-latex value="\\sqrt{x + 1}"></hp-latex></p>
+      <p>Bad: <hp-latex value="\\notarealcommand{x}"></hp-latex></p>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+export default () => (
+  <>
+    <p>Good: <hp-latex value="\\\\sqrt{x + 1}" /></p>
+    <p>Bad: <hp-latex value="\\\\notarealcommand{x}" /></p>
+  </>
+);`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Setting up the renderer</h2>
+      <p>
+        hp-latex ships no engine to keep <code>@hexpunk/core</code> dependency-free.
+        Install KaTeX (or another engine), register it once at startup. Every connected
+        <code>&lt;hp-latex&gt;</code> re-renders automatically when a new renderer is set.
+      </p>
+
+      <hp-code no-line-numbers language="bash">bun add katex</hp-code>
+      <hp-code language="typescript">{`import "@hexpunk/core/hp-latex.css";
+import "katex/dist/katex.min.css";
+import katex from "katex";
+import { HpLatex } from "@hexpunk/core";
+
+HpLatex.setRenderer((source, mode) => {
+  try {
+    return katex.renderToString(source, {
+      displayMode: mode === "block",
+      throwOnError: false,
+    });
+  } catch {
+    return null;
+  }
+});`}</hp-code>
+
+      <p>
+        <code>throwOnError: false</code> tells KaTeX to render an inline red error span
+        instead of throwing on malformed input — the rest of the page keeps rendering.
+        The try/catch returns <code>null</code> on any unexpected failure, which
+        triggers hp-latex's mono-spaced source fallback. Failures also dispatch a
+        bubbling <code>render-error</code> CustomEvent
+        (<code>detail: &#123; error, latex &#125;</code>) so consumers can log them.
+      </p>
+
+      <h2>Why light DOM?</h2>
+      <p>
+        hp-latex is the only light-DOM <code>hp-*</code> element in the system —
+        <code>createRenderRoot()</code> returns <code>this</code>. KaTeX outputs HTML
+        scoped by <code>.katex</code> / <code>.katex-mathml</code> /
+        <code>.katex-html</code> classes and depends on ~2000 lines of CSS plus
+        <code>@font-face</code> rules to render correctly; shadow-DOM encapsulation
+        would block that cascade. Light DOM lets the consumer's global
+        <code>katex.min.css</code> reach the math naturally. The deviation from the
+        hp-* convention is intentional and documented in the element's source.
+      </p>
+
+      <h2>Alternatives</h2>
+      <p>The renderer slot is engine-agnostic — anything that returns an HTML string works:</p>
+      <ul class="hp-prose">
+        <li>
+          <strong><a href="https://github.com/KaTeX/KaTeX">KaTeX</a> (0.17.0, May 2026).</strong>
+          Fast, synchronous, comprehensive LaTeX subset. ~70 KB JS + ~25 KB CSS + font
+          files. Default pick.
+        </li>
+        <li>
+          <strong><a href="https://github.com/ronkok/Temml">Temml</a> (0.13.3, May 2026).</strong>
+          Pure LaTeX → MathML converter. ~30 KB, no fonts (relies on browser MathML).
+          Smaller payload; rendering fidelity varies by browser.
+        </li>
+        <li>
+          <strong><a href="https://github.com/mathjax/MathJax-src">MathJax v4</a>
+          (4.1.2, May 2026).</strong>
+          Broader LaTeX coverage, accessibility extensions, async renderer. ~400 KB+.
+          Reach for it when KaTeX's subset isn't enough.
+        </li>
+      </ul>
+
+      <p>
+        For build-time pre-rendered math in static MDX docs (independent of hp-latex),
+        use Astro's <a href="https://github.com/remarkjs/remark-math"><code>remark-math</code></a>
+        + <code>rehype-katex</code> plugins. That path produces zero-runtime-JS math
+        directly in HTML and is the right call for static docs. hp-latex is for
+        dynamic / interactive / programmatically-driven math.
+      </p>
+
+      <h2>When to use</h2>
+      <hp-banner tone="do">
+        Use for any math expression a consumer should see rendered — inline references,
+        block formulas, classroom-style derivations, live previews of user-entered
+        LaTeX.
+      </hp-banner>
+      <hp-banner tone="do">
+        Set the <code>value</code> attribute when the source contains characters HTML
+        doesn't love (<code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code> inside
+        inequalities). The slot fallback is fine for static prose where the source is
+        plain.
+      </hp-banner>
+      <hp-banner tone="do">
+        Pair <code>block</code> with <code>background</code> for a one-off "system-styled"
+        featured equation — drops an <code>&lt;hp-background&gt;</code> behind the math
+        without needing a wrapper.
+      </hp-banner>
+      <hp-banner tone="do">
+        Add <code>copyable</code> when readers might want to grab the LaTeX source —
+        docs pages walking through derivations, reference cards, anywhere the
+        expression itself is the takeaway. The button writes the
+        <code>value</code> attribute to the clipboard via the async Clipboard API.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Stuff LaTeX into <code>&lt;hp-code&gt;</code> when you want it rendered. hp-code
+        treats its content as plain code (or syntax-highlighted), not math. Reach for
+        hp-latex when the intent is "show the math".
+      </hp-banner>
+      <hp-banner tone="dont">
+        Use hp-latex on pages built with Astro's <code>output: "static"</code> if you
+        need pre-rendered math at build time — light DOM is incompatible with
+        <code>@lit-labs/ssr</code>. Use <code>remark-math</code> + <code>rehype-katex</code>
+        in your Astro/MDX config instead.
+      </hp-banner>
+
+      <h2>Accessibility</h2>
+      <p>
+        KaTeX emits MathML alongside its rendered HTML so screen readers can announce
+        the math semantically (<code>&lt;math&gt;</code> inside the
+        <code>.katex-mathml</code> span). The visual <code>.katex-html</code> span is
+        <code>aria-hidden</code>. No extra setup needed.
+      </p>
+      <p>
+        For the no-renderer fallback, the source renders as a plain
+        <code>&lt;span class="hp-latex-source"&gt;</code> — screen readers read the
+        LaTeX source as text. Consumers wanting better fallback semantics can listen
+        for <code>render-error</code> and surface a user-facing message.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

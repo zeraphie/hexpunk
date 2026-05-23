@@ -1317,6 +1317,15 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 - `skip-link` (`<hp-skip-link>`) — "skip to main content" accessibility primitive. Visually hidden until focused; on `:focus-visible`, Docks in from the top of the viewport. Activating jumps to and focuses the target element (by `id`). One per page, at the top of the keyboard-tab order.
 - `keymap-dialog` / `keymap-section` / `keymap-binding` / `keymap-key` (`<hp-keymap>`) — discoverable keymap viewer. Opens as an `<hp-dialog>` on `?` (when present in the page) and lists every registered app-level binding, grouped by section. Each binding renders its keys as styled keycap-like chips (`keymap-key` token, mono-sm). Pairs with `hpBindKey()` helper (see § Implementation Notes › Keyboard shortcuts) so the dialog always reflects the live set.
 
+**Content-engine atoms** (render external HTML from a consumer-registered engine):
+
+- `<hp-code>` — monospaced code block with line numbers + per-line hover. Syntax highlighting opt-in via `HpCode.setHighlighter(...)` — consumer brings highlight.js / Shiki / Prism. Default theme rules target `.hljs-*` so highlight.js works zero-config. Shadow DOM.
+- `<hp-latex>` — render-only LaTeX math primitive. Math engine opt-in via `HpLatex.setRenderer(...)` — consumer brings KaTeX / MathJax / Temml / custom (`@hexpunk/core` has zero math-engine dependency). `value` attribute carries the LaTeX source (slot text content is captured once on connect as a fallback). Boolean attributes: `block` (inline → block display + centred), `background` (mounts `<hp-background>` backdrop, block mode only), `copyable` (mounts `<hp-copy>` source button, block mode only). Without a renderer, the source renders as mono-spaced fallback (same shape as `hp-code` without a tokeniser). **Light DOM** — only light-DOM hp-\* element in the system, see file header for the rationale (KaTeX outputs HTML scoped by `.katex` classes that depend on ~2000 lines of its own CSS; shadow-DOM encapsulation would block that cascade). Side effect: not SSR-friendly via `@lit-labs/ssr`. For pre-rendered math in MDX docs, use Astro's `remark-math` + `rehype-katex` directly, independent of `hp-latex`.
+
+**Utility atoms:**
+
+- `<hp-copy>` — copy-to-clipboard button widget. Writes a configured `value` string via the async Clipboard API; dispatches bubbling `hp-copy-success` / `hp-copy-error` events. Borderless chrome with Lucide's `copy` icon + slotted label (default "Copy", translatable per-instance); sibling toast fades in to its left after a successful write with `aria-live="polite"`. Boolean attribute `icon-only` hides the visible label but keeps it in the a11y tree via the standard visually-hidden recipe. Used internally by `<hp-demo>` for the copy-code action and by `<hp-latex>` for the source-copy button; available standalone for any consumer needing the same affordance. Async Clipboard API only — no `execCommand` fallback; non-secure contexts no-op rather than half-working.
+
 ### Molecules — small linked clusters
 
 - **Input molecule:** an `input-field` content card flanked by a `hex-anchor` (label / grip) and a `hex-utility` (clear / submit).

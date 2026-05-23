@@ -2,6 +2,8 @@
 import "../../../src/tokens/tokens.dark.css";
 import "../../../src/tokens/tokens.light.css";
 import "../../../src/styles/elements.css";
+import "../../../src/styles/hp-latex.css";
+import "katex/dist/katex.min.css";
 import "../styles/global.css";
 import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
 import { moon, search as searchIcon, sun } from "../../../src/icons/index.ts";
@@ -234,7 +236,29 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
     <script>
       // Register every <hp-*> element on every page. Astro bundles
       // this so each page ships only what it actually needs.
-      import { HpCode } from "../../../src/index.ts";
+      import { HpCode, HpLatex } from "../../../src/index.ts";
+      import katex from "katex";
+
+      // ── Math renderer (KaTeX) ─────────────────────────────────
+      // hp-latex ships no math engine — the showcase wires KaTeX
+      // here so any <hp-latex> on a doc page renders. KaTeX's
+      // renderToString is synchronous and pure (no DOM access);
+      // we wrap it in a try/catch that returns null on failure so
+      // hp-latex falls back to its mono-spaced source rendering
+      // instead of throwing. throwOnError: false makes KaTeX
+      // emit a red-highlighted error span inline rather than
+      // throwing, which keeps the rest of the page rendering when
+      // one expression has bad syntax.
+      HpLatex.setRenderer((source, mode) => {
+        try {
+          return katex.renderToString(source, {
+            displayMode: mode === "block",
+            throwOnError: false,
+          });
+        } catch {
+          return null;
+        }
+      });
 
       // ── Syntax highlighter (Shiki) ────────────────────────────
       // hp-code itself ships no tokeniser — the showcase registers

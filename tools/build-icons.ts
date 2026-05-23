@@ -17,7 +17,7 @@ import { resolve } from "node:path";
 
 /** Lucide icon names to mirror, kebab-case as on lucide.dev.
  *  Each entry produces `src/icons/<name>.ts`. */
-const ICONS_TO_MIRROR = ["moon", "scan", "search", "sun"];
+const ICONS_TO_MIRROR = ["copy", "moon", "scan", "search", "sun"];
 
 const ROOT = resolve(import.meta.dir, "..");
 const LUCIDE_DIR = resolve(ROOT, "node_modules/lucide-static/icons");

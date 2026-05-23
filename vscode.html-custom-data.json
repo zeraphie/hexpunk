@@ -1166,6 +1166,24 @@
       ]
     },
     {
+      "name": "hp-copy",
+      "description": "Copy-to-clipboard button.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Text to write to the clipboard on click"
+        },
+        {
+          "name": "copied",
+          "description": "Toast text shown briefly after a successful copy (default: \"Copied\")"
+        },
+        {
+          "name": "icon-only",
+          "description": "Drop the visible text label (still in the a11y tree); show only the icon"
+        }
+      ]
+    },
+    {
       "name": "hp-hex",
       "description": "SVG hex primitive. Every other hex-shaped atom composes this for\nits stencil; size is the only public knob.",
       "attributes": [
@@ -1189,6 +1207,28 @@
               "name": "lg"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "hp-latex",
+      "description": "LaTeX math primitive. Render-only.\n\nThe LaTeX source comes from the `value` attribute or the element's\ntext content (attribute wins when both are present). Consumers\nregister a renderer once at startup via `HpLatex.setRenderer(...)`.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "LaTeX source string"
+        },
+        {
+          "name": "block",
+          "description": "Switch to block (display) mode (default: inline)"
+        },
+        {
+          "name": "background",
+          "description": "Mount an hp-background backdrop (block-mode only)"
+        },
+        {
+          "name": "copyable",
+          "description": "Show a copy-source button in the top-right corner (block-mode only)"
         }
       ]
     },
