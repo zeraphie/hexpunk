@@ -421,23 +421,48 @@ details + details {
   margin-top: var(--hp-sm);
 }
 
+/* Hide the native disclosure marker. The browser's ::marker pseudo
+ * accepts colour but not margin/padding, so with
+ * `list-style-position: outside` the triangle gets pulled back into
+ * the details border edge no matter how much padding summary has.
+ * A custom flex layout + ::before triangle gives full control over
+ * marker-to-text spacing and lets the triangle rotate on open. */
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
 summary {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--hp-sm);
   font-family: var(--hp-typo-label-md-font-family);
   font-size: var(--hp-typo-label-md-font-size);
   font-weight: var(--hp-typo-label-md-font-weight);
   letter-spacing: var(--hp-typo-label-md-letter-spacing);
   text-transform: uppercase;
   color: var(--hp-on-surface);
-  /* Inset the disclosure marker from the details border so the
-   * triangle has breathing room from the chrome edge. */
-  padding-left: var(--hp-sm);
-  list-style-position: outside;
 }
 
-summary::marker,
-summary::-webkit-details-marker {
-  color: var(--hp-secondary);
+/* Custom triangle marker. Points right when closed; rotates 90°
+ * to point down when the parent details is open. */
+summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--hp-secondary);
+  transition: transform var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+details[open] > summary::before {
+  transform: rotate(90deg);
 }
 
 /* ── Form primitives ───────────────────────────────────────────── */
@@ -703,7 +728,8 @@ progress {
   input,
   select,
   textarea,
-  button {
+  button,
+  summary::before {
     transition: none;
   }
 }
