@@ -37,9 +37,11 @@ import { LitElement, html, nothing, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
-// Side-effect import — hp-background may be rendered as a backdrop
-// when both `block` and `background` attributes are set.
+// Side-effect imports — hp-background renders as a backdrop when
+// `block background` is set, and hp-copy renders as the source-copy
+// button when `block copyable` is set.
 import "../layout/hp-background.js";
+import "./hp-copy.js";
 
 /** Signature for a consumer-registered renderer. Return an HTML
  * string (the renderer's output), or `null` to fall back to the
@@ -60,6 +62,7 @@ export type HpLatexRenderer = (latex: string, displayMode: "inline" | "block") =
  * @property value - LaTeX source string
  * @property block - Switch to block (display) mode (default: inline)
  * @property background - Mount an hp-background backdrop (block-mode only)
+ * @property copyable - Show a copy-source button in the top-right corner (block-mode only)
  * @fires render-error - Bubbling CustomEvent when the renderer throws; detail = { error, latex }
  */
 @customElement("hp-latex")
@@ -84,6 +87,12 @@ export class HpLatex extends LitElement {
 
   /** Mount an hp-background backdrop. Only effective in block mode. */
   @property({ type: Boolean, reflect: true }) background = false;
+
+  /** Show a copy-source button (hp-copy in the top-right corner). Only
+   * effective in block mode — inline math has no room for a button
+   * affordance. The button writes `this.value` to the clipboard via
+   * the async Clipboard API and briefly flips its label to "Copied". */
+  @property({ type: Boolean, reflect: true }) copyable = false;
 
   /** Light-DOM render root — see file header for rationale. */
   override createRenderRoot(): HTMLElement {
@@ -111,15 +120,20 @@ export class HpLatex extends LitElement {
 
     const renderer = HpLatex.renderer;
     const wantsBackdrop = this.block && this.background;
+    const wantsCopy = this.block && this.copyable;
+
     const backdrop = wantsBackdrop
       ? html`<hp-background class="hp-latex-backdrop"></hp-background>`
+      : nothing;
+    const copyButton = wantsCopy
+      ? html`<hp-copy class="hp-latex-copy" .value=${source}></hp-copy>`
       : nothing;
 
     if (renderer) {
       try {
         const result = renderer(source, this.block ? "block" : "inline");
         if (typeof result === "string") {
-          return html`${backdrop}${unsafeHTML(result)}`;
+          return html`${backdrop}${copyButton}${unsafeHTML(result)}`;
         }
         // null → fall through to source fallback
       } catch (err) {
@@ -134,7 +148,7 @@ export class HpLatex extends LitElement {
       }
     }
 
-    return html`${backdrop}<span class="hp-latex-source">${source}</span>`;
+    return html`${backdrop}${copyButton}<span class="hp-latex-source">${source}</span>`;
   }
 }
 

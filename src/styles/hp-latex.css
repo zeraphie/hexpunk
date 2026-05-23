@@ -33,15 +33,29 @@ hp-latex[block] {
   margin: var(--hp-md) 0;
 }
 
-hp-latex[block][background] {
+/* Shared stacking context for any block variant that absolutely
+ * positions internal chrome (backdrop, copy button). Without
+ * `isolation: isolate`, `position: relative` + `z-index: -1` on
+ * a child can escape and paint behind the document body. */
+hp-latex[block][background],
+hp-latex[block][copyable] {
   position: relative;
-  /* New stacking context so the z-index: -1 backdrop stays within
-   * hp-latex's bounds. Without isolation, `position: relative` +
-   * z-index: -1 child escapes the parent and paints behind the
-   * page's other content (often invisibly behind the body
-   * background). */
   isolation: isolate;
+}
+
+hp-latex[block][background]:not([copyable]) {
   padding: var(--hp-md);
+}
+
+hp-latex[block][copyable]:not([background]) {
+  /* Top padding makes room for the absolutely-positioned copy button
+   * so it doesn't overlap the math. Inline padding matches the
+   * button's right offset for visual balance. */
+  padding: var(--hp-xl) var(--hp-sm) 0;
+}
+
+hp-latex[block][background][copyable] {
+  padding: var(--hp-xl) var(--hp-md) var(--hp-md);
 }
 
 hp-latex[block][background] .hp-latex-backdrop {
@@ -50,6 +64,16 @@ hp-latex[block][background] .hp-latex-backdrop {
   z-index: -1;
   /* Don't intercept pointer events targeted at the math content. */
   pointer-events: none;
+}
+
+/* hp-copy chrome lives inside its own shadow root — this rule only
+ * positions the hp-copy element in the top-right corner of the
+ * block-mode hp-latex host. */
+hp-latex[block][copyable] .hp-latex-copy {
+  position: absolute;
+  top: var(--hp-sm);
+  right: var(--hp-sm);
+  z-index: 1;
 }
 
 hp-latex .hp-latex-source {

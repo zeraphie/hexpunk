@@ -23,6 +23,7 @@ export { HpCode, type HpCodeHighlighter } from "./elements/primitives/hp-code.js
 export { HpCluster } from "./elements/layout/hp-cluster.js";
 export { HpCollapsible } from "./elements/layout/hp-collapsible.js";
 export { HpContextMenu } from "./elements/overlays/hp-context-menu.js";
+export { HpCopy } from "./elements/primitives/hp-copy.js";
 export { HpDemo } from "./elements/layout/hp-demo.js";
 export { HpDialog } from "./elements/overlays/hp-dialog.js";
 export { HpDropdownMenu, HpMenuItem } from "./elements/overlays/hp-dropdown-menu.js";

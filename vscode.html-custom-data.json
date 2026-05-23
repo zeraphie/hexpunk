@@ -746,6 +746,53 @@
       ]
     },
     {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
+        }
+      ]
+    },
+    {
       "name": "hp-link",
       "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
       "attributes": [
@@ -877,53 +924,6 @@
         {
           "name": "value",
           "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
         }
       ]
     },
@@ -1166,6 +1166,28 @@
       ]
     },
     {
+      "name": "hp-copy",
+      "description": "Copy-to-clipboard button.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Text to write to the clipboard on click"
+        },
+        {
+          "name": "label",
+          "description": "Idle button label (default: \"Copy\")"
+        },
+        {
+          "name": "copied-label",
+          "description": "Label after a successful copy (default: \"Copied\")"
+        },
+        {
+          "name": "icon",
+          "description": "Switch to icon-only variant"
+        }
+      ]
+    },
+    {
       "name": "hp-hex",
       "description": "SVG hex primitive. Every other hex-shaped atom composes this for\nits stencil; size is the only public knob.",
       "attributes": [
@@ -1207,6 +1229,10 @@
         {
           "name": "background",
           "description": "Mount an hp-background backdrop (block-mode only)"
+        },
+        {
+          "name": "copyable",
+          "description": "Show a copy-source button in the top-right corner (block-mode only)"
         }
       ]
     },

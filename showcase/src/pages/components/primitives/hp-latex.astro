@@ -46,17 +46,17 @@ export default () => (
     </hp-demo>
 
     <hp-demo caption="Block mode — integral, summation, limit">
-      <hp-latex block value="\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"></hp-latex>
-      <hp-latex block value="\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"></hp-latex>
-      <hp-latex block value="\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"></hp-latex>
+      <hp-latex block background value="\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"></hp-latex>
+      <hp-latex block background value="\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"></hp-latex>
+      <hp-latex block background value="\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"></hp-latex>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
 
 export default () => (
   <>
-    <hp-latex block value="\\\\int_{-\\\\infty}^{\\\\infty} e^{-x^2}\\\\,dx = \\\\sqrt{\\\\pi}" />
-    <hp-latex block value="\\\\sum_{n=1}^{\\\\infty} \\\\frac{1}{n^2} = \\\\frac{\\\\pi^2}{6}" />
-    <hp-latex block value="\\\\lim_{x \\\\to 0} \\\\frac{\\\\sin x}{x} = 1" />
+    <hp-latex block background value="\\\\int_{-\\\\infty}^{\\\\infty} e^{-x^2}\\\\,dx = \\\\sqrt{\\\\pi}" />
+    <hp-latex block background value="\\\\sum_{n=1}^{\\\\infty} \\\\frac{1}{n^2} = \\\\frac{\\\\pi^2}{6}" />
+    <hp-latex block background value="\\\\lim_{x \\\\to 0} \\\\frac{\\\\sin x}{x} = 1" />
   </>
 );`}</hp-code>
     </hp-demo>
@@ -64,6 +64,7 @@ export default () => (
     <hp-demo caption="Matrix">
       <hp-latex
         block
+        background
         value="A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
       ></hp-latex>
 
@@ -72,6 +73,7 @@ export default () => (
 export default () => (
   <hp-latex
     block
+    background
     value="A = \\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}"
   />
 );`}</hp-code>
@@ -81,6 +83,7 @@ export default () => (
       <p>The roots of <hp-latex value="ax^2 + bx + c = 0"></hp-latex> are given by:</p>
       <hp-latex
         block
+        background
         value="x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
       ></hp-latex>
 
@@ -93,17 +96,37 @@ export default () => (
     </p>
     <hp-latex
       block
+      background
       value="x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a}"
     />
   </>
 );`}</hp-code>
     </hp-demo>
 
-    <hp-demo caption="With a backdrop (block + background)">
+    <hp-demo caption="Without a backdrop — block only">
+      <hp-latex
+        block
+        value="\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}"
+      ></hp-latex>
+
+      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+
+// Omit the \`background\` attribute for naked block math — useful
+// when the surrounding surface already has its own chrome.
+export default () => (
+  <hp-latex
+    block
+    value="\\\\nabla \\\\cdot \\\\mathbf{E} = \\\\frac{\\\\rho}{\\\\varepsilon_0}"
+  />
+);`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Copy-source button (block + background + copyable)">
       <hp-latex
         block
         background
-        value="\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}"
+        copyable
+        value="e^{i\\pi} + 1 = 0"
       ></hp-latex>
 
       <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
@@ -112,7 +135,8 @@ export default () => (
   <hp-latex
     block
     background
-    value="\\\\nabla \\\\cdot \\\\mathbf{E} = \\\\frac{\\\\rho}{\\\\varepsilon_0}"
+    copyable
+    value="e^{i\\\\pi} + 1 = 0"
   />
 );`}</hp-code>
     </hp-demo>
@@ -222,6 +246,12 @@ HpLatex.setRenderer((source, mode) => {
         Pair <code>block</code> with <code>background</code> for a one-off "system-styled"
         featured equation — drops an <code>&lt;hp-background&gt;</code> behind the math
         without needing a wrapper.
+      </hp-banner>
+      <hp-banner tone="do">
+        Add <code>copyable</code> when readers might want to grab the LaTeX source —
+        docs pages walking through derivations, reference cards, anywhere the
+        expression itself is the takeaway. The button writes the
+        <code>value</code> attribute to the clipboard via the async Clipboard API.
       </hp-banner>
       <hp-banner tone="dont">
         Stuff LaTeX into <code>&lt;hp-code&gt;</code> when you want it rendered. hp-code
