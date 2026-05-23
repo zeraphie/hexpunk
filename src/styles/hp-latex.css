@@ -1,0 +1,51 @@
+/* hp-latex.css — Light-DOM chrome for <hp-latex>.
+ *
+ * hp-latex is the system's only light-DOM web component (see the
+ * file header in src/elements/primitives/hp-latex.ts for the why).
+ * Its chrome — display mode, margin, optional backdrop padding,
+ * source-fallback typography — lives in this regular stylesheet
+ * since light-DOM elements can't carry `static styles` the way
+ * shadow-DOM ones do.
+ *
+ * Import alongside elements.css and katex.min.css:
+ *
+ *   import "@hexpunk/core/elements.css";
+ *   import "@hexpunk/core/hp-latex.css";
+ *   import "katex/dist/katex.min.css";
+ *
+ * All values reference --hp-* tokens; load tokens.dark.css /
+ * tokens.light.css first.
+ */
+
+hp-latex {
+  display: inline;
+  color: var(--hp-on-surface);
+}
+
+hp-latex[block] {
+  display: block;
+  text-align: center;
+  margin: var(--hp-md) 0;
+}
+
+hp-latex[block][background] {
+  position: relative;
+  padding: var(--hp-md);
+}
+
+hp-latex[block][background] .hp-latex-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+hp-latex .hp-latex-source {
+  font-family: var(--hp-typo-mono-sm-font-family);
+  font-size: var(--hp-typo-mono-sm-font-size);
+  line-height: var(--hp-typo-mono-sm-line-height);
+  color: var(--hp-on-surface-variant);
+}
+
+hp-latex[block] .hp-latex-source {
+  display: block;
+}

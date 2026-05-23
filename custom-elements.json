@@ -281,6 +281,22 @@
         },
         {
           "kind": "js",
+          "name": "HpLatex",
+          "declaration": {
+            "name": "HpLatex",
+            "module": "./elements/primitives/hp-latex.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpLatexRenderer",
+          "declaration": {
+            "name": "HpLatexRenderer",
+            "module": "./elements/primitives/hp-latex.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "HpLink",
           "declaration": {
             "name": "HpLink",
@@ -934,86 +950,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/pixel-icons/menu.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "idle",
-          "type": {
-            "text": "HpPixelPosition[]"
-          },
-          "default": "[ [-2, -2], // top-left [ 0, -2], // top [ 2, -2], // top-right [-2, 0], // left [ 0, 0], // centre [ 2, 0], // right [-2, 2], // bottom-left [ 0, 2], // bottom [ 2, 2], // bottom-right ]"
-        },
-        {
-          "kind": "variable",
-          "name": "hover",
-          "type": {
-            "text": "HpPixelPosition[]"
-          },
-          "default": "[ [ 0, -3 ], // top-left → top [ 0, -1.5], // top → top-near [ 3, 0 ], // top-right → right-far [-1.5, 0 ], // left → left-near [ 0, 0 ], // centre → centre [ 1.5, 0 ], // right → right-near [-3, 0 ], // bottom-left → left-far [ 0, 1.5], // bottom → bottom-near [ 0, 3 ], // bottom-right→ bottom ]"
-        },
-        {
-          "kind": "variable",
-          "name": "active",
-          "type": {
-            "text": "HpPixelPosition[]"
-          },
-          "default": "[ [-2, -2], // top-left [ 1, -1], // top → upper-right-inner [ 2, -2], // top-right [-1, -1], // left → upper-left-inner [ 0, 0], // centre [ 1, 1], // right → lower-right-inner [-2, 2], // bottom-left [-1, 1], // bottom → lower-left-inner [ 2, 2], // bottom-right ]"
-        },
-        {
-          "kind": "variable",
-          "name": "menu",
-          "type": {
-            "text": "object"
-          },
-          "default": "{ idle, hover, active }"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "idle",
-          "declaration": {
-            "name": "idle",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "hover",
-          "declaration": {
-            "name": "hover",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "active",
-          "declaration": {
-            "name": "active",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "menu",
-          "declaration": {
-            "name": "menu",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "menu",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/lib/floating.ts",
       "declarations": [
         {
@@ -1119,6 +1055,86 @@
           "declaration": {
             "name": "onEscape",
             "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/pixel-icons/menu.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "idle",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2], // top-left [ 0, -2], // top [ 2, -2], // top-right [-2, 0], // left [ 0, 0], // centre [ 2, 0], // right [-2, 2], // bottom-left [ 0, 2], // bottom [ 2, 2], // bottom-right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "hover",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [ 0, -3 ], // top-left → top [ 0, -1.5], // top → top-near [ 3, 0 ], // top-right → right-far [-1.5, 0 ], // left → left-near [ 0, 0 ], // centre → centre [ 1.5, 0 ], // right → right-near [-3, 0 ], // bottom-left → left-far [ 0, 1.5], // bottom → bottom-near [ 0, 3 ], // bottom-right→ bottom ]"
+        },
+        {
+          "kind": "variable",
+          "name": "active",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2], // top-left [ 1, -1], // top → upper-right-inner [ 2, -2], // top-right [-1, -1], // left → upper-left-inner [ 0, 0], // centre [ 1, 1], // right → lower-right-inner [-2, 2], // bottom-left [-1, 1], // bottom → lower-left-inner [ 2, 2], // bottom-right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "menu",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ idle, hover, active }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "idle",
+          "declaration": {
+            "name": "idle",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hover",
+          "declaration": {
+            "name": "hover",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "active",
+          "declaration": {
+            "name": "active",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "menu",
+          "declaration": {
+            "name": "menu",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "menu",
+            "module": "src/pixel-icons/menu.ts"
           }
         }
       ]
@@ -5720,298 +5736,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/navigation/hp-link.ts",
       "declarations": [
         {
@@ -6880,6 +6604,298 @@
           "declaration": {
             "name": "HpTabPanel",
             "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
           }
         }
       ]
@@ -9000,6 +9016,142 @@
           "declaration": {
             "name": "HpHex",
             "module": "src/elements/primitives/hp-hex.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/primitives/hp-latex.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "LaTeX math primitive. Render-only.\n\nThe LaTeX source comes from the `value` attribute or the element's\ntext content (attribute wins when both are present). Consumers\nregister a renderer once at startup via `HpLatex.setRenderer(...)`.",
+          "name": "HpLatex",
+          "members": [
+            {
+              "kind": "field",
+              "name": "renderer",
+              "type": {
+                "text": "HpLatexRenderer | null"
+              },
+              "static": true,
+              "default": "null",
+              "description": "Currently-registered renderer, or null for source fallback."
+            },
+            {
+              "kind": "method",
+              "name": "setRenderer",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "fn",
+                  "type": {
+                    "text": "HpLatexRenderer | null"
+                  }
+                }
+              ],
+              "description": "Register the renderer globally. Pass null to clear. Connected\nhp-latex instances re-render automatically when this changes."
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "LaTeX source string",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "block",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Switch to block (display) mode (default: inline)",
+              "attribute": "block",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "background",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Mount an hp-background backdrop (block-mode only)",
+              "attribute": "background",
+              "reflects": true
+            }
+          ],
+          "events": [
+            {
+              "name": "render-error",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Bubbling CustomEvent when the renderer throws; detail = { error, latex }"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "LaTeX source string",
+              "fieldName": "value"
+            },
+            {
+              "name": "block",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Switch to block (display) mode (default: inline)",
+              "fieldName": "block"
+            },
+            {
+              "name": "background",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Mount an hp-background backdrop (block-mode only)",
+              "fieldName": "background"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-latex",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLatex",
+          "declaration": {
+            "name": "HpLatex",
+            "module": "src/elements/primitives/hp-latex.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-latex",
+          "declaration": {
+            "name": "HpLatex",
+            "module": "src/elements/primitives/hp-latex.ts"
           }
         }
       ]
