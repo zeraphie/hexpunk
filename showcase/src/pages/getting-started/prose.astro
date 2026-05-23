@@ -41,15 +41,19 @@ import Layout from "../../layouts/Layout.astro";
         <li>Bond detection is opt-in via the <code>bondable</code> attribute.</li>
       </ul>
     </div>
-    <hp-code slot="code" language="html">{`<div>
-  <h3>The hex stencil</h3>
-  <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
-  <p>The grid uses an effective cell width...</p>
-  <ul>
-    <li>Pointy-top is the default orientation.</li>
-    <li>Flat-top kicks in at <code>size="md"</code>.</li>
-  </ul>
-</div>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <div>
+    <h3>The hex stencil</h3>
+    <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
+    <p>The grid uses an effective cell width...</p>
+    <ul>
+      <li>Pointy-top is the default orientation.</li>
+      <li>Flat-top kicks in at <code>size="md"</code>.</li>
+    </ul>
+  </div>
+);`}</hp-code>
   </hp-demo>
 
   <hp-demo caption="With .hp-prose">
@@ -70,15 +74,19 @@ import Layout from "../../layouts/Layout.astro";
         <li>Bond detection is opt-in via the <code>bondable</code> attribute.</li>
       </ul>
     </div>
-    <hp-code slot="code" language="html">{`<div class="hp-prose">
-  <h3>The hex stencil</h3>
-  <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
-  <p>The grid uses an effective cell width...</p>
-  <ul>
-    <li>Pointy-top is the default orientation.</li>
-    <li>Flat-top kicks in at <code>size="md"</code>.</li>
-  </ul>
-</div>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <div class="hp-prose">
+    <h3>The hex stencil</h3>
+    <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
+    <p>The grid uses an effective cell width...</p>
+    <ul>
+      <li>Pointy-top is the default orientation.</li>
+      <li>Flat-top kicks in at <code>size="md"</code>.</li>
+    </ul>
+  </div>
+);`}</hp-code>
   </hp-demo>
 
   <h2>What .hp-prose adds</h2>
@@ -127,14 +135,18 @@ import Layout from "../../layouts/Layout.astro";
       <h3>The next subsection</h3>
       <p>And a new section starts again.</p>
     </article>
-    <hp-code slot="code" language="html">{`<article class="hp-prose">
-  <h2>The Foundation</h2>
-  <h3>Subsection right under</h3>
-  <p>Two headings stacked back-to-back tighten...</p>
-  <p>A follow-up paragraph spaces normally...</p>
-  <h3>The next subsection</h3>
-  <p>And a new section starts again.</p>
-</article>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <article class="hp-prose">
+    <h2>The Foundation</h2>
+    <h3>Subsection right under</h3>
+    <p>Two headings stacked back-to-back tighten...</p>
+    <p>A follow-up paragraph spaces normally...</p>
+    <h3>The next subsection</h3>
+    <p>And a new section starts again.</p>
+  </article>
+);`}</hp-code>
   </hp-demo>
 
   <h2>When NOT to use it</h2>

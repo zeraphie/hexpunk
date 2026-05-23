@@ -18,9 +18,13 @@ import Layout from "../../layouts/Layout.astro";
   </hp-banner>
 
   <h2>Installation</h2>
-  <hp-code language="ts">{`import "@hexpunk/core/tokens.dark.css";
+  <hp-code language="jsx">{`import "@hexpunk/core/tokens.dark.css";
 import "@hexpunk/core/tokens.light.css";
-import "@hexpunk/core/elements.css";`}</hp-code>
+import "@hexpunk/core/elements.css";
+
+export default () => (
+  <p>Hello, hex world.</p>
+);`}</hp-code>
 
   <h2>Headings</h2>
   <hp-demo caption="h1 through h6">
@@ -32,12 +36,18 @@ import "@hexpunk/core/elements.css";`}</hp-code>
       <h5>Heading 5 — label md (uppercase)</h5>
       <h6>Heading 6 — label sm (uppercase)</h6>
     </div>
-    <hp-code slot="code" language="html">{`<h1>Heading 1 — display lg</h1>
-<h2>Heading 2 — headline lg</h2>
-<h3>Heading 3 — headline md</h3>
-<h4>Heading 4 — title md</h4>
-<h5>Heading 5 — label md (uppercase)</h5>
-<h6>Heading 6 — label sm (uppercase)</h6>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <>
+    <h1>Heading 1 — display lg</h1>
+    <h2>Heading 2 — headline lg</h2>
+    <h3>Heading 3 — headline md</h3>
+    <h4>Heading 4 — title md</h4>
+    <h5>Heading 5 — label md (uppercase)</h5>
+    <h6>Heading 6 — label sm (uppercase)</h6>
+  </>
+);`}</hp-code>
   </hp-demo>
   <p>
     Headings carry zero default margin so they compose freely. Use <code>.hp-prose</code>
@@ -63,12 +73,18 @@ import "@hexpunk/core/elements.css";`}</hp-code>
         <samp>OK</samp>.
       </p>
     </div>
-    <hp-code slot="code" language="html">{`<p>
-  <strong>Strong</strong> / <b>b</b>, <em>emphasis</em> / <i>i</i>,
-  <small>small text</small>, <mark>marked</mark>, <del>del</del>,
-  <ins>ins</ins>, <kbd>Ctrl</kbd>, <abbr title="Keyboard">kbd</abbr>.
-</p>
-<p>H<sub>2</sub>O — E = mc<sup>2</sup>. <var>x</var> / <samp>OK</samp>.</p>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <>
+    <p>
+      <strong>Strong</strong> / <b>b</b>, <em>emphasis</em> / <i>i</i>,
+      <small>small text</small>, <mark>marked</mark>, <del>del</del>,
+      <ins>ins</ins>, <kbd>Ctrl</kbd>, <abbr title="Keyboard">kbd</abbr>.
+    </p>
+    <p>H<sub>2</sub>O — E = mc<sup>2</sup>. <var>x</var> / <samp>OK</samp>.</p>
+  </>
+);`}</hp-code>
   </hp-demo>
 
   <h2>Links</h2>
@@ -80,9 +96,13 @@ import "@hexpunk/core/elements.css";`}</hp-code>
       <a href="/components/navigation/hp-link"><code>&lt;hp-link&gt;</code></a> or
       <a href="/components/primitives/hp-cell"><code>&lt;hp-cell variant="anchor"&gt;</code></a>.
     </p>
-    <hp-code slot="code" language="html">{`<p>
-  Visit <a href="https://example.com">example.com</a> for details.
-</p>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <p>
+    Visit <a href="https://example.com">example.com</a> for details.
+  </p>
+);`}</hp-code>
   </hp-demo>
 
   <h2>Code</h2>
@@ -96,11 +116,16 @@ import "@hexpunk/core/elements.css";`}</hp-code>
   return [q * (3 / 2), r * Math.sqrt(3) + q * Math.sqrt(3) / 2];
 &#125;</code></pre>
     </div>
-    <hp-code slot="code" language="html">{`<p>Inline <code>const x = 1</code> reads as a chip.</p>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
 
-<pre><code>function hex(q, r) {
+export default () => (
+  <>
+    <p>Inline <code>const x = 1</code> reads as a chip.</p>
+    <pre><code>{\`function hex(q, r) {
   return [q * (3 / 2), r * Math.sqrt(3) + q * Math.sqrt(3) / 2];
-}</code></pre>`}</hp-code>
+}\`}</code></pre>
+  </>
+);`}</hp-code>
   </hp-demo>
   <p>
     For syntax-highlighted code with line numbers and per-line hover, use
@@ -114,10 +139,14 @@ import "@hexpunk/core/elements.css";`}</hp-code>
       <p>The system is the source of truth — the chrome is just the surface.</p>
       <cite>— Hexpunk DESIGN.md</cite>
     </blockquote>
-    <hp-code slot="code" language="html">{`<blockquote>
-  <p>The system is the source of truth — the chrome is just the surface.</p>
-  <cite>— Hexpunk DESIGN.md</cite>
-</blockquote>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <blockquote>
+    <p>The system is the source of truth — the chrome is just the surface.</p>
+    <cite>— Hexpunk DESIGN.md</cite>
+  </blockquote>
+);`}</hp-code>
   </hp-demo>
 
   <h2>Lists</h2>
@@ -149,25 +178,30 @@ import "@hexpunk/core/elements.css";`}</hp-code>
         <dd>Curved arc between two anchors.</dd>
       </dl>
     </div>
-    <hp-code slot="code" language="html">{`<ul>
-  <li>Atoms — single-hex elements</li>
-  <li>Molecules — composed structures
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <div class="hp-prose">
     <ul>
-      <li>Bonding (adjacency)</li>
-      <li>Linking (arcs at distance)</li>
+      <li>Atoms — single-hex elements</li>
+      <li>
+        Molecules — composed structures
+        <ul>
+          <li>Bonding (adjacency)</li>
+          <li>Linking (arcs at distance)</li>
+        </ul>
+      </li>
     </ul>
-  </li>
-</ul>
-
-<ol>
-  <li>Read DESIGN.md</li>
-  <li>Pick a step, propose, confirm, ship</li>
-</ol>
-
-<dl>
-  <dt>Cell</dt>
-  <dd>Universal labelled hex element.</dd>
-</dl>`}</hp-code>
+    <ol>
+      <li>Read DESIGN.md</li>
+      <li>Pick a step, propose, confirm, ship</li>
+    </ol>
+    <dl>
+      <dt>Cell</dt>
+      <dd>Universal labelled hex element.</dd>
+    </dl>
+  </div>
+);`}</hp-code>
   </hp-demo>
   <p>
     Bullet glyphs use the secondary hue via <code>::marker</code>. Padding shown here comes
@@ -193,21 +227,25 @@ import "@hexpunk/core/elements.css";`}</hp-code>
         <tr><td>comfortable</td><td>60</td><td>120</td><td>220</td></tr>
       </tbody>
     </table>
-    <hp-code slot="code" language="html">{`<table>
-  <caption>Density modes</caption>
-  <thead>
-    <tr>
-      <th>Mode</th>
-      <th>Cell sm</th>
-      <th>Cell md</th>
-      <th>Cell lg</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>compact</td><td>44</td><td>80</td><td>140</td></tr>
-    <tr><td>default</td><td>50</td><td>100</td><td>180</td></tr>
-  </tbody>
-</table>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <table>
+    <caption>Density modes</caption>
+    <thead>
+      <tr>
+        <th>Mode</th>
+        <th>Cell sm</th>
+        <th>Cell md</th>
+        <th>Cell lg</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>compact</td><td>44</td><td>80</td><td>140</td></tr>
+      <tr><td>default</td><td>50</td><td>100</td><td>180</td></tr>
+    </tbody>
+  </table>
+);`}</hp-code>
   </hp-demo>
 
   <h2>Details / summary</h2>
@@ -225,15 +263,20 @@ import "@hexpunk/core/elements.css";`}</hp-code>
         <p>The <code>open</code> attribute starts the disclosure expanded.</p>
       </details>
     </div>
-    <hp-code slot="code" language="html">{`<details>
-  <summary>What's a soulslike boss?</summary>
-  <p>Stamina-gated melee fight with parry windows.</p>
-</details>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
 
-<details open>
-  <summary>Open by default</summary>
-  <p>The <code>open</code> attribute starts expanded.</p>
-</details>`}</hp-code>
+export default () => (
+  <>
+    <details>
+      <summary>What's a soulslike boss?</summary>
+      <p>Stamina-gated melee fight with parry windows.</p>
+    </details>
+    <details open>
+      <summary>Open by default</summary>
+      <p>The <code>open</code> attribute starts expanded.</p>
+    </details>
+  </>
+);`}</hp-code>
   </hp-demo>
 
   <h2>Horizontal rule</h2>
@@ -243,9 +286,15 @@ import "@hexpunk/core/elements.css";`}</hp-code>
       <hr>
       <p>Below the rule.</p>
     </div>
-    <hp-code slot="code" language="html">{`<p>Above the rule.</p>
-<hr>
-<p>Below the rule.</p>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <>
+    <p>Above the rule.</p>
+    <hr />
+    <p>Below the rule.</p>
+  </>
+);`}</hp-code>
   </hp-demo>
 
   <h2>Form primitives</h2>
@@ -283,27 +332,31 @@ import "@hexpunk/core/elements.css";`}</hp-code>
         </select>
       </label>
     </form>
-    <hp-code slot="code" language="html">{`<form>
-  <label>
-    Name
-    <input type="text" placeholder="Hissalia">
-  </label>
-  <label>
-    Email
-    <input type="email" required placeholder="izzy@example.com">
-  </label>
-  <label>
-    Bio
-    <textarea></textarea>
-  </label>
-  <label>
-    Country
-    <select>
-      <option>United Kingdom</option>
-      <option>United States</option>
-    </select>
-  </label>
-</form>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <form>
+    <label>
+      Name
+      <input type="text" placeholder="Hissalia" />
+    </label>
+    <label>
+      Email
+      <input type="email" required placeholder="izzy@example.com" />
+    </label>
+    <label>
+      Bio
+      <textarea />
+    </label>
+    <label>
+      Country
+      <select>
+        <option>United Kingdom</option>
+        <option>United States</option>
+      </select>
+    </label>
+  </form>
+);`}</hp-code>
   </hp-demo>
 
   <hp-demo caption="Buttons, checkbox, radio, range">
@@ -316,12 +369,18 @@ import "@hexpunk/core/elements.css";`}</hp-code>
       <input type="range" min="0" max="100" value="42">
       <input type="color" value="#00cc88">
     </div>
-    <hp-code slot="code" language="html">{`<button>raw button</button>
-<button disabled>disabled</button>
-<label><input type="checkbox" checked> Subscribe</label>
-<label><input type="radio" name="r"> A</label>
-<input type="range" min="0" max="100" value="42">
-<input type="color" value="#00cc88">`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <>
+    <button>raw button</button>
+    <button disabled>disabled</button>
+    <label><input type="checkbox" checked /> Subscribe</label>
+    <label><input type="radio" name="r" /> A</label>
+    <input type="range" min="0" max="100" value="42" />
+    <input type="color" value="#00cc88" />
+  </>
+);`}</hp-code>
   </hp-demo>
 
   <hp-demo caption="Fieldset + legend">
@@ -331,12 +390,16 @@ import "@hexpunk/core/elements.css";`}</hp-code>
       <label style="display: block;"><input type="checkbox" checked> Show focus rings</label>
       <label style="display: block;"><input type="checkbox"> High contrast</label>
     </fieldset>
-    <hp-code slot="code" language="html">{`<fieldset>
-  <legend>Display preferences</legend>
-  <label><input type="checkbox"> Reduce motion</label>
-  <label><input type="checkbox" checked> Show focus rings</label>
-  <label><input type="checkbox"> High contrast</label>
-</fieldset>`}</hp-code>
+    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
+
+export default () => (
+  <fieldset>
+    <legend>Display preferences</legend>
+    <label><input type="checkbox" /> Reduce motion</label>
+    <label><input type="checkbox" checked /> Show focus rings</label>
+    <label><input type="checkbox" /> High contrast</label>
+  </fieldset>
+);`}</hp-code>
   </hp-demo>
 
   <h2>What this file does NOT do</h2>
