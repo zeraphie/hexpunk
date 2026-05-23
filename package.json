@@ -17,6 +17,10 @@
   ],
   "files": [
     "dist",
+    "src/styles/elements.css",
+    "src/styles/hp-base.css",
+    "src/tokens/tokens.dark.css",
+    "src/tokens/tokens.light.css",
     "DESIGN.md",
     "custom-elements.json",
     "vscode.html-custom-data.json",
@@ -32,6 +36,10 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./elements.css": "./src/styles/elements.css",
+    "./hp-base.css": "./src/styles/hp-base.css",
+    "./tokens.dark.css": "./src/tokens/tokens.dark.css",
+    "./tokens.light.css": "./src/tokens/tokens.light.css",
     "./DESIGN.md": "./DESIGN.md",
     "./custom-elements.json": "./custom-elements.json",
     "./vscode.html-custom-data.json": "./vscode.html-custom-data.json"
