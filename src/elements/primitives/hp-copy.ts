@@ -6,13 +6,19 @@
 // needs a small "grab this text" affordance.
 //
 // Appearance: borderless button with Lucide's `copy` icon next to a
-// "Copy" text label, plus a sibling "copied" toast that fades in to
-// its left for ~1.5s after a successful write. Mirrors hp-demo's
-// original copy affordance — transparent chrome, colour shifts to
+// slotted text label (default "Copy" if the consumer doesn't
+// provide content), plus a sibling toast that fades in to its left
+// for ~1.5s after a successful write. Mirrors hp-demo's original
+// copy affordance — transparent chrome, colour shifts to
 // --hp-primary on hover/focus, no surface fill or border. Failure
 // dispatches a bubbling `hp-copy-error` event; success dispatches
-// `hp-copy-success`. The `icon-only` attribute drops the text label
-// for tight chrome where only the glyph fits.
+// `hp-copy-success`. The `icon-only` attribute drops the visible
+// text label for tight chrome (the slotted text remains in the
+// accessibility tree via visually-hidden styling). The toast text
+// is set via the `copied` attribute, so both labels are translatable
+// per-instance:
+//
+//   <hp-copy value="..." copied="Copié">Copier le code</hp-copy>
 //
 // Built on Lit + shadow DOM. The button is fully self-contained;
 // the `value` text isn't visibly rendered (it's only flushed to the
@@ -28,10 +34,11 @@ import { hpBase } from "../../styles/hp-base.js";
 /**
  * Copy-to-clipboard button.
  *
+ * @slot - Idle button text (default: "Copy"). Provide consumer-translated
+ *   content for i18n: `<hp-copy value="...">Copy code</hp-copy>`.
  * @property value - Text to write to the clipboard on click
- * @property label - Idle button label (default: "Copy")
- * @property copiedLabel - Label after a successful copy (default: "Copied")
- * @property iconOnly - Drop the text label and show only the icon
+ * @property copied - Toast text shown briefly after a successful copy (default: "Copied")
+ * @property iconOnly - Drop the visible text label (still in the a11y tree); show only the icon
  * @fires hp-copy-success - Bubbling CustomEvent on successful clipboard write; detail = { value }
  * @fires hp-copy-error - Bubbling CustomEvent on failed clipboard write; detail = { error, value }
  * @csspart button - The internal <button> element
@@ -41,15 +48,16 @@ export class HpCopy extends LitElement {
   /** Text to write to the clipboard. */
   @property({ type: String }) value = "";
 
-  /** Idle button label. */
-  @property({ type: String }) label = "Copy";
+  /** Toast text shown briefly after a successful copy. Set this per-
+   * instance to translate. The idle button text comes from the
+   * default slot, not a property — same i18n story but consumer-
+   * controlled. */
+  @property({ type: String }) copied = "Copied";
 
-  /** Label shown briefly after a successful copy. */
-  @property({ type: String, attribute: "copied-label" }) copiedLabel = "Copied";
-
-  /** Icon-only variant — drops the text label so only the Lucide
-   * `copy` glyph shows. Default keeps both the icon and the label.
-   * Useful for tight chrome where the text doesn't fit. */
+  /** Icon-only variant — hides the slotted text label visually
+   * (still in the a11y tree for screen readers) so only the Lucide
+   * `copy` glyph renders. Useful for tight chrome where the text
+   * doesn't fit. */
   @property({ type: Boolean, reflect: true, attribute: "icon-only" })
   iconOnly = false;
 
@@ -150,9 +158,23 @@ export class HpCopy extends LitElement {
         outline-offset: 2px;
       }
 
-      /* Icon-only variant — collapse padding around the icon. */
+      /* Icon-only variant — collapse padding around the icon and
+       * visually hide the slotted label (it stays in the a11y tree
+       * via the standard visually-hidden recipe). */
       :host([icon-only]) button {
         padding: var(--hp-xs);
+      }
+
+      :host([icon-only]) .label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       /* Lucide's copy is designed at 24×24 with stroke-width 2. At
@@ -178,10 +200,10 @@ export class HpCopy extends LitElement {
 
     return html`
       <span class=${`toast ${this._copied ? "show" : ""}`} aria-live="polite">
-        ${this.copiedLabel}
+        ${this.copied}
       </span>
-      <button type="button" part="button" aria-label=${this.label} @click=${this._handleClick}>
-        ${iconSvg}${this.iconOnly ? "" : this.label}
+      <button type="button" part="button" @click=${this._handleClick}>
+        ${iconSvg}<span class="label"><slot>Copy</slot></span>
       </button>
     `;
   }

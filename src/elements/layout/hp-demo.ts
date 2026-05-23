@@ -307,12 +307,7 @@ export class HpDemo extends LitElement {
             `}
         ${this.noCopy
           ? ""
-          : html`<hp-copy
-              class="copy"
-              label="Copy code"
-              copied-label="Copied"
-              .value=${this._codeText}
-            ></hp-copy>`}
+          : html`<hp-copy class="copy" .value=${this._codeText}>Copy code</hp-copy>`}
       </div>
       <div class="code" part="code">
         <slot name="code" @slotchange=${this.handleCodeSlotChange}></slot>
