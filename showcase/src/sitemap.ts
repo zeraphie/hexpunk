@@ -30,6 +30,8 @@ export const SITEMAP: SitemapNode[] = [
     children: [
       { path: "/getting-started/install", title: "Install" },
       { path: "/getting-started/concepts", title: "Concepts" },
+      { path: "/getting-started/elements", title: "Elements" },
+      { path: "/getting-started/prose", title: "Prose" },
     ],
   },
   {

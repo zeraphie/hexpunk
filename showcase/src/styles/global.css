@@ -68,52 +68,27 @@
   }
 }
 
+/* Page shell. Body typography (font, colour, background) comes from
+ * @hexpunk/core/elements.css now — only the page-shell properties
+ * that elements.css doesn't opine on stay here. */
 html,
 body {
-  margin: 0;
   padding: 0;
   min-height: 100vh;
-  background: var(--hp-background);
-  color: var(--hp-on-background);
-  font-family: var(--hp-typo-body-md-font-family);
-  font-size: var(--hp-typo-body-md-font-size);
-  line-height: var(--hp-typo-body-md-line-height);
 }
 
+/* Page-title margin only. Headings and paragraph colour now come
+ * from elements.css; the previous h2-as-label-md override and the
+ * faded-paragraph override sat here as showcase-bespoke styling
+ * that contradicted the design system (h2 < h3 < h4 in the size
+ * ramp, body text always faded). Both removed so the showcase
+ * matches what a consumer of @hexpunk/core/elements.css gets. */
 h1 {
-  font-family: var(--hp-typo-display-lg-font-family);
-  font-size: var(--hp-typo-display-lg-font-size);
-  font-weight: var(--hp-typo-display-lg-font-weight);
-  line-height: var(--hp-typo-display-lg-line-height);
-  letter-spacing: var(--hp-typo-display-lg-letter-spacing);
-  color: var(--hp-primary);
-  text-transform: uppercase;
   margin: 0 0 var(--hp-md);
 }
 
 h2 {
-  font-family: var(--hp-typo-label-md-font-family);
-  font-size: var(--hp-typo-label-md-font-size);
-  font-weight: var(--hp-typo-label-md-font-weight);
-  line-height: var(--hp-typo-label-md-line-height);
-  letter-spacing: var(--hp-typo-label-md-letter-spacing);
-  color: var(--hp-on-surface-variant);
-  text-transform: uppercase;
   margin: var(--hp-xl) 0 var(--hp-md);
-}
-
-p {
-  color: var(--hp-on-surface-variant);
-}
-
-a {
-  color: var(--hp-secondary);
-}
-
-code {
-  font-family: var(--hp-typo-code-md-font-family);
-  font-size: var(--hp-typo-code-md-font-size);
-  color: var(--hp-primary-bright);
 }
 
 .row {
