@@ -23,6 +23,7 @@ export { HpCode, type HpCodeHighlighter } from "./elements/primitives/hp-code.js
 export { HpCluster } from "./elements/layout/hp-cluster.js";
 export { HpCollapsible } from "./elements/layout/hp-collapsible.js";
 export { HpContextMenu } from "./elements/overlays/hp-context-menu.js";
+export { HpCopy } from "./elements/primitives/hp-copy.js";
 export { HpDemo } from "./elements/layout/hp-demo.js";
 export { HpDialog } from "./elements/overlays/hp-dialog.js";
 export { HpDropdownMenu, HpMenuItem } from "./elements/overlays/hp-dropdown-menu.js";
@@ -34,11 +35,12 @@ export {
   type HpGridTetherEventDetail,
   type HpGridMoveEventDetail,
   type HpGridPanEventDetail,
-} from "./elements/layout/hp-grid.js";
+} from "./elements/layout/hp-grid/index.js";
 export { HpHex } from "./elements/primitives/hp-hex.js";
 export { HpHoverCard } from "./elements/overlays/hp-hover-card.js";
 export { HpIcon } from "./elements/images/hp-icon.js";
 export { HpLabel } from "./elements/forms/hp-label.js";
+export { HpLatex, type HpLatexRenderer } from "./elements/primitives/hp-latex.js";
 export { HpLink } from "./elements/navigation/hp-link.js";
 export { HpLinkNode } from "./elements/hp-link-node.js";
 export { HpMenubar } from "./elements/navigation/hp-menubar.js";

@@ -1,0 +1,412 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Elements" prose>
+  <h1>Elements</h1>
+  <p>
+    <code>@hexpunk/core/elements.css</code> ships a token-driven baseline for native HTML
+    primitives — paragraphs, links, lists, tables, code, form fields. Import it once at the
+    document root and raw HTML in your app picks up the design system's typography, colour,
+    focus ring, and forced-colors fallbacks. No <code>&lt;hp-*&gt;</code> wrapper required.
+  </p>
+
+  <hp-banner tone="neutral">
+    Two layers in one file. The <strong>bare reset</strong> auto-applies to every native
+    element. The <strong>.hp-prose</strong> class is an opt-in rhythm scope for long-form
+    content — see the <a href="/getting-started/prose">Prose</a> page.
+  </hp-banner>
+
+  <h2>Installation</h2>
+  <hp-code language="html">{`<!-- Import the three CSS files once at your app's entry. -->
+<link rel="stylesheet" href="/path/to/@hexpunk/core/tokens.dark.css" />
+<link rel="stylesheet" href="/path/to/@hexpunk/core/tokens.light.css" />
+<link rel="stylesheet" href="/path/to/@hexpunk/core/elements.css" />
+
+<!-- Then write plain HTML — every native element picks up the
+     design system's tokens automatically. -->
+<p>Hello, hex world.</p>`}</hp-code>
+
+  <p>
+    Or, if your build pipeline supports CSS-via-JS imports (Vite, Astro, Next, etc.):
+  </p>
+  <hp-code language="javascript">{`import "@hexpunk/core/tokens.dark.css";
+import "@hexpunk/core/tokens.light.css";
+import "@hexpunk/core/elements.css";`}</hp-code>
+
+  <h2>Headings</h2>
+  <hp-demo caption="h1 through h6">
+    <div>
+      <h1>Heading 1 — display lg</h1>
+      <h2>Heading 2 — headline lg</h2>
+      <h3>Heading 3 — headline md</h3>
+      <h4>Heading 4 — title md</h4>
+      <h5>Heading 5 — label md (uppercase)</h5>
+      <h6>Heading 6 — label sm (uppercase)</h6>
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <h1>Heading 1 — display lg</h1>
+  <h2>Heading 2 — headline lg</h2>
+  <h3>Heading 3 — headline md</h3>
+  <h4>Heading 4 — title md</h4>
+  <h5>Heading 5 — label md (uppercase)</h5>
+  <h6>Heading 6 — label sm (uppercase)</h6>
+</body>`}</hp-code>
+  </hp-demo>
+  <p>
+    Headings carry zero default margin so they compose freely. Use <code>.hp-prose</code>
+    on a wrapping element to opt into vertical rhythm.
+  </p>
+
+  <h2>Inline text</h2>
+  <hp-demo caption="Emphasis, marks, abbreviations">
+    <div>
+      <p>
+        Paragraphs default to <code>--hp-on-surface</code>. <strong>Strong</strong> and
+        <b>b</b> tighten weight; <em>emphasis</em> and <i>i</i> italicise.
+        <small>Small text drops to body-sm.</small>
+      </p>
+      <p>
+        <mark>Marked text</mark> uses the warn container tokens.
+        <del>Deleted</del> strikes through; <ins>inserted</ins> underlines with the
+        secondary hue. Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for command palettes —
+        <abbr title="Keyboard">kbd</abbr> reads as a key cap.
+      </p>
+      <p>
+        H<sub>2</sub>O and E = mc<sup>2</sup>. Variables read as <var>x</var>, samples as
+        <samp>OK</samp>.
+      </p>
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <p>
+    <strong>Strong</strong> / <b>b</b>, <em>emphasis</em> / <i>i</i>,
+    <small>small text</small>, <mark>marked</mark>, <del>del</del>,
+    <ins>ins</ins>, <kbd>Ctrl</kbd>, <abbr title="Keyboard">kbd</abbr>.
+  </p>
+  <p>H<sub>2</sub>O — E = mc<sup>2</sup>. <var>x</var> / <samp>OK</samp>.</p>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>Links</h2>
+  <hp-demo caption="Anchor as text">
+    <p>
+      Raw <code>&lt;a&gt;</code> is the *anchor-as-text* primitive — for in-sentence
+      references like a <a href="#">link to elsewhere</a>. For *anchor-as-affordance*
+      (hover trace, hex geometry), reach for
+      <a href="/components/navigation/hp-link"><code>&lt;hp-link&gt;</code></a> or
+      <a href="/components/primitives/hp-cell"><code>&lt;hp-cell variant="anchor"&gt;</code></a>.
+    </p>
+    <hp-code slot="code" language="html">{`<body>
+  <p>
+    Visit <a href="https://example.com">example.com</a> for details.
+  </p>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>Code</h2>
+  <hp-banner tone="neutral">
+    For syntax-highlighted code with line numbers, per-line hover, and a copy button,
+    reach for <a href="/components/primitives/hp-code"><code>&lt;hp-code&gt;</code></a> —
+    it accepts a consumer-registered highlighter (Shiki, highlight.js, Prism). The raw
+    primitives below are the right call for short inline snippets and unhighlighted
+    block samples.
+  </hp-banner>
+  <hp-demo caption="Inline and block">
+    <div>
+      <p>
+        Inline <code>const x = 1</code> renders as a chip. Block-level code uses
+        <code>&lt;pre&gt;&lt;code&gt;</code>:
+      </p>
+      <pre><code>function hex(q, r) &#123;
+  return [q * (3 / 2), r * Math.sqrt(3) + q * Math.sqrt(3) / 2];
+&#125;</code></pre>
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <p>Inline <code>const x = 1</code> reads as a chip.</p>
+  <pre>
+    <code>
+      function hex(q, r) {
+        return [q * (3 / 2), r * Math.sqrt(3) + q * Math.sqrt(3) / 2];
+      }
+    </code>
+  </pre>
+</body>`}</hp-code>
+  </hp-demo>
+  <h2>Blockquote</h2>
+  <hp-demo caption="Citation with attribution">
+    <blockquote>
+      <p>The system is the source of truth — the chrome is just the surface.</p>
+      <cite>— Hexpunk DESIGN.md</cite>
+    </blockquote>
+    <hp-code slot="code" language="html">{`<body>
+  <blockquote>
+    <p>The system is the source of truth — the chrome is just the surface.</p>
+    <cite>— Hexpunk DESIGN.md</cite>
+  </blockquote>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>Lists</h2>
+  <hp-demo caption="Unordered, ordered, and definition lists">
+    <div class="hp-prose">
+      <ul>
+        <li>Atoms — single-hex elements (<code>hp-cell</code>, <code>hp-icon</code>)</li>
+        <li>Molecules — composed structures (<code>hp-grid</code>, <code>hp-cluster</code>)</li>
+        <li>
+          Primitives — the bigger ideas
+          <ul>
+            <li>Bonding (adjacency)</li>
+            <li>Linking (arcs at distance)</li>
+            <li>Unfolding (in-place / overlay / camera-zoom)</li>
+          </ul>
+        </li>
+      </ul>
+      <ol>
+        <li>Read DESIGN.md</li>
+        <li>Read PLAN.md</li>
+        <li>Pick a step, propose, confirm, ship</li>
+      </ol>
+      <dl>
+        <dt>Cell</dt>
+        <dd>Universal labelled hex element with interactive variants.</dd>
+        <dt>Cluster</dt>
+        <dd>Canonical 5-hex rosette layout.</dd>
+        <dt>Tether</dt>
+        <dd>Curved arc between two anchors.</dd>
+      </dl>
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <div class="hp-prose">
+    <ul>
+      <li>Atoms — single-hex elements</li>
+      <li>
+        Molecules — composed structures
+        <ul>
+          <li>Bonding (adjacency)</li>
+          <li>Linking (arcs at distance)</li>
+        </ul>
+      </li>
+    </ul>
+    <ol>
+      <li>Read DESIGN.md</li>
+      <li>Pick a step, propose, confirm, ship</li>
+    </ol>
+    <dl>
+      <dt>Cell</dt>
+      <dd>Universal labelled hex element.</dd>
+    </dl>
+  </div>
+</body>`}</hp-code>
+  </hp-demo>
+  <p>
+    Bullet glyphs use the secondary hue via <code>::marker</code>. Padding shown here comes
+    from the <code>.hp-prose</code> wrapper — bare-reset lists ship with zero padding so
+    consumers control list indentation per-surface.
+  </p>
+
+  <h2>Tables</h2>
+  <hp-demo caption="Caption, header, cells">
+    <table>
+      <caption>Density modes</caption>
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Cell sm</th>
+          <th>Cell md</th>
+          <th>Cell lg</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>compact</td><td>44</td><td>80</td><td>140</td></tr>
+        <tr><td>default</td><td>50</td><td>100</td><td>180</td></tr>
+        <tr><td>comfortable</td><td>60</td><td>120</td><td>220</td></tr>
+      </tbody>
+    </table>
+    <hp-code slot="code" language="html">{`<body>
+  <table>
+    <caption>Density modes</caption>
+    <thead>
+      <tr>
+        <th>Mode</th>
+        <th>Cell sm</th>
+        <th>Cell md</th>
+        <th>Cell lg</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>compact</td><td>44</td><td>80</td><td>140</td></tr>
+      <tr><td>default</td><td>50</td><td>100</td><td>180</td></tr>
+    </tbody>
+  </table>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>Details / summary</h2>
+  <hp-demo caption="Native disclosure">
+    <div>
+      <details>
+        <summary>Why hexagons?</summary>
+        <p>
+          Hexagons are the densest regular tiling of the plane — six neighbours per cell,
+          uniform distance, and a directionality that maps cleanly to a six-state colour
+          system. Every Hexpunk component starts from that geometry.
+        </p>
+      </details>
+      <details>
+        <summary>What's the difference between hp-cell and hp-hex?</summary>
+        <p>
+          <code>&lt;hp-hex&gt;</code> is the raw geometric primitive — pure shape, no
+          semantics. <code>&lt;hp-cell&gt;</code> is the universal labelled atom built
+          on top, with interactive variants (anchor / action / secondary / utility) and
+          decorative variants (content / support / slot).
+        </p>
+      </details>
+      <details open>
+        <summary>Open by default</summary>
+        <p>The <code>open</code> attribute starts the disclosure expanded.</p>
+      </details>
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <details>
+    <summary>Why hexagons?</summary>
+    <p>Hexagons are the densest regular tiling of the plane...</p>
+  </details>
+  <details open>
+    <summary>Open by default</summary>
+    <p>The <code>open</code> attribute starts expanded.</p>
+  </details>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>Horizontal rule</h2>
+  <hp-banner tone="neutral">
+    For dividers with orientation (horizontal / vertical), tone, and optional centred
+    marks, use <a href="/components/layout/hp-separator"><code>&lt;hp-separator&gt;</code></a>.
+    Raw <code>&lt;hr&gt;</code> stays useful for inline section breaks inside long-form
+    content.
+  </hp-banner>
+  <hp-demo caption="Section divider">
+    <div>
+      <p>Above the rule.</p>
+      <hr>
+      <p>Below the rule.</p>
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <p>Above the rule.</p>
+  <hr />
+  <p>Below the rule.</p>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>Form primitives</h2>
+  <hp-banner tone="neutral">
+    Raw form inputs get tokenised typography, restrained borders, and a focus ring that
+    matches the rest of the system. They deliberately don't carry hex geometry — for
+    the full Hexpunk aesthetic (hex buttons, hex-bonded toggles, single/multi toggle
+    groups, sliders, labelled selects, form-association via
+    <a href="/components/forms/hp-form"><code>&lt;hp-form&gt;</code></a>), reach for:
+    <a href="/components/forms/hp-button"><code>hp-button</code></a> ·
+    <a href="/components/forms/hp-checkbox"><code>hp-checkbox</code></a> ·
+    <a href="/components/forms/hp-radio"><code>hp-radio</code></a> ·
+    <a href="/components/forms/hp-select"><code>hp-select</code></a> ·
+    <a href="/components/forms/hp-slider"><code>hp-slider</code></a> ·
+    <a href="/components/forms/hp-toggle"><code>hp-toggle</code></a> ·
+    <a href="/components/forms/hp-toggle-group"><code>hp-toggle-group</code></a> ·
+    <a href="/components/forms/hp-label"><code>hp-label</code></a>.
+  </hp-banner>
+
+  <hp-demo caption="Text inputs">
+    <form
+      onsubmit="event.preventDefault()"
+      style="display: grid; gap: 12px; max-width: 32rem;"
+    >
+      <label>
+        Name
+        <input type="text" placeholder="Hissalia" style="display: block; width: 100%;">
+      </label>
+      <label>
+        Email (validates on blur)
+        <input type="email" required placeholder="izzy@example.com" style="display: block; width: 100%;">
+      </label>
+      <label>
+        Bio
+        <textarea placeholder="Tell us about your hex obsession" style="display: block; width: 100%;"></textarea>
+      </label>
+      <label>
+        Country
+        <select style="display: block; width: 100%;">
+          <option>United Kingdom</option>
+          <option>United States</option>
+          <option>Japan</option>
+        </select>
+      </label>
+    </form>
+    <hp-code slot="code" language="html">{`<body>
+  <form>
+    <label>
+      Name
+      <input type="text" placeholder="Hissalia" />
+    </label>
+    <label>
+      Email
+      <input type="email" required placeholder="izzy@example.com" />
+    </label>
+    <label>
+      Bio
+      <textarea></textarea>
+    </label>
+    <label>
+      Country
+      <select>
+        <option>United Kingdom</option>
+        <option>United States</option>
+      </select>
+    </label>
+  </form>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <hp-demo caption="Buttons, checkbox, radio, range">
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
+      <button>raw button</button>
+      <button disabled>disabled</button>
+      <label><input type="checkbox" checked> Subscribe</label>
+      <label><input type="radio" name="r" checked> A</label>
+      <label><input type="radio" name="r"> B</label>
+      <input type="range" min="0" max="100" value="42">
+      <input type="color" value="#00cc88">
+    </div>
+    <hp-code slot="code" language="html">{`<body>
+  <button>raw button</button>
+  <button disabled>disabled</button>
+  <label><input type="checkbox" checked /> Subscribe</label>
+  <label><input type="radio" name="r" /> A</label>
+  <input type="range" min="0" max="100" value="42" />
+  <input type="color" value="#00cc88" />
+</body>`}</hp-code>
+  </hp-demo>
+
+  <hp-demo caption="Fieldset + legend">
+    <fieldset style="max-width: 32rem;">
+      <legend>Display preferences</legend>
+      <label style="display: block;"><input type="checkbox"> Reduce motion</label>
+      <label style="display: block;"><input type="checkbox" checked> Show focus rings</label>
+      <label style="display: block;"><input type="checkbox"> High contrast</label>
+    </fieldset>
+    <hp-code slot="code" language="html">{`<body>
+  <fieldset>
+    <legend>Display preferences</legend>
+    <label><input type="checkbox" /> Reduce motion</label>
+    <label><input type="checkbox" checked /> Show focus rings</label>
+    <label><input type="checkbox" /> High contrast</label>
+  </fieldset>
+</body>`}</hp-code>
+  </hp-demo>
+
+  <h2>What this file does NOT do</h2>
+  <ul class="hp-prose">
+    <li>Restyle <code>&lt;hp-*&gt;</code> elements — they live in shadow DOM and own their own chrome.</li>
+    <li>Repaint <code>&lt;button&gt;</code> / <code>&lt;input&gt;</code> as full hp-button / hp-input lookalikes — hex geometry stays reserved for the components.</li>
+    <li>Force a max-width or font-size root override — the page shell is yours.</li>
+  </ul>
+</Layout>

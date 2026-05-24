@@ -24,12 +24,13 @@ export function isLeaf(node: SitemapNode): node is SitemapLeaf {
 }
 
 export const SITEMAP: SitemapNode[] = [
-  { path: "/", title: "Home" },
   {
     title: "Getting Started",
     children: [
       { path: "/getting-started/install", title: "Install" },
       { path: "/getting-started/concepts", title: "Concepts" },
+      { path: "/getting-started/elements", title: "Elements" },
+      { path: "/getting-started/prose", title: "Prose" },
     ],
   },
   {
@@ -40,7 +41,9 @@ export const SITEMAP: SitemapNode[] = [
         children: [
           { path: "/components/primitives/hp-cell", title: "hp-cell" },
           { path: "/components/primitives/hp-code", title: "hp-code" },
+          { path: "/components/primitives/hp-copy", title: "hp-copy" },
           { path: "/components/primitives/hp-hex", title: "hp-hex" },
+          { path: "/components/primitives/hp-latex", title: "hp-latex" },
           { path: "/components/primitives/hp-visually-hidden", title: "hp-visually-hidden" },
         ],
       },

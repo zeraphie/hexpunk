@@ -21,16 +21,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-visually-hidden>search</hp-visually-hidden>
       </hp-button>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-button>
-      <svg aria-hidden="true">…</svg>
-      <hp-visually-hidden>Search</hp-visually-hidden>
-    </hp-button>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-button>
+    <svg aria-hidden="true">…</svg>
+    <hp-visually-hidden>Search</hp-visually-hidden>
+  </hp-button>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

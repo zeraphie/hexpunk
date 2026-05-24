@@ -18,16 +18,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-background></hp-background>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <div style="position: relative; min-height: 240px">
-      <hp-background></hp-background>
-      <!-- foreground content here -->
-    </div>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <div style="position: relative; min-height: 240px">
+    <hp-background></hp-background>
+    <!-- foreground content here -->
+  </div>
+</body>`}</hp-code>
     </hp-demo>
 
     <p>
@@ -45,17 +41,13 @@ export default () => (
         <hp-cell variant="content" q="0" r="1" size="sm">south</hp-cell>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-grid draggable>
-      <hp-background></hp-background>
-      <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
-      <hp-cell variant="action" q="1" r="0">east</hp-cell>
-    </hp-grid>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-grid draggable>
+    <hp-background></hp-background>
+    <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
+    <hp-cell variant="action" q="1" r="0">east</hp-cell>
+  </hp-grid>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Denser pattern + tighter pointer radius">
@@ -63,17 +55,13 @@ export default () => (
         <hp-background hex-size="9" pointer-radius="120"></hp-background>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <!-- Smaller hexes, smaller cursor halo -->
+  <hp-background hex-size="9" pointer-radius="120"></hp-background>
 
-export default () => (
-  <>
-    <!-- Smaller hexes, smaller cursor halo -->
-    <hp-background hex-size="9" pointer-radius="120"></hp-background>
-
-    <!-- Larger hexes, wider halo -->
-    <hp-background hex-size="22" pointer-radius="320"></hp-background>
-  </>
-);`}</hp-code>
+  <!-- Larger hexes, wider halo -->
+  <hp-background hex-size="22" pointer-radius="320"></hp-background>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

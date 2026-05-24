@@ -34,23 +34,19 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-nav-item href="#contact">Contact</hp-nav-item>
       </hp-navigation-menu>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-navigation-menu>
-      <hp-nav-item href="/about">About</hp-nav-item>
-      <hp-nav-item>
-        Components
-        <div slot="content">
-          <a href="/buttons">Buttons</a>
-          <a href="/inputs">Inputs</a>
-        </div>
-      </hp-nav-item>
-      <hp-nav-item href="/contact">Contact</hp-nav-item>
-    </hp-navigation-menu>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-navigation-menu>
+    <hp-nav-item href="/about">About</hp-nav-item>
+    <hp-nav-item>
+      Components
+      <div slot="content">
+        <a href="/buttons">Buttons</a>
+        <a href="/inputs">Inputs</a>
+      </div>
+    </hp-nav-item>
+    <hp-nav-item href="/contact">Contact</hp-nav-item>
+  </hp-navigation-menu>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

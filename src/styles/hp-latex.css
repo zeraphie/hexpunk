@@ -1,0 +1,88 @@
+/* hp-latex.css — Light-DOM chrome for <hp-latex>.
+ *
+ * hp-latex is the system's only light-DOM web component (see the
+ * file header in src/elements/primitives/hp-latex.ts for the why).
+ * Its chrome — display mode, margin, optional backdrop padding,
+ * source-fallback typography — lives in this regular stylesheet
+ * since light-DOM elements can't carry `static styles` the way
+ * shadow-DOM ones do.
+ *
+ * Import alongside elements.css and katex.min.css:
+ *
+ *   import "@hexpunk/core/elements.css";
+ *   import "@hexpunk/core/hp-latex.css";
+ *   import "katex/dist/katex.min.css";
+ *
+ * All values reference --hp-* tokens; load tokens.dark.css /
+ * tokens.light.css first.
+ */
+
+hp-latex {
+  display: inline;
+  color: var(--hp-on-surface);
+}
+
+hp-latex[block] {
+  display: block;
+  /* Defensive: explicit width + border-box so block hp-latex fills
+   * its container's content width even inside flex parents (where
+   * `display: block` alone would shrink to content). */
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  margin: var(--hp-md) 0;
+}
+
+/* Shared stacking context for any block variant that absolutely
+ * positions internal chrome (backdrop, copy button). Without
+ * `isolation: isolate`, `position: relative` + `z-index: -1` on
+ * a child can escape and paint behind the document body. */
+hp-latex[block][background],
+hp-latex[block][copyable] {
+  position: relative;
+  isolation: isolate;
+}
+
+hp-latex[block][background]:not([copyable]) {
+  padding: var(--hp-md);
+}
+
+hp-latex[block][copyable]:not([background]) {
+  /* Top padding makes room for the absolutely-positioned copy button
+   * so it doesn't overlap the math. Inline padding matches the
+   * button's right offset for visual balance. */
+  padding: var(--hp-xl) var(--hp-sm) 0;
+}
+
+hp-latex[block][background][copyable] {
+  padding: var(--hp-xl) var(--hp-md) var(--hp-md);
+}
+
+hp-latex[block][background] .hp-latex-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Don't intercept pointer events targeted at the math content. */
+  pointer-events: none;
+}
+
+/* hp-copy chrome lives inside its own shadow root — this rule only
+ * positions the hp-copy element in the top-right corner of the
+ * block-mode hp-latex host. */
+hp-latex[block][copyable] .hp-latex-copy {
+  position: absolute;
+  top: var(--hp-sm);
+  right: var(--hp-sm);
+  z-index: 1;
+}
+
+hp-latex .hp-latex-source {
+  font-family: var(--hp-typo-mono-sm-font-family);
+  font-size: var(--hp-typo-mono-sm-font-size);
+  line-height: var(--hp-typo-mono-sm-line-height);
+  color: var(--hp-on-surface-variant);
+}
+
+hp-latex[block] .hp-latex-source {
+  display: block;
+}

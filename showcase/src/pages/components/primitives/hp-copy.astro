@@ -1,0 +1,120 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-copy">
+  <ComponentDocs title="hp-copy">
+    <p slot="description">
+      Copy-to-clipboard button primitive. Writes a configured <code>value</code> string to
+      the system clipboard via the async Clipboard API, dispatches a bubbling
+      <code>hp-copy-success</code> event on success, and fades a sibling "Copied" toast in
+      for ~1.5s as feedback. Used internally by
+      <a href="/components/layout/hp-demo"><code>&lt;hp-demo&gt;</code></a> for its
+      copy-code action and by
+      <a href="/components/primitives/hp-latex"><code>&lt;hp-latex&gt;</code></a> for the
+      block-math copy button; available standalone for any consumer needing the same
+      affordance.
+    </p>
+
+    <hp-demo caption="Default — icon + 'Copy'">
+      <hp-copy value="Hello, hex world."></hp-copy>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="Hello, hex world."></hp-copy>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Custom idle text via slot">
+      <hp-copy value="bun add @hexpunk/core lit">Copy install command</hp-copy>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="bun add @hexpunk/core lit">Copy install command</hp-copy>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Translated — French">
+      <hp-copy value="Bonjour, monde hexagonal." copied="Copié">Copier</hp-copy>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="Bonjour, monde hexagonal." copied="Copié">
+    Copier
+  </hp-copy>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Icon-only — hides label visually, keeps it in the a11y tree">
+      <hp-copy value="https://hexpunk.dev" icon-only>Copy URL</hp-copy>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="https://hexpunk.dev" icon-only>Copy URL</hp-copy>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+      <hp-banner tone="do">
+        Reach for hp-copy any time the user might want to grab text and paste elsewhere —
+        install commands, code samples, snippet URLs, IDs, math source, etc. The
+        consistent affordance (icon + label + toast) signals "this is grabbable" without
+        consumers having to wire clipboard logic per surface.
+      </hp-banner>
+      <hp-banner tone="do">
+        Translate the idle label via slot content and the toast via the
+        <code>copied</code> attribute. Both default to English ("Copy" / "Copied")
+        when absent.
+      </hp-banner>
+      <hp-banner tone="do">
+        Use <code>icon-only</code> for tight chrome (corner buttons, dense toolbars).
+        The slotted label stays in the accessibility tree via a standard visually-
+        hidden recipe, so screen readers still announce it.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Use hp-copy to trigger arbitrary "copy then do X" workflows. Listen for the
+        <code>hp-copy-success</code> event from outside and run side effects there
+        — hp-copy stays a single-purpose clipboard widget.
+      </hp-banner>
+
+      <h2>Events</h2>
+      <p>Both events bubble + compose, so consumers can listen at any ancestor:</p>
+      <ul class="hp-prose">
+        <li>
+          <code>hp-copy-success</code> — fired after a successful write.
+          <code>detail = &#123; value &#125;</code>.
+        </li>
+        <li>
+          <code>hp-copy-error</code> — fired when the Clipboard API rejects
+          (permission denied, non-secure context, blocked iframe).
+          <code>detail = &#123; error, value &#125;</code>.
+        </li>
+      </ul>
+
+      <hp-code language="javascript">{`document.addEventListener("hp-copy-success", (e) => {
+  console.log("Copied:", e.detail.value);
+});`}</hp-code>
+
+      <h2>Accessibility</h2>
+      <p>
+        The slotted text is the button's accessible name — no <code>aria-label</code>
+        override needed in the default form. <code>icon-only</code> keeps the slot
+        content in the a11y tree via visually-hidden styling, so screen readers still
+        read "Copy" (or the translated label) when navigating to the icon.
+      </p>
+      <p>
+        The toast uses <code>aria-live="polite"</code> so assistive tech announces
+        the success state without interrupting the user.
+      </p>
+
+      <h2>Clipboard API caveats</h2>
+      <p>
+        hp-copy relies exclusively on the async Clipboard API
+        (<code>navigator.clipboard.writeText</code>). This requires a secure context
+        (HTTPS or localhost). In non-secure contexts the click is a no-op rather than
+        falling back to legacy <code>document.execCommand("copy")</code> — that
+        fallback is sync-only, requires a transient user-activation focus dance, and
+        silently fails just as often. Consumers can listen for
+        <code>hp-copy-error</code> to surface a fallback affordance.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>

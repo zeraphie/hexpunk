@@ -43,28 +43,24 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-unfold-list>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-grid>
+    <hp-unfold-list q="0" r="0">
+      <hp-cell variant="anchor" slot="source">pipeline</hp-cell>
+      <hp-cell variant="content">stage 1 — ingest</hp-cell>
+      <hp-cell variant="content">stage 2 — transform</hp-cell>
+      <hp-cell variant="content">stage 3 — emit</hp-cell>
+      <hp-cell tone="positive">online</hp-cell>
+    </hp-unfold-list>
+  </hp-grid>
 
-export default () => (
-  <>
-    <hp-grid>
-      <hp-unfold-list q="0" r="0">
-        <hp-cell variant="anchor" slot="source">pipeline</hp-cell>
-        <hp-cell variant="content">stage 1 — ingest</hp-cell>
-        <hp-cell variant="content">stage 2 — transform</hp-cell>
-        <hp-cell variant="content">stage 3 — emit</hp-cell>
-        <hp-cell tone="positive">online</hp-cell>
-      </hp-unfold-list>
-    </hp-grid>
-
-    const unfold = document.querySelector("hp-unfold-list");
-    unfold.addEventListener("hp-unfold-open", () => { /* … */ });
-    unfold.addEventListener("hp-unfold-close", () => { /* … */ });
-    unfold.toggle();    // flip open / closed
-    unfold.close();     // close if open
-    unfold.open = true; // direct property write also works
-  </>
-);`}</hp-code>
+  const unfold = document.querySelector("hp-unfold-list");
+  unfold.addEventListener("hp-unfold-open", () => { /* … */ });
+  unfold.addEventListener("hp-unfold-close", () => { /* … */ });
+  unfold.toggle();    // flip open / closed
+  unfold.close();     // close if open
+  unfold.open = true; // direct property write also works
+</body>`}</hp-code>
     </hp-demo>
 
     <p>
@@ -81,18 +77,14 @@ export default () => (
         </hp-unfold-list>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-unfold-list unordered>
-      <hp-cell variant="anchor" slot="source">tags</hp-cell>
-      <hp-cell variant="content" size="sm">cyberpunk</hp-cell>
-      <hp-cell variant="content" size="sm">wireframe</hp-cell>
-      <hp-cell variant="content" size="sm">hex-first</hp-cell>
-    </hp-unfold-list>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-unfold-list unordered>
+    <hp-cell variant="anchor" slot="source">tags</hp-cell>
+    <hp-cell variant="content" size="sm">cyberpunk</hp-cell>
+    <hp-cell variant="content" size="sm">wireframe</hp-cell>
+    <hp-cell variant="content" size="sm">hex-first</hp-cell>
+  </hp-unfold-list>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

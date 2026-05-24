@@ -20,26 +20,22 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-menu-item slot="content" disabled>archive</hp-menu-item>
       </hp-dropdown-menu>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-dropdown-menu side="bottom" align="start">
+    <hp-button>actions</hp-button>
+    <hp-menu-item slot="content">edit</hp-menu-item>
+    <hp-menu-item slot="content">duplicate</hp-menu-item>
+    <hp-menu-item slot="content">share</hp-menu-item>
+    <hp-menu-item slot="content" disabled>archive</hp-menu-item>
+  </hp-dropdown-menu>
 
-export default () => (
-  <>
-    <hp-dropdown-menu side="bottom" align="start">
-      <hp-button>actions</hp-button>
-      <hp-menu-item slot="content">edit</hp-menu-item>
-      <hp-menu-item slot="content">duplicate</hp-menu-item>
-      <hp-menu-item slot="content">share</hp-menu-item>
-      <hp-menu-item slot="content" disabled>archive</hp-menu-item>
-    </hp-dropdown-menu>
-
-    <script>
-      document.querySelector("hp-dropdown-menu")
-        .addEventListener("hp-menu-select", (ev) => {
-          console.log(ev.detail.value); // "edit", "duplicate", ...
-        });
-    </${"script"}>
-  </>
-);`}</hp-code>
+  <script>
+    document.querySelector("hp-dropdown-menu")
+      .addEventListener("hp-menu-select", (ev) => {
+        console.log(ev.detail.value); // "edit", "duplicate", ...
+      });
+  </${"script"}>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

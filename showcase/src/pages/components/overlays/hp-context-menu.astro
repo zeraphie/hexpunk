@@ -21,19 +21,15 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-menu-item slot="content">paste</hp-menu-item>
       </hp-context-menu>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-context-menu>
+    <div class="my-target">Right-click me</div>
 
-export default () => (
-  <>
-    <hp-context-menu>
-      <div class="my-target">Right-click me</div>
-
-      <hp-menu-item slot="content">cut</hp-menu-item>
-      <hp-menu-item slot="content">copy</hp-menu-item>
-      <hp-menu-item slot="content">paste</hp-menu-item>
-    </hp-context-menu>
-  </>
-);`}</hp-code>
+    <hp-menu-item slot="content">cut</hp-menu-item>
+    <hp-menu-item slot="content">copy</hp-menu-item>
+    <hp-menu-item slot="content">paste</hp-menu-item>
+  </hp-context-menu>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

@@ -30,6 +30,9 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { hpBase } from "../../styles/hp-base.js";
+// Side-effect import — hp-demo's copy-code action delegates to
+// hp-copy now instead of an inline button + bespoke toast.
+import "../primitives/hp-copy.js";
 // Inline-imported token stylesheets so they can be adopted into
 // hp-demo's shadow root. Without this, the document-level
 // `[data-theme="light"]` / `[data-theme="dark"]` rules in
@@ -72,7 +75,11 @@ export class HpDemo extends LitElement {
   @property({ reflect: true, type: Boolean, attribute: "no-theme-toggle" })
   noThemeToggle = false;
 
-  @state() private copiedToast = false;
+  /** Mirror of the code slot's flattened text content. hp-copy needs
+   * the value upfront (it can't lazily read the slot at click time
+   * since it lives in its own shadow root), so we cache here on
+   * slotchange. */
+  @state() private _codeText = "";
 
   /** Explicit theme override applied to the preview area only.
    * `null` = inherit from the page-level <html data-theme=…>. */
@@ -129,30 +136,13 @@ export class HpDemo extends LitElement {
     this.siteThemeObserver = null;
   }
 
-  private handleCopyClick = async (): Promise<void> => {
-    const codeSlot = this.renderRoot.querySelector<HTMLSlotElement>('slot[name="code"]');
-    if (!codeSlot) {
-      return;
-    }
-    const nodes = codeSlot.assignedNodes({ flatten: true });
-    const text = nodes
+  private handleCodeSlotChange = (e: Event): void => {
+    const slot = e.target as HTMLSlotElement;
+    const nodes = slot.assignedNodes({ flatten: true });
+    this._codeText = nodes
       .map((node) => node.textContent ?? "")
       .join("")
       .trim();
-    if (!text) {
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(text);
-      this.copiedToast = true;
-      window.setTimeout(() => {
-        this.copiedToast = false;
-      }, 1600);
-    } catch {
-      // Clipboard API may be unavailable (non-secure context, blocked
-      // permissions) — silently skip; consumers can still copy
-      // manually from the visible code area.
-    }
   };
 
   static override styles = [
@@ -214,8 +204,11 @@ export class HpDemo extends LitElement {
         color: var(--hp-on-surface-variant);
       }
 
-      .copy,
+      /* Theme toggle on the left; hp-copy on the right. The theme
+       * button keeps its bespoke chrome since it's tightly coupled
+       * to the per-demo light/dark sun/moon UX. */
       .theme {
+        margin-right: auto;
         background: transparent;
         border: 1px solid transparent;
         color: var(--hp-on-surface-variant);
@@ -230,27 +223,16 @@ export class HpDemo extends LitElement {
         transition: color var(--hp-duration-fast) var(--hp-ease-default);
       }
 
-      /* Theme toggle sits left; copy + its toast cluster right. The
- * auto margin pushes everything after the toggle to the
- * far edge — keeps the "copied" flash from drifting around. */
-      .theme {
-        margin-right: auto;
-      }
-
-      .copy:hover,
-      .copy:focus-visible,
       .theme:hover,
       .theme:focus-visible {
         color: var(--hp-primary);
       }
 
-      .copy:focus-visible,
       .theme:focus-visible {
         outline: 2px solid var(--hp-focus-ring);
         outline-offset: 2px;
       }
 
-      .copy svg,
       .theme svg {
         width: 12px;
         height: 12px;
@@ -259,16 +241,6 @@ export class HpDemo extends LitElement {
         stroke-linecap: square;
         stroke-linejoin: miter;
         fill: none;
-      }
-
-      .toast {
-        color: var(--hp-secondary);
-        opacity: 0;
-        transition: opacity var(--hp-duration-medium) var(--hp-ease-default);
-      }
-
-      .toast.show {
-        opacity: 1;
       }
 
       .code {
@@ -333,26 +305,12 @@ export class HpDemo extends LitElement {
                 ${effective}
               </button>
             `}
-        <span class=${`toast ${this.copiedToast ? "show" : ""}`} aria-live="polite"> copied </span>
         ${this.noCopy
           ? ""
-          : html`
-              <button
-                class="copy"
-                type="button"
-                aria-label="Copy code"
-                @click=${this.handleCopyClick}
-              >
-                <svg viewBox="0 0 12 12" aria-hidden="true">
-                  <rect x="3.5" y="3.5" width="6" height="6"></rect>
-                  <path d="M2.5 8.5 V2.5 H8.5"></path>
-                </svg>
-                copy code
-              </button>
-            `}
+          : html`<hp-copy class="copy" .value=${this._codeText}>Copy code</hp-copy>`}
       </div>
       <div class="code" part="code">
-        <slot name="code"></slot>
+        <slot name="code" @slotchange=${this.handleCodeSlotChange}></slot>
       </div>
     `;
   }

@@ -1,0 +1,752 @@
+/* elements.css — Token-driven preflight for native HTML primitives.
+ *
+ * Hexpunk's <hp-*> components live in shadow DOM and own their own
+ * chrome via hp-base.css + per-element styles. Raw HTML in light DOM
+ * — paragraphs, links, lists, tables, form fields, headings — gets
+ * none of that. This file fills the gap: it grounds native primitives
+ * in the design system so a consumer importing @hexpunk/core gets a
+ * coherent baseline for prose and forms without wrapping every <p> in
+ * a custom element.
+ *
+ * Two layers:
+ *
+ *   1. Bare reset (auto-applied). Document defaults + raw primitives
+ *      pick up tokens for typography, colour, focus, and a `box-sizing`
+ *      reset. No vertical rhythm — headings and paragraphs get no
+ *      margin so they compose freely inside arbitrary layouts.
+ *
+ *   2. `.hp-prose` opt-in scope. Long-form content surfaces (articles,
+ *      MDX/markdown output, READMEs rendered as HTML) add the class
+ *      to a wrapper to get vertical rhythm: heading separation,
+ *      paragraph spacing, list bullet treatment, table chrome,
+ *      blockquote accent, etc.
+ *
+ * Token references resolve against tokens.dark.css / tokens.light.css
+ * — load those first so the variables exist. No JS, no shadow DOM, no
+ * cascade tricks beyond standard CSS.
+ *
+ * What this file deliberately does NOT do:
+ *   - Restyle <hp-*> elements (they're shadow-scoped — light-DOM
+ *     rules don't pierce the boundary anyway).
+ *   - Repaint <button> / <input> as hp-button / hp-input lookalikes.
+ *     Raw form elements get tokenised typography, focus rings, and a
+ *     restrained border treatment — but the hex geometry stays
+ *     reserved for the components themselves.
+ *   - Force a max-width or font-size root override. Consumers control
+ *     the page shell; this file only opines on what primitives look
+ *     like when they're encountered.
+ */
+
+/* ── Bare reset ────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Smooth in-page anchor jumps — overridden by prefers-reduced-motion
+   * below. */
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--hp-background);
+  color: var(--hp-on-background);
+  font-family: var(--hp-typo-body-md-font-family);
+  font-size: var(--hp-typo-body-md-font-size);
+  font-weight: var(--hp-typo-body-md-font-weight);
+  line-height: var(--hp-typo-body-md-line-height);
+}
+
+/* ── Headings ──────────────────────────────────────────────────── */
+
+/* No margin on headings by default — .hp-prose adds rhythm. Outside
+ * a prose scope, headings sit flush against neighbouring content and
+ * the consumer's layout owns spacing. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--hp-on-surface);
+  font-weight: 700;
+}
+
+h1 {
+  font-family: var(--hp-typo-display-lg-font-family);
+  font-size: var(--hp-typo-display-lg-font-size);
+  font-weight: var(--hp-typo-display-lg-font-weight);
+  line-height: var(--hp-typo-display-lg-line-height);
+  letter-spacing: var(--hp-typo-display-lg-letter-spacing);
+  color: var(--hp-primary);
+  text-transform: uppercase;
+}
+
+h2 {
+  font-family: var(--hp-typo-headline-lg-font-family);
+  font-size: var(--hp-typo-headline-lg-font-size);
+  font-weight: var(--hp-typo-headline-lg-font-weight);
+  line-height: var(--hp-typo-headline-lg-line-height);
+  letter-spacing: var(--hp-typo-headline-lg-letter-spacing);
+}
+
+h3 {
+  font-family: var(--hp-typo-headline-md-font-family);
+  font-size: var(--hp-typo-headline-md-font-size);
+  font-weight: var(--hp-typo-headline-md-font-weight);
+  line-height: var(--hp-typo-headline-md-line-height);
+}
+
+h4 {
+  font-family: var(--hp-typo-title-md-font-family);
+  font-size: var(--hp-typo-title-md-font-size);
+  font-weight: var(--hp-typo-title-md-font-weight);
+  line-height: var(--hp-typo-title-md-line-height);
+  letter-spacing: var(--hp-typo-title-md-letter-spacing);
+}
+
+/* h5 / h6 fall back to label scales (uppercase, tracked) since the
+ * Hexpunk type ramp doesn't ship explicit tiers below title-md. They
+ * read as section labels rather than continued display headings,
+ * which matches how deeply-nested headings actually get used. */
+h5 {
+  font-family: var(--hp-typo-label-md-font-family);
+  font-size: var(--hp-typo-label-md-font-size);
+  font-weight: var(--hp-typo-label-md-font-weight);
+  line-height: var(--hp-typo-label-md-line-height);
+  letter-spacing: var(--hp-typo-label-md-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+}
+
+h6 {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: var(--hp-typo-label-sm-font-weight);
+  line-height: var(--hp-typo-label-sm-line-height);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+}
+
+/* ── Paragraph + inline text ───────────────────────────────────── */
+
+p {
+  margin: 0;
+  color: var(--hp-on-surface);
+}
+
+strong,
+b {
+  font-weight: 700;
+  color: var(--hp-on-surface);
+}
+
+em,
+i,
+cite,
+q {
+  font-style: italic;
+}
+
+small {
+  font-size: var(--hp-typo-body-sm-font-size);
+  line-height: var(--hp-typo-body-sm-line-height);
+  color: var(--hp-on-surface-variant);
+}
+
+sub,
+sup {
+  font-size: 0.75em;
+  line-height: 1;
+  position: relative;
+  vertical-align: baseline;
+}
+sub {
+  bottom: -0.25em;
+}
+sup {
+  top: -0.5em;
+}
+
+mark {
+  background: var(--hp-warn-container);
+  color: var(--hp-on-warn-container);
+  padding: 0 var(--hp-xs);
+  border-radius: var(--hp-rounded-sm);
+}
+
+del,
+s {
+  text-decoration: line-through;
+  color: var(--hp-on-surface-variant);
+}
+
+ins,
+u {
+  text-decoration: underline;
+  text-decoration-color: var(--hp-secondary);
+  text-underline-offset: 2px;
+}
+
+abbr[title] {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--hp-outline-variant);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+/* ── Links ─────────────────────────────────────────────────────── */
+
+/* Raw <a> is for *anchor-as-text* — references inline in a sentence,
+ * footer links, etc. For *anchor-as-affordance* (hover trace, hex
+ * geometry, motion), reach for <hp-link> or <hp-anchor>. */
+a {
+  color: var(--hp-secondary);
+  text-decoration: underline;
+  text-decoration-color: var(--hp-outline-variant);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition:
+    color var(--hp-duration-fast) var(--hp-ease-default),
+    text-decoration-color var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+a:hover {
+  color: var(--hp-primary-bright);
+  text-decoration-color: var(--hp-secondary);
+}
+
+a:active {
+  color: var(--hp-secondary-container);
+}
+
+a:visited {
+  color: var(--hp-secondary);
+}
+
+/* ── Code, kbd, samp, var ──────────────────────────────────────── */
+
+code,
+kbd,
+samp,
+var {
+  font-family: var(--hp-typo-mono-sm-font-family);
+  font-size: var(--hp-typo-mono-sm-font-size);
+  line-height: var(--hp-typo-mono-sm-line-height);
+}
+
+/* Inline code: subtle chip. Block-level <pre code> resets these in
+ * the pre rule below so code inside a block doesn't double-frame. */
+code {
+  background: var(--hp-surface-container);
+  color: var(--hp-primary-bright);
+  padding: 1px 4px;
+  border-radius: var(--hp-rounded-sm);
+}
+
+kbd {
+  background: var(--hp-surface-container-high);
+  color: var(--hp-on-surface);
+  padding: 1px 6px;
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+  /* Tiny inset shadow to read as a key-cap. Forced-colors override
+   * below switches to a plain border. */
+  box-shadow: inset 0 -1px 0 var(--hp-outline-faint);
+}
+
+var {
+  font-style: italic;
+  color: var(--hp-tertiary);
+}
+
+samp {
+  color: var(--hp-on-surface-variant);
+}
+
+pre {
+  margin: 0;
+  padding: var(--hp-md);
+  background: var(--hp-surface-container);
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+  overflow-x: auto;
+  font-family: var(--hp-typo-mono-sm-font-family);
+  font-size: var(--hp-typo-mono-sm-font-size);
+  line-height: var(--hp-typo-mono-sm-line-height);
+  color: var(--hp-on-surface);
+}
+
+pre code {
+  display: block;
+  background: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font: inherit;
+}
+
+/* ── Blockquote + figure ───────────────────────────────────────── */
+
+blockquote {
+  margin: 0;
+  padding: 0 0 0 var(--hp-md);
+  border-left: 2px solid var(--hp-secondary);
+  color: var(--hp-on-surface-variant);
+  font-style: italic;
+}
+
+blockquote cite,
+blockquote footer {
+  display: block;
+  margin-top: var(--hp-xs);
+  font-size: var(--hp-typo-body-sm-font-size);
+  font-style: normal;
+  color: var(--hp-on-surface-variant);
+}
+
+figure {
+  margin: 0;
+}
+
+figcaption {
+  font-size: var(--hp-typo-body-sm-font-size);
+  line-height: var(--hp-typo-body-sm-line-height);
+  color: var(--hp-on-surface-variant);
+}
+
+/* ── Lists ─────────────────────────────────────────────────────── */
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+li::marker {
+  color: var(--hp-secondary);
+}
+
+dl {
+  margin: 0;
+}
+
+dt {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: var(--hp-typo-label-sm-font-weight);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+}
+
+dd {
+  margin: 0;
+  color: var(--hp-on-surface);
+}
+
+/* ── Horizontal rule ───────────────────────────────────────────── */
+
+hr {
+  height: 0;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--hp-outline-faint);
+  color: inherit;
+}
+
+/* ── Tables ────────────────────────────────────────────────────── */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  color: var(--hp-on-surface);
+}
+
+caption {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: var(--hp-typo-label-sm-font-weight);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+  text-align: left;
+  caption-side: top;
+  padding-bottom: var(--hp-xs);
+}
+
+th,
+td {
+  padding: var(--hp-xs) var(--hp-sm);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--hp-outline-faint);
+}
+
+th {
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: 700;
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+  border-bottom-color: var(--hp-outline-variant);
+}
+
+/* ── Details / summary ─────────────────────────────────────────── */
+
+details {
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+  padding: var(--hp-md);
+  background: var(--hp-surface-container-low);
+}
+
+details[open] {
+  border-color: var(--hp-outline-variant);
+}
+
+/* Sibling spacing — details elements are chrome-bearing disclosure
+ * widgets that need visible separation from one another, unlike
+ * plain prose blocks which inherit rhythm from `.hp-prose`. */
+details + details {
+  margin-top: var(--hp-sm);
+}
+
+/* Hide the native disclosure marker. The browser's ::marker pseudo
+ * accepts colour but not margin/padding, so with
+ * `list-style-position: outside` the triangle gets pulled back into
+ * the details border edge no matter how much padding summary has.
+ * A custom flex layout + ::before triangle gives full control over
+ * marker-to-text spacing and lets the triangle rotate on open. */
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  font-family: var(--hp-typo-label-md-font-family);
+  font-size: var(--hp-typo-label-md-font-size);
+  font-weight: var(--hp-typo-label-md-font-weight);
+  letter-spacing: var(--hp-typo-label-md-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface);
+}
+
+/* Custom triangle marker. Points right when closed; rotates 90°
+ * to point down when the parent details is open. */
+summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--hp-secondary);
+  transition: transform var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+/* ── Form primitives ───────────────────────────────────────────── */
+
+/* Inputs / textareas / selects get a tokenised baseline — readable
+ * font, restrained border, focus ring matching hp-base. Consumers
+ * reaching for full hex geometry use <hp-button>, <hp-select>,
+ * <hp-toggle>, etc. */
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+input,
+select,
+textarea {
+  background: var(--hp-surface);
+  color: var(--hp-on-surface);
+  border: 1px solid var(--hp-outline-variant);
+  border-radius: var(--hp-rounded-sm);
+  padding: var(--hp-xs) var(--hp-sm);
+  font-family: var(--hp-typo-body-sm-font-family);
+  font-size: var(--hp-typo-body-sm-font-size);
+  line-height: var(--hp-typo-body-sm-line-height);
+  transition: border-color var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+input:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) {
+  border-color: var(--hp-secondary);
+}
+
+textarea {
+  min-height: calc(var(--hp-typo-body-sm-line-height) * 3em);
+  resize: vertical;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  /* Browser-native checkbox/radio painting varies wildly. Leave
+   * them alone — consumers wanting hex geometry use hp-checkbox /
+   * hp-radio. Just tint the accent so native widgets visually
+   * belong. */
+  accent-color: var(--hp-secondary);
+  width: auto;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+input[type="range"] {
+  accent-color: var(--hp-secondary);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+input[type="color"] {
+  padding: 0;
+  height: calc(var(--hp-typo-body-sm-line-height) * 1.6em);
+  min-width: 3rem;
+  cursor: pointer;
+}
+
+input[type="file"] {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--hp-on-surface-variant);
+  opacity: 0.6;
+}
+
+/* :user-invalid only fires after the user has touched the field;
+ * :invalid would light up empty required fields on first paint. */
+input:user-invalid,
+select:user-invalid,
+textarea:user-invalid {
+  border-color: var(--hp-error);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button {
+  background: transparent;
+  color: var(--hp-secondary);
+  border: 1px solid var(--hp-outline-variant);
+  border-radius: var(--hp-rounded-sm);
+  padding: var(--hp-xs) var(--hp-md);
+  font-family: var(--hp-typo-label-md-font-family);
+  font-size: var(--hp-typo-label-md-font-size);
+  font-weight: var(--hp-typo-label-md-font-weight);
+  letter-spacing: var(--hp-typo-label-md-letter-spacing);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color var(--hp-duration-fast) var(--hp-ease-default),
+    border-color var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+button:hover:not(:disabled) {
+  color: var(--hp-primary-bright);
+  border-color: var(--hp-secondary);
+}
+
+fieldset {
+  margin: 0;
+  padding: var(--hp-md);
+  border: 1px solid var(--hp-outline-faint);
+  border-radius: var(--hp-rounded-sm);
+}
+
+legend {
+  padding: 0 var(--hp-xs);
+  font-family: var(--hp-typo-label-sm-font-family);
+  font-size: var(--hp-typo-label-sm-font-size);
+  font-weight: var(--hp-typo-label-sm-font-weight);
+  letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+  text-transform: uppercase;
+  color: var(--hp-on-surface-variant);
+}
+
+label {
+  color: var(--hp-on-surface);
+}
+
+progress {
+  accent-color: var(--hp-secondary);
+}
+
+/* ── Focus ring (keyboard-only) ────────────────────────────────── */
+
+/* Mirrors the :focus-visible discipline in hp-base.css so native
+ * focusables and hp-* shadow hosts share one focus aesthetic. */
+:focus-visible {
+  outline: 2px solid var(--hp-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── .hp-prose — long-form content rhythm ──────────────────────── */
+
+/* Opt-in by adding `class="hp-prose"` to a wrapper. Adds vertical
+ * rhythm and the more opinionated treatments (list padding, table
+ * borders, blockquote indent) that don't belong on every loose <p>
+ * in an app. Designed for article bodies, README renders, MDX, docs
+ * prose — anywhere a chunk of HTML wants to read like a document. */
+
+.hp-prose {
+  color: var(--hp-on-surface);
+  max-width: 70ch;
+}
+
+.hp-prose > * + * {
+  margin-top: var(--hp-md);
+}
+
+.hp-prose h1,
+.hp-prose h2,
+.hp-prose h3,
+.hp-prose h4,
+.hp-prose h5,
+.hp-prose h6 {
+  margin-top: var(--hp-xl);
+  margin-bottom: var(--hp-sm);
+}
+
+.hp-prose > :first-child {
+  margin-top: 0;
+}
+
+.hp-prose h1 + h2,
+.hp-prose h2 + h3,
+.hp-prose h3 + h4 {
+  /* Tighten heading-after-heading so a section subtitle hugs its
+   * parent rather than floating in its own block. */
+  margin-top: var(--hp-sm);
+}
+
+.hp-prose ul,
+.hp-prose ol {
+  padding-left: var(--hp-lg);
+}
+
+.hp-prose ul {
+  list-style: disc;
+}
+
+.hp-prose ol {
+  list-style: decimal;
+}
+
+.hp-prose li + li {
+  margin-top: var(--hp-xs);
+}
+
+.hp-prose li > ul,
+.hp-prose li > ol {
+  /* Nested lists hug their parent item — don't apply the block
+   * rhythm gap from the `> * + *` rule above. */
+  margin-top: var(--hp-xs);
+}
+
+.hp-prose dl > dt {
+  margin-top: var(--hp-md);
+}
+
+.hp-prose dl > dd {
+  margin-top: var(--hp-xxs, var(--hp-xs));
+  margin-left: var(--hp-md);
+}
+
+.hp-prose blockquote {
+  padding: var(--hp-xs) var(--hp-md);
+}
+
+.hp-prose blockquote > * + * {
+  margin-top: var(--hp-sm);
+}
+
+.hp-prose figure {
+  margin: var(--hp-md) 0;
+}
+
+.hp-prose figcaption {
+  margin-top: var(--hp-xs);
+  text-align: center;
+}
+
+.hp-prose hr {
+  margin: var(--hp-xl) 0;
+}
+
+.hp-prose table {
+  margin: var(--hp-md) 0;
+}
+
+.hp-prose pre {
+  margin: var(--hp-md) 0;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  a,
+  input,
+  select,
+  textarea,
+  button,
+  summary::before {
+    transition: none;
+  }
+}
+
+/* ── Forced colors / high contrast ─────────────────────────────── */
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: CanvasText;
+  }
+  kbd {
+    box-shadow: none;
+  }
+  a {
+    text-decoration-color: LinkText;
+  }
+  blockquote {
+    border-left-color: CanvasText;
+  }
+}

@@ -20,17 +20,30 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-cell variant="anchor" tabindex="0">tab me</hp-cell>
       <hp-cell variant="anchor" aria-pressed="true">active</hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell variant="anchor">profile</hp-cell>
+  <hp-cell variant="anchor" size="md">deploy</hp-cell>
+  <hp-cell variant="anchor" size="lg">archive</hp-cell>
+  <hp-cell variant="anchor" tabindex="0">tab me</hp-cell>
+  <hp-cell variant="anchor" aria-pressed="true">active</hp-cell>
+</body>`}</hp-code>
+    </hp-demo>
 
-export default () => (
-  <>
-    <hp-cell variant="anchor">profile</hp-cell>
-    <hp-cell variant="anchor" size="md">deploy</hp-cell>
-    <hp-cell variant="anchor" size="lg">archive</hp-cell>
-    <hp-cell variant="anchor" tabindex="0">tab me</hp-cell>
-    <hp-cell variant="anchor" aria-pressed="true">active</hp-cell>
-  </>
-);`}</hp-code>
+    <hp-demo caption="Anchor — filled (drag handle / cluster centre)">
+      <hp-cell variant="anchor" filled tabindex="0">profile</hp-cell>
+      <hp-cell variant="anchor" filled size="md" tabindex="0">layout</hp-cell>
+      <hp-cell variant="anchor" filled size="lg" tabindex="0">forms</hp-cell>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- Filled-anchor reads as a solid primary hex, distinct from the
+       unfilled anchor neighbours in a cluster. Hover / focus swaps the
+       whole fill+stroke+label to secondary (matches the unfilled
+       anchor hue-swap motion, on a filled surface). Pairs with
+       <hp-cluster layout="honeycomb"> as the cluster centre. -->
+  <hp-cell variant="anchor" filled tabindex="0">profile</hp-cell>
+  <hp-cell variant="anchor" filled size="md" tabindex="0">layout</hp-cell>
+  <hp-cell variant="anchor" filled size="lg" tabindex="0">forms</hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Interactive — action">
@@ -39,14 +52,10 @@ export default () => (
       <hp-cell variant="action" filled tabindex="0">go live</hp-cell>
       <hp-cell variant="action" filled size="md" tabindex="0">commit</hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-cell variant="action" tabindex="0">deploy</hp-cell>
-    <hp-cell variant="action" filled tabindex="0">go live</hp-cell>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell variant="action" tabindex="0">deploy</hp-cell>
+  <hp-cell variant="action" filled tabindex="0">go live</hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Interactive — secondary & utility">
@@ -56,14 +65,10 @@ export default () => (
       <hp-cell variant="utility" tabindex="0">close</hp-cell>
       <hp-cell variant="utility" tabindex="0">filter</hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-cell variant="secondary" tabindex="0">cancel</hp-cell>
-    <hp-cell variant="utility" tabindex="0">edit</hp-cell>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell variant="secondary" tabindex="0">cancel</hp-cell>
+  <hp-cell variant="utility" tabindex="0">edit</hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <h2>Decorative — content</h2>
@@ -73,15 +78,11 @@ export default () => (
       <hp-cell variant="content">2 of 18 quests</hp-cell>
       <hp-cell variant="content" size="lg">build #4421 · all green · 24s</hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-cell variant="content" size="sm">v2.1.3</hp-cell>
-    <hp-cell variant="content">2 of 18 quests</hp-cell>
-    <hp-cell variant="content" size="lg">build #4421 · all green · 24s</hp-cell>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell variant="content" size="sm">v2.1.3</hp-cell>
+  <hp-cell variant="content">2 of 18 quests</hp-cell>
+  <hp-cell variant="content" size="lg">build #4421 · all green · 24s</hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <h2>Decorative — support &amp; slot</h2>
@@ -93,14 +94,10 @@ export default () => (
       <hp-cell variant="slot" size="sm"></hp-cell>
       <hp-cell variant="slot" size="md"></hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-cell variant="support"></hp-cell>
-    <hp-cell variant="slot"></hp-cell>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell variant="support"></hp-cell>
+  <hp-cell variant="slot"></hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <h2>Tone — semantic indicator</h2>
@@ -111,16 +108,12 @@ export default () => (
       <hp-cell tone="alert">restricted</hp-cell>
       <hp-cell tone="error">failed</hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-cell tone="positive">online</hp-cell>
-    <hp-cell tone="warn">pending</hp-cell>
-    <hp-cell tone="alert">restricted</hp-cell>
-    <hp-cell tone="error">failed</hp-cell>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell tone="positive">online</hp-cell>
+  <hp-cell tone="warn">pending</hp-cell>
+  <hp-cell tone="alert">restricted</hp-cell>
+  <hp-cell tone="error">failed</hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Active (filled)">
@@ -129,16 +122,12 @@ export default () => (
       <hp-cell tone="alert" active>restricted</hp-cell>
       <hp-cell tone="error" active>failed</hp-cell>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-cell tone="positive" active>online</hp-cell>
-    <hp-cell tone="warn" active>pending</hp-cell>
-    <hp-cell tone="alert" active>restricted</hp-cell>
-    <hp-cell tone="error" active>failed</hp-cell>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cell tone="positive" active>online</hp-cell>
+  <hp-cell tone="warn" active>pending</hp-cell>
+  <hp-cell tone="alert" active>restricted</hp-cell>
+  <hp-cell tone="error" active>failed</hp-cell>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

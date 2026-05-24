@@ -18,31 +18,23 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-checkbox disabled></hp-checkbox>
       <hp-checkbox checked disabled></hp-checkbox>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-checkbox></hp-checkbox>
-    <hp-checkbox checked></hp-checkbox>
-    <hp-checkbox indeterminate></hp-checkbox>
-    <hp-checkbox disabled></hp-checkbox>
-    <hp-checkbox checked disabled></hp-checkbox>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-checkbox></hp-checkbox>
+  <hp-checkbox checked></hp-checkbox>
+  <hp-checkbox indeterminate></hp-checkbox>
+  <hp-checkbox disabled></hp-checkbox>
+  <hp-checkbox checked disabled></hp-checkbox>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="With label">
       <hp-checkbox id="terms"></hp-checkbox>
       <hp-label for="terms">accept terms</hp-label>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-checkbox id="terms"></hp-checkbox>
-    <hp-label for="terms">Accept terms</hp-label>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-checkbox id="terms"></hp-checkbox>
+  <hp-label for="terms">Accept terms</hp-label>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

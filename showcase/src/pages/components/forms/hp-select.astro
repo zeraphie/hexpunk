@@ -20,25 +20,21 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-option value="xlarge" disabled>xlarge (sold out)</hp-option>
       </hp-select>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-select value="medium" placeholder="Choose a size">
+    <hp-option value="small">small</hp-option>
+    <hp-option value="medium">medium</hp-option>
+    <hp-option value="large">large</hp-option>
+    <hp-option value="xlarge" disabled>xlarge (sold out)</hp-option>
+  </hp-select>
 
-export default () => (
-  <>
-    <hp-select value="medium" placeholder="Choose a size">
-      <hp-option value="small">small</hp-option>
-      <hp-option value="medium">medium</hp-option>
-      <hp-option value="large">large</hp-option>
-      <hp-option value="xlarge" disabled>xlarge (sold out)</hp-option>
-    </hp-select>
-
-    <script>
-      document.querySelector("hp-select")
-        .addEventListener("change", (ev) => {
-          console.log(ev.detail.value);
-        });
-    </${"script"}>
-  </>
-);`}</hp-code>
+  <script>
+    document.querySelector("hp-select")
+      .addEventListener("change", (ev) => {
+        console.log(ev.detail.value);
+      });
+  </${"script"}>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

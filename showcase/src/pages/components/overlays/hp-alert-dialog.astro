@@ -23,22 +23,18 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-alert-dialog>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-button onclick="confirmDelete.show()">delete</hp-button>
 
-export default () => (
-  <>
-    <hp-button onclick="confirmDelete.show()">delete</hp-button>
-
-    <hp-alert-dialog id="confirmDelete">
-      <h3>Delete project?</h3>
-      <p>This can't be undone.</p>
-      <div slot="actions">
-        <hp-button onclick="confirmDelete.close()">cancel</hp-button>
-        <hp-button filled onclick="confirmDelete.close()">delete</hp-button>
-      </div>
-    </hp-alert-dialog>
-  </>
-);`}</hp-code>
+  <hp-alert-dialog id="confirmDelete">
+    <h3>Delete project?</h3>
+    <p>This can't be undone.</p>
+    <div slot="actions">
+      <hp-button onclick="confirmDelete.close()">cancel</hp-button>
+      <hp-button filled onclick="confirmDelete.close()">delete</hp-button>
+    </div>
+  </hp-alert-dialog>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
