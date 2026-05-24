@@ -3740,27 +3740,31 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "5-hex rosette layout — centre + 4 axial neighbours. Slotted\nchildren with slot names (`centre`, `top`, `middle-left`,\n`middle-right`, `bottom`) get positioned by axial offsets.",
+          "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
           "name": "HpCluster",
           "slots": [
             {
-              "description": "Centre hex",
+              "description": "Default slot — N children for honeycomb layout. First child is the centre.",
+              "name": ""
+            },
+            {
+              "description": "Rosette centre hex",
               "name": "centre"
             },
             {
-              "description": "Top hex (north neighbour)",
+              "description": "Rosette top hex (north neighbour)",
               "name": "top"
             },
             {
-              "description": "West-of-centre",
+              "description": "Rosette west-of-centre",
               "name": "middle-left"
             },
             {
-              "description": "East-of-centre",
+              "description": "Rosette east-of-centre",
               "name": "middle-right"
             },
             {
-              "description": "Bottom hex (south neighbour)",
+              "description": "Rosette bottom hex (south neighbour)",
               "name": "bottom"
             }
           ],
@@ -3775,6 +3779,17 @@
               "description": "Cell size for the cluster — `sm` (default), `md`, or `lg`.",
               "attribute": "size",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "layout",
+              "type": {
+                "text": "\"rosette\" | \"honeycomb\""
+              },
+              "default": "\"rosette\"",
+              "description": "Layout mode. `rosette` is the canonical 5-hex navigation\nrosette (named slots, current behaviour). `honeycomb` accepts\nN default-slot children packed into rings outward from the\nfirst child.",
+              "attribute": "layout",
+              "reflects": true
             }
           ],
           "attributes": [
@@ -3786,6 +3801,15 @@
               "default": "\"sm\"",
               "description": "Cell size for the cluster — `sm` (default), `md`, or `lg`.",
               "fieldName": "size"
+            },
+            {
+              "name": "layout",
+              "type": {
+                "text": "\"rosette\" | \"honeycomb\""
+              },
+              "default": "\"rosette\"",
+              "description": "Layout mode. `rosette` is the canonical 5-hex navigation\nrosette (named slots, current behaviour). `honeycomb` accepts\nN default-slot children packed into rings outward from the\nfirst child.",
+              "fieldName": "layout"
             }
           ],
           "superclass": {

@@ -1335,7 +1335,7 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 
 ### Organisms — multi-atom compositions
 
-- **Cluster (`<hp-cluster>`):** five small hexes arranged top / middle-left / middle-right / bottom plus a centre — the canonical "navigation rosette" from the pen.
+- **Cluster (`<hp-cluster>`):** multi-hex group layout. Two modes via the `layout` attribute. `rosette` (default — back-compat) is the canonical 5-hex navigation rosette: a centre cell with four named-slot neighbours (top / middle-left / middle-right / bottom). `honeycomb` accepts N default-slot children: first child is the centre (0, 0); remaining children fill outward clockwise from north — ring 1 holds 6 positions, ring 2 holds 12 (capped at 19 hexes in v1). Drag handling stays in `<hp-grid>` via its `drag-handle="..."` selector — for honeycomb `:first-child` selects the centre, for rosette `[slot='centre']`.
 - **Login organism:** email molecule + password molecule + `hex-content` (remember) + `hex-action` (enter).
 - **Dashboard cluster:** anchor + 4–6 content hexes + 2 utility hexes in a sparse cluster.
 - **HUD strip:** anchor + status hexes + action hexes laid horizontally with half-cell vertical offset between alternating cells.

@@ -495,7 +495,7 @@
     },
     {
       "name": "hp-cluster",
-      "description": "5-hex rosette layout — centre + 4 axial neighbours. Slotted\nchildren with slot names (`centre`, `top`, `middle-left`,\n`middle-right`, `bottom`) get positioned by axial offsets.",
+      "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
       "attributes": [
         {
           "name": "size",
@@ -509,6 +509,18 @@
             },
             {
               "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "layout",
+          "description": "Layout mode. `rosette` is the canonical 5-hex navigation\nrosette (named slots, current behaviour). `honeycomb` accepts\nN default-slot children packed into rings outward from the\nfirst child.",
+          "values": [
+            {
+              "name": "rosette"
+            },
+            {
+              "name": "honeycomb"
             }
           ]
         }
