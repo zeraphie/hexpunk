@@ -28,21 +28,15 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-tether from="#tether-node-b" to="#tether-node-c" directed></hp-tether>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-grid>
+  <hp-cell variant="anchor" q="-2" r="0" id="node-a">node a</hp-cell>
+  <hp-cell variant="anchor" q="2"  r="0" id="node-b">node b</hp-cell>
+  <hp-cell variant="anchor" q="0"  r="-1" id="node-c">node c</hp-cell>
+</hp-grid>
 
-export default () => (
-  <>
-    <hp-grid>
-      <hp-cell variant="anchor" q="-2" r="0" id="node-a">node a</hp-cell>
-      <hp-cell variant="anchor" q="2"  r="0" id="node-b">node b</hp-cell>
-      <hp-cell variant="anchor" q="0"  r="-1" id="node-c">node c</hp-cell>
-    </hp-grid>
-
-    <hp-tether from="#node-a" to="#node-b"></hp-tether>
-    <hp-tether from="#node-a" to="#node-c" state="idle"></hp-tether>
-    <hp-tether from="#node-b" to="#node-c" directed></hp-tether>
-  </>
-);`}</hp-code>
+<hp-tether from="#node-a" to="#node-b"></hp-tether>
+<hp-tether from="#node-a" to="#node-c" state="idle"></hp-tether>
+<hp-tether from="#node-b" to="#node-c" directed></hp-tether>`}</hp-code>
     </hp-demo>
 
     <p>
@@ -61,26 +55,20 @@ export default () => (
         <hp-cell variant="anchor" q="0" r="2">d</hp-cell>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<!-- Authoring: just the grid + its hexes. hp-tether elements
+     are auto-appended by the grid on drop. -->
+<hp-grid draggable tetherable>
+  <hp-cell variant="anchor" q="-2" r="0">a</hp-cell>
+  <hp-cell variant="anchor" q="2"  r="0">b</hp-cell>
+  <hp-cell variant="anchor" q="0"  r="-2">c</hp-cell>
+  <hp-cell variant="anchor" q="0"  r="2">d</hp-cell>
+</hp-grid>
 
-export default () => (
-  <>
-    <!-- Authoring: just the grid + its hexes. hp-tether elements
-         are auto-appended by the grid on drop. -->
-    <hp-grid draggable tetherable>
-      <hp-cell variant="anchor" q="-2" r="0">a</hp-cell>
-      <hp-cell variant="anchor" q="2"  r="0">b</hp-cell>
-      <hp-cell variant="anchor" q="0"  r="-2">c</hp-cell>
-      <hp-cell variant="anchor" q="0"  r="2">d</hp-cell>
-    </hp-grid>
-
-    document.querySelector("hp-grid")
-      .addEventListener("hp-grid-tether", (ev) => {
-        // ev.detail = { source, target, tether }
-        // tether.drawIn() has already been called for you.
-      });
-  </>
-);`}</hp-code>
+document.querySelector("hp-grid")
+  .addEventListener("hp-grid-tether", (ev) => {
+    // ev.detail = { source, target, tether }
+    // tether.drawIn() has already been called for you.
+  });`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

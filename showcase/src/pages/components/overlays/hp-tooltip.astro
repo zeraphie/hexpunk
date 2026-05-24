@@ -32,16 +32,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-tooltip>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-tooltip side="top">
-      <hp-button>info</hp-button>
-      <span slot="content">More information</span>
-    </hp-tooltip>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-tooltip side="top">
+  <hp-button>info</hp-button>
+  <span slot="content">More information</span>
+</hp-tooltip>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

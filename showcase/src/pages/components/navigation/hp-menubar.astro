@@ -33,23 +33,17 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-dropdown-menu>
       </hp-menubar>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-menubar>
-      <hp-dropdown-menu>
-        <hp-button>File</hp-button>
-        <hp-menu-item slot="content">New</hp-menu-item>
-        <hp-menu-item slot="content">Open</hp-menu-item>
-      </hp-dropdown-menu>
-      <hp-dropdown-menu>
-        <hp-button>Edit</hp-button>
-        <hp-menu-item slot="content">Undo</hp-menu-item>
-      </hp-dropdown-menu>
-    </hp-menubar>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-menubar>
+  <hp-dropdown-menu>
+    <hp-button>File</hp-button>
+    <hp-menu-item slot="content">New</hp-menu-item>
+    <hp-menu-item slot="content">Open</hp-menu-item>
+  </hp-dropdown-menu>
+  <hp-dropdown-menu>
+    <hp-button>Edit</hp-button>
+    <hp-menu-item slot="content">Undo</hp-menu-item>
+  </hp-dropdown-menu>
+</hp-menubar>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

@@ -28,24 +28,18 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-tab-panel>
       </hp-tabs>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-tabs value="overview">
+  <hp-tab value="overview">overview</hp-tab>
+  <hp-tab value="details">details</hp-tab>
+  <hp-tab-panel value="overview">…</hp-tab-panel>
+  <hp-tab-panel value="details">…</hp-tab-panel>
+</hp-tabs>
 
-export default () => (
-  <>
-    <hp-tabs value="overview">
-      <hp-tab value="overview">overview</hp-tab>
-      <hp-tab value="details">details</hp-tab>
-      <hp-tab-panel value="overview">…</hp-tab-panel>
-      <hp-tab-panel value="details">…</hp-tab-panel>
-    </hp-tabs>
-
-    document
-      .querySelector("hp-tabs")
-      .addEventListener("change", (ev) => {
-        console.log(ev.detail.value);
-      });
-  </>
-);`}</hp-code>
+document
+  .querySelector("hp-tabs")
+  .addEventListener("change", (ev) => {
+    console.log(ev.detail.value);
+  });`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

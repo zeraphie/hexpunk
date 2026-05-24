@@ -38,30 +38,24 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-unfold-overlay>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-grid>
+  <hp-unfold-overlay q="0" r="0">
+    <hp-cell variant="anchor" slot="source">player</hp-cell>
 
-export default () => (
-  <>
-    <hp-grid>
-      <hp-unfold-overlay q="0" r="0">
-        <hp-cell variant="anchor" slot="source">player</hp-cell>
+    <h2>kira_chen</h2>
+    <p>Level 42 hexcrafter — Western Loop division</p>
+    <p>Recent: completed "Stardust Refactor"</p>
 
-        <h2>kira_chen</h2>
-        <p>Level 42 hexcrafter — Western Loop division</p>
-        <p>Recent: completed "Stardust Refactor"</p>
+    <hp-cell variant="action" filled tabindex="0">profile</hp-cell>
+  </hp-unfold-overlay>
+</hp-grid>
 
-        <hp-cell variant="action" filled tabindex="0">profile</hp-cell>
-      </hp-unfold-overlay>
-    </hp-grid>
-
-    const overlay = document.querySelector("hp-unfold-overlay");
-    overlay.addEventListener("hp-unfold-open", () => { /* analytics, prefetch */ });
-    overlay.addEventListener("hp-unfold-close", () => { /* … */ });
-    overlay.toggle();    // flip open / closed
-    overlay.close();     // close if open
-    overlay.open = true; // direct property write also works
-  </>
-);`}</hp-code>
+const overlay = document.querySelector("hp-unfold-overlay");
+overlay.addEventListener("hp-unfold-open", () => { /* analytics, prefetch */ });
+overlay.addEventListener("hp-unfold-close", () => { /* … */ });
+overlay.toggle();    // flip open / closed
+overlay.close();     // close if open
+overlay.open = true; // direct property write also works`}</hp-code>
     </hp-demo>
 
     <p>Same element outside a grid — the overlay still centers on the viewport.</p>
@@ -78,18 +72,12 @@ export default () => (
         <hp-cell tone="positive" active>deployed</hp-cell>
       </hp-unfold-overlay>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-unfold-overlay>
-      <hp-cell variant="action" slot="source" tabindex="0">details</hp-cell>
-      <h2>Build #4082</h2>
-      <p>Pushed to main by kira_chen</p>
-      <hp-cell tone="positive" active>deployed</hp-cell>
-    </hp-unfold-overlay>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-unfold-overlay>
+  <hp-cell variant="action" slot="source" tabindex="0">details</hp-cell>
+  <h2>Build #4082</h2>
+  <p>Pushed to main by kira_chen</p>
+  <hp-cell tone="positive" active>deployed</hp-cell>
+</hp-unfold-overlay>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

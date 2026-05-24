@@ -23,26 +23,20 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-dialog>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-button onclick="myDialog.show()">open</hp-button>
 
-export default () => (
-  <>
-    <hp-button onclick="myDialog.show()">open</hp-button>
+<hp-dialog id="myDialog">
+  <h3>Confirm</h3>
+  <p>Are you sure?</p>
+  <hp-button onclick="myDialog.close()">cancel</hp-button>
+  <hp-button filled onclick="myDialog.close()">ok</hp-button>
+</hp-dialog>
 
-    <hp-dialog id="myDialog">
-      <h3>Confirm</h3>
-      <p>Are you sure?</p>
-      <hp-button onclick="myDialog.close()">cancel</hp-button>
-      <hp-button filled onclick="myDialog.close()">ok</hp-button>
-    </hp-dialog>
-
-    document
-      .querySelector("hp-dialog")
-      .addEventListener("hp-dialog-close", () => {
-        // fires on backdrop click, Escape, or .close()
-      });
-  </>
-);`}</hp-code>
+document
+  .querySelector("hp-dialog")
+  .addEventListener("hp-dialog-close", () => {
+    // fires on backdrop click, Escape, or .close()
+  });`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
