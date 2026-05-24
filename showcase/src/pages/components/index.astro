@@ -15,28 +15,30 @@ interface Category {
   items: CategoryItem[];
 }
 
-// Hand-tuned axial positions per category — clusters spaced 3 axial
-// units apart in both directions. The cluster bbox is ~5 axial units
-// wide / tall (4 col-steps + cell width), so 3-unit spacing means
-// neighbour clusters interleave at the corners. Empty honeycomb-
-// corner space in each cluster's ring-2 region lets them tile
-// cleanly without their hexes literally overlapping.
+// Hand-tuned axial positions per category — clusters spaced 6 axial
+// units apart in both directions. Each cluster's ring-2 reach is 2
+// axial units in every direction from its centre; with 6-unit
+// centre-to-centre spacing, neighbour clusters' ring-2 hexes sit
+// 2 axial units apart (i.e. one empty hex of visible gap between
+// them). Anything tighter and the ring-2 edges share stroke or
+// overlap — the spacing has to account for the cluster's reach,
+// not just the centre position.
 // Layout: 4×3 grid of categories aligned vertically in pixel space
 // (q on odd r rows shifts by -r/2 to compensate the axial-to-pixel
 // x = col_step * (q + r/2) offset).
 const POSITIONS: Record<string, { q: number; r: number }> = {
   Primitives: { q: 0, r: 0 },
-  Forms: { q: 3, r: 0 },
-  Status: { q: 6, r: 0 },
-  Loading: { q: 9, r: 0 },
-  Layout: { q: -2, r: 3 },
-  Images: { q: 1, r: 3 },
-  Navigation: { q: 4, r: 3 },
-  Overlays: { q: 7, r: 3 },
-  Messaging: { q: -3, r: 6 },
-  Tether: { q: 0, r: 6 },
-  Unfold: { q: 3, r: 6 },
-  Deprecated: { q: 6, r: 6 },
+  Forms: { q: 6, r: 0 },
+  Status: { q: 12, r: 0 },
+  Loading: { q: 18, r: 0 },
+  Layout: { q: -3, r: 6 },
+  Images: { q: 3, r: 6 },
+  Navigation: { q: 9, r: 6 },
+  Overlays: { q: 15, r: 6 },
+  Messaging: { q: -6, r: 12 },
+  Tether: { q: 0, r: 12 },
+  Unfold: { q: 6, r: 12 },
+  Deprecated: { q: 12, r: 12 },
 };
 
 const componentsBranch = SITEMAP.find(
