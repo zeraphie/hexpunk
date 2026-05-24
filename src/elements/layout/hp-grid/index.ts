@@ -70,13 +70,9 @@ import "../../tether/hp-tether.js";
 import { scan } from "../../../icons/scan.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import { axialNeighbours, slotKey } from "./axial.js";
-import {
-  type FillMask,
-  findFirstFreePosition,
-  findFirstFreePositionRowMajor,
-  markClaimed,
-  parseFillCells,
-} from "./pack.js";
+import { type FillMask, markClaimed, parseFillCells } from "./layouts/index.js";
+import { findRowsPosition } from "./layouts/rows.js";
+import { findSpiralPosition } from "./layouts/spiral.js";
 import { PanController, stopPanFromButton } from "./pan.js";
 import { recenter as recenterContent } from "./recenter.js";
 import { hpGridStyles } from "./styles.js";
@@ -151,19 +147,19 @@ export class HpGrid extends LitElement {
    *
    * - `free` (default) respects each child's authored `q` / `r`
    *   attributes.
-   * - `masonry` runs an FFD bin-pack with a spiral-from-origin scan:
+   * - `spiral` runs an FFD bin-pack with a spiral-from-origin scan:
    *   children are sorted by mask size descending, then each is
    *   placed at the first free position picked from a scan ordered
    *   by axial distance from `(0, 0)` (ring 0, then ring 1's 6
    *   positions, ring 2's 12, …). Produces a tight roughly-square
    *   honeycomb — largest cluster anchors the centre, smaller ones
    *   nest around it with a ≥1-hex gap.
-   * - `masonry-wide` runs the same FFD pack but with a row-major
-   *   scan capped at `WIDE_HALF_COLS` axial cells wide, so the
-   *   layout grows as left-to-right rows that wrap downward —
-   *   roughly-rectangular wide arrangement, ideal for full-page-
-   *   width surfaces (component index pages) where the spiral's
-   *   square shape leaves too much horizontal space unused.
+   * - `rows` runs the same FFD pack but with a row-major scan capped
+   *   at `WIDE_HALF_COLS` axial cells wide, so the layout grows as
+   *   left-to-right rows that wrap downward — roughly-rectangular
+   *   wide arrangement, ideal for full-page-width surfaces (component
+   *   index pages) where the spiral's square shape leaves too much
+   *   horizontal space unused.
    *
    * Children publish their actual filled hexes via `data-fill-cells`
    * (composite elements like `<hp-cluster>` set this on slotchange);
@@ -172,13 +168,13 @@ export class HpGrid extends LitElement {
    * bbox padding — so non-symmetric clusters' empty corners stay
    * available for neighbours to tuck into.
    *
-   * Triggered automatically on first render when set to a masonry
-   * mode, and re-runs when the attribute changes. Manual repack
+   * Triggered automatically on first render when set to `spiral` or
+   * `rows`, and re-runs when the attribute changes. Manual repack
    * via `.pack()`. Drag interactions stay live; calling `.pack()`
    * again re-runs the FFD pack from scratch (dragged positions are
    * ignored). */
   @property({ reflect: true })
-  layout: "free" | "masonry" | "masonry-wide" = "free";
+  layout: "free" | "spiral" | "rows" = "free";
 
   /** Track which children occupy which axial slots — keyed `"q,r"`. */
   private readonly occupancy = new Map<string, HTMLElement>();
@@ -232,7 +228,7 @@ export class HpGrid extends LitElement {
   }
 
   override firstUpdated(): void {
-    if (this.isMasonryLayout()) {
+    if (this.isPackedLayout()) {
       // Wait one frame so slotted children (hp-cluster) have run their
       // own slotchange and published `data-fill-cells` attrs.
       requestAnimationFrame(() => this.pack());
@@ -240,7 +236,7 @@ export class HpGrid extends LitElement {
   }
 
   override updated(changed: Map<string, unknown>): void {
-    if (changed.has("layout") && this.isMasonryLayout()) {
+    if (changed.has("layout") && this.isPackedLayout()) {
       // updated() fires after firstUpdated on the very first render,
       // and we don't want to double-pack — skip when the previous
       // value is undefined (first render). The firstUpdated path
@@ -252,33 +248,33 @@ export class HpGrid extends LitElement {
     }
   }
 
-  private isMasonryLayout(): boolean {
-    return this.layout === "masonry" || this.layout === "masonry-wide";
+  private isPackedLayout(): boolean {
+    return this.layout === "spiral" || this.layout === "rows";
   }
 
-  /** Axial-cell width cap for `layout="masonry-wide"`. Sized to force
-   * 2–3 rows for the typical components-page workload (~12 mixed-
-   * size clusters): at halfCols=10 the layout spans ~20 axial wide,
+  /** Axial-cell width cap for `layout="rows"`. Sized to force 2–3
+   * rows for the typical components-page workload (~12 mixed-size
+   * clusters): at halfCols=10 the layout spans ~20 axial wide,
    * which fits 4–6 medium clusters per row before wrapping. Pinned
    * here rather than viewport-derived so wide layouts stay
    * predictable across screen sizes. */
   private static readonly WIDE_HALF_COLS = 10;
 
-  /** Run the masonry bin-pack: every `[q][r]` child is placed at the
-   * leftmost-topmost axial position whose 1-cell-padded extent doesn't
-   * collide with already-placed children. Children's extent comes from
-   * their `data-axial-q-min`/`q-max`/`r-min`/`r-max` attributes
-   * (set by composite elements like `<hp-cluster>` after slotchange);
-   * children without those attrs are treated as single-hex (`0,0,0,0`).
+  /**
+   * Run the FFD bin-pack for `layout="spiral"` or `layout="rows"`.
+   * Children are sorted by mask size descending (largest first; ties
+   * broken by document order), then each is placed at the first free
+   * position the chosen strategy returns. Strategies live in
+   * `./layouts/spiral.ts` and `./layouts/rows.ts`; this method just
+   * orchestrates.
    *
-   * Sort order: children are processed by their *current* `q`/`r`
-   * position (lowest r first, then lowest q), so dragged children
-   * stay roughly where the user put them when repacking. On the first
-   * call (children at their authored positions), this matches author
-   * order if positions were left at the default `0,0`. */
+   * Children publish their actual filled hexes via `data-fill-cells`
+   * (composite elements like `<hp-cluster>` set this on slotchange);
+   * children without it are treated as single-hex.
+   */
   public pack(): void {
     // Take every direct element child except decorative backdrops.
-    // Children needn't have authored q/r — masonry assigns them.
+    // Children needn't have authored q/r — pack assigns them.
     // hp-background is the only known non-packable decoration; if
     // future siblings need exclusion they can carry `data-hp-decoration`.
     const children = Array.from(this.children).filter(
@@ -307,17 +303,17 @@ export class HpGrid extends LitElement {
     // layout is deterministic.
     items.sort((a, b) => b.mask.length - a.mask.length || a.order - b.order);
 
-    // `masonry` uses the spiral-from-origin scan → roughly-square
-    // honeycomb. `masonry-wide` uses row-major with a width cap →
-    // roughly-rectangular wide arrangement that fills horizontal
-    // space on full-page-width surfaces.
-    const wide = this.layout === "masonry-wide";
+    // `spiral` → spiral-from-origin scan, roughly-square honeycomb.
+    // `rows` → row-major + width cap, roughly-rectangular wide
+    // arrangement that fills horizontal space on full-page-width
+    // surfaces.
+    const rows = this.layout === "rows";
 
     const claimed = new Set<string>();
     for (const item of items) {
-      const pos = wide
-        ? findFirstFreePositionRowMajor(item.mask, claimed, HpGrid.WIDE_HALF_COLS)
-        : findFirstFreePosition(item.mask, claimed);
+      const pos = rows
+        ? findRowsPosition(item.mask, claimed, HpGrid.WIDE_HALF_COLS)
+        : findSpiralPosition(item.mask, claimed);
       item.el.setAttribute("q", String(pos.q));
       item.el.setAttribute("r", String(pos.r));
       // Mirror to the CSS custom properties the host stylesheet reads
@@ -366,7 +362,7 @@ export class HpGrid extends LitElement {
    * Fit every positioned child inside the viewport and centre the
    * content. Public so consumers can recenter programmatically; the
    * bound `recenter` button in the controls slot calls it on click,
-   * and the masonry pack pipeline runs it after every placement
+   * and the FFD pack pipeline runs it after every placement
    * pass. Implementation lives in `./recenter.ts`.
    */
   recenter(): void {

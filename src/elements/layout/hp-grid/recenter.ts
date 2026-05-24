@@ -12,7 +12,7 @@
  * non-symmetric cluster's empty bbox corners no longer count as
  * occupied space.
  *
- * Triggered automatically after every masonry pack, and bound to the
+ * Triggered automatically after every FFD pack, and bound to the
  * `Recenter` control button so the user can snap back to "show
  * everything" after any pan/zoom interaction.
  */
@@ -93,7 +93,7 @@ export function recenter(host: RecenterHost): void {
   const paddedW = Math.max(1, maxCx - minCx + 2 * halfCellW + 2 * padX);
   const paddedH = Math.max(1, maxCy - minCy + 2 * halfCellH + 2 * padY);
   const zoomFit = Math.min(vw / paddedW, vh / paddedH);
-  // Never zoom IN past native — masonry packing's natural scale is
+  // Never zoom IN past native — FFD packing's natural scale is
   // already correct, we only zoom OUT when content overflows.
   const z = Math.max(ZOOM_MIN, Math.min(1, zoomFit));
   host.zoom = z;

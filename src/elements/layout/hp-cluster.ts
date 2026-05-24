@@ -33,7 +33,7 @@ const ROW_STEP_FACTOR = 0.8660254;
 /** Axial coordinates of each honeycomb position in fill order — matches
  * the CSS :nth-child rules in this element's stylesheet. Used to report
  * the cluster's actual filled-hex extent (data-axial-* attributes) so
- * hp-grid masonry packing knows the cluster's real footprint, not just
+ * hp-grid packed layouts know the cluster's real footprint, not just
  * its host bbox. */
 const HONEYCOMB_POSITIONS: ReadonlyArray<{ q: number; r: number }> = [
   { q: 0, r: 0 }, //  1: centre
@@ -337,7 +337,7 @@ export class HpCluster extends LitElement {
   /** Walks slotted children, finds which honeycomb positions are
    * filled (children fill in order matching HONEYCOMB_POSITIONS), and
    * publishes both the per-cell fill list (`data-fill-cells`) and the
-   * bounding box (`data-axial-q-min` etc.) so hp-grid masonry mode
+   * bounding box (`data-axial-q-min` etc.) so hp-grid packed layouts
    * can pack clusters using their actual hex footprint rather than
    * the worst-case bbox. Per-cell occupancy lets neighbouring
    * clusters interpenetrate each other's empty bbox corners — a

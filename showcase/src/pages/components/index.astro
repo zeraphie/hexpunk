@@ -20,9 +20,9 @@ interface Category {
   items: CategoryItem[];
 }
 
-// Axial positions are computed at runtime by <hp-grid layout="masonry">
-// — every cluster reports its filled-hex extent via data-axial-* and
-// hp-grid greedy-packs them with a 1-cell gap. Adding / removing
+// Axial positions are computed at runtime by <hp-grid layout="rows">
+// — every cluster reports its filled-hex extent via data-fill-cells
+// and hp-grid greedy-packs them with a 1-cell gap. Adding / removing
 // components in sitemap.ts auto-reflows.
 const componentsBranch = SITEMAP.find(
   (n) => !isLeaf(n) && n.title === "Components"
@@ -59,7 +59,7 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       </label>
     </header>
 
-    <hp-grid draggable layout="masonry-wide" id="components-grid" class="components-grid">
+    <hp-grid draggable layout="rows" id="components-grid" class="components-grid">
       {categories.map((cat) => (
         <hp-cluster layout="honeycomb" drag-handle=":first-child">
           <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
