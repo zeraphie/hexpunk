@@ -1159,7 +1159,7 @@
         },
         {
           "name": "filled",
-          "description": "High-emphasis filled CTA. Meaningful when `variant=\"action\"` —\npaints both polygons with `--hp-primary`, label flips to\n`--hp-on-primary`."
+          "description": "Filled-hex paint. Works on `variant=\"action\"` (high-emphasis CTA;\ndarkens to primary-container on hover/focus) and `variant=\"anchor\"`\n(identity / grip / drag-handle; hue-swaps to secondary on\nhover/focus/aria-pressed — same as the unfilled anchor engagement\nmotion). Both paint the polygon with `--hp-primary` and flip the\nlabel to `--hp-on-primary` at rest."
         }
       ]
     },

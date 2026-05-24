@@ -16,7 +16,13 @@
 // of any variant. `neutral` (default) keeps the variant's resting
 // tokens. Pairs with `active`: tone-stroked at rest, tone-container
 // filled when active.
-// - `filled` is the action CTA paint — primary fill, on-primary label.
+// - `filled` paints the host with `--hp-primary` and flips the label to
+// `--hp-on-primary`. Works on `variant="action"` (the CTA shape) and
+// `variant="anchor"` (the identity / grip / drag-handle shape). On
+// hover/focus/aria-pressed: action+filled darkens to primary-container
+// for keyboard distinction; anchor+filled swaps to secondary (the
+// canonical anchor hue-swap), so a filled-anchor drag handle reads
+// the same engagement motion as its unfilled siblings.
 // - `size` is `sm` (default), `md` (flat-top rotation), `lg`.
 //
 // Hit area is hex-shaped: the host has `pointer-events: none` and
@@ -104,9 +110,12 @@ export class HpCell extends LitElement {
   @property({ reflect: true, type: Boolean })
   active = false;
 
-  /** High-emphasis filled CTA. Meaningful when `variant="action"` —
-   * paints both polygons with `--hp-primary`, label flips to
-   * `--hp-on-primary`. */
+  /** Filled-hex paint. Works on `variant="action"` (high-emphasis CTA;
+   * darkens to primary-container on hover/focus) and `variant="anchor"`
+   * (identity / grip / drag-handle; hue-swaps to secondary on
+   * hover/focus/aria-pressed — same as the unfilled anchor engagement
+   * motion). Both paint the polygon with `--hp-primary` and flip the
+   * label to `--hp-on-primary` at rest. */
   @property({ reflect: true, type: Boolean })
   filled = false;
 
@@ -284,6 +293,26 @@ export class HpCell extends LitElement {
         --hp-stroke-color: var(--hp-primary-container);
         --hp-hex-fill: var(--hp-primary-container);
         --hp-cell-label-color: var(--hp-on-primary-container);
+      }
+
+      /* ── Filled anchor (drag handle / cluster centre) ────────── */
+      /* Rest: same primary fill as filled action. Engaged states
+       * swap the whole fill+stroke+label to secondary — matches
+       * the unfilled anchor hover hue-swap motion, applied to a
+       * filled surface. */
+
+      :host([variant="anchor"][filled]) {
+        --hp-stroke-color: var(--hp-primary);
+        --hp-hex-fill: var(--hp-primary);
+        --hp-cell-label-color: var(--hp-on-primary);
+      }
+
+      :host([variant="anchor"][filled]:hover),
+      :host([variant="anchor"][filled]:focus-visible),
+      :host([variant="anchor"][filled][aria-pressed="true"]) {
+        --hp-stroke-color: var(--hp-secondary);
+        --hp-hex-fill: var(--hp-secondary);
+        --hp-cell-label-color: var(--hp-on-secondary);
       }
 
       /* ── Tone overlay (any variant) ──────────────────────────── */

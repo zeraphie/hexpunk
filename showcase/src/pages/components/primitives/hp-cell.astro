@@ -29,6 +29,23 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <hp-demo caption="Anchor — filled (drag handle / cluster centre)">
+      <hp-cell variant="anchor" filled tabindex="0">profile</hp-cell>
+      <hp-cell variant="anchor" filled size="md" tabindex="0">layout</hp-cell>
+      <hp-cell variant="anchor" filled size="lg" tabindex="0">forms</hp-cell>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- Filled-anchor reads as a solid primary hex, distinct from the
+       unfilled anchor neighbours in a cluster. Hover / focus swaps the
+       whole fill+stroke+label to secondary (matches the unfilled
+       anchor hue-swap motion, on a filled surface). Pairs with
+       <hp-cluster layout="honeycomb"> as the cluster centre. -->
+  <hp-cell variant="anchor" filled tabindex="0">profile</hp-cell>
+  <hp-cell variant="anchor" filled size="md" tabindex="0">layout</hp-cell>
+  <hp-cell variant="anchor" filled size="lg" tabindex="0">forms</hp-cell>
+</body>`}</hp-code>
+    </hp-demo>
+
     <hp-demo caption="Interactive — action">
       <hp-cell variant="action" tabindex="0">deploy</hp-cell>
       <hp-cell variant="action" size="md" tabindex="0">launch</hp-cell>

@@ -44,7 +44,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <hp-demo caption="Honeycomb — ring 1 (7 children: centre + 6 neighbours)">
       <hp-cluster layout="honeycomb">
-        <hp-cell variant="anchor" tabindex="0">forms</hp-cell>
+        <hp-cell variant="anchor" filled tabindex="0">forms</hp-cell>
         <hp-cell variant="anchor" tabindex="0">button</hp-cell>
         <hp-cell variant="anchor" tabindex="0">checkbox</hp-cell>
         <hp-cell variant="anchor" tabindex="0">radio</hp-cell>
@@ -55,10 +55,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
       <hp-code slot="code" language="html">{`<body>
   <hp-cluster layout="honeycomb">
-    <!-- First child is the centre — variant="anchor" is the
-         identity / grip / section-marker variant (the drag
-         handle when wrapped in a draggable hp-grid). -->
-    <hp-cell variant="anchor" tabindex="0">forms</hp-cell>
+    <!-- First child is the centre — variant="anchor" + filled
+         paints the drag-handle as a solid primary hex so it
+         reads distinctly from the unfilled neighbours. -->
+    <hp-cell variant="anchor" filled tabindex="0">forms</hp-cell>
     <!-- Remaining children fill ring 1 clockwise from north (6 max). -->
     <hp-cell variant="anchor" tabindex="0">button</hp-cell>
     <hp-cell variant="anchor" tabindex="0">checkbox</hp-cell>
@@ -72,7 +72,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <hp-demo caption="Honeycomb — ring 2 (13 children: centre + 6 + 6 of ring 2)">
       <hp-cluster layout="honeycomb">
-        <hp-cell variant="anchor" tabindex="0">layout</hp-cell>
+        <hp-cell variant="anchor" filled tabindex="0">layout</hp-cell>
         <hp-cell variant="anchor" tabindex="0">background</hp-cell>
         <hp-cell variant="anchor" tabindex="0">cluster</hp-cell>
         <hp-cell variant="anchor" tabindex="0">collapsible</hp-cell>
@@ -89,7 +89,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
       <hp-code slot="code" language="html">{`<body>
   <hp-cluster layout="honeycomb">
-    <hp-cell variant="anchor" tabindex="0">layout</hp-cell>
+    <hp-cell variant="anchor" filled tabindex="0">layout</hp-cell>
     <hp-cell variant="anchor" tabindex="0">background</hp-cell>
     <hp-cell variant="anchor" tabindex="0">cluster</hp-cell>
     <!-- ... 11 more children. Ring 1 fills first (positions 2-7);
