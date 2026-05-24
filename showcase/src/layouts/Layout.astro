@@ -292,7 +292,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         if (!name) {
           name = document.documentElement.dataset.theme;
         }
-        return name === "light" ? "github-light" : "night-owl";
+        return name === "light" ? "github-light" : "tokyo-night";
       }
       const shikiHighlighter: Parameters<typeof HpCode.setHighlighter>[0] = async (
         code,
@@ -306,7 +306,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         try {
           const { getSingletonHighlighter } = await import("shiki");
           const highlighter = await getSingletonHighlighter({
-            themes: ["github-light", "night-owl"],
+            themes: ["github-light", "tokyo-night"],
             langs: [
               "html",
               "css",
