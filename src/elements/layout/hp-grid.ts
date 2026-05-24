@@ -80,6 +80,33 @@ import {
 // on CSS `sqrt()` which isn't reliable across Baseline 2025.
 const ROW_STEP_FACTOR = 0.8660254;
 
+/** Pointy-top hex half-height as a fraction of cell width
+ * (= 1 / sqrt(3) ≈ 0.5774). Used by `recenter()` to compute the
+ * vertical pixel extent of a single hex when fitting content. */
+const HEX_HALF_HEIGHT_FACTOR = 0.5773503;
+
+/** Fallback fill mask for children without `data-fill-cells` — a
+ * single hex at the child's own (q, r). */
+const SINGLE_CELL_MASK: ReadonlyArray<{ q: number; r: number }> = [{ q: 0, r: 0 }];
+
+/** Inline parser for `data-fill-cells` — duplicates `parseFillCells`
+ * from hp-grid-pack.ts to avoid the pack module's `[{q: 0, r: 0}]`
+ * fallback (which would mask legitimately-missing attributes here).
+ * Returns `null` for unparseable input so the caller can fall back
+ * to the host bbox. */
+function parseFillCellsForBbox(value: string): ReadonlyArray<{ q: number; r: number }> {
+  const cells: Array<{ q: number; r: number }> = [];
+  for (const token of value.split(/\s+/)) {
+    if (token.length === 0) continue;
+    const [qStr, rStr] = token.split(",");
+    const q = Number.parseFloat(qStr ?? "");
+    const r = Number.parseFloat(rStr ?? "");
+    if (!Number.isFinite(q) || !Number.isFinite(r)) continue;
+    cells.push({ q, r });
+  }
+  return cells.length === 0 ? SINGLE_CELL_MASK : cells;
+}
+
 interface AxialCoord {
   q: number;
   r: number;
@@ -638,13 +665,15 @@ export class HpGrid extends LitElement {
   }
 
   /** Fit every positioned child inside the viewport and centre the
-   * content. Computes the content's pixel-space bbox from `[q][r]`
-   * children's pre-transform sizes, picks the zoom level that frames
-   * the whole bbox with a small margin (max zoom = 1; never zooms
-   * past native), then pans so the bbox's midpoint sits at the
-   * viewport centre. Falls back to zoom-1 / pan-0 when nothing is
-   * positioned yet (e.g. detached / pre-paint). Public so consumers
-   * can recenter programmatically too. */
+   * content. Walks `[q][r]` children's per-cell fill masks
+   * (`data-fill-cells`) so non-symmetric clusters don't over-claim
+   * space via their full host bbox; falls back to a single-cell
+   * bbox when a child has no mask. Picks the zoom level that frames
+   * the actual filled hexes with at most one cell of padding around
+   * the layout — never zooms in past native (max zoom = 1). Falls
+   * back to zoom-1 / pan-0 when nothing is positioned yet (e.g.
+   * detached / pre-paint). Public so consumers can recenter
+   * programmatically too. */
   public recenter(): void {
     const gridRect = this.getBoundingClientRect();
     const vw = gridRect.width;
@@ -653,10 +682,13 @@ export class HpGrid extends LitElement {
       return;
     }
     const steps = this.computeStyleSteps();
-    let minX = Number.POSITIVE_INFINITY;
-    let maxX = Number.NEGATIVE_INFINITY;
-    let minY = Number.POSITIVE_INFINITY;
-    let maxY = Number.NEGATIVE_INFINITY;
+    // Walk each filled hex's centre across every child. minCx / maxCx
+    // / minCy / maxCy track the cell-centre bbox; we add the cell
+    // extent + padding afterwards so the maths stays in centre-space.
+    let minCx = Number.POSITIVE_INFINITY;
+    let maxCx = Number.NEGATIVE_INFINITY;
+    let minCy = Number.POSITIVE_INFINITY;
+    let maxCy = Number.NEGATIVE_INFINITY;
     let foundAny = false;
     for (const child of this.querySelectorAll<HTMLElement>("[q][r]")) {
       const q = Number.parseFloat(child.getAttribute("q") ?? "");
@@ -664,25 +696,19 @@ export class HpGrid extends LitElement {
       if (Number.isNaN(q) || Number.isNaN(r)) {
         continue;
       }
-      const childStyle = getComputedStyle(child);
-      const baseW = Number.parseFloat(childStyle.width);
-      const baseH = Number.parseFloat(childStyle.height);
-      if (!baseW || !baseH) {
-        continue;
+      const fillCellsAttr = child.getAttribute("data-fill-cells");
+      const cells = fillCellsAttr
+        ? parseFillCellsForBbox(fillCellsAttr)
+        : SINGLE_CELL_MASK;
+      for (const cell of cells) {
+        const cx = steps.col * (q + cell.q + (r + cell.r) / 2);
+        const cy = steps.row * (r + cell.r);
+        if (cx < minCx) minCx = cx;
+        if (cx > maxCx) maxCx = cx;
+        if (cy < minCy) minCy = cy;
+        if (cy > maxCy) maxCy = cy;
+        foundAny = true;
       }
-      foundAny = true;
-      // Child centre in pixel coords (origin at viewport centre,
-      // pre-zoom — the transform multiplies by --hp-zoom).
-      const cx = steps.col * (q + r / 2);
-      const cy = steps.row * r;
-      const left = cx - baseW / 2;
-      const right = cx + baseW / 2;
-      const top = cy - baseH / 2;
-      const bottom = cy + baseH / 2;
-      if (left < minX) minX = left;
-      if (right > maxX) maxX = right;
-      if (top < minY) minY = top;
-      if (bottom > maxY) maxY = bottom;
     }
     if (!foundAny) {
       this.zoom = 1;
@@ -692,12 +718,20 @@ export class HpGrid extends LitElement {
       this.removeAttribute("data-hp-panned");
       return;
     }
-    // 5% margin each side, so content never sits flush against
-    // viewport edges.
-    const padding = 1.1;
-    const contentW = Math.max(1, (maxX - minX) * padding);
-    const contentH = Math.max(1, (maxY - minY) * padding);
-    const zoomFit = Math.min(vw / contentW, vh / contentH);
+    // Pad by 1 col-step horizontally + 1 row-step vertically — at
+    // most 1 cell of gap between the layout's outermost hex and the
+    // viewport edge. The cell itself extends col_step/2 from its
+    // centre, so total side-extent = centre-bbox/2 + col_step/2
+    // (cell half) + col_step (padding) = centre-bbox/2 + 1.5
+    // col_step. Doubled for both sides → centre-bbox + 3 col_step
+    // total. Same idea vertically with row_step.
+    const halfCellW = steps.col / 2;
+    const halfCellH = steps.col * HEX_HALF_HEIGHT_FACTOR;
+    const padX = steps.col;
+    const padY = steps.row;
+    const paddedW = Math.max(1, maxCx - minCx + 2 * halfCellW + 2 * padX);
+    const paddedH = Math.max(1, maxCy - minCy + 2 * halfCellH + 2 * padY);
+    const zoomFit = Math.min(vw / paddedW, vh / paddedH);
     // Never zoom IN past native — masonry packing's natural scale is
     // already correct, we only zoom OUT when content overflows.
     const z = Math.max(HpGrid.ZOOM_MIN, Math.min(1, zoomFit));
@@ -707,8 +741,8 @@ export class HpGrid extends LitElement {
     } else {
       this.style.setProperty("--hp-zoom", String(z));
     }
-    const contentCx = (minX + maxX) / 2;
-    const contentCy = (minY + maxY) / 2;
+    const contentCx = (minCx + maxCx) / 2;
+    const contentCy = (minCy + maxCy) / 2;
     // Pan so the content's midpoint lands at viewport centre. The
     // transform applies zoom to (q, r) positions, then adds pan; to
     // move the content's pixel-centre `contentCx` (at the chosen
