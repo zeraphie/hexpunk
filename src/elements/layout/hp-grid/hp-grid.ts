@@ -66,16 +66,16 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
-import "../tether/hp-tether.js";
-import { scan } from "../../icons/scan.js";
-import { hpBase } from "../../styles/hp-base.js";
+import "../../tether/hp-tether.js";
+import { scan } from "../../../icons/scan.js";
+import { hpBase } from "../../../styles/hp-base.js";
 import {
   type FillMask,
   findFirstFreePosition,
   findFirstFreePositionRowMajor,
   markClaimed,
   parseFillCells,
-} from "./hp-grid-pack.js";
+} from "./pack.js";
 
 // Pointy-top hex row step is `w · √3/2`. Precomputed to avoid relying
 // on CSS `sqrt()` which isn't reliable across Baseline 2025.
@@ -91,7 +91,7 @@ const HEX_HALF_HEIGHT_FACTOR = 0.5773503;
 const SINGLE_CELL_MASK: ReadonlyArray<{ q: number; r: number }> = [{ q: 0, r: 0 }];
 
 /** Inline parser for `data-fill-cells` — duplicates `parseFillCells`
- * from hp-grid-pack.ts to avoid the pack module's `[{q: 0, r: 0}]`
+ * from pack.ts to avoid the pack module's `[{q: 0, r: 0}]`
  * fallback (which would mask legitimately-missing attributes here).
  * Returns `null` for unparseable input so the caller can fall back
  * to the host bbox. */

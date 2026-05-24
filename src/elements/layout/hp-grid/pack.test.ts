@@ -7,7 +7,7 @@ import {
   isPositionClear,
   markClaimed,
   parseFillCells,
-} from "./hp-grid-pack.js";
+} from "./pack.js";
 
 /** Convenience: claim a mask at a position and return the mutated set
  * so tests can chain placements. */

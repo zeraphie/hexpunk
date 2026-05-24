@@ -35,7 +35,7 @@ export {
   type HpGridTetherEventDetail,
   type HpGridMoveEventDetail,
   type HpGridPanEventDetail,
-} from "./elements/layout/hp-grid.js";
+} from "./elements/layout/hp-grid/hp-grid.js";
 export { HpHex } from "./elements/primitives/hp-hex.js";
 export { HpHoverCard } from "./elements/overlays/hp-hover-card.js";
 export { HpIcon } from "./elements/images/hp-icon.js";
