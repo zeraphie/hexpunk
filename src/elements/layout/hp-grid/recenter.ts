@@ -54,6 +54,12 @@ export function recenter(host: RecenterHost): void {
   let maxCy = Number.NEGATIVE_INFINITY;
   let foundAny = false;
   for (const child of host.querySelectorAll<HTMLElement>("[q][r]")) {
+    // Skip hidden children — they don't contribute to the visible
+    // bbox, and including them would let stale positions of
+    // filtered-out clusters drag the centre off the visible content.
+    if (child.hasAttribute("hidden")) {
+      continue;
+    }
     const q = Number.parseFloat(child.getAttribute("q") ?? "");
     const r = Number.parseFloat(child.getAttribute("r") ?? "");
     if (Number.isNaN(q) || Number.isNaN(r)) {

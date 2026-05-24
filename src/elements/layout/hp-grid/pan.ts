@@ -118,6 +118,12 @@ export class PanController {
     let maxY = Number.POSITIVE_INFINITY;
     let foundAny = false;
     for (const child of this.host.querySelectorAll<HTMLElement>("[q][r]")) {
+      // Skip hidden children — they don't contribute visible area to
+      // the pan range, and counting them would let stale positions
+      // of filtered-out clusters constrain the bounds.
+      if (child.hasAttribute("hidden")) {
+        continue;
+      }
       const q = Number.parseFloat(child.getAttribute("q") ?? "");
       const r = Number.parseFloat(child.getAttribute("r") ?? "");
       if (Number.isNaN(q) || Number.isNaN(r)) {
