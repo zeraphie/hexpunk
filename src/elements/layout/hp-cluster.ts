@@ -101,6 +101,15 @@ export class HpCluster extends LitElement {
          * row-steps tall + the cell height. */
         width: calc(var(--hp-col-step) * 2 + var(--hp-cell));
         height: calc(var(--hp-row-step) * 2 + var(--hp-cell) * 1.1547);
+
+        /* The host is a rectangular bbox sized to enclose every
+         * positioned hex, but the cluster's *real* shape is hexagonal
+         * (or sub-shape thereof). Empty bbox corners must stay
+         * transparent to pointer events so they don't intercept
+         * panning drags on the hp-grid behind, nor overlap hp-grid's
+         * bottom-right controls. Each hex re-enables its own pointer
+         * events via the ::slotted rule below. */
+        pointer-events: none;
       }
 
       /* Honeycomb mode grows to accommodate ring 2 — outermost q,r
@@ -123,6 +132,10 @@ export class HpCluster extends LitElement {
         position: absolute;
         left: 50%;
         top: 50%;
+        /* Re-enables pointer events on each positioned hex so they
+         * still catch clicks / drags individually; the host above
+         * is pointer-events: none. */
+        pointer-events: auto;
       }
 
       /* ── Cursor: only the drag-handle child inherits the grab
