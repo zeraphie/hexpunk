@@ -69,13 +69,7 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import "../../tether/hp-tether.js";
 import { scan } from "../../../icons/scan.js";
 import { hpBase } from "../../../styles/hp-base.js";
-import {
-  HEX_HALF_HEIGHT_FACTOR,
-  SINGLE_CELL_MASK,
-  axialNeighbours,
-  parseFillCellsForBbox,
-  slotKey,
-} from "./axial.js";
+import { axialNeighbours, slotKey } from "./axial.js";
 import {
   type FillMask,
   findFirstFreePosition,
@@ -84,8 +78,9 @@ import {
   parseFillCells,
 } from "./pack.js";
 import { PanController, stopPanFromButton } from "./pan.js";
+import { recenter as recenterContent } from "./recenter.js";
 import { hpGridStyles } from "./styles.js";
-import { ZOOM_MIN, ZoomController } from "./zoom.js";
+import { ZoomController } from "./zoom.js";
 import type {
   AxialCoord,
   DragState,
@@ -367,107 +362,15 @@ export class HpGrid extends LitElement {
   }
 
 
-  /** Fit every positioned child inside the viewport and centre the
-   * content. Walks `[q][r]` children's per-cell fill masks
-   * (`data-fill-cells`) so non-symmetric clusters don't over-claim
-   * space via their full host bbox; falls back to a single-cell
-   * bbox when a child has no mask. Picks the zoom level that frames
-   * the actual filled hexes with at most one cell of padding around
-   * the layout — never zooms in past native (max zoom = 1). Falls
-   * back to zoom-1 / pan-0 when nothing is positioned yet (e.g.
-   * detached / pre-paint). Public so consumers can recenter
-   * programmatically too. */
-  public recenter(): void {
-    const gridRect = this.getBoundingClientRect();
-    const vw = gridRect.width;
-    const vh = gridRect.height;
-    if (vw === 0 || vh === 0) {
-      return;
-    }
-    const steps = this.computeStyleSteps();
-    // Walk each filled hex's centre across every child. minCx / maxCx
-    // / minCy / maxCy track the cell-centre bbox; we add the cell
-    // extent + padding afterwards so the maths stays in centre-space.
-    let minCx = Number.POSITIVE_INFINITY;
-    let maxCx = Number.NEGATIVE_INFINITY;
-    let minCy = Number.POSITIVE_INFINITY;
-    let maxCy = Number.NEGATIVE_INFINITY;
-    let foundAny = false;
-    for (const child of this.querySelectorAll<HTMLElement>("[q][r]")) {
-      const q = Number.parseFloat(child.getAttribute("q") ?? "");
-      const r = Number.parseFloat(child.getAttribute("r") ?? "");
-      if (Number.isNaN(q) || Number.isNaN(r)) {
-        continue;
-      }
-      const fillCellsAttr = child.getAttribute("data-fill-cells");
-      const cells = fillCellsAttr
-        ? parseFillCellsForBbox(fillCellsAttr)
-        : SINGLE_CELL_MASK;
-      for (const cell of cells) {
-        const cx = steps.col * (q + cell.q + (r + cell.r) / 2);
-        const cy = steps.row * (r + cell.r);
-        if (cx < minCx) minCx = cx;
-        if (cx > maxCx) maxCx = cx;
-        if (cy < minCy) minCy = cy;
-        if (cy > maxCy) maxCy = cy;
-        foundAny = true;
-      }
-    }
-    if (!foundAny) {
-      this.zoom = 1;
-      this.style.removeProperty("--hp-zoom");
-      this.style.removeProperty("--hp-pan-x");
-      this.style.removeProperty("--hp-pan-y");
-      this.removeAttribute("data-hp-panned");
-      return;
-    }
-    // Pad by 1 col-step horizontally + 1 row-step vertically — at
-    // most 1 cell of gap between the layout's outermost hex and the
-    // viewport edge. The cell itself extends col_step/2 from its
-    // centre, so total side-extent = centre-bbox/2 + col_step/2
-    // (cell half) + col_step (padding) = centre-bbox/2 + 1.5
-    // col_step. Doubled for both sides → centre-bbox + 3 col_step
-    // total. Same idea vertically with row_step.
-    const halfCellW = steps.col / 2;
-    const halfCellH = steps.col * HEX_HALF_HEIGHT_FACTOR;
-    const padX = steps.col;
-    const padY = steps.row;
-    const paddedW = Math.max(1, maxCx - minCx + 2 * halfCellW + 2 * padX);
-    const paddedH = Math.max(1, maxCy - minCy + 2 * halfCellH + 2 * padY);
-    const zoomFit = Math.min(vw / paddedW, vh / paddedH);
-    // Never zoom IN past native — masonry packing's natural scale is
-    // already correct, we only zoom OUT when content overflows.
-    const z = Math.max(ZOOM_MIN, Math.min(1, zoomFit));
-    this.zoom = z;
-    if (z === 1) {
-      this.style.removeProperty("--hp-zoom");
-    } else {
-      this.style.setProperty("--hp-zoom", String(z));
-    }
-    const contentCx = (minCx + maxCx) / 2;
-    const contentCy = (minCy + maxCy) / 2;
-    // Pan so the content's midpoint lands at viewport centre. The
-    // transform applies zoom to (q, r) positions, then adds pan; to
-    // move the content's pixel-centre `contentCx` (at the chosen
-    // zoom) onto the viewport's 0, pan must be `-contentCx * z`.
-    const panX = -contentCx * z;
-    const panY = -contentCy * z;
-    if (panX === 0 && panY === 0 && z === 1) {
-      this.style.removeProperty("--hp-pan-x");
-      this.style.removeProperty("--hp-pan-y");
-      this.removeAttribute("data-hp-panned");
-    } else {
-      this.style.setProperty("--hp-pan-x", `${panX}px`);
-      this.style.setProperty("--hp-pan-y", `${panY}px`);
-      this.setAttribute("data-hp-panned", "");
-    }
-    this.dispatchEvent(
-      new CustomEvent<HpGridPanEventDetail>("hp-grid-pan", {
-        detail: { panX, panY },
-        bubbles: true,
-        composed: true,
-      })
-    );
+  /**
+   * Fit every positioned child inside the viewport and centre the
+   * content. Public so consumers can recenter programmatically; the
+   * bound `recenter` button in the controls slot calls it on click,
+   * and the masonry pack pipeline runs it after every placement
+   * pass. Implementation lives in `./recenter.ts`.
+   */
+  recenter(): void {
+    recenterContent(this);
   }
 
   // ── Slot wiring ────────────────────────────────────────────────────
