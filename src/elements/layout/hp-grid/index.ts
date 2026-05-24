@@ -62,7 +62,7 @@
 // `<hp-cluster>` and similar preset layouts will compose `<hp-grid>`
 // with fixed children rather than re-implementing the coordinate math.
 
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
@@ -70,118 +70,38 @@ import "../../tether/hp-tether.js";
 import { scan } from "../../../icons/scan.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import {
+  HEX_HALF_HEIGHT_FACTOR,
+  SINGLE_CELL_MASK,
+  axialNeighbours,
+  parseFillCellsForBbox,
+  slotKey,
+} from "./axial.js";
+import {
   type FillMask,
   findFirstFreePosition,
   findFirstFreePositionRowMajor,
   markClaimed,
   parseFillCells,
 } from "./pack.js";
+import { hpGridStyles } from "./styles.js";
+import type {
+  AxialCoord,
+  DragState,
+  HpGridBondEventDetail,
+  HpGridDropEventDetail,
+  HpGridMoveEventDetail,
+  HpGridPanEventDetail,
+  HpGridTetherEventDetail,
+  PanState,
+} from "./types.js";
 
-// Pointy-top hex row step is `w · √3/2`. Precomputed to avoid relying
-// on CSS `sqrt()` which isn't reliable across Baseline 2025.
-const ROW_STEP_FACTOR = 0.8660254;
-
-/** Pointy-top hex half-height as a fraction of cell width
- * (= 1 / sqrt(3) ≈ 0.5774). Used by `recenter()` to compute the
- * vertical pixel extent of a single hex when fitting content. */
-const HEX_HALF_HEIGHT_FACTOR = 0.5773503;
-
-/** Fallback fill mask for children without `data-fill-cells` — a
- * single hex at the child's own (q, r). */
-const SINGLE_CELL_MASK: ReadonlyArray<{ q: number; r: number }> = [{ q: 0, r: 0 }];
-
-/** Inline parser for `data-fill-cells` — duplicates `parseFillCells`
- * from pack.ts to avoid the pack module's `[{q: 0, r: 0}]`
- * fallback (which would mask legitimately-missing attributes here).
- * Returns `null` for unparseable input so the caller can fall back
- * to the host bbox. */
-function parseFillCellsForBbox(value: string): ReadonlyArray<{ q: number; r: number }> {
-  const cells: Array<{ q: number; r: number }> = [];
-  for (const token of value.split(/\s+/)) {
-    if (token.length === 0) continue;
-    const [qStr, rStr] = token.split(",");
-    const q = Number.parseFloat(qStr ?? "");
-    const r = Number.parseFloat(rStr ?? "");
-    if (!Number.isFinite(q) || !Number.isFinite(r)) continue;
-    cells.push({ q, r });
-  }
-  return cells.length === 0 ? SINGLE_CELL_MASK : cells;
-}
-
-interface AxialCoord {
-  q: number;
-  r: number;
-}
-
-interface DragState {
-  element: HTMLElement;
-  pointerId: number;
-  origin: { clientX: number; clientY: number };
-  startCoord: AxialCoord;
-}
-
-/** Pan state — empty-space pointerdown initiates a Figma/Miro-style
- * pan that translates the canvas via `--hp-pan-x` / `--hp-pan-y`
- * CSS vars. Children remain at their q/r axial coords; only the
- * visual offset changes. */
-interface PanState {
-  pointerId: number;
-  origin: { clientX: number; clientY: number };
-  startPanX: number;
-  startPanY: number;
-}
-
-/** Event emitted when a child finishes a drag onto a new slot. */
-export interface HpGridMoveEventDetail {
-  element: HTMLElement;
-  from: AxialCoord;
-  to: AxialCoord;
-}
-
-/** Event emitted whenever a bond is formed or broken between two
- * hexes by a drop. A "bond" here is pure axial adjacency on the q/r
- * grid — the two hexes share an edge. Fired after `hp-grid-move`,
- * once per bond gained or lost on the dropped element. Use
- * `hp-grid-bond` to play in a `<hp-bond>` indicator or kick off
- * consumer-side bonded-group logic; use `hp-grid-unbond` to clean
- * up indicators that no longer apply. */
-export interface HpGridBondEventDetail {
-  /** The hex that was just dropped — drives the event. */
-  moved: HTMLElement;
-  /** The neighbour on the other side of the bond. */
-  partner: HTMLElement;
-}
-
-/** Fires once the 90ms post-drop snap animation has fully settled on
- * its target slot. Same detail shape as `hp-grid-move` so a single
- * handler can serve both. Use this when the consumer needs to react
- * to the visual completion (e.g. persisting layout state to a back-
- * end, kicking off a follow-on animation) and shouldn't fire while
- * the hex is mid-flight. Skipped on no-op drops (target == start)
- * and on cancelled drags. */
-export type HpGridDropEventDetail = HpGridMoveEventDetail;
-
-/** Fires every pointermove while the canvas is being panned via
- * empty-space drag. Detail carries the current pan offset in
- * pixels. Consumers that derive viewport-relative geometry (e.g.
- * `<hp-tether>` recomputing its bezier endpoints) should listen for
- * this so they keep up with the camera move. */
-export interface HpGridPanEventDetail {
-  panX: number;
-  panY: number;
-}
-
-/** Event emitted on the tetherable grid when a drag-to-tether
- * interaction creates or removes an arc between two hexes. Detail
- * carries the two endpoint elements and the hp-tether element that
- * was created (for the tether event) or just removed (for untether —
- * the element is detached from the DOM at this point, but a
- * reference is provided so consumers can react). */
-export interface HpGridTetherEventDetail {
-  source: HTMLElement;
-  target: HTMLElement;
-  tether: HTMLElement;
-}
+export type {
+  HpGridBondEventDetail,
+  HpGridDropEventDetail,
+  HpGridMoveEventDetail,
+  HpGridPanEventDetail,
+  HpGridTetherEventDetail,
+} from "./types.js";
 
 /**
  * Hex coordinate space — slotted children with q / r attributes are
@@ -290,164 +210,7 @@ export class HpGrid extends LitElement {
    * per-event factor based on `deltaY`. */
   private static readonly ZOOM_BUTTON_STEP = 1.25;
 
-  static override styles = [
-    hpBase,
-    css`
-      :host {
-        position: relative;
-        display: block;
-        width: 100%;
-        min-height: 400px;
-        overflow: hidden;
-        cursor: grab;
-
-        --hp-cell: var(--hp-hex-cell-sm);
-
-        /* Effective cell width — reduced by the stroke so adjacent hexes
- * overlap exactly along their shared edge instead of producing
- * a double-thick line. */
-        --hp-effective-cell: calc(var(--hp-cell) - var(--hp-hex-stroke));
-        --hp-col-step: var(--hp-effective-cell);
-        --hp-row-step: calc(var(--hp-effective-cell) * ${ROW_STEP_FACTOR});
-
-        touch-action: none;
-      }
-
-      /* Surface tint laid as a translucent pseudo behind everything
- * else in the shadow tree. 75%-opaque --hp-surface lets whatever
- * sits behind the grid (the main hp-background, the page
- * colour) show through at 25%, so the canvas reads as a tinted
- * recess rather than an opaque block. Sits at the back of the
- * stacking order automatically — pseudo precedes the slot in
- * shadow tree order. */
-      :host::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: var(--hp-surface);
-        opacity: 0.75;
-        pointer-events: none;
-      }
-
-      /* Slotted hp-background backdrop: dim the entire element so the
- * texture stays ambient on top of the tinted canvas surface. */
-      ::slotted(hp-background) {
-        opacity: 0.6;
-      }
-
-      :host([data-hp-panning]) {
-        cursor: grabbing;
-      }
-
-      :host([size="md"]) {
-        --hp-cell: var(--hp-hex-cell-md);
-      }
-
-      :host([size="lg"]) {
-        --hp-cell: var(--hp-hex-cell-lg);
-      }
-
-      /* Each slotted child with both q and r positions itself via the
- * transform — origin is the grid's centre. The drag offset vars
- * default to 0 and only get set on the dragged child. The
- * transition animates the snap-into-slot when the drag ends
- * (data-hp-dragging is removed first, then drag-x/drag-y +
- * q/r change — the transition fires across that change). */
-      ::slotted([q][r]) {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        translate: -50% -50%;
-        /* Axial position is multiplied by --hp-zoom (defaults to 1)
- * so the canvas content scales as a unit; drag and pan are
- * in viewport pixels and added post-scale. The scale()
- * after the translate then visually resizes each hex. */
-        transform: translate(
-            calc(
-              var(--hp-col-step) * (var(--hp-q, 0) + var(--hp-r, 0) / 2) * var(--hp-zoom, 1) +
-                var(--hp-drag-x, 0px) + var(--hp-pan-x, 0px)
-            ),
-            calc(
-              var(--hp-row-step) * var(--hp-r, 0) * var(--hp-zoom, 1) + var(--hp-drag-y, 0px) +
-                var(--hp-pan-y, 0px)
-            )
-          )
-          scale(var(--hp-zoom, 1));
-        transition: transform var(--hp-unfold-trigger) var(--hp-ease-default);
-        /* --hp-cursor crosses the shadow boundary because custom
- * properties cascade through it. Each draggable atom reads
- * cursor: var(--hp-cursor, pointer) on its own :host. */
-        --hp-cursor: grab;
-      }
-
-      ::slotted([q][r][data-hp-dragging]) {
-        z-index: var(--hp-layer-dragging);
-        opacity: 0.85;
-        --hp-cursor: grabbing;
-        transition: none;
-        /* GPU-composite the transform during the drag for smoother
- * 60fps tracking; cleared once data-hp-dragging is removed. */
-        will-change: transform;
-      }
-
-      /* Hidden probe — read getBoundingClientRect to recover the
- * resolved pixel values of --hp-col-step and --hp-row-step.
- * getComputedStyle returns the raw calc() expression for custom
- * properties, so parseFloat can't recover the pixels directly. */
-      .step-probe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: var(--hp-col-step);
-        height: var(--hp-row-step);
-        visibility: hidden;
-        pointer-events: none;
-      }
-
-      /* Viewport controls — bottom-right cluster of zoom-out / zoom-in
- * / recenter buttons. Always visible but at 60% opacity so they
- * don't compete with the content; full opacity on hover. */
-      .controls {
-        position: absolute;
-        right: var(--hp-sm);
-        bottom: var(--hp-sm);
-        z-index: 1;
-        display: flex;
-        gap: var(--hp-xxs);
-        opacity: 0.6;
-        transition: opacity var(--hp-duration-fast) var(--hp-ease-default);
-      }
-
-      .controls:hover {
-        opacity: 1;
-      }
-
-      .controls button {
-        font: inherit;
-        font-size: var(--hp-typo-label-sm-font-size);
-        padding: 0 var(--hp-sm);
-        background: var(--hp-surface-container);
-        color: var(--hp-on-surface);
-        border: 1px solid var(--hp-outline-variant);
-        border-radius: var(--hp-rounded-sm);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 2rem;
-        height: 2rem;
-      }
-
-      .controls button:hover {
-        color: var(--hp-secondary);
-      }
-
-      .controls svg {
-        width: 1rem;
-        height: 1rem;
-      }
-    `,
-  ];
+  static override styles = [hpBase, hpGridStyles];
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -1478,22 +1241,6 @@ export class HpGrid extends LitElement {
     }
     return out;
   }
-}
-
-/** The six pointy-top axial neighbours of `(q, r)`. */
-function axialNeighbours(coord: AxialCoord): AxialCoord[] {
-  return [
-    { q: coord.q + 1, r: coord.r },
-    { q: coord.q - 1, r: coord.r },
-    { q: coord.q, r: coord.r + 1 },
-    { q: coord.q, r: coord.r - 1 },
-    { q: coord.q + 1, r: coord.r - 1 },
-    { q: coord.q - 1, r: coord.r + 1 },
-  ];
-}
-
-function slotKey(q: number | string, r: number | string): string {
-  return `${q},${r}`;
 }
 
 declare global {
