@@ -41,9 +41,7 @@ import Layout from "../../layouts/Layout.astro";
         <li>Bond detection is opt-in via the <code>bondable</code> attribute.</li>
       </ul>
     </div>
-    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
-
-export default () => (
+    <hp-code slot="code" language="html">{`<body>
   <div>
     <h3>The hex stencil</h3>
     <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
@@ -53,7 +51,7 @@ export default () => (
       <li>Flat-top kicks in at <code>size="md"</code>.</li>
     </ul>
   </div>
-);`}</hp-code>
+</body>`}</hp-code>
   </hp-demo>
 
   <hp-demo caption="With .hp-prose">
@@ -74,9 +72,7 @@ export default () => (
         <li>Bond detection is opt-in via the <code>bondable</code> attribute.</li>
       </ul>
     </div>
-    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
-
-export default () => (
+    <hp-code slot="code" language="html">{`<body>
   <div class="hp-prose">
     <h3>The hex stencil</h3>
     <p>Every hex has a bounding box of <code>w × (w · 2/√3)</code>...</p>
@@ -86,7 +82,7 @@ export default () => (
       <li>Flat-top kicks in at <code>size="md"</code>.</li>
     </ul>
   </div>
-);`}</hp-code>
+</body>`}</hp-code>
   </hp-demo>
 
   <h2>What .hp-prose adds</h2>
@@ -135,9 +131,7 @@ export default () => (
       <h3>The next subsection</h3>
       <p>And a new section starts again.</p>
     </article>
-    <hp-code slot="code" language="jsx">{`import "@hexpunk/core/elements.css";
-
-export default () => (
+    <hp-code slot="code" language="html">{`<body>
   <article class="hp-prose">
     <h2>The Foundation</h2>
     <h3>Subsection right under</h3>
@@ -146,7 +140,7 @@ export default () => (
     <h3>The next subsection</h3>
     <p>And a new section starts again.</p>
   </article>
-);`}</hp-code>
+</body>`}</hp-code>
   </hp-demo>
 
   <h2>When NOT to use it</h2>

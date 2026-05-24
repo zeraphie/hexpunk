@@ -13,17 +13,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-bond></hp-bond>
       <hp-bond state="settled"></hp-bond>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <!-- forming — full hex visible -->
+  <hp-bond></hp-bond>
 
-export default () => (
-  <>
-    <!-- forming — full hex visible -->
-    <hp-bond></hp-bond>
-
-    <!-- settled — collapses to a hairline on the shared edge -->
-    <hp-bond state="settled"></hp-bond>
-  </>
-);`}</hp-code>
+  <!-- settled — collapses to a hairline on the shared edge -->
+  <hp-bond state="settled"></hp-bond>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

@@ -43,15 +43,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         <hp-cell variant="anchor" slot="source">play</hp-cell>
       </hp-unfold-page>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-unfold-page preview>
-      <hp-cell variant="action" filled slot="source">play</hp-cell>
-    </hp-unfold-page>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-unfold-page preview>
+    <hp-cell variant="action" filled slot="source">play</hp-cell>
+  </hp-unfold-page>
+</body>`}</hp-code>
     </hp-demo>
 
     <p>Click <strong>palette</strong> — the action's primary colour floods the viewport, then the palette page appears. Browser back returns with the inverse shrink animation.</p>
@@ -68,15 +64,11 @@ export default () => (
         <hp-cell variant="anchor" slot="source">motion</hp-cell>
       </hp-unfold-page>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-unfold-page href="/palette">
-      <hp-cell variant="action" filled slot="source">palette</hp-cell>
-    </hp-unfold-page>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-unfold-page href="/palette">
+    <hp-cell variant="action" filled slot="source">palette</hp-cell>
+  </hp-unfold-page>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Text link with the same animation">
@@ -93,38 +85,34 @@ export default () => (
         </a>.
       </p>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <a href="/palette" data-hp-unfold style="color: var(--hp-secondary)">
+    go to palette
+  </a>
 
-export default () => (
-  <>
-    <a href="/palette" data-hp-unfold style="color: var(--hp-secondary)">
-      go to palette
-    </a>
+  <!-- Animation keyframes (global.css) -->
+  @view-transition {
+    navigation: auto;
+  }
 
-    <!-- Animation keyframes (global.css) -->
-    @view-transition {
-      navigation: auto;
-    }
+  ::view-transition-old(hp-unfold-source) {
+    animation: hp-unfold-expand var(--hp-unfold-bloom) ease-out forwards;
+  }
 
-    ::view-transition-old(hp-unfold-source) {
-      animation: hp-unfold-expand var(--hp-unfold-bloom) ease-out forwards;
-    }
+  ::view-transition-new(hp-unfold-source) {
+    animation: hp-unfold-shrink var(--hp-unfold-bloom) ease-out forwards;
+  }
 
-    ::view-transition-new(hp-unfold-source) {
-      animation: hp-unfold-shrink var(--hp-unfold-bloom) ease-out forwards;
-    }
+  @keyframes hp-unfold-expand {
+    from { transform: scale(1); }
+    to   { transform: scale(var(--hp-unfold-peak, 50)); }
+  }
 
-    @keyframes hp-unfold-expand {
-      from { transform: scale(1); }
-      to   { transform: scale(var(--hp-unfold-peak, 50)); }
-    }
-
-    @keyframes hp-unfold-shrink {
-      from { transform: scale(var(--hp-unfold-peak, 50)); }
-      to   { transform: scale(1); }
-    }
-  </>
-);`}</hp-code>
+  @keyframes hp-unfold-shrink {
+    from { transform: scale(var(--hp-unfold-peak, 50)); }
+    to   { transform: scale(1); }
+  }
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

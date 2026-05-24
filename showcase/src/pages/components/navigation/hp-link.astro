@@ -20,13 +20,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         primitives in action.
       </p>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-link href="/docs">read the docs</hp-link>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-link href="/docs">read the docs</hp-link>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="External (target=&quot;_blank&quot;)">
@@ -35,15 +31,11 @@ export default () => (
         — <code>rel="noopener"</code> is added automatically.
       </p>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-link href="https://example.com" target="_blank">
-      external page
-    </hp-link>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-link href="https://example.com" target="_blank">
+    external page
+  </hp-link>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

@@ -13,14 +13,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-link-node></hp-link-node>
       <hp-link-node bonded></hp-link-node>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-link-node></hp-link-node>
-    <hp-link-node bonded></hp-link-node>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-link-node></hp-link-node>
+  <hp-link-node bonded></hp-link-node>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

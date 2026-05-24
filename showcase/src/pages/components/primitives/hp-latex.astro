@@ -34,15 +34,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         letters work too: <hp-latex value="\\alpha + \\beta = \\gamma"></hp-latex>.
       </p>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
+      <hp-code slot="code" language="html">{`<body>
   <p>
-    Mass-energy equivalence is <hp-latex value="E = mc^2" /> —
+    Mass-energy equivalence is <hp-latex value="E = mc^2"></hp-latex> —
     one of the cleanest statements in physics. Greek letters
-    work too: <hp-latex value="\\\\alpha + \\\\beta = \\\\gamma" />.
+    work too: <hp-latex value="\\alpha + \\beta = \\gamma"></hp-latex>.
   </p>
-);`}</hp-code>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Block mode — integral, summation, limit">
@@ -50,15 +48,11 @@ export default () => (
       <hp-latex block background value="\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"></hp-latex>
       <hp-latex block background value="\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-latex block background value="\\\\int_{-\\\\infty}^{\\\\infty} e^{-x^2}\\\\,dx = \\\\sqrt{\\\\pi}" />
-    <hp-latex block background value="\\\\sum_{n=1}^{\\\\infty} \\\\frac{1}{n^2} = \\\\frac{\\\\pi^2}{6}" />
-    <hp-latex block background value="\\\\lim_{x \\\\to 0} \\\\frac{\\\\sin x}{x} = 1" />
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-latex block background value="\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}"></hp-latex>
+  <hp-latex block background value="\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}"></hp-latex>
+  <hp-latex block background value="\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Matrix">
@@ -68,15 +62,13 @@ export default () => (
         value="A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
       ></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
+      <hp-code slot="code" language="html">{`<body>
   <hp-latex
     block
     background
-    value="A = \\\\begin{pmatrix} a & b \\\\\\\\ c & d \\\\end{pmatrix}"
-  />
-);`}</hp-code>
+    value="A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+  ></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Quadratic formula">
@@ -87,20 +79,16 @@ export default () => (
         value="x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
       ></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <p>
-      The roots of <hp-latex value="ax^2 + bx + c = 0" /> are given by:
-    </p>
-    <hp-latex
-      block
-      background
-      value="x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a}"
-    />
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <p>
+    The roots of <hp-latex value="ax^2 + bx + c = 0"></hp-latex> are given by:
+  </p>
+  <hp-latex
+    block
+    background
+    value="x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
+  ></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Multi-line — aligned environment">
@@ -114,19 +102,17 @@ export default () => (
         \\end{aligned}"
       ></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
+      <hp-code slot="code" language="html">{`<body>
   <hp-latex
     block
     background
-    value={\`\\\\begin{aligned}
-      e^{i\\\\pi} + 1 &= 0 \\\\\\\\
-      e^{i\\\\pi} &= -1 \\\\\\\\
-      \\\\ln(-1) &= i\\\\pi
-    \\\\end{aligned}\`}
-  />
-);`}</hp-code>
+    value="\\begin{aligned}
+      e^{i\\pi} + 1 &= 0 \\\\
+      e^{i\\pi} &= -1 \\\\
+      \\ln(-1) &= i\\pi
+    \\end{aligned}"
+  ></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Multi-line — piecewise (cases)">
@@ -139,18 +125,16 @@ export default () => (
         \\end{cases}"
       ></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
+      <hp-code slot="code" language="html">{`<body>
   <hp-latex
     block
     background
-    value={\`f(x) = \\\\begin{cases}
-      x^2 & \\\\text{if } x \\\\geq 0 \\\\\\\\
-      -x & \\\\text{if } x < 0
-    \\\\end{cases}\`}
-  />
-);`}</hp-code>
+    value="f(x) = \\begin{cases}
+      x^2 & \\text{if } x \\geq 0 \\\\
+      -x & \\text{if } x < 0
+    \\end{cases}"
+  ></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Without a backdrop — block only">
@@ -159,16 +143,11 @@ export default () => (
         value="\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}"
       ></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-// Omit the \`background\` attribute for naked block math — useful
-// when the surrounding surface already has its own chrome.
-export default () => (
-  <hp-latex
-    block
-    value="\\\\nabla \\\\cdot \\\\mathbf{E} = \\\\frac{\\\\rho}{\\\\varepsilon_0}"
-  />
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <!-- Omit the \`background\` attribute for naked block math —
+       useful when the surrounding surface already has its own chrome. -->
+  <hp-latex block value="\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}"></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Copy-source button (block + background + copyable)">
@@ -179,30 +158,24 @@ export default () => (
         value="e^{i\\pi} + 1 = 0"
       ></hp-latex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
+      <hp-code slot="code" language="html">{`<body>
   <hp-latex
     block
     background
     copyable
-    value="e^{i\\\\pi} + 1 = 0"
-  />
-);`}</hp-code>
+    value="e^{i\\pi} + 1 = 0"
+  ></hp-latex>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Error handling — broken LaTeX">
       <p>Good: <hp-latex value="\\sqrt{x + 1}"></hp-latex></p>
       <p>Bad: <hp-latex value="\\notarealcommand{x}"></hp-latex></p>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <p>Good: <hp-latex value="\\\\sqrt{x + 1}" /></p>
-    <p>Bad: <hp-latex value="\\\\notarealcommand{x}" /></p>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <p>Good: <hp-latex value="\\sqrt{x + 1}"></hp-latex></p>
+  <p>Bad: <hp-latex value="\\notarealcommand{x}"></hp-latex></p>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

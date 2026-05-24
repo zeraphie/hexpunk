@@ -19,26 +19,22 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-cell variant="content" slot="bottom" size="sm">v2.1.3</hp-cell>
       </hp-cluster>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-cluster>
+    <hp-cell variant="action"    slot="top"          tabindex="0">deploy</hp-cell>
+    <hp-cell variant="secondary" slot="middle-left"  tabindex="0">cancel</hp-cell>
+    <hp-cell variant="anchor"    slot="centre">profile</hp-cell>
+    <hp-cell variant="utility"   slot="middle-right" tabindex="0">edit</hp-cell>
+    <hp-cell variant="content"   slot="bottom" size="sm">v2.1.3</hp-cell>
+  </hp-cluster>
 
-export default () => (
-  <>
-    <hp-cluster>
-      <hp-cell variant="action"    slot="top"          tabindex="0">deploy</hp-cell>
-      <hp-cell variant="secondary" slot="middle-left"  tabindex="0">cancel</hp-cell>
-      <hp-cell variant="anchor"    slot="centre">profile</hp-cell>
-      <hp-cell variant="utility"   slot="middle-right" tabindex="0">edit</hp-cell>
-      <hp-cell variant="content"   slot="bottom" size="sm">v2.1.3</hp-cell>
-    </hp-cluster>
-
-    <!-- All five slots are optional. Sizes cascade from the cluster's
-         size attribute via --hp-cell and --hp-hex-stroke. -->
-    <hp-cluster size="md">
-      <hp-cell variant="anchor" slot="centre">profile</hp-cell>
-      <hp-cell variant="action" slot="top">save</hp-cell>
-    </hp-cluster>
-  </>
-);`}</hp-code>
+  <!-- All five slots are optional. Sizes cascade from the cluster's
+       size attribute via --hp-cell and --hp-hex-stroke. -->
+  <hp-cluster size="md">
+    <hp-cell variant="anchor" slot="centre">profile</hp-cell>
+    <hp-cell variant="action" slot="top">save</hp-cell>
+  </hp-cluster>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

@@ -21,20 +21,16 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-popover>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-popover side="bottom" align="start">
+    <hp-button>open</hp-button>
 
-export default () => (
-  <>
-    <hp-popover side="bottom" align="start">
-      <hp-button>open</hp-button>
-
-      <div slot="content">
-        <strong>Quick info</strong>
-        <p>...</p>
-      </div>
-    </hp-popover>
-  </>
-);`}</hp-code>
+    <div slot="content">
+      <strong>Quick info</strong>
+      <p>...</p>
+    </div>
+  </hp-popover>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

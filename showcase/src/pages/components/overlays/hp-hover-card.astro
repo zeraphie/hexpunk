@@ -21,20 +21,16 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-hover-card>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<body>
+  <hp-hover-card side="bottom">
+    <hp-link href="/users/kira">@kira_chen</hp-link>
 
-export default () => (
-  <>
-    <hp-hover-card side="bottom">
-      <hp-link href="/users/kira">@kira_chen</hp-link>
-
-      <div slot="content">
-        <strong>Kira Chen</strong>
-        <span>Level 42 hexcrafter</span>
-      </div>
-    </hp-hover-card>
-  </>
-);`}</hp-code>
+    <div slot="content">
+      <strong>Kira Chen</strong>
+      <span>Level 42 hexcrafter</span>
+    </div>
+  </hp-hover-card>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
