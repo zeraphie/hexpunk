@@ -18,17 +18,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-tag tone="alert">deprecated</hp-tag>
       <hp-tag tone="error">removed</hp-tag>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-tag>react</hp-tag>
-    <hp-tag tone="positive">stable</hp-tag>
-    <hp-tag tone="warn">beta</hp-tag>
-    <hp-tag tone="alert">deprecated</hp-tag>
-    <hp-tag tone="error">removed</hp-tag>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-tag>react</hp-tag>
+<hp-tag tone="positive">stable</hp-tag>
+<hp-tag tone="warn">beta</hp-tag>
+<hp-tag tone="alert">deprecated</hp-tag>
+<hp-tag tone="error">removed</hp-tag>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Removable">
@@ -36,20 +30,14 @@ export default () => (
       <hp-tag tone="positive" removable>typescript</hp-tag>
       <hp-tag tone="warn" removable>vite</hp-tag>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-tag removable>lit</hp-tag>
+<hp-tag tone="positive" removable>typescript</hp-tag>
+<hp-tag tone="warn" removable>vite</hp-tag>
 
-export default () => (
-  <>
-    <hp-tag removable>lit</hp-tag>
-    <hp-tag tone="positive" removable>typescript</hp-tag>
-    <hp-tag tone="warn" removable>vite</hp-tag>
-
-    document.querySelector("hp-tag")
-      .addEventListener("hp-tag-remove", (ev) => {
-        ev.currentTarget.remove();
-      });
-  </>
-);`}</hp-code>
+document.querySelector("hp-tag")
+  .addEventListener("hp-tag-remove", (ev) => {
+    ev.currentTarget.remove();
+  });`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

@@ -18,17 +18,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-badge tone="alert">7</hp-badge>
       <hp-badge tone="error">err</hp-badge>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-badge>5</hp-badge>
-    <hp-badge tone="positive">ok</hp-badge>
-    <hp-badge tone="warn">!</hp-badge>
-    <hp-badge tone="alert">7</hp-badge>
-    <hp-badge tone="error">err</hp-badge>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-badge>5</hp-badge>
+<hp-badge tone="positive">ok</hp-badge>
+<hp-badge tone="warn">!</hp-badge>
+<hp-badge tone="alert">7</hp-badge>
+<hp-badge tone="error">err</hp-badge>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Active (filled)">
@@ -37,16 +31,10 @@ export default () => (
       <hp-badge tone="alert" active>retry</hp-badge>
       <hp-badge tone="error" active>down</hp-badge>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-badge tone="positive" active>online</hp-badge>
-    <hp-badge tone="warn" active>queued</hp-badge>
-    <hp-badge tone="alert" active>retry</hp-badge>
-    <hp-badge tone="error" active>down</hp-badge>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-badge tone="positive" active>online</hp-badge>
+<hp-badge tone="warn" active>queued</hp-badge>
+<hp-badge tone="alert" active>retry</hp-badge>
+<hp-badge tone="error" active>down</hp-badge>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

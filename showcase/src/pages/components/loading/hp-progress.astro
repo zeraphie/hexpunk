@@ -20,16 +20,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-progress value="100"></hp-progress>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-progress value="25"></hp-progress>
-    <hp-progress value="60"></hp-progress>
-    <hp-progress value="90"></hp-progress>
-    <hp-progress value="100"></hp-progress>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-progress value="25"></hp-progress>
+<hp-progress value="60"></hp-progress>
+<hp-progress value="90"></hp-progress>
+<hp-progress value="100"></hp-progress>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Tones">
@@ -41,29 +35,17 @@ export default () => (
         <hp-progress value="70" tone="error"></hp-progress>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-progress value="70"></hp-progress>
-    <hp-progress value="70" tone="positive"></hp-progress>
-    <hp-progress value="70" tone="warn"></hp-progress>
-    <hp-progress value="70" tone="alert"></hp-progress>
-    <hp-progress value="70" tone="error"></hp-progress>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-progress value="70"></hp-progress>
+<hp-progress value="70" tone="positive"></hp-progress>
+<hp-progress value="70" tone="warn"></hp-progress>
+<hp-progress value="70" tone="alert"></hp-progress>
+<hp-progress value="70" tone="error"></hp-progress>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Indeterminate">
       <hp-progress indeterminate></hp-progress>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-progress indeterminate></hp-progress>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-progress indeterminate></hp-progress>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
