@@ -28,11 +28,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-form>
 
-      <hp-code slot="code" language="html">{`<hp-form>
-  <hp-checkbox id="terms"></hp-checkbox>
-  <hp-label for="terms">Accept terms</hp-label>
-  <hp-button type="submit">save</hp-button>
-</hp-form>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-form>
+    <hp-checkbox id="terms"></hp-checkbox>
+    <hp-label for="terms">Accept terms</hp-label>
+    <hp-button type="submit">save</hp-button>
+  </hp-form>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

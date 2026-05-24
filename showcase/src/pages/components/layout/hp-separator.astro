@@ -22,9 +22,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <span>section four</span>
       </div>
 
-      <hp-code slot="code" language="html">{`<hp-separator></hp-separator>
-<hp-separator mark="dot"></hp-separator>
-<hp-separator mark="none"></hp-separator>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-separator></hp-separator>
+  <hp-separator mark="dot"></hp-separator>
+  <hp-separator mark="none"></hp-separator>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Vertical">
@@ -36,11 +38,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <span>right</span>
       </div>
 
-      <hp-code slot="code" language="html">{`<hp-separator orientation="vertical"></hp-separator>
-<hp-separator orientation="vertical" mark="dot"></hp-separator>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-separator orientation="vertical"></hp-separator>
+  <hp-separator orientation="vertical" mark="dot"></hp-separator>
 
-<!-- decorative — role="presentation" for screen readers -->
-<hp-separator orientation="vertical" decorative></hp-separator>`}</hp-code>
+  <!-- decorative — role="presentation" for screen readers -->
+  <hp-separator orientation="vertical" decorative></hp-separator>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

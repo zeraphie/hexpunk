@@ -17,26 +17,28 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-pixel pixel-size="6" id="pixel-menu-interactive" tabindex="0"></hp-pixel>
       </div>
 
-      <hp-code slot="code" language="html">{`<hp-pixel pixel-size="4" id="my-pixel"></hp-pixel>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-pixel pixel-size="4" id="my-pixel"></hp-pixel>
 
-document.getElementById("my-pixel").art =
-  "#.#.#\\n#.#.#\\n.....\\n#.#.#\\n#.#.#";
+  document.getElementById("my-pixel").art =
+    "#.#.#\\n#.#.#\\n.....\\n#.#.#\\n#.#.#";
 
-<!-- State morph (CodePen-style) -->
-<hp-pixel pixel-size="6" id="menu" tabindex="0"></hp-pixel>
+  <!-- State morph (CodePen-style) -->
+  <hp-pixel pixel-size="6" id="menu" tabindex="0"></hp-pixel>
 
-import { menu } from "@hexpunk/core/pixel-icons/menu";
-const el = document.getElementById("menu");
-el.states = menu;
-el.interactive = true; // wires :hover / :focus-visible / :active / [aria-pressed]
+  import { menu } from "@hexpunk/core/pixel-icons/menu";
+  const el = document.getElementById("menu");
+  el.states = menu;
+  el.interactive = true; // wires :hover / :focus-visible / :active / [aria-pressed]
 
-<!-- Multi-colour palette -->
-el.palette = [
-  "var(--hp-primary)",
-  "var(--hp-secondary)",
-  "var(--hp-warn)",
-];
-el.art = "010\\n121\\n010"; // each digit indexes into palette`}</hp-code>
+  <!-- Multi-colour palette -->
+  el.palette = [
+    "var(--hp-primary)",
+    "var(--hp-secondary)",
+    "var(--hp-warn)",
+  ];
+  el.art = "010\\n121\\n010"; // each digit indexes into palette
+</body>`}</hp-code>
     </hp-demo>
 
     <script>

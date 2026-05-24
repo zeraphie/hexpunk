@@ -42,11 +42,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         it expects a single-line label.
       </hp-banner>
 
-      <hp-code slot="code" language="html">{`<hp-banner label="Note">…</hp-banner>
-<hp-banner tone="positive" label="Tip">…</hp-banner>
-<hp-banner tone="warn" label="Warning">…</hp-banner>
-<hp-banner tone="alert" label="Important">…</hp-banner>
-<hp-banner tone="error" label="Error">…</hp-banner>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-banner label="Note">…</hp-banner>
+  <hp-banner tone="positive" label="Tip">…</hp-banner>
+  <hp-banner tone="warn" label="Warning">…</hp-banner>
+  <hp-banner tone="alert" label="Important">…</hp-banner>
+  <hp-banner tone="error" label="Error">…</hp-banner>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Without a label">
@@ -55,7 +57,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         unambiguous from the body.
       </hp-banner>
 
-      <hp-code slot="code" language="html">{`<hp-banner tone="warn">…</hp-banner>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-banner tone="warn">…</hp-banner>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

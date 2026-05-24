@@ -32,11 +32,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 const grid = hexGrid(4, 6);
 console.log(grid);`}</hp-code>
 
-      <hp-code slot="code" language="html">{`<hp-code>function hexGrid(rows, cols) {
-  return Array.from({ length: rows }, (_, r) =>
-    Array.from({ length: cols }, (_, c) => ({ r, c })),
-  );
-}</hp-code>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-code>function hexGrid(rows, cols) {
+    return Array.from({ length: rows }, (_, r) =>
+      Array.from({ length: cols }, (_, c) => ({ r, c })),
+    );
+  }</hp-code>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="With Shiki — language=&quot;javascript&quot;">
@@ -49,11 +51,13 @@ console.log(grid);`}</hp-code>
 const grid = hexGrid(4, 6);
 console.log(grid);`}</hp-code>
 
-      <hp-code slot="code" language="html">{`<hp-code language="javascript">function hexGrid(rows, cols) {
-  return Array.from({ length: rows }, (_, r) =>
-    Array.from({ length: cols }, (_, c) => ({ r, c })),
-  );
-}</hp-code>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-code language="javascript">function hexGrid(rows, cols) {
+    return Array.from({ length: rows }, (_, r) =>
+      Array.from({ length: cols }, (_, c) => ({ r, c })),
+    );
+  }</hp-code>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="No line numbers">
@@ -62,10 +66,12 @@ console.log(grid);`}</hp-code>
   background: var(--hp-primary);
 }`}</hp-code>
 
-      <hp-code slot="code" language="html">{`<hp-code no-line-numbers language="css">.hex {
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: var(--hp-primary);
-}</hp-code>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-code no-line-numbers language="css">.hex {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: var(--hp-primary);
+  }</hp-code>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

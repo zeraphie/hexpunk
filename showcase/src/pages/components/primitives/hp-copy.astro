@@ -20,27 +20,35 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     <hp-demo caption="Default — icon + 'Copy'">
       <hp-copy value="Hello, hex world."></hp-copy>
 
-      <hp-code slot="code" language="html">{`<hp-copy value="Hello, hex world."></hp-copy>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="Hello, hex world."></hp-copy>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Custom idle text via slot">
       <hp-copy value="bun add @hexpunk/core lit">Copy install command</hp-copy>
 
-      <hp-code slot="code" language="html">{`<hp-copy value="bun add @hexpunk/core lit">Copy install command</hp-copy>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="bun add @hexpunk/core lit">Copy install command</hp-copy>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Translated — French">
       <hp-copy value="Bonjour, monde hexagonal." copied="Copié">Copier</hp-copy>
 
-      <hp-code slot="code" language="html">{`<hp-copy value="Bonjour, monde hexagonal." copied="Copié">
-  Copier
-</hp-copy>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="Bonjour, monde hexagonal." copied="Copié">
+    Copier
+  </hp-copy>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Icon-only — hides label visually, keeps it in the a11y tree">
       <hp-copy value="https://hexpunk.dev" icon-only>Copy URL</hp-copy>
 
-      <hp-code slot="code" language="html">{`<hp-copy value="https://hexpunk.dev" icon-only>Copy URL</hp-copy>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-copy value="https://hexpunk.dev" icon-only>Copy URL</hp-copy>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

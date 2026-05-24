@@ -20,15 +20,17 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-toast open tone="error">build failed: 2 type errors</hp-toast>
       </div>
 
-      <hp-code slot="code" language="html">{`<hp-toast id="t" tone="positive">deployed</hp-toast>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-toast id="t" tone="positive">deployed</hp-toast>
 
-document.getElementById("t").show();
-// auto-dismisses after 4 seconds (default)
+  document.getElementById("t").show();
+  // auto-dismisses after 4 seconds (default)
 
-<!-- sticky toast (no auto-dismiss) -->
-<hp-toast tone="error" duration="0">
-  build failed — click to retry
-</hp-toast>`}</hp-code>
+  <!-- sticky toast (no auto-dismiss) -->
+  <hp-toast tone="error" duration="0">
+    build failed — click to retry
+  </hp-toast>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

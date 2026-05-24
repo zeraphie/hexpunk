@@ -16,26 +16,32 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-slider value="30"></hp-slider>
       <hp-slider value="65"></hp-slider>
 
-      <hp-code slot="code" language="html">{`<hp-slider min="0" max="100" step="1" value="30"></hp-slider>
-<hp-slider value="65"></hp-slider>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-slider min="0" max="100" step="1" value="30"></hp-slider>
+  <hp-slider value="65"></hp-slider>
 
-document
-  .querySelector("hp-slider")
-  .addEventListener("change", (ev) => {
-    console.log(ev.detail.value);
-  });`}</hp-code>
+  document
+    .querySelector("hp-slider")
+    .addEventListener("change", (ev) => {
+      console.log(ev.detail.value);
+    });
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Stepped (0–10, step 2)">
       <hp-slider min="0" max="10" step="2" value="4"></hp-slider>
 
-      <hp-code slot="code" language="html">{`<hp-slider min="0" max="10" step="2" value="4"></hp-slider>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-slider min="0" max="10" step="2" value="4"></hp-slider>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Disabled">
       <hp-slider value="50" disabled></hp-slider>
 
-      <hp-code slot="code" language="html">{`<hp-slider value="50" disabled></hp-slider>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-slider value="50" disabled></hp-slider>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

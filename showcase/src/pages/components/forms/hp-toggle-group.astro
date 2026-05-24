@@ -19,11 +19,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-button value="right" size="sm">right</hp-button>
       </hp-toggle-group>
 
-      <hp-code slot="code" language="html">{`<hp-toggle-group type="single" value="left">
-  <hp-button value="left">left</hp-button>
-  <hp-button value="center">center</hp-button>
-  <hp-button value="right">right</hp-button>
-</hp-toggle-group>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-toggle-group type="single" value="left">
+    <hp-button value="left">left</hp-button>
+    <hp-button value="center">center</hp-button>
+    <hp-button value="right">right</hp-button>
+  </hp-toggle-group>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Multiple (any combination)">
@@ -33,11 +35,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-button value="underline" size="sm"><u>U</u></hp-button>
       </hp-toggle-group>
 
-      <hp-code slot="code" language="html">{`<hp-toggle-group type="multiple" value="bold italic">
-  <hp-button value="bold">B</hp-button>
-  <hp-button value="italic">I</hp-button>
-  <hp-button value="underline">U</hp-button>
-</hp-toggle-group>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-toggle-group type="multiple" value="bold italic">
+    <hp-button value="bold">B</hp-button>
+    <hp-button value="italic">I</hp-button>
+    <hp-button value="underline">U</hp-button>
+  </hp-toggle-group>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

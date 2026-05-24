@@ -31,21 +31,23 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-sidebar-group>
       </hp-sidebar>
 
-      <hp-code slot="code" language="html">{`<hp-sidebar aria-label="Site map">
-  <hp-sidebar-item href="/">Home</hp-sidebar-item>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-sidebar aria-label="Site map">
+    <hp-sidebar-item href="/">Home</hp-sidebar-item>
 
-  <hp-sidebar-group label="Getting Started" open>
-    <hp-sidebar-item href="/install" active>Install</hp-sidebar-item>
-    <hp-sidebar-item href="/concepts">Concepts</hp-sidebar-item>
-  </hp-sidebar-group>
-
-  <hp-sidebar-group label="Components">
-    <hp-sidebar-group label="Layout">
-      <hp-sidebar-item href="/components/hp-cluster">hp-cluster</hp-sidebar-item>
-      <hp-sidebar-item href="/components/hp-grid">hp-grid</hp-sidebar-item>
+    <hp-sidebar-group label="Getting Started" open>
+      <hp-sidebar-item href="/install" active>Install</hp-sidebar-item>
+      <hp-sidebar-item href="/concepts">Concepts</hp-sidebar-item>
     </hp-sidebar-group>
-  </hp-sidebar-group>
-</hp-sidebar>`}</hp-code>
+
+    <hp-sidebar-group label="Components">
+      <hp-sidebar-group label="Layout">
+        <hp-sidebar-item href="/components/hp-cluster">hp-cluster</hp-sidebar-item>
+        <hp-sidebar-item href="/components/hp-grid">hp-grid</hp-sidebar-item>
+      </hp-sidebar-group>
+    </hp-sidebar-group>
+  </hp-sidebar>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

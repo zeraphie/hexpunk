@@ -14,17 +14,19 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-module-handle></hp-module-handle>
       <hp-module-handle active></hp-module-handle>
 
-      <hp-code slot="code" language="html">{`<hp-module-handle></hp-module-handle>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-module-handle></hp-module-handle>
 
-<!-- active = currently grabbed -->
-<hp-module-handle active></hp-module-handle>
+  <!-- active = currently grabbed -->
+  <hp-module-handle active></hp-module-handle>
 
-<!-- override the default 6-dot grip with a custom icon -->
-<hp-module-handle>
-  <svg viewBox="0 0 24 24" stroke="currentColor" ...>
-    <path d="..." />
-  </svg>
-</hp-module-handle>`}</hp-code>
+  <!-- override the default 6-dot grip with a custom icon -->
+  <hp-module-handle>
+    <svg viewBox="0 0 24 24" stroke="currentColor" ...>
+      <path d="..." />
+    </svg>
+  </hp-module-handle>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

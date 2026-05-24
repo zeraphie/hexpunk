@@ -17,16 +17,18 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-toggle disabled></hp-toggle>
       <hp-toggle checked disabled></hp-toggle>
 
-      <hp-code slot="code" language="html">{`<hp-toggle></hp-toggle>
-<hp-toggle checked></hp-toggle>
-<hp-toggle disabled></hp-toggle>
-<hp-toggle checked disabled></hp-toggle>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-toggle></hp-toggle>
+  <hp-toggle checked></hp-toggle>
+  <hp-toggle disabled></hp-toggle>
+  <hp-toggle checked disabled></hp-toggle>
 
-document
-  .querySelector("hp-toggle")
-  .addEventListener("change", (ev) => {
-    console.log(ev.detail.checked);
-  });`}</hp-code>
+  document
+    .querySelector("hp-toggle")
+    .addEventListener("change", (ev) => {
+      console.log(ev.detail.checked);
+    });
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

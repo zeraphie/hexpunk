@@ -16,9 +16,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-avatar size="md" src="https://i.pravatar.cc/120?u=b" alt="Bob">BO</hp-avatar>
       <hp-avatar size="lg" src="https://i.pravatar.cc/160?u=c" alt="Cara">CA</hp-avatar>
 
-      <hp-code slot="code" language="html">{`<hp-avatar src="/me.jpg" alt="Izzy">IZ</hp-avatar>
-<hp-avatar size="md" src="/bob.jpg" alt="Bob">BO</hp-avatar>
-<hp-avatar size="lg" src="/cara.jpg" alt="Cara">CA</hp-avatar>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-avatar src="/me.jpg" alt="Izzy">IZ</hp-avatar>
+  <hp-avatar size="md" src="/bob.jpg" alt="Bob">BO</hp-avatar>
+  <hp-avatar size="lg" src="/cara.jpg" alt="Cara">CA</hp-avatar>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Initials fallback (no src)">
@@ -26,15 +28,19 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-avatar size="md">JS</hp-avatar>
       <hp-avatar size="lg">CY</hp-avatar>
 
-      <hp-code slot="code" language="html">{`<hp-avatar>IZ</hp-avatar>
-<hp-avatar size="md">JS</hp-avatar>
-<hp-avatar size="lg">CY</hp-avatar>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-avatar>IZ</hp-avatar>
+  <hp-avatar size="md">JS</hp-avatar>
+  <hp-avatar size="lg">CY</hp-avatar>
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Image error → fallback">
       <hp-avatar src="https://invalid.example/missing.png" alt="Missing">??</hp-avatar>
 
-      <hp-code slot="code" language="html">{`<hp-avatar src="/missing.png" alt="Missing">??</hp-avatar>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-avatar src="/missing.png" alt="Missing">??</hp-avatar>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

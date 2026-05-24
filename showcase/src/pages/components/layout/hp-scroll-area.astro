@@ -24,12 +24,14 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-scroll-area>
 
-      <hp-code slot="code" language="html">{`<hp-scroll-area style="height: 240px">
-  <p>Long content...</p>
-</hp-scroll-area>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-scroll-area style="height: 240px">
+    <p>Long content...</p>
+  </hp-scroll-area>
 
-<!-- Visibility modes: auto (default) | always | hover -->
-<hp-scroll-area visibility="hover">...</hp-scroll-area>`}</hp-code>
+  <!-- Visibility modes: auto (default) | always | hover -->
+  <hp-scroll-area visibility="hover">...</hp-scroll-area>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

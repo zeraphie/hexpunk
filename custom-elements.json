@@ -699,6 +699,126 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -865,126 +985,6 @@
           "declaration": {
             "name": "sun",
             "module": "src/icons/sun.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
           }
         }
       ]
@@ -5778,6 +5778,298 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/navigation/hp-link.ts",
       "declarations": [
         {
@@ -6646,298 +6938,6 @@
           "declaration": {
             "name": "HpTabPanel",
             "module": "src/elements/navigation/hp-tabs.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
           }
         }
       ]

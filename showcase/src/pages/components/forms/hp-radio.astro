@@ -29,17 +29,19 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-radio-group>
 
-      <hp-code slot="code" language="html">{`<hp-radio-group value="medium">
-  <hp-radio value="small"></hp-radio>
-  <hp-radio value="medium"></hp-radio>
-  <hp-radio value="large"></hp-radio>
-</hp-radio-group>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-radio-group value="medium">
+    <hp-radio value="small"></hp-radio>
+    <hp-radio value="medium"></hp-radio>
+    <hp-radio value="large"></hp-radio>
+  </hp-radio-group>
 
-document
-  .querySelector("hp-radio-group")
-  .addEventListener("change", (ev) => {
-    console.log(ev.detail.value);
-  });`}</hp-code>
+  document
+    .querySelector("hp-radio-group")
+    .addEventListener("change", (ev) => {
+      console.log(ev.detail.value);
+    });
+</body>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Disabled">
@@ -58,11 +60,13 @@ document
         </div>
       </hp-radio-group>
 
-      <hp-code slot="code" language="html">{`<hp-radio-group value="b">
-  <hp-radio value="a"></hp-radio>
-  <hp-radio value="b"></hp-radio>
-  <hp-radio value="c" disabled></hp-radio>
-</hp-radio-group>`}</hp-code>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-radio-group value="b">
+    <hp-radio value="a"></hp-radio>
+    <hp-radio value="b"></hp-radio>
+    <hp-radio value="c" disabled></hp-radio>
+  </hp-radio-group>
+</body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
