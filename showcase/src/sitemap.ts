@@ -24,7 +24,6 @@ export function isLeaf(node: SitemapNode): node is SitemapLeaf {
 }
 
 export const SITEMAP: SitemapNode[] = [
-  { path: "/", title: "Home" },
   {
     title: "Getting Started",
     children: [

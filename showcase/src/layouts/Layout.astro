@@ -6,7 +6,12 @@ import "../../../src/styles/hp-latex.css";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
 import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
-import { moon, search as searchIcon, sun } from "../../../src/icons/index.ts";
+import {
+  github as githubIcon,
+  moon,
+  search as searchIcon,
+  sun,
+} from "../../../src/icons/index.ts";
 
 interface Props {
   title: string;
@@ -127,7 +132,10 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
           </svg>
           <span class="brand-text">Hexpunk</span>
         </a>
-        <span class="tagline">Hexagonal-first, wireframe-cyberpunk Lit components.</span>
+        <nav class="header-nav" aria-label="Primary">
+          <a class="header-nav-link" href={href("/getting-started/install")}>Docs</a>
+          <a class="header-nav-link" href={href("/components")}>Components</a>
+        </nav>
         <div class="header-tools">
           <button
             type="button"
@@ -179,6 +187,22 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
               set:html={moon}
             ></svg>
           </button>
+          <a
+            class="header-btn header-github"
+            href="https://github.com/zeraphie/hexpunk"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on GitHub"
+            title="View on GitHub"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              set:html={githubIcon}
+            ></svg>
+          </a>
         </div>
       </header>
       <hp-sidebar
