@@ -20,11 +20,11 @@
  */
 
 import { axialNeighbours, slotKey } from "./axial.js";
+import { dispatchBondEvents, findOccupiedNeighbours } from "./bonds.js";
 import type { PanController } from "./pan.js";
 import type {
   AxialCoord,
   DragState,
-  HpGridBondEventDetail,
   HpGridDropEventDetail,
   HpGridMoveEventDetail,
   HpGridTetherEventDetail,
@@ -351,7 +351,7 @@ export class DragController {
     // post-move set and only fire events for adjacencies that
     // actually changed. The element is still occupying startCoord in
     // `occupancy` here.
-    const bondsBefore = this.findOccupiedNeighbours(startCoord, element);
+    const bondsBefore = findOccupiedNeighbours(this.host.occupancy, startCoord, element);
 
     // Drop the dragging attribute FIRST so the base transform
     // transition re-engages, then change q/r and clear drag offsets in
@@ -381,29 +381,8 @@ export class DragController {
       // unbond; any in `after` but not `before` is a new bond. Skip
       // the diff entirely on a no-op snap (same slot) — that can
       // happen on a cancelled drag and would produce phantom events.
-      const bondsAfter = this.findOccupiedNeighbours(target, element);
-      for (const partner of bondsBefore) {
-        if (!bondsAfter.includes(partner)) {
-          this.host.dispatchEvent(
-            new CustomEvent<HpGridBondEventDetail>("hp-grid-unbond", {
-              detail: { moved: element, partner },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        }
-      }
-      for (const partner of bondsAfter) {
-        if (!bondsBefore.includes(partner)) {
-          this.host.dispatchEvent(
-            new CustomEvent<HpGridBondEventDetail>("hp-grid-bond", {
-              detail: { moved: element, partner },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        }
-      }
+      const bondsAfter = findOccupiedNeighbours(this.host.occupancy, target, element);
+      dispatchBondEvents(this.host, element, bondsBefore, bondsAfter);
 
       // Post-animation event: fires after the ~90ms snap transition
       // completes. Listeners auto-detach via AbortController on the
@@ -591,26 +570,6 @@ export class DragController {
   private isFree(coord: AxialCoord, dragged: HTMLElement): boolean {
     const occupier = this.host.occupancy.get(slotKey(coord.q, coord.r));
     return !occupier || occupier === dragged;
-  }
-
-  /**
-   * Elements occupying the 6 axial neighbours of `coord`, with
-   * `exclude` filtered out. Used to compute bond before/after sets
-   * on drop so we can dispatch `hp-grid-bond` / `hp-grid-unbond`
-   * only for adjacencies that changed.
-   */
-  private findOccupiedNeighbours(
-    coord: AxialCoord,
-    exclude: HTMLElement
-  ): HTMLElement[] {
-    const out: HTMLElement[] = [];
-    for (const n of axialNeighbours(coord)) {
-      const occupier = this.host.occupancy.get(slotKey(n.q, n.r));
-      if (occupier && occupier !== exclude) {
-        out.push(occupier);
-      }
-    }
-    return out;
   }
 
   /** Shared drag-listener / capture teardown — used by both the
