@@ -6,11 +6,16 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 <Layout title="hp-cluster">
   <ComponentDocs title="hp-cluster">
     <p slot="description">
-      Canonical 5-hex navigation rosette. Centre surrounded by top / middle-left / middle-right /
-      bottom slots; positioned by CSS, not draggable.
+      Multi-hex group layout. Two modes via the <code>layout</code> attribute.
+      <code>rosette</code> (default) is the canonical 5-hex navigation rosette — a centre
+      cell with four named-slot neighbours. <code>honeycomb</code> accepts N default-slot
+      children and packs them in rings outward from the first child (the centre). Drag
+      handling stays in <code>&lt;hp-grid&gt;</code> via its <code>drag-handle</code>
+      selector — for honeycomb mode use <code>:first-child</code>, for rosette use
+      <code>[slot='centre']</code>.
     </p>
 
-    <hp-demo>
+    <hp-demo caption="Rosette — 5 named slots (default)">
       <hp-cluster>
         <hp-cell variant="action" slot="top" tabindex="0">deploy</hp-cell>
         <hp-cell variant="secondary" slot="middle-left" tabindex="0">cancel</hp-cell>
@@ -37,37 +42,133 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <p>
+      The honeycomb demos below wrap the cluster in <code>&lt;hp-grid draggable&gt;</code>
+      so the centre acts as a drag handle for the whole cluster (via the
+      <code>drag-handle=":first-child"</code> selector hp-grid reads on the cluster).
+      <code>&lt;hp-background&gt;</code> sits as a sibling for the ambient hex backdrop.
+      Both are <code>&lt;hp-grid&gt;</code> features — the cluster itself works without
+      either wrapper; drop the wrapper if you just want a static layout.
+    </p>
+
+    <hp-demo caption="Honeycomb — ring 1 (7 children: centre + 6 neighbours)">
+      <hp-grid draggable>
+        <hp-background></hp-background>
+        <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
+          <hp-cell variant="anchor" filled tabindex="0">forms</hp-cell>
+          <hp-cell variant="action" tabindex="0">button</hp-cell>
+          <hp-cell variant="action" tabindex="0">checkbox</hp-cell>
+          <hp-cell variant="action" tabindex="0">radio</hp-cell>
+          <hp-cell variant="action" tabindex="0">select</hp-cell>
+          <hp-cell variant="action" tabindex="0">slider</hp-cell>
+          <hp-cell variant="action" tabindex="0">toggle</hp-cell>
+        </hp-cluster>
+      </hp-grid>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- hp-grid + hp-background give the cluster a draggable canvas
+       with the ambient hex backdrop. Both are optional — drop the
+       wrapper if you just want a static layout. -->
+  <hp-grid draggable>
+    <hp-background></hp-background>
+    <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
+      <!-- First child is the centre — variant="anchor" + filled is the
+           draggable handle for the whole cluster. Solid primary hex,
+           visually distinct from the action-variant outer ring. -->
+      <hp-cell variant="anchor" filled tabindex="0">forms</hp-cell>
+      <!-- Remaining children are navigation links — variant="action"
+           is the "click to navigate" CTA variant. Fill ring 1
+           clockwise from north (6 max). -->
+      <hp-cell variant="action" tabindex="0">button</hp-cell>
+      <hp-cell variant="action" tabindex="0">checkbox</hp-cell>
+      <hp-cell variant="action" tabindex="0">radio</hp-cell>
+      <hp-cell variant="action" tabindex="0">select</hp-cell>
+      <hp-cell variant="action" tabindex="0">slider</hp-cell>
+      <hp-cell variant="action" tabindex="0">toggle</hp-cell>
+    </hp-cluster>
+  </hp-grid>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Honeycomb — ring 2 (13 children: centre + 6 + 6 of ring 2)">
+      <hp-grid draggable>
+        <hp-background></hp-background>
+        <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
+          <hp-cell variant="anchor" filled tabindex="0">layout</hp-cell>
+          <hp-cell variant="action" tabindex="0">background</hp-cell>
+          <hp-cell variant="action" tabindex="0">cluster</hp-cell>
+          <hp-cell variant="action" tabindex="0">collapsible</hp-cell>
+          <hp-cell variant="action" tabindex="0">demo</hp-cell>
+          <hp-cell variant="action" tabindex="0">grid</hp-cell>
+          <hp-cell variant="action" tabindex="0">scroll</hp-cell>
+          <hp-cell variant="action" tabindex="0">separator</hp-cell>
+          <hp-cell variant="action" tabindex="0">sidebar</hp-cell>
+          <hp-cell variant="action" tabindex="0">toolbar</hp-cell>
+          <hp-cell variant="action" tabindex="0">grid 2</hp-cell>
+          <hp-cell variant="action" tabindex="0">scroll 2</hp-cell>
+          <hp-cell variant="action" tabindex="0">extras</hp-cell>
+        </hp-cluster>
+      </hp-grid>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-grid draggable>
+    <hp-background></hp-background>
+    <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
+      <hp-cell variant="anchor" filled tabindex="0">layout</hp-cell>
+      <hp-cell variant="action" tabindex="0">background</hp-cell>
+      <hp-cell variant="action" tabindex="0">cluster</hp-cell>
+      <!-- ... 11 more children. Ring 1 fills first (positions 2-7);
+           ring 2 begins at position 8, clockwise from north. -->
+    </hp-cluster>
+  </hp-grid>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>When to use</h2>
-              <hp-banner tone="do">
-          Build navigation rails as columns of clusters — each cluster represents a section, with
-          its <code>centre</code> as the section label and the four outer slots as actions.
-        </hp-banner>
-        <hp-banner tone="do">
-          Use the <strong>same atom type</strong> for all outer slots when possible. Mixed atom
-          types (e.g., <code>&lt;hp-cell&gt;</code> + raw <code>&lt;hp-hex&gt;</code>) require
-          careful stroke / fill matching to avoid orphan-ring gaps in the overlap region.
-          DESIGN.md's bonding rules cover this in detail.
-        </hp-banner>
-        <hp-banner tone="dont">
-          Treat the cluster as draggable. <code>&lt;hp-cluster&gt;</code> is a static layout —
-          if you need drag-snap behaviour for a 5-hex group, place the cluster inside
-          <code>&lt;hp-grid&gt;</code> with a <code>drag-handle</code> attribute pointing at the
-          centre.
-        </hp-banner>
-        <hp-banner tone="dont">
-          Pack more than 5 slots. The rosette is intentionally 5 — adding more breaks the
-          surrounding-the-centre semantic. For larger groups, use multiple clusters or drop to
-          <code>&lt;hp-grid&gt;</code>.
-        </hp-banner>
-      
+      <hp-banner tone="do">
+        Reach for <code>rosette</code> (default) when you have exactly 4 actions around a
+        single focal point — navigation rails, contextual menus, action wheels. The named
+        slots make intent legible at the markup level.
+      </hp-banner>
+      <hp-banner tone="do">
+        Reach for <code>layout="honeycomb"</code> when the count varies or exceeds 4
+        outer cells — category indexes, attribute groupings, anything packing N items
+        around a label. The first default-slot child is the centre.
+      </hp-banner>
+      <hp-banner tone="do">
+        Use the <strong>same atom type</strong> for all outer cells when possible. Mixed
+        atom types (e.g., <code>&lt;hp-cell&gt;</code> + raw <code>&lt;hp-hex&gt;</code>)
+        require careful stroke / fill matching to avoid orphan-ring gaps in the overlap
+        region. DESIGN.md's bonding rules cover this in detail.
+      </hp-banner>
+      <hp-banner tone="do">
+        For drag-snap behaviour, place the cluster inside <code>&lt;hp-grid draggable&gt;</code>
+        with a <code>drag-handle</code> attribute pointing at the centre — the cluster
+        itself stays purely layout. Selectors:
+        <code>drag-handle="[slot='centre']"</code> for rosette,
+        <code>drag-handle=":first-child"</code> for honeycomb.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Pack more than 19 children into a honeycomb cluster. v1 caps at ring 2 (1 centre
+        + 6 ring 1 + 12 ring 2 = 19). Beyond that, children stack at the centre. For
+        bigger groups, use multiple clusters or drop to a bare <code>&lt;hp-grid&gt;</code>
+        with hand-placed axial coordinates.
+      </hp-banner>
 
       <h2>Layout math</h2>
       <p>
-        Outer slots sit at axial coordinates <code>(0,-1)</code>, <code>(-1,0)</code>,
-        <code>(1,0)</code>, <code>(0,1)</code> relative to the centre. The cluster uses the same
-        effective-cell math as <code>&lt;hp-grid&gt;</code> (<code>col_step = cell − hex-stroke</code>)
-        so adjacent strokes share cleanly.
+        Both modes share the same effective-cell math as
+        <code>&lt;hp-grid&gt;</code> — <code>col_step = cell − hex-stroke</code> — so
+        adjacent strokes share cleanly. Pixel position from axial coords:
+        <code>x = col_step × (q + r/2)</code>, <code>y = row_step × r</code>.
+      </p>
+      <p>
+        Rosette outer slots sit at <code>(0,-1)</code>, <code>(-1,0)</code>,
+        <code>(1,0)</code>, <code>(0,1)</code>. Honeycomb ring 1 fills the same four
+        plus the two unused neighbours <code>(1,-1)</code> and <code>(-1,1)</code>;
+        ring 2 fills the 12 axial positions at distance 2, clockwise from north.
+        Children fill sequentially by index — centre first, then ring 1, then ring 2.
       </p>
     </Fragment>
   </ComponentDocs>
