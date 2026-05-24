@@ -291,7 +291,8 @@ export class HpGrid extends LitElement {
       (el): el is HTMLElement =>
         el instanceof HTMLElement &&
         el.tagName.toLowerCase() !== "hp-background" &&
-        !el.hasAttribute("data-hp-decoration")
+        !el.hasAttribute("data-hp-decoration") &&
+        !el.hasAttribute("hidden")
     );
     if (children.length === 0) {
       return;

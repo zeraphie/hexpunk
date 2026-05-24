@@ -83,29 +83,37 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       height: calc(100vh - var(--hp-navbar-height));
     }
 
+    /* Web Awesome-style centered intro: title, tagline, and filter
+     * stack vertically with breathing room. The header isn't full-
+     * width content — it caps at a comfortable reading width and
+     * centres horizontally. */
     .components-header {
-      padding: var(--hp-md) var(--hp-xl);
+      padding: var(--hp-xxl) var(--hp-xl) var(--hp-xl);
       border-bottom: 1px solid var(--hp-outline-faint);
+      text-align: center;
     }
 
     .components-header h1 {
-      margin: 0 0 var(--hp-xs);
+      margin: 0 0 var(--hp-md);
     }
 
     .components-tagline {
       color: var(--hp-on-surface-variant);
-      margin: 0 0 var(--hp-md);
+      margin: 0 auto var(--hp-xl);
+      max-width: 48rem;
     }
 
     .component-filter {
       display: block;
       max-width: 32rem;
+      margin: 0 auto;
     }
 
     .component-filter input {
       width: 100%;
       padding: var(--hp-sm) var(--hp-md);
       font-size: var(--hp-typo-body-md-font-size);
+      text-align: center;
     }
 
     /* Grid claims all remaining vertical space, fills width edge-to-
@@ -134,16 +142,25 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
   </style>
 
   <script>
-    // Filter logic: walk every <a class="component-link"> descendant of
-    // the grid and toggle `hidden` based on a substring match against
-    // the wrapped hp-cell's text content. Cluster centres (variant=
-    // anchor filled, NOT wrapped in <a>) stay always visible — the
-    // category labels are part of the page's structural map, not
-    // filterable items.
+    // Filter logic walks every <a class="component-link"> descendant
+    // of the grid and toggles `hidden` based on a substring match
+    // against the wrapped hp-cell's text content. When a cluster's
+    // entire set of links is filtered out, the cluster itself goes
+    // hidden too — leaving a stranded anchor centre isn't useful.
+    // After a 300ms debounce we call `grid.pack()` so the layout
+    // reflows around just the visible clusters (the FFD packer
+    // skips hidden children).
     const search = document.querySelector<HTMLInputElement>("#component-search");
-    const grid = document.querySelector<HTMLElement>("#components-grid");
+    const grid = document.querySelector<HTMLElement & { pack?: () => void }>(
+      "#components-grid",
+    );
     if (search && grid) {
-      const links = Array.from(grid.querySelectorAll<HTMLAnchorElement>("a.component-link"));
+      const links = Array.from(
+        grid.querySelectorAll<HTMLAnchorElement>("a.component-link"),
+      );
+      const clusters = Array.from(grid.querySelectorAll<HTMLElement>("hp-cluster"));
+      let repackTimer: ReturnType<typeof setTimeout> | null = null;
+
       const apply = () => {
         const query = search.value.trim().toLowerCase();
         for (const link of links) {
@@ -151,7 +168,23 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
           const text = (cell?.textContent ?? "").toLowerCase();
           link.hidden = query.length > 0 && !text.includes(query);
         }
+        for (const cluster of clusters) {
+          const clusterLinks = cluster.querySelectorAll<HTMLAnchorElement>(
+            "a.component-link",
+          );
+          const anyVisible = Array.from(clusterLinks).some((l) => !l.hidden);
+          cluster.hidden = !anyVisible;
+        }
+        // Debounce the repack so we don't reflow on every keystroke.
+        // 300ms feels right for type-and-pause filtering.
+        if (repackTimer) {
+          clearTimeout(repackTimer);
+        }
+        repackTimer = setTimeout(() => {
+          grid.pack?.();
+        }, 300);
       };
+
       search.addEventListener("input", apply);
       // Run once on load so the initial render is consistent if the
       // browser restored a value from autocomplete (rare with
