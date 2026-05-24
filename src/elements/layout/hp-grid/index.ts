@@ -83,6 +83,7 @@ import {
   markClaimed,
   parseFillCells,
 } from "./pack.js";
+import { PanController, stopPanFromButton } from "./pan.js";
 import { hpGridStyles } from "./styles.js";
 import type {
   AxialCoord,
@@ -92,7 +93,6 @@ import type {
   HpGridMoveEventDetail,
   HpGridPanEventDetail,
   HpGridTetherEventDetail,
-  PanState,
 } from "./types.js";
 
 export type {
@@ -196,13 +196,20 @@ export class HpGrid extends LitElement {
   /** Active drag, if any. */
   private drag: DragState | null = null;
 
-  /** Active pan, if any. */
-  private pan: PanState | null = null;
+  /** Pan controller — owns the active pan state, the pan move/end
+   * handlers, and `clampPan`. Field name kept as `panController` so
+   * the public type doesn't clash with HTMLElement's no-op `pan` */
+  private readonly panController = new PanController(this);
 
-  /** Current zoom factor. 1 = no zoom; > 1 zooms in, < 1 zooms out.
-   * Bounded by ZOOM_MIN / ZOOM_MAX. Mirrored to `--hp-zoom` inline
-   * style so the slotted-child transform sees it. */
-  private zoom = 1;
+  /**
+   * Current zoom factor. 1 = no zoom; > 1 zooms in, < 1 zooms out.
+   * Bounded by `ZOOM_MIN` / `ZOOM_MAX`. Mirrored to `--hp-zoom` inline
+   * style so the slotted-child transform sees it.
+   *
+   * @internal Public so the `PanController` / future zoom controller
+   *   can read it; not part of the documented API.
+   */
+  zoom = 1;
 
   private static readonly ZOOM_MIN = 0.25;
   private static readonly ZOOM_MAX = 4;
@@ -339,7 +346,7 @@ export class HpGrid extends LitElement {
     return html`
       <div class="step-probe" aria-hidden="true"></div>
       <slot @slotchange=${this.handleSlotChange}></slot>
-      <div class="controls" part="controls" @pointerdown=${this.stopPanFromButton}>
+      <div class="controls" part="controls" @pointerdown=${stopPanFromButton}>
         <button type="button" aria-label="Zoom out" part="zoom-out" @click=${this.zoomOut}>
           −
         </button>
@@ -361,94 +368,6 @@ export class HpGrid extends LitElement {
     `;
   }
 
-  /** Recenter button stops propagation so pointerdown doesn't bubble
-   * up to the host's pan handler. Otherwise clicking the button
-   * would also start a pan. */
-  private stopPanFromButton(event: Event): void {
-    event.stopPropagation();
-  }
-
-  /** Compute the legal pan range so every [q][r] child stays fully
-   * inside the viewport. For each child, `pan_x` is bounded by
-   * `[child_half_w - viewport_half_w - offset_x,
-   * viewport_half_w - offset_x - child_half_w]`; intersecting
-   * every child's range gives the grid-wide bounds. Contradictory
-   * ranges (children too big to fit) collapse to their midpoint —
-   * the best-fit center. Returns zero bounds when layout is not
-   * yet ready. */
-  private computePanBounds(): { minX: number; maxX: number; minY: number; maxY: number } {
-    const gridRect = this.getBoundingClientRect();
-    const w = gridRect.width;
-    const h = gridRect.height;
-    if (w === 0 || h === 0) {
-      return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-    }
-    const steps = this.computeStyleSteps();
-    let minX = Number.NEGATIVE_INFINITY;
-    let maxX = Number.POSITIVE_INFINITY;
-    let minY = Number.NEGATIVE_INFINITY;
-    let maxY = Number.POSITIVE_INFINITY;
-    let foundAny = false;
-    for (const child of this.querySelectorAll<HTMLElement>("[q][r]")) {
-      const q = Number.parseFloat(child.getAttribute("q") ?? "");
-      const r = Number.parseFloat(child.getAttribute("r") ?? "");
-      if (Number.isNaN(q) || Number.isNaN(r)) {
-        continue;
-      }
-      // Use the COMPUTED (pre-transform) size so we factor in zoom
-      // ourselves rather than reading the already-scaled bbox.
-      const childStyle = getComputedStyle(child);
-      const baseW = Number.parseFloat(childStyle.width);
-      const baseH = Number.parseFloat(childStyle.height);
-      if (!baseW || !baseH) {
-        continue;
-      }
-      foundAny = true;
-      const wi = baseW * this.zoom;
-      const hi = baseH * this.zoom;
-      const offsetX = steps.col * (q + r / 2) * this.zoom;
-      const offsetY = steps.row * r * this.zoom;
-      const lowerX = wi / 2 - w / 2 - offsetX;
-      const upperX = w / 2 - offsetX - wi / 2;
-      const lowerY = hi / 2 - h / 2 - offsetY;
-      const upperY = h / 2 - offsetY - hi / 2;
-      if (lowerX > minX) {
-        minX = lowerX;
-      }
-      if (upperX < maxX) {
-        maxX = upperX;
-      }
-      if (lowerY > minY) {
-        minY = lowerY;
-      }
-      if (upperY < maxY) {
-        maxY = upperY;
-      }
-    }
-    if (!foundAny) {
-      return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-    }
-    if (minX > maxX) {
-      // Content is wider than the viewport — swap so the user can pan
-      // from "child's left edge at viewport's left" to "child's right
-      // edge at viewport's right". Without the swap, the range
-      // collapses to the midpoint and the overflowing parts stay
-      // permanently clipped behind the grid's bounds.
-      [minX, maxX] = [maxX, minX];
-    }
-    if (minY > maxY) {
-      [minY, maxY] = [maxY, minY];
-    }
-    return { minX, maxX, minY, maxY };
-  }
-
-  private clampPan(panX: number, panY: number): { panX: number; panY: number } {
-    const b = this.computePanBounds();
-    return {
-      panX: Math.max(b.minX, Math.min(b.maxX, panX)),
-      panY: Math.max(b.minY, Math.min(b.maxY, panY)),
-    };
-  }
 
   /** Fit every positioned child inside the viewport and centre the
    * content. Walks `[q][r]` children's per-cell fill masks
@@ -580,7 +499,7 @@ export class HpGrid extends LitElement {
     const targetPanY = (cy - h / 2) * (1 - ratio) + oldPanY * ratio;
     this.zoom = newZoom;
     this.style.setProperty("--hp-zoom", String(newZoom));
-    const { panX, panY } = this.clampPan(targetPanX, targetPanY);
+    const { panX, panY } = this.panController.clamp(targetPanX, targetPanY);
     this.style.setProperty("--hp-pan-x", `${panX}px`);
     this.style.setProperty("--hp-pan-y", `${panY}px`);
     if (panX !== 0 || panY !== 0 || newZoom !== 1) {
@@ -686,7 +605,7 @@ export class HpGrid extends LitElement {
       // Only when drag/pan is enabled — a static grid ignores empty
       // pointerdowns so layout surfaces don't accidentally pan.
       if (this.draggable) {
-        this.startPan(event);
+        this.panController.start(event);
       }
       return;
     }
@@ -1094,74 +1013,21 @@ export class HpGrid extends LitElement {
     this.cleanupDrag(element, pointerId);
   }
 
-  // ── Pan lifecycle ──────────────────────────────────────────────────
-
-  private startPan(event: PointerEvent): void {
-    this.setPointerCapture(event.pointerId);
-    const startPanX = Number.parseFloat(this.style.getPropertyValue("--hp-pan-x")) || 0;
-    const startPanY = Number.parseFloat(this.style.getPropertyValue("--hp-pan-y")) || 0;
-    this.pan = {
-      pointerId: event.pointerId,
-      origin: { clientX: event.clientX, clientY: event.clientY },
-      startPanX,
-      startPanY,
-    };
-    this.setAttribute("data-hp-panning", "");
-    this.addEventListener("pointermove", this.handlePanMove);
-    this.addEventListener("pointerup", this.handlePanEnd);
-    this.addEventListener("pointercancel", this.handlePanEnd);
-    event.preventDefault();
-  }
-
-  private handlePanMove = (event: PointerEvent): void => {
-    if (!this.pan || event.pointerId !== this.pan.pointerId) {
-      return;
-    }
-    const dx = event.clientX - this.pan.origin.clientX;
-    const dy = event.clientY - this.pan.origin.clientY;
-    // Clamp pan so every [q][r] child stays within the visible
-    // viewport. If the content is bigger than the viewport, the
-    // clamp collapses to the midpoint that best-fits the content.
-    const { panX, panY } = this.clampPan(this.pan.startPanX + dx, this.pan.startPanY + dy);
-    this.style.setProperty("--hp-pan-x", `${panX}px`);
-    this.style.setProperty("--hp-pan-y", `${panY}px`);
-    if (panX !== 0 || panY !== 0) {
-      this.setAttribute("data-hp-panned", "");
-    } else {
-      this.removeAttribute("data-hp-panned");
-    }
-    // Notify consumers (e.g. <hp-tether>) that the canvas offset has
-    // changed so they can recompute viewport-relative geometry.
-    this.dispatchEvent(
-      new CustomEvent<HpGridPanEventDetail>("hp-grid-pan", {
-        detail: { panX, panY },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  };
-
-  private handlePanEnd = (event: PointerEvent): void => {
-    if (!this.pan || event.pointerId !== this.pan.pointerId) {
-      return;
-    }
-    this.removeEventListener("pointermove", this.handlePanMove);
-    this.removeEventListener("pointerup", this.handlePanEnd);
-    this.removeEventListener("pointercancel", this.handlePanEnd);
-    if (this.hasPointerCapture(event.pointerId)) {
-      this.releasePointerCapture(event.pointerId);
-    }
-    this.removeAttribute("data-hp-panning");
-    this.pan = null;
-  };
-
   // ── Coordinate math ────────────────────────────────────────────────
 
-  /** Resolve --hp-col-step / --hp-row-step to numeric pixel values via
-   * the hidden probe element. getComputedStyle on a custom property
-   * returns the raw calc() expression (unresolved), so we apply the
-   * vars to width/height on a hidden div and read the resolved size. */
-  private computeStyleSteps(): { col: number; row: number } {
+  /**
+   * Resolve `--hp-col-step` / `--hp-row-step` to numeric pixel values
+   * via the hidden probe element. `getComputedStyle` on a custom
+   * property returns the raw `calc()` expression (unresolved), so we
+   * apply the vars to width/height on a hidden div and read the
+   * resolved size.
+   *
+   * @returns Resolved step sizes in px. `{ col: 1, row: 1 }` if the
+   *   probe isn't reachable (pre-paint / detached).
+   * @internal Public so concern modules (pan, zoom, recenter) can
+   *   reach the same numbers; not part of the documented API.
+   */
+  computeStyleSteps(): { col: number; row: number } {
     const probe = this.shadowRoot?.querySelector<HTMLElement>(".step-probe");
     if (!probe) {
       return { col: 1, row: 1 };
