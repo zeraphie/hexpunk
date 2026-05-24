@@ -98,6 +98,25 @@ export class HpCluster extends LitElement {
         top: 50%;
       }
 
+      /* ── Cursor: only the drag-handle child inherits the grab
+       * cursor from hp-grid. Non-handle children (rosette outer
+       * slots, honeycomb ring) override --hp-cursor back to pointer
+       * so they read as navigation/click targets, not draggable
+       * surfaces. Custom property cascades through the cell's
+       * shadow boundary; cell hosts read cursor: var(--hp-cursor,
+       * pointer) on their own :host. */
+
+      :host([layout="rosette"]) ::slotted([slot="top"]),
+      :host([layout="rosette"]) ::slotted([slot="middle-left"]),
+      :host([layout="rosette"]) ::slotted([slot="middle-right"]),
+      :host([layout="rosette"]) ::slotted([slot="bottom"]) {
+        --hp-cursor: pointer;
+      }
+
+      :host([layout="honeycomb"]) ::slotted(:nth-child(n + 2)) {
+        --hp-cursor: pointer;
+      }
+
       /* ── Rosette layout (5 named slots) ─────────────────────── */
 
       /* Centre lifted above outer slots so the focal child of the

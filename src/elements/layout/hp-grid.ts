@@ -495,12 +495,15 @@ export class HpGrid extends LitElement {
       return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
     }
     if (minX > maxX) {
-      const mid = (minX + maxX) / 2;
-      minX = maxX = mid;
+      // Content is wider than the viewport — swap so the user can pan
+      // from "child's left edge at viewport's left" to "child's right
+      // edge at viewport's right". Without the swap, the range
+      // collapses to the midpoint and the overflowing parts stay
+      // permanently clipped behind the grid's bounds.
+      [minX, maxX] = [maxX, minX];
     }
     if (minY > maxY) {
-      const mid = (minY + maxY) / 2;
-      minY = maxY = mid;
+      [minY, maxY] = [maxY, minY];
     }
     return { minX, maxX, minY, maxY };
   }
@@ -694,17 +697,15 @@ export class HpGrid extends LitElement {
     // when the pointerdown originated inside an element matching
     // that selector AND still inside this child. Lets a composite
     // like <hp-cluster> expose its centre hex as the sole grip while
-    // its outer slots remain inert. A pointerdown on the child but
-    // OUTSIDE the handle falls through to pan — clicking the
-    // cluster's outer hexes pans the canvas just like clicking
-    // empty space.
+    // its outer slots are inert from hp-grid's perspective. A
+    // pointerdown on the child but OUTSIDE the handle does NOT start
+    // a canvas pan — outer cells are typically navigation links,
+    // and pan would steal the click. Let the event fall through so
+    // the underlying anchor / interactive element handles itself.
     const handleSelector = target.getAttribute("drag-handle");
     if (handleSelector) {
       const handleEl = (event.target as Element).closest(handleSelector);
       if (!handleEl || !target.contains(handleEl)) {
-        if (this.draggable) {
-          this.startPan(event);
-        }
         return;
       }
     }
