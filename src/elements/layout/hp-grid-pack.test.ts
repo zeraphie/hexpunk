@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   type FillMask,
   findFirstFreePosition,
+  findFirstFreePositionRowMajor,
   isPositionClear,
   markClaimed,
   parseFillCells,
@@ -266,6 +267,62 @@ describe("findFirstFreePosition", () => {
       expect(seen.has(key)).toBe(false);
       seen.add(key);
     }
+  });
+
+  test("row-major scan wraps to new r when width cap fills", () => {
+    // halfCols=4 → q-window roughly [-4, 4] at r=0. With SINGLE items
+    // (no width), at most 5 fit per row before the algorithm has to
+    // wrap to a new r row. We pack 10 SINGLEs and assert at least
+    // two distinct r rows.
+    const claimed = new Set<string>();
+    const rows = new Set<number>();
+    for (let i = 0; i < 10; i++) {
+      const pos = findFirstFreePositionRowMajor(SINGLE, claimed, 4);
+      markClaimed(pos.q, pos.r, SINGLE, claimed);
+      rows.add(pos.r);
+    }
+    expect(rows.size).toBeGreaterThanOrEqual(2);
+  });
+
+  test("row-major: first placement lands at top of scan, second to its right", () => {
+    const claimed = new Set<string>();
+    const a = findFirstFreePositionRowMajor(SINGLE, claimed, 5);
+    markClaimed(a.q, a.r, SINGLE, claimed);
+    const b = findFirstFreePositionRowMajor(SINGLE, claimed, 5);
+    expect(b.r).toBe(a.r);
+    expect(b.q).toBeGreaterThan(a.q);
+  });
+
+  test("12-cluster components-page workload row-major-packs into 2-3 r rows", () => {
+    // masonry-wide's design intent: a roughly-rectangular layout
+    // wrapping into a small number of rows. With halfCols=10 (the
+    // production cap) and the 12-cluster components-page workload,
+    // we expect 2–3 distinct r rows.
+    const cats: FillMask[] = [
+      honeycombMask(7),
+      honeycombMask(10),
+      honeycombMask(3),
+      honeycombMask(3),
+      honeycombMask(10),
+      honeycombMask(4),
+      honeycombMask(5),
+      honeycombMask(8),
+      honeycombMask(3),
+      honeycombMask(2),
+      honeycombMask(5),
+      honeycombMask(3),
+    ];
+    const sorted = [...cats].sort((a, b) => b.length - a.length);
+    const claimed = new Set<string>();
+    const placements: Array<{ q: number; r: number }> = [];
+    for (const mask of sorted) {
+      const pos = findFirstFreePositionRowMajor(mask, claimed, 10);
+      markClaimed(pos.q, pos.r, mask, claimed);
+      placements.push(pos);
+    }
+    const rows = new Set(placements.map((p) => p.r));
+    expect(rows.size).toBeGreaterThanOrEqual(2);
+    expect(rows.size).toBeLessThanOrEqual(4);
   });
 
   test("ROSETTE cluster packs without overlapping a placed RING1", () => {

@@ -144,6 +144,57 @@ export function findFirstFreePosition(
   return { q: 0, r: 0 };
 }
 
+/** Axial-coord bounding box of a fill mask. Used by the row-major
+ * scan to bound the q-window so the layout wraps to a new r row
+ * when the current row fills. */
+function maskBounds(mask: FillMask): { qMin: number; qMax: number } {
+  let qMin = Number.POSITIVE_INFINITY;
+  let qMax = Number.NEGATIVE_INFINITY;
+  for (const c of mask) {
+    if (c.q < qMin) qMin = c.q;
+    if (c.q > qMax) qMax = c.q;
+  }
+  if (!Number.isFinite(qMin)) {
+    qMin = 0;
+    qMax = 0;
+  }
+  return { qMin, qMax };
+}
+
+/** Row-major scan for the first free position, bounded by
+ * `halfColsAvailable` (in axial cells, post-`r/2` shift compensation).
+ * Walks r from `-PACK_RANGE` upward and q left-to-right within each
+ * row's window — the layout grows as left-to-right rows that wrap
+ * downward. Paired with FFD largest-first sort, this produces a
+ * roughly-rectangular wide layout instead of the spiral's square
+ * blob. Used by `<hp-grid layout="masonry-wide">`.
+ *
+ * The r/2 horizontal shift in the axial-to-pixel projection means
+ * each r-step also nudges the row right by half a column. We shift
+ * the q-scan window left by r/2 to keep placed items centred under
+ * the viewport regardless of which r row they land on.
+ *
+ * Returns `{q: 0, r: 0}` as a defensive fallback when nothing fits;
+ * real packs never hit it. */
+export function findFirstFreePositionRowMajor(
+  mask: FillMask,
+  claimed: ReadonlySet<string>,
+  halfColsAvailable: number
+): AxialPos {
+  const { qMin, qMax } = maskBounds(mask);
+  for (let r = -PACK_RANGE; r <= PACK_RANGE; r++) {
+    const xShift = r / 2;
+    const qLo = Math.ceil(-halfColsAvailable - xShift - qMin);
+    const qHi = Math.floor(halfColsAvailable - xShift - qMax);
+    for (let q = qLo; q <= qHi; q++) {
+      if (isPositionClear(q, r, mask, claimed)) {
+        return { q, r };
+      }
+    }
+  }
+  return { q: 0, r: 0 };
+}
+
 /** Parses an `hp-cluster`-style `data-fill-cells` attribute (space-
  * separated `"q,r q,r ..."` pairs) into a `FillMask`. Returns a
  * single-hex mask `[{q: 0, r: 0}]` for missing / empty input. */

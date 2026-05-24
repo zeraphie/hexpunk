@@ -59,7 +59,7 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       </label>
     </header>
 
-    <hp-grid draggable layout="masonry" id="components-grid" class="components-grid">
+    <hp-grid draggable layout="masonry-wide" id="components-grid" class="components-grid">
       {categories.map((cat) => (
         <hp-cluster layout="honeycomb" drag-handle=":first-child">
           <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>

@@ -72,6 +72,7 @@ import { hpBase } from "../../styles/hp-base.js";
 import {
   type FillMask,
   findFirstFreePosition,
+  findFirstFreePositionRowMajor,
   markClaimed,
   parseFillCells,
 } from "./hp-grid-pack.js";
@@ -230,15 +231,23 @@ export class HpGrid extends LitElement {
   @property({ reflect: true, type: Boolean })
   draggable = false;
 
-  /** Layout mode. `free` (default) respects each child's authored
-   * `q` / `r` attributes. `masonry` ignores them on first render and
-   * runs an FFD bin-pack: children are sorted by mask size descending
-   * (largest first), then each is placed at the first free position
-   * picked from a scan ordered by axial distance from the origin
-   * (ring 0, then ring 1's 6 positions, then ring 2's 12, …). The
-   * result: the largest cluster anchors the centre, smaller ones
-   * nest around it with a ≥1-hex gap, producing a tight roughly-
-   * square honeycomb.
+  /** Layout mode.
+   *
+   * - `free` (default) respects each child's authored `q` / `r`
+   *   attributes.
+   * - `masonry` runs an FFD bin-pack with a spiral-from-origin scan:
+   *   children are sorted by mask size descending, then each is
+   *   placed at the first free position picked from a scan ordered
+   *   by axial distance from `(0, 0)` (ring 0, then ring 1's 6
+   *   positions, ring 2's 12, …). Produces a tight roughly-square
+   *   honeycomb — largest cluster anchors the centre, smaller ones
+   *   nest around it with a ≥1-hex gap.
+   * - `masonry-wide` runs the same FFD pack but with a row-major
+   *   scan capped at `WIDE_HALF_COLS` axial cells wide, so the
+   *   layout grows as left-to-right rows that wrap downward —
+   *   roughly-rectangular wide arrangement, ideal for full-page-
+   *   width surfaces (component index pages) where the spiral's
+   *   square shape leaves too much horizontal space unused.
    *
    * Children publish their actual filled hexes via `data-fill-cells`
    * (composite elements like `<hp-cluster>` set this on slotchange);
@@ -247,13 +256,13 @@ export class HpGrid extends LitElement {
    * bbox padding — so non-symmetric clusters' empty corners stay
    * available for neighbours to tuck into.
    *
-   * Triggered automatically on first render when set to `masonry`,
-   * and re-runs when the attribute is toggled. Manual repack via
-   * `.pack()`. Drag interactions stay live; calling `.pack()` again
-   * re-runs the FFD pack from scratch (dragged positions are
+   * Triggered automatically on first render when set to a masonry
+   * mode, and re-runs when the attribute changes. Manual repack
+   * via `.pack()`. Drag interactions stay live; calling `.pack()`
+   * again re-runs the FFD pack from scratch (dragged positions are
    * ignored). */
   @property({ reflect: true })
-  layout: "free" | "masonry" = "free";
+  layout: "free" | "masonry" | "masonry-wide" = "free";
 
   /** Track which children occupy which axial slots — keyed `"q,r"`. */
   private readonly occupancy = new Map<string, HTMLElement>();
@@ -460,19 +469,15 @@ export class HpGrid extends LitElement {
   }
 
   override firstUpdated(): void {
-    if (this.layout === "masonry") {
+    if (this.isMasonryLayout()) {
       // Wait one frame so slotted children (hp-cluster) have run their
-      // own slotchange and published `data-axial-*` extent attrs.
+      // own slotchange and published `data-fill-cells` attrs.
       requestAnimationFrame(() => this.pack());
     }
   }
 
   override updated(changed: Map<string, unknown>): void {
-    // Re-run packing when `layout` flips to "masonry" after first
-    // render (toggle via JS / attribute). The firstUpdated handler
-    // covers the initial case; this covers the "user changed the
-    // mode" case.
-    if (changed.has("layout") && this.layout === "masonry") {
+    if (changed.has("layout") && this.isMasonryLayout()) {
       // updated() fires after firstUpdated on the very first render,
       // and we don't want to double-pack — skip when the previous
       // value is undefined (first render). The firstUpdated path
@@ -483,6 +488,18 @@ export class HpGrid extends LitElement {
       }
     }
   }
+
+  private isMasonryLayout(): boolean {
+    return this.layout === "masonry" || this.layout === "masonry-wide";
+  }
+
+  /** Axial-cell width cap for `layout="masonry-wide"`. Sized to force
+   * 2–3 rows for the typical components-page workload (~12 mixed-
+   * size clusters): at halfCols=10 the layout spans ~20 axial wide,
+   * which fits 4–6 medium clusters per row before wrapping. Pinned
+   * here rather than viewport-derived so wide layouts stay
+   * predictable across screen sizes. */
+  private static readonly WIDE_HALF_COLS = 10;
 
   /** Run the masonry bin-pack: every `[q][r]` child is placed at the
    * leftmost-topmost axial position whose 1-cell-padded extent doesn't
@@ -522,16 +539,22 @@ export class HpGrid extends LitElement {
       mask: parseFillCells(el.getAttribute("data-fill-cells")),
       order,
     }));
-    // Largest-first (FFD): big shapes anchor the centre, small ones
-    // nest around them. Ties broken by document order so the layout
-    // is deterministic. Combined with the spiral-from-origin scan in
-    // findFirstFreePosition, this produces a tight, roughly-square
-    // honeycomb arrangement.
+    // Largest-first (FFD): big shapes anchor first, small ones
+    // settle around them. Ties broken by document order so the
+    // layout is deterministic.
     items.sort((a, b) => b.mask.length - a.mask.length || a.order - b.order);
+
+    // `masonry` uses the spiral-from-origin scan → roughly-square
+    // honeycomb. `masonry-wide` uses row-major with a width cap →
+    // roughly-rectangular wide arrangement that fills horizontal
+    // space on full-page-width surfaces.
+    const wide = this.layout === "masonry-wide";
 
     const claimed = new Set<string>();
     for (const item of items) {
-      const pos = findFirstFreePosition(item.mask, claimed);
+      const pos = wide
+        ? findFirstFreePositionRowMajor(item.mask, claimed, HpGrid.WIDE_HALF_COLS)
+        : findFirstFreePosition(item.mask, claimed);
       item.el.setAttribute("q", String(pos.q));
       item.el.setAttribute("r", String(pos.r));
       // Mirror to the CSS custom properties the host stylesheet reads
