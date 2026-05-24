@@ -19,8 +19,15 @@ interface Props {
    * right TOC, and drop the main padding so the page content can
    * fill the full viewport width. Used by the components index. */
   fullWidth?: boolean;
+  /** When set, wrap the slotted page content in an `.hp-prose`
+   * container so it picks up the design system's prose chrome —
+   * vertical rhythm, list indent, table chrome, 70ch max-width.
+   * Long-form pages (getting-started walkthroughs, design notes)
+   * opt in via this; demo pages stay out so their hp-demo blocks
+   * sit flush with the viewport. */
+  prose?: boolean;
 }
-const { title, fullWidth = false } = Astro.props;
+const { title, fullWidth = false, prose = false } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
 const fullPath = new URL(Astro.request.url).pathname.replace(/\/$/, "") || "/";
 const active = baseUrl && fullPath.startsWith(baseUrl)
@@ -212,7 +219,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       ></hp-sidebar>
       <main>
         <hp-background></hp-background>
-        <slot />
+        {prose ? <div class="hp-prose"><slot /></div> : <slot />}
       </main>
       <hp-sidebar
         class="page-toc"
@@ -593,17 +600,24 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         const all = mainEl.querySelectorAll<HTMLHeadingElement>("h2, h3");
         const visible: HTMLHeadingElement[] = [];
         all.forEach((h) => {
-          // Walk ancestors: skip if any ancestor is hidden.
+          // Walk ancestors: skip if any ancestor is hidden, lives
+          // inside an `<hp-demo>` block (those headings are sample
+          // content, not page structure), or carries `data-no-toc`
+          // for one-off opt-outs.
           let el: HTMLElement | null = h;
-          let hidden = false;
+          let skip = false;
           while (el && el !== mainEl) {
-            if (el.hasAttribute("hidden")) {
-              hidden = true;
+            if (
+              el.hasAttribute("hidden") ||
+              el.tagName.toLowerCase() === "hp-demo" ||
+              el.hasAttribute("data-no-toc")
+            ) {
+              skip = true;
               break;
             }
             el = el.parentElement;
           }
-          if (!hidden) {
+          if (!skip) {
             visible.push(h);
           }
         });
