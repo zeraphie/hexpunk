@@ -137,6 +137,24 @@ h2 {
   gap: 0;
 }
 
+/* Full-width mode: drop the 3-column grid, hide sidebar + TOC, drop
+ * main's max-width / padding so the page content fills the viewport.
+ * Used by /components (Layout.astro receives fullWidth={true}). */
+body.page-full-width .page {
+  display: block;
+  max-width: none;
+  margin: 0;
+}
+
+body.page-full-width .page > .page-sidebar,
+body.page-full-width .page > .page-toc {
+  display: none;
+}
+
+body.page-full-width .page > main {
+  padding: 0;
+}
+
 /* The right-rail TOC track is always reserved (14rem) even on pages
  * without h2 content. Otherwise the grid switched from 2-col to
  * 3-col the moment JS populated the TOC, causing a visible main-

@@ -694,18 +694,29 @@ export class HpGrid extends LitElement {
 
     // Drag-handle gating: if the [q][r] child declares a
     // `drag-handle` attribute (CSS selector), only initiate drag
-    // when the pointerdown originated inside an element matching
-    // that selector AND still inside this child. Lets a composite
-    // like <hp-cluster> expose its centre hex as the sole grip while
-    // its outer slots are inert from hp-grid's perspective. A
-    // pointerdown on the child but OUTSIDE the handle does NOT start
-    // a canvas pan — outer cells are typically navigation links,
-    // and pan would steal the click. Let the event fall through so
-    // the underlying anchor / interactive element handles itself.
+    // when the pointerdown originated inside the cluster's specific
+    // handle element. Lets a composite like <hp-cluster> expose its
+    // centre hex as the sole grip while its outer slots are inert.
+    //
+    // Resolves the handle via `target.querySelector()` rather than
+    // `closest()` from event.target — closest() with `:first-child`
+    // matches ANY first-child ancestor (e.g., the hp-cell inside an
+    // <a class="component-link"><hp-cell></hp-cell></a> wrapper is
+    // its own parent's first child, so closest() returns it and the
+    // gate passes incorrectly). querySelector() returns the first
+    // matching descendant of the cluster in DOM order — the cluster's
+    // actual centre — and we check whether the pointerdown landed on
+    // that specific element or one of its descendants.
+    //
+    // Pointerdown outside the handle does NOT start a canvas pan —
+    // outer cells are typically navigation links, and pan would steal
+    // the click. The event falls through so the link handles its own
+    // click.
     const handleSelector = target.getAttribute("drag-handle");
     if (handleSelector) {
-      const handleEl = (event.target as Element).closest(handleSelector);
-      if (!handleEl || !target.contains(handleEl)) {
+      const handleEl = target.querySelector(handleSelector);
+      const evtTarget = event.target as Node;
+      if (!handleEl || (handleEl !== evtTarget && !handleEl.contains(evtTarget))) {
         return;
       }
     }

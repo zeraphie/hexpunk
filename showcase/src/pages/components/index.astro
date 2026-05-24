@@ -15,25 +15,28 @@ interface Category {
   items: CategoryItem[];
 }
 
-// Hand-tuned axial positions per category — clusters spaced 6 apart
-// horizontally and 6 apart vertically so their footprints (4 col-steps
-// + cell ≈ 5 hex widths) don't overlap and a visible gap remains.
+// Hand-tuned axial positions per category — clusters spaced 3 axial
+// units apart in both directions. The cluster bbox is ~5 axial units
+// wide / tall (4 col-steps + cell width), so 3-unit spacing means
+// neighbour clusters interleave at the corners. Empty honeycomb-
+// corner space in each cluster's ring-2 region lets them tile
+// cleanly without their hexes literally overlapping.
 // Layout: 4×3 grid of categories aligned vertically in pixel space
 // (q on odd r rows shifts by -r/2 to compensate the axial-to-pixel
 // x = col_step * (q + r/2) offset).
 const POSITIONS: Record<string, { q: number; r: number }> = {
   Primitives: { q: 0, r: 0 },
-  Forms: { q: 6, r: 0 },
-  Status: { q: 12, r: 0 },
-  Loading: { q: 18, r: 0 },
-  Layout: { q: -3, r: 6 },
-  Images: { q: 3, r: 6 },
-  Navigation: { q: 9, r: 6 },
-  Overlays: { q: 15, r: 6 },
-  Messaging: { q: -6, r: 12 },
-  Tether: { q: 0, r: 12 },
-  Unfold: { q: 6, r: 12 },
-  Deprecated: { q: 12, r: 12 },
+  Forms: { q: 3, r: 0 },
+  Status: { q: 6, r: 0 },
+  Loading: { q: 9, r: 0 },
+  Layout: { q: -2, r: 3 },
+  Images: { q: 1, r: 3 },
+  Navigation: { q: 4, r: 3 },
+  Overlays: { q: 7, r: 3 },
+  Messaging: { q: -3, r: 6 },
+  Tether: { q: 0, r: 6 },
+  Unfold: { q: 3, r: 6 },
+  Deprecated: { q: 6, r: 6 },
 };
 
 const componentsBranch = SITEMAP.find(
@@ -57,79 +60,92 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       });
 ---
 
-<Layout title="Components">
-  <h1>Components</h1>
-  <p>
-    Every <code>&lt;hp-*&gt;</code> element grouped by category on a single hex grid.
-    Drag the filled-anchor centre of any cluster to slide it around. Tap any
-    outer hex to jump to that component's docs page. Pan the canvas by dragging
-    empty space; zoom with the &nbsp;<code>+</code>&nbsp;/&nbsp;<code>−</code>&nbsp;
-    controls (bottom-right of the grid) or scroll-wheel.
-  </p>
+<Layout title="Components" fullWidth>
+  <div class="components-page">
+    <header class="components-header">
+      <h1>Components</h1>
+      <p class="components-tagline">
+        Every <code>&lt;hp-*&gt;</code> element on a single hex grid. Drag a cluster's
+        centre to slide it; tap an outer hex to open its docs.
+      </p>
+      <label class="component-filter">
+        <input
+          type="search"
+          id="component-search"
+          placeholder="Filter by component name..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </label>
+    </header>
 
-  <label class="component-filter">
-    <span class="component-filter__label">Filter</span>
-    <input
-      type="search"
-      id="component-search"
-      placeholder="Type a component name..."
-      autocomplete="off"
-      spellcheck="false"
-    />
-  </label>
-
-  <hp-grid draggable id="components-grid" class="components-grid">
-    <hp-background></hp-background>
-    {categories.map((cat) => (
-      <hp-cluster
-        layout="honeycomb"
-        q={cat.q}
-        r={cat.r}
-        drag-handle=":first-child"
-      >
-        <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
-        {cat.items.map((item) => (
-          <a href={item.path} class="component-link">
-            <hp-cell variant="action" tabindex="0">{item.name}</hp-cell>
-          </a>
-        ))}
-      </hp-cluster>
-    ))}
-  </hp-grid>
+    <hp-grid draggable id="components-grid" class="components-grid">
+      <hp-background></hp-background>
+      {categories.map((cat) => (
+        <hp-cluster
+          layout="honeycomb"
+          q={cat.q}
+          r={cat.r}
+          drag-handle=":first-child"
+        >
+          <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
+          {cat.items.map((item) => (
+            <a href={item.path} class="component-link">
+              <hp-cell variant="action" tabindex="0">{item.name}</hp-cell>
+            </a>
+          ))}
+        </hp-cluster>
+      ))}
+    </hp-grid>
+  </div>
 
   <style>
-    .component-filter {
+    .components-page {
       display: flex;
       flex-direction: column;
-      gap: var(--hp-xs);
-      margin: var(--hp-md) 0;
-      max-width: 24rem;
+      /* Fill the viewport minus the fixed navbar so the grid extends
+       * all the way to the bottom. Header above the grid takes its
+       * natural size; grid claims the rest via flex: 1. */
+      height: calc(100vh - var(--hp-navbar-height));
     }
 
-    .component-filter__label {
-      font-family: var(--hp-typo-label-sm-font-family);
-      font-size: var(--hp-typo-label-sm-font-size);
-      font-weight: var(--hp-typo-label-sm-font-weight);
-      letter-spacing: var(--hp-typo-label-sm-letter-spacing);
-      text-transform: uppercase;
+    .components-header {
+      padding: var(--hp-md) var(--hp-xl);
+      border-bottom: 1px solid var(--hp-outline-faint);
+    }
+
+    .components-header h1 {
+      margin: 0 0 var(--hp-xs);
+    }
+
+    .components-tagline {
       color: var(--hp-on-surface-variant);
+      margin: 0 0 var(--hp-md);
     }
 
-    /* Make the grid tall enough to actually use without immediately
-     * needing to pan. hp-grid's own min-height is 400px; bumping here
-     * gives the components gallery more vertical breathing room. */
+    .component-filter {
+      display: block;
+      max-width: 32rem;
+    }
+
+    .component-filter input {
+      width: 100%;
+      padding: var(--hp-sm) var(--hp-md);
+      font-size: var(--hp-typo-body-md-font-size);
+    }
+
+    /* Grid claims all remaining vertical space, fills width edge-to-
+     * edge (the page's main has already dropped its padding via
+     * Layout.astro fullWidth mode). */
     .components-grid {
-      min-height: 600px;
+      flex: 1 1 0;
+      min-height: 0;
+      width: 100%;
     }
 
-    /* Component-link anchors wrap each outer hp-cell. Drop the
-     * underline + inherited link colour from elements.css so the
-     * hex stays the visual rest state. */
     .component-link {
       text-decoration: none;
       color: inherit;
-      /* Position-absolute hex layout means we want the anchor itself
-       * to size with the cell — give it block layout. */
       display: block;
     }
     .component-link:hover,
@@ -138,8 +154,6 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       color: inherit;
     }
 
-    /* Hide cluster centres' "support" rendering quirks if they leak —
-     * not needed currently but cheap insurance. */
     [hidden] {
       display: none !important;
     }
