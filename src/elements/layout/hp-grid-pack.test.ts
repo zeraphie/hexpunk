@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 
 import {
   type FillMask,
-  PACK_RANGE,
   findFirstFreePosition,
   isPositionClear,
   markClaimed,
@@ -51,8 +50,8 @@ function honeycombMask(childCount: number): FillMask {
 }
 
 const SINGLE: FillMask = [{ q: 0, r: 0 }];
-const RING1: FillMask = honeycombMask(7); // centre + ring 1
-const TEN_HONEYCOMB: FillMask = honeycombMask(10); // centre + ring 1 + 3 ring-2 NE hexes
+const RING1: FillMask = honeycombMask(7);
+const TEN_HONEYCOMB: FillMask = honeycombMask(10);
 const ROSETTE: FillMask = [
   { q: 0, r: 0 },
   { q: 0, r: -1 },
@@ -74,7 +73,6 @@ describe("isPositionClear", () => {
 
   test("hex-neighbour rejected (no edge-sharing across clusters)", () => {
     const claimed = place(new Set(), 0, 0, SINGLE);
-    // All 6 hex-neighbours of (0,0) must reject a SINGLE placement.
     for (const [dq, dr] of [
       [1, 0],
       [-1, 0],
@@ -95,9 +93,6 @@ describe("isPositionClear", () => {
   });
 
   test("non-hex-neighbour rectangular-diagonal IS allowed (tight packing)", () => {
-    // (1, 1) is rect-diagonal from (0, 0) but hex-distance 2, so a
-    // SINGLE there is fine. This is the pivotal property: tight
-    // masonry exploits these rect-diagonal-but-hex-far cells.
     const claimed = place(new Set(), 0, 0, SINGLE);
     expect(isPositionClear(1, 1, SINGLE, claimed)).toBe(true);
     expect(isPositionClear(-1, -1, SINGLE, claimed)).toBe(true);
@@ -130,52 +125,31 @@ describe("markClaimed", () => {
   });
 
   test("10-child honeycomb marks exactly 10 cells (only filled, not bbox)", () => {
-    // Bbox of a 10-child cluster is q[-1,2] r[-2,1] = 12 cells, but
-    // only 10 are filled. The 2 unfilled corners stay free.
     const claimed = new Set<string>();
     markClaimed(0, 0, TEN_HONEYCOMB, claimed);
     expect(claimed.size).toBe(10);
-    // Specifically, the two unfilled bbox corners must NOT be claimed.
-    // Positions 11 (2, -1) and 12 (2, 0) are NOT in the 10-fill set,
-    // BUT (2, -1) is part of the 10-fill set — let's pick a clearly-
-    // unfilled bbox cell: (-1, -2) and (-1, -1) are unfilled.
     expect(claimed.has("-1,-2")).toBe(false);
     expect(claimed.has("-1,-1")).toBe(false);
   });
 });
 
 describe("findFirstFreePosition", () => {
-  test("first item lands at top of scan bounds", () => {
-    const pos = findFirstFreePosition(SINGLE, new Set(), 5);
-    expect(pos.r).toBe(-PACK_RANGE);
+  test("first item lands at origin (spiral scan starts there)", () => {
+    expect(findFirstFreePosition(SINGLE, new Set())).toEqual({ q: 0, r: 0 });
   });
 
-  test("two SINGLE items pack at hex-distance 2 (exactly 1 cell gap)", () => {
-    const claimed = new Set<string>();
-    const a = findFirstFreePosition(SINGLE, claimed, 5);
-    markClaimed(a.q, a.r, SINGLE, claimed);
-    const b = findFirstFreePosition(SINGLE, claimed, 5);
-    markClaimed(b.q, b.r, SINGLE, claimed);
-    expect(hexDist(a, b)).toBe(2);
-  });
-
-  test("wraps to new row when current row fills (tight viewport)", () => {
-    const claimed = new Set<string>();
-    const halfCols = 2;
-    const placements: Array<{ q: number; r: number }> = [];
-    for (let i = 0; i < 8; i++) {
-      const pos = findFirstFreePosition(SINGLE, claimed, halfCols);
-      markClaimed(pos.q, pos.r, SINGLE, claimed);
-      placements.push(pos);
-    }
-    const rows = new Set(placements.map((p) => p.r));
-    expect(rows.size).toBeGreaterThan(1);
+  test("second SINGLE lands at hex-distance 2 (closest legal tuck)", () => {
+    // Ring 1 (distance 1) is all hex-adjacent to the placed SINGLE
+    // → blocked. Ring 2 (distance 2) is the first ring with legal
+    // positions. The spiral tie-break is `(r, q)` ascending, so we
+    // get the topmost ring-2 hex first.
+    const claimed = place(new Set(), 0, 0, SINGLE);
+    const b = findFirstFreePosition(SINGLE, claimed);
+    expect(hexDist(b, { q: 0, r: 0 })).toBe(2);
+    expect(b.r).toBe(-2);
   });
 
   test("mixed-size pack: every pair of filled hexes is hex-distance ≥ 2", () => {
-    // The defining property of "≥1-hex gap between clusters": for
-    // every pair of placed clusters, every filled cell of A is at
-    // hex-distance ≥ 2 from every filled cell of B.
     const claimed = new Set<string>();
     const items: FillMask[] = [
       RING1,
@@ -193,7 +167,7 @@ describe("findFirstFreePosition", () => {
     ];
     const placed: Array<{ q: number; r: number; mask: FillMask }> = [];
     for (const mask of items) {
-      const pos = findFirstFreePosition(mask, claimed, 35);
+      const pos = findFirstFreePosition(mask, claimed);
       markClaimed(pos.q, pos.r, mask, claimed);
       placed.push({ q: pos.q, r: pos.r, mask });
     }
@@ -212,85 +186,99 @@ describe("findFirstFreePosition", () => {
     }
   });
 
+  test("layout stays compact: spiral pack bbox scales with cell count", () => {
+    // Spiral-from-origin packing keeps the layout's hex-distance
+    // diameter ≈ sqrt(total_cells × 2). The components-page workload
+    // is 63 cells across 12 clusters — well within axial-distance 20
+    // of the origin (much tighter than the 36-wide row-major fallback
+    // would give).
+    const cats: FillMask[] = [
+      honeycombMask(7),
+      honeycombMask(10),
+      honeycombMask(3),
+      honeycombMask(3),
+      honeycombMask(10),
+      honeycombMask(4),
+      honeycombMask(5),
+      honeycombMask(8),
+      honeycombMask(3),
+      honeycombMask(2),
+      honeycombMask(5),
+      honeycombMask(3),
+    ];
+    const sorted = [...cats].sort((a, b) => b.length - a.length);
+    const claimed = new Set<string>();
+    const cells: Array<{ q: number; r: number }> = [];
+    for (const mask of sorted) {
+      const pos = findFirstFreePosition(mask, claimed);
+      markClaimed(pos.q, pos.r, mask, claimed);
+      for (const c of mask) cells.push({ q: pos.q + c.q, r: pos.r + c.r });
+    }
+    let maxDist = 0;
+    for (let i = 0; i < cells.length; i++) {
+      for (let j = i + 1; j < cells.length; j++) {
+        const d = hexDist(cells[i]!, cells[j]!);
+        if (d > maxDist) maxDist = d;
+      }
+    }
+    expect(maxDist).toBeGreaterThanOrEqual(6);
+    expect(maxDist).toBeLessThanOrEqual(20);
+  });
+
   test("hex-distance-2 tuck next to a 10-honeycomb is reachable", () => {
-    // A 10-child honeycomb (Forms-shape: centre + ring 1 + 3 NE
-    // ring-2 hexes) at origin still leaves close-in positions free,
-    // because hex-distance-2 from the cluster's filled cells is the
-    // gap rule — not bbox-rectangular padding. We assert several
-    // tuck positions that a bbox algorithm would have blocked but
-    // hex-distance leaves available.
     const claimed = new Set<string>();
     markClaimed(0, 0, TEN_HONEYCOMB, claimed);
-    // (1, 2) is hex-distance 2 from (0, 1), the cluster's southmost
-    // filled cell — closest legal tuck below the cluster.
     expect(isPositionClear(1, 2, SINGLE, claimed)).toBe(true);
-    // (3, -4) is hex-distance 2 from (2, -2), the cluster's NE
-    // ring-2 tip — legal tuck to the NE.
     expect(isPositionClear(3, -4, SINGLE, claimed)).toBe(true);
-    // (-3, 2) is hex-distance 2 from (-1, 1) — legal tuck to the SW.
     expect(isPositionClear(-3, 2, SINGLE, claimed)).toBe(true);
   });
 
-  test("row-major: items prefer lower r, then lower q", () => {
-    const claimed = new Set<string>();
-    const first = findFirstFreePosition(SINGLE, claimed, 10);
-    markClaimed(first.q, first.r, SINGLE, claimed);
-    const second = findFirstFreePosition(SINGLE, claimed, 10);
-    // Same row, higher q (room to the right of the first item).
-    expect(second.r).toBe(first.r);
-    expect(second.q).toBeGreaterThan(first.q);
-  });
-
-  test("every placement stays within the viewport's visual q-range", () => {
-    const halfCols = 4;
-    const claimed = new Set<string>();
-    const items: FillMask[] = [
-      SINGLE,
-      ROSETTE,
-      RING1,
-      SINGLE,
-      ROSETTE,
-      SINGLE,
-    ];
-    for (const mask of items) {
-      const pos = findFirstFreePosition(mask, claimed, halfCols);
-      markClaimed(pos.q, pos.r, mask, claimed);
-      for (const cell of mask) {
-        const visualX = pos.q + cell.q + pos.r / 2;
-        expect(visualX).toBeGreaterThanOrEqual(-halfCols);
-        expect(visualX).toBeLessThanOrEqual(halfCols);
-      }
-    }
-  });
-
-  test("12-cluster components-page snapshot packs cleanly", () => {
-    // Counts taken from the actual sitemap.ts categories.
+  test("12-cluster components-page snapshot packs without fallback", () => {
     const cats: FillMask[] = [
-      honeycombMask(7), // Primitives
-      honeycombMask(10), // Forms
-      honeycombMask(3), // Status
-      honeycombMask(3), // Loading
-      honeycombMask(10), // Layout
-      honeycombMask(4), // Images
-      honeycombMask(5), // Navigation
-      honeycombMask(8), // Overlays
-      honeycombMask(3), // Messaging
-      honeycombMask(2), // Tether
-      honeycombMask(5), // Unfold
-      honeycombMask(3), // Deprecated
+      honeycombMask(7),
+      honeycombMask(10),
+      honeycombMask(3),
+      honeycombMask(3),
+      honeycombMask(10),
+      honeycombMask(4),
+      honeycombMask(5),
+      honeycombMask(8),
+      honeycombMask(3),
+      honeycombMask(2),
+      honeycombMask(5),
+      honeycombMask(3),
     ];
+    const sorted = [...cats].sort((a, b) => b.length - a.length);
     const claimed = new Set<string>();
     const placements: Array<{ q: number; r: number }> = [];
-    for (const mask of cats) {
-      const pos = findFirstFreePosition(mask, claimed, 35);
+    for (const mask of sorted) {
+      const pos = findFirstFreePosition(mask, claimed);
       markClaimed(pos.q, pos.r, mask, claimed);
       placements.push(pos);
     }
+    // Every cluster must land at a unique position — duplicates
+    // would indicate the fallback `{0, 0}` fired, meaning the scan
+    // exhausted its range. Spiral pack should never hit that on
+    // any realistic workload.
     const seen = new Set<string>();
     for (const p of placements) {
       const key = `${p.q},${p.r}`;
       expect(seen.has(key)).toBe(false);
       seen.add(key);
+    }
+  });
+
+  test("ROSETTE cluster packs without overlapping a placed RING1", () => {
+    const claimed = new Set<string>();
+    markClaimed(0, 0, RING1, claimed);
+    const pos = findFirstFreePosition(ROSETTE, claimed);
+    // ROSETTE must not collide with RING1's claimed cells.
+    for (const c of ROSETTE) {
+      const cell = { q: pos.q + c.q, r: pos.r + c.r };
+      for (const rc of RING1) {
+        const ringCell = { q: rc.q, r: rc.r };
+        expect(hexDist(cell, ringCell)).toBeGreaterThanOrEqual(2);
+      }
     }
   });
 });
@@ -311,7 +299,7 @@ describe("parseFillCells", () => {
     ]);
   });
 
-  test("extra whitespace and trailing spaces tolerated", () => {
+  test("extra whitespace tolerated", () => {
     const parsed = parseFillCells("  0,0   1,1  ");
     expect(parsed).toEqual([
       { q: 0, r: 0 },
@@ -319,7 +307,7 @@ describe("parseFillCells", () => {
     ]);
   });
 
-  test("malformed tokens skipped (don't crash)", () => {
+  test("malformed tokens skipped", () => {
     const parsed = parseFillCells("0,0 garbage 1,1");
     expect(parsed).toEqual([
       { q: 0, r: 0 },

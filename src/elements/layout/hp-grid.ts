@@ -71,7 +71,6 @@ import { scan } from "../../icons/scan.js";
 import { hpBase } from "../../styles/hp-base.js";
 import {
   type FillMask,
-  PACK_RANGE,
   findFirstFreePosition,
   markClaimed,
   parseFillCells,
@@ -206,20 +205,26 @@ export class HpGrid extends LitElement {
 
   /** Layout mode. `free` (default) respects each child's authored
    * `q` / `r` attributes. `masonry` ignores them on first render and
-   * runs a greedy bin-pack: every child is placed at the leftmost-
-   * topmost axial position whose 1-cell-padded extent doesn't collide
-   * with already-placed children. Children's actual footprint comes
-   * from `data-axial-q-min`/`q-max`/`r-min`/`r-max` attributes
-   * (composite elements like `<hp-cluster>` set these on slotchange);
-   * children without those attrs are treated as single-hex.
+   * runs an FFD bin-pack: children are sorted by mask size descending
+   * (largest first), then each is placed at the first free position
+   * picked from a scan ordered by axial distance from the origin
+   * (ring 0, then ring 1's 6 positions, then ring 2's 12, …). The
+   * result: the largest cluster anchors the centre, smaller ones
+   * nest around it with a ≥1-hex gap, producing a tight roughly-
+   * square honeycomb.
+   *
+   * Children publish their actual filled hexes via `data-fill-cells`
+   * (composite elements like `<hp-cluster>` set this on slotchange);
+   * children without it are treated as single-hex. The gap check
+   * uses hex-adjacency (the 6 axial neighbours) — not rectangular
+   * bbox padding — so non-symmetric clusters' empty corners stay
+   * available for neighbours to tuck into.
    *
    * Triggered automatically on first render when set to `masonry`,
    * and re-runs when the attribute is toggled. Manual repack via
-   * `.pack()`. Drag interactions stay live — masonry doesn't fight
-   * the user — but calling `.pack()` again will re-sort dragged
-   * cells back into the packed layout (sorted by current position,
-   * so cells stay roughly where the user dragged them when
-   * possible). */
+   * `.pack()`. Drag interactions stay live; calling `.pack()` again
+   * re-runs the FFD pack from scratch (dragged positions are
+   * ignored). */
   @property({ reflect: true })
   layout: "free" | "masonry" = "free";
 
@@ -481,33 +486,25 @@ export class HpGrid extends LitElement {
     interface Item {
       el: HTMLElement;
       mask: FillMask;
-      currentQ: number;
-      currentR: number;
+      // Original document index — preserved as a stable tie-breaker
+      // when two clusters have the same size.
+      order: number;
     }
-    const items: Item[] = children.map((el) => ({
+    const items: Item[] = children.map((el, order) => ({
       el,
       mask: parseFillCells(el.getAttribute("data-fill-cells")),
-      currentQ: Number.parseFloat(el.getAttribute("q") ?? "0") || 0,
-      currentR: Number.parseFloat(el.getAttribute("r") ?? "0") || 0,
+      order,
     }));
-    // Stable sort by current position so dragged items stay roughly
-    // where they were. Lowest r first (top), then lowest q (left).
-    items.sort((a, b) => a.currentR - b.currentR || a.currentQ - b.currentQ);
-
-    // Viewport bound on q: figure out how many axial columns fit
-    // inside the grid host so the algorithm wraps to a new r row
-    // when the current row fills. Falls back to a wide bound when
-    // layout isn't ready yet (e.g. detached / pre-paint).
-    const rect = this.getBoundingClientRect();
-    const steps = this.computeStyleSteps();
-    const halfColsAvailable =
-      rect.width > 0 && steps.col > 0
-        ? Math.max(2, Math.floor(rect.width / steps.col / 2) - 1)
-        : PACK_RANGE;
+    // Largest-first (FFD): big shapes anchor the centre, small ones
+    // nest around them. Ties broken by document order so the layout
+    // is deterministic. Combined with the spiral-from-origin scan in
+    // findFirstFreePosition, this produces a tight, roughly-square
+    // honeycomb arrangement.
+    items.sort((a, b) => b.mask.length - a.mask.length || a.order - b.order);
 
     const claimed = new Set<string>();
     for (const item of items) {
-      const pos = findFirstFreePosition(item.mask, claimed, halfColsAvailable);
+      const pos = findFirstFreePosition(item.mask, claimed);
       item.el.setAttribute("q", String(pos.q));
       item.el.setAttribute("r", String(pos.r));
       // Mirror to the CSS custom properties the host stylesheet reads
