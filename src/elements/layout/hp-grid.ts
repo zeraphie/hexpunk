@@ -69,6 +69,12 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import "../tether/hp-tether.js";
 import { scan } from "../../icons/scan.js";
 import { hpBase } from "../../styles/hp-base.js";
+import {
+  type AxialExtent,
+  PACK_RANGE,
+  findFirstFreePosition,
+  markClaimed,
+} from "./hp-grid-pack.js";
 
 // Pointy-top hex row step is `w · √3/2`. Precomputed to avoid relying
 // on CSS `sqrt()` which isn't reliable across Baseline 2025.
@@ -196,6 +202,25 @@ export class HpGrid extends LitElement {
    * that should stay put). */
   @property({ reflect: true, type: Boolean })
   draggable = false;
+
+  /** Layout mode. `free` (default) respects each child's authored
+   * `q` / `r` attributes. `masonry` ignores them on first render and
+   * runs a greedy bin-pack: every child is placed at the leftmost-
+   * topmost axial position whose 1-cell-padded extent doesn't collide
+   * with already-placed children. Children's actual footprint comes
+   * from `data-axial-q-min`/`q-max`/`r-min`/`r-max` attributes
+   * (composite elements like `<hp-cluster>` set these on slotchange);
+   * children without those attrs are treated as single-hex.
+   *
+   * Triggered automatically on first render when set to `masonry`,
+   * and re-runs when the attribute is toggled. Manual repack via
+   * `.pack()`. Drag interactions stay live — masonry doesn't fight
+   * the user — but calling `.pack()` again will re-sort dragged
+   * cells back into the packed layout (sorted by current position,
+   * so cells stay roughly where the user dragged them when
+   * possible). */
+  @property({ reflect: true })
+  layout: "free" | "masonry" = "free";
 
   /** Track which children occupy which axial slots — keyed `"q,r"`. */
   private readonly occupancy = new Map<string, HTMLElement>();
@@ -399,6 +424,113 @@ export class HpGrid extends LitElement {
     this.removeEventListener("pointerdown", this.handlePointerDown);
     this.removeEventListener("wheel", this.handleWheel);
     this.cancelDrag();
+  }
+
+  override firstUpdated(): void {
+    if (this.layout === "masonry") {
+      // Wait one frame so slotted children (hp-cluster) have run their
+      // own slotchange and published `data-axial-*` extent attrs.
+      requestAnimationFrame(() => this.pack());
+    }
+  }
+
+  override updated(changed: Map<string, unknown>): void {
+    // Re-run packing when `layout` flips to "masonry" after first
+    // render (toggle via JS / attribute). The firstUpdated handler
+    // covers the initial case; this covers the "user changed the
+    // mode" case.
+    if (changed.has("layout") && this.layout === "masonry") {
+      // updated() fires after firstUpdated on the very first render,
+      // and we don't want to double-pack — skip when the previous
+      // value is undefined (first render). The firstUpdated path
+      // already scheduled the pack.
+      const previous = changed.get("layout");
+      if (previous !== undefined) {
+        requestAnimationFrame(() => this.pack());
+      }
+    }
+  }
+
+  /** Run the masonry bin-pack: every `[q][r]` child is placed at the
+   * leftmost-topmost axial position whose 1-cell-padded extent doesn't
+   * collide with already-placed children. Children's extent comes from
+   * their `data-axial-q-min`/`q-max`/`r-min`/`r-max` attributes
+   * (set by composite elements like `<hp-cluster>` after slotchange);
+   * children without those attrs are treated as single-hex (`0,0,0,0`).
+   *
+   * Sort order: children are processed by their *current* `q`/`r`
+   * position (lowest r first, then lowest q), so dragged children
+   * stay roughly where the user put them when repacking. On the first
+   * call (children at their authored positions), this matches author
+   * order if positions were left at the default `0,0`. */
+  public pack(): void {
+    // Take every direct element child except decorative backdrops.
+    // Children needn't have authored q/r — masonry assigns them.
+    // hp-background is the only known non-packable decoration; if
+    // future siblings need exclusion they can carry `data-hp-decoration`.
+    const children = Array.from(this.children).filter(
+      (el): el is HTMLElement =>
+        el instanceof HTMLElement &&
+        el.tagName.toLowerCase() !== "hp-background" &&
+        !el.hasAttribute("data-hp-decoration")
+    );
+    if (children.length === 0) {
+      return;
+    }
+    interface Item {
+      el: HTMLElement;
+      extent: AxialExtent;
+      currentQ: number;
+      currentR: number;
+    }
+    const items: Item[] = children.map((el) => ({
+      el,
+      extent: HpGrid.readChildExtent(el),
+      currentQ: Number.parseFloat(el.getAttribute("q") ?? "0") || 0,
+      currentR: Number.parseFloat(el.getAttribute("r") ?? "0") || 0,
+    }));
+    // Stable sort by current position so dragged items stay roughly
+    // where they were. Lowest r first (top), then lowest q (left).
+    items.sort((a, b) => a.currentR - b.currentR || a.currentQ - b.currentQ);
+
+    // Viewport bound on q: figure out how many axial columns fit
+    // inside the grid host so the algorithm wraps to a new r row
+    // when the current row fills. Falls back to a wide bound when
+    // layout isn't ready yet (e.g. detached / pre-paint).
+    const rect = this.getBoundingClientRect();
+    const steps = this.computeStyleSteps();
+    const halfColsAvailable =
+      rect.width > 0 && steps.col > 0
+        ? Math.max(2, Math.floor(rect.width / steps.col / 2) - 1)
+        : PACK_RANGE;
+
+    const claimed = new Set<string>();
+    for (const item of items) {
+      const pos = findFirstFreePosition(item.extent, claimed, halfColsAvailable);
+      item.el.setAttribute("q", String(pos.q));
+      item.el.setAttribute("r", String(pos.r));
+      // Mirror to the CSS custom properties the host stylesheet reads
+      // so the position update applies immediately — slotchange does
+      // not fire on attribute mutation.
+      item.el.style.setProperty("--hp-q", String(pos.q));
+      item.el.style.setProperty("--hp-r", String(pos.r));
+      markClaimed(pos.q, pos.r, item.extent, claimed);
+    }
+    // Refresh occupancy + pan bounds now that positions changed.
+    this.occupancy.clear();
+    for (const item of items) {
+      this.occupancy.set(slotKey(String(item.el.getAttribute("q")), String(item.el.getAttribute("r"))), item.el);
+    }
+    requestAnimationFrame(() => this.recenter());
+  }
+
+  private static readChildExtent(el: HTMLElement): AxialExtent {
+    return {
+      qMin: Number.parseFloat(el.getAttribute("data-axial-q-min") ?? "0") || 0,
+      qMax: Number.parseFloat(el.getAttribute("data-axial-q-max") ?? "0") || 0,
+      rMin: Number.parseFloat(el.getAttribute("data-axial-r-min") ?? "0") || 0,
+      rMax: Number.parseFloat(el.getAttribute("data-axial-r-max") ?? "0") || 0,
+    };
   }
 
   override render() {

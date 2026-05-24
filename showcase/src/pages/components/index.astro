@@ -17,38 +17,13 @@ interface CategoryItem {
 }
 interface Category {
   name: string;
-  q: number;
-  r: number;
   items: CategoryItem[];
 }
 
-// Hand-tuned axial positions per category — clusters spaced 4 axial
-// units apart in both directions. Sized for the actual filled-hex
-// extent, not the worst-case cluster bbox: every category's hexes
-// reach at most ring 1 horizontally (q=±1), so spacing 4 gives one
-// empty hex column between adjacent clusters horizontally. Vertically,
-// Forms / Layout / Overlays do reach ring-2-top (r=-2) and their
-// top edges sit adjacent to the cluster above's bottom ring-1
-// hexes; the visual still reads as a tight honeycomb because they
-// share strokes rather than overlap.
-// Layout: 4×3 grid of categories aligned vertically in pixel space
-// (q on each row shifts by -r/2 to compensate the axial-to-pixel
-// x = col_step * (q + r/2) offset).
-const POSITIONS: Record<string, { q: number; r: number }> = {
-  Primitives: { q: 0, r: 0 },
-  Forms: { q: 4, r: 0 },
-  Status: { q: 8, r: 0 },
-  Loading: { q: 12, r: 0 },
-  Layout: { q: -2, r: 4 },
-  Images: { q: 2, r: 4 },
-  Navigation: { q: 6, r: 4 },
-  Overlays: { q: 10, r: 4 },
-  Messaging: { q: -4, r: 8 },
-  Tether: { q: 0, r: 8 },
-  Unfold: { q: 4, r: 8 },
-  Deprecated: { q: 8, r: 8 },
-};
-
+// Axial positions are computed at runtime by <hp-grid layout="masonry">
+// — every cluster reports its filled-hex extent via data-axial-* and
+// hp-grid greedy-packs them with a 1-cell gap. Adding / removing
+// components in sitemap.ts auto-reflows.
 const componentsBranch = SITEMAP.find(
   (n) => !isLeaf(n) && n.title === "Components"
 );
@@ -56,18 +31,13 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
   ? []
   : componentsBranch.children
       .filter((c): c is { title: string; children: typeof SITEMAP } => !isLeaf(c))
-      .map((c) => {
-        const pos = POSITIONS[c.title] ?? { q: 0, r: 0 };
-        return {
-          name: c.title.toLowerCase(),
-          q: pos.q,
-          r: pos.r,
-          items: c.children.filter(isLeaf).map((leaf) => ({
-            name: leaf.title,
-            path: leaf.path,
-          })),
-        };
-      });
+      .map((c) => ({
+        name: c.title.toLowerCase(),
+        items: c.children.filter(isLeaf).map((leaf) => ({
+          name: leaf.title,
+          path: leaf.path,
+        })),
+      }));
 ---
 
 <Layout title="Components" fullWidth>
@@ -89,14 +59,9 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       </label>
     </header>
 
-    <hp-grid draggable id="components-grid" class="components-grid">
+    <hp-grid draggable layout="masonry" id="components-grid" class="components-grid">
       {categories.map((cat) => (
-        <hp-cluster
-          layout="honeycomb"
-          q={cat.q}
-          r={cat.r}
-          drag-handle=":first-child"
-        >
+        <hp-cluster layout="honeycomb" drag-handle=":first-child">
           <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
           {cat.items.map((item) => (
             <a href={href(item.path)} class="component-link">

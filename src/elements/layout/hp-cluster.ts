@@ -30,6 +30,33 @@ import { hpBase } from "../../styles/hp-base.js";
 
 const ROW_STEP_FACTOR = 0.8660254;
 
+/** Axial coordinates of each honeycomb position in fill order — matches
+ * the CSS :nth-child rules in this element's stylesheet. Used to report
+ * the cluster's actual filled-hex extent (data-axial-* attributes) so
+ * hp-grid masonry packing knows the cluster's real footprint, not just
+ * its host bbox. */
+const HONEYCOMB_POSITIONS: ReadonlyArray<{ q: number; r: number }> = [
+  { q: 0, r: 0 }, //  1: centre
+  { q: 0, r: -1 }, //  2: N
+  { q: 1, r: -1 }, //  3: NE
+  { q: 1, r: 0 }, //  4: SE
+  { q: 0, r: 1 }, //  5: S
+  { q: -1, r: 1 }, //  6: SW
+  { q: -1, r: 0 }, //  7: NW
+  { q: 0, r: -2 }, //  8: ring 2 N
+  { q: 1, r: -2 }, //  9
+  { q: 2, r: -2 }, // 10
+  { q: 2, r: -1 }, // 11
+  { q: 2, r: 0 }, // 12
+  { q: 1, r: 1 }, // 13
+  { q: 0, r: 2 }, // 14
+  { q: -1, r: 2 }, // 15
+  { q: -2, r: 2 }, // 16
+  { q: -2, r: 1 }, // 17
+  { q: -2, r: 0 }, // 18
+  { q: -1, r: -1 }, // 19
+];
+
 /**
  * Multi-hex group layout. `layout="rosette"` (default) preserves
  * the canonical 5-hex navigation rosette via named slots;
@@ -263,7 +290,7 @@ export class HpCluster extends LitElement {
 
   override render(): TemplateResult {
     if (this.layout === "honeycomb") {
-      return html`<slot></slot>`;
+      return html`<slot @slotchange=${this.updateAxialExtent}></slot>`;
     }
     return html`
       <slot name="top"></slot>
@@ -272,6 +299,55 @@ export class HpCluster extends LitElement {
       <slot name="middle-right"></slot>
       <slot name="bottom"></slot>
     `;
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    // Rosette extent is static (radius 1) — set it once on connect.
+    // Honeycomb extent depends on child count and is computed on
+    // slotchange.
+    if (this.layout === "rosette") {
+      this.writeExtent(-1, 1, -1, 1);
+    }
+  }
+
+  /** Walks slotted children, finds which honeycomb positions are filled
+   * (children fill in order matching HONEYCOMB_POSITIONS), and writes
+   * the bounding axial-coord rectangle to `data-axial-q-min` etc.
+   * hp-grid masonry mode reads these to pack clusters with their
+   * actual filled footprint rather than the worst-case host bbox. */
+  private updateAxialExtent = (): void => {
+    if (this.layout !== "honeycomb") {
+      return;
+    }
+    // Count element children (whitespace text nodes ignored).
+    const childCount = this.children.length;
+    if (childCount === 0) {
+      this.writeExtent(0, 0, 0, 0);
+      return;
+    }
+    const filled = HONEYCOMB_POSITIONS.slice(
+      0,
+      Math.min(childCount, HONEYCOMB_POSITIONS.length)
+    );
+    let qMin = Number.POSITIVE_INFINITY;
+    let qMax = Number.NEGATIVE_INFINITY;
+    let rMin = Number.POSITIVE_INFINITY;
+    let rMax = Number.NEGATIVE_INFINITY;
+    for (const pos of filled) {
+      if (pos.q < qMin) qMin = pos.q;
+      if (pos.q > qMax) qMax = pos.q;
+      if (pos.r < rMin) rMin = pos.r;
+      if (pos.r > rMax) rMax = pos.r;
+    }
+    this.writeExtent(qMin, qMax, rMin, rMax);
+  };
+
+  private writeExtent(qMin: number, qMax: number, rMin: number, rMax: number): void {
+    this.setAttribute("data-axial-q-min", String(qMin));
+    this.setAttribute("data-axial-q-max", String(qMax));
+    this.setAttribute("data-axial-r-min", String(rMin));
+    this.setAttribute("data-axial-r-max", String(rMax));
   }
 }
 
