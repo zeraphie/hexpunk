@@ -19,43 +19,25 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-button size="md">deploy</hp-button>
       <hp-button size="lg">launch</hp-button>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-button>click me</hp-button>
-    <hp-button size="md">deploy</hp-button>
-    <hp-button size="lg">launch</hp-button>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-button>click me</hp-button>
+<hp-button size="md">deploy</hp-button>
+<hp-button size="lg">launch</hp-button>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Filled (high-emphasis CTA)">
       <hp-button filled>go live</hp-button>
       <hp-button filled size="md">commit</hp-button>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-button filled>go live</hp-button>
-    <hp-button filled size="md">commit</hp-button>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-button filled>go live</hp-button>
+<hp-button filled size="md">commit</hp-button>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Disabled">
       <hp-button disabled>can't click</hp-button>
       <hp-button filled disabled>blocked</hp-button>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-button disabled>can't click</hp-button>
-    <hp-button filled disabled>blocked</hp-button>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-button disabled>can't click</hp-button>
+<hp-button filled disabled>blocked</hp-button>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Form submit">
@@ -64,17 +46,11 @@ export default () => (
         <hp-button type="reset">reset</hp-button>
       </form>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <form>
-      <input name="email" type="email" />
-      <hp-button type="submit">subscribe</hp-button>
-      <hp-button type="reset">reset</hp-button>
-    </form>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<form>
+  <input name="email" type="email" />
+  <hp-button type="submit">subscribe</hp-button>
+  <hp-button type="reset">reset</hp-button>
+</form>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

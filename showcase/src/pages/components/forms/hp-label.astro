@@ -28,20 +28,14 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-checkbox id="terms"></hp-checkbox>
+<hp-label for="terms">Accept terms</hp-label>
 
-export default () => (
-  <>
-    <hp-checkbox id="terms"></hp-checkbox>
-    <hp-label for="terms">Accept terms</hp-label>
+<!-- with required marker -->
+<hp-label for="email" required>Email</hp-label>
 
-    <!-- with required marker -->
-    <hp-label for="email" required>Email</hp-label>
-
-    <!-- with optional hint -->
-    <hp-label for="phone" optional>Phone</hp-label>
-  </>
-);`}</hp-code>
+<!-- with optional hint -->
+<hp-label for="phone" optional>Phone</hp-label>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
