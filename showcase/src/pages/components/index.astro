@@ -22,30 +22,31 @@ interface Category {
   items: CategoryItem[];
 }
 
-// Hand-tuned axial positions per category — clusters spaced 5 axial
-// units apart in both directions. Cluster ring-2 reach is 2 axial
-// units in every direction from the centre, so 5-unit spacing means
-// neighbour clusters' worst-case ring-2 hexes sit at axial distance
-// 1 (adjacent, sharing their stroke edge) — no overlap, no visible
-// empty gap. Smaller categories (Primitives, Tether — ring-1 only)
-// naturally get more visual space around them since their cluster
-// bbox extends further than their actual content reach.
+// Hand-tuned axial positions per category — clusters spaced 4 axial
+// units apart in both directions. Sized for the actual filled-hex
+// extent, not the worst-case cluster bbox: every category's hexes
+// reach at most ring 1 horizontally (q=±1), so spacing 4 gives one
+// empty hex column between adjacent clusters horizontally. Vertically,
+// Forms / Layout / Overlays do reach ring-2-top (r=-2) and their
+// top edges sit adjacent to the cluster above's bottom ring-1
+// hexes; the visual still reads as a tight honeycomb because they
+// share strokes rather than overlap.
 // Layout: 4×3 grid of categories aligned vertically in pixel space
-// (q on odd r rows shifts by -r/2 to compensate the axial-to-pixel
+// (q on each row shifts by -r/2 to compensate the axial-to-pixel
 // x = col_step * (q + r/2) offset).
 const POSITIONS: Record<string, { q: number; r: number }> = {
   Primitives: { q: 0, r: 0 },
-  Forms: { q: 5, r: 0 },
-  Status: { q: 10, r: 0 },
-  Loading: { q: 15, r: 0 },
-  Layout: { q: -2, r: 5 },
-  Images: { q: 3, r: 5 },
-  Navigation: { q: 8, r: 5 },
-  Overlays: { q: 13, r: 5 },
-  Messaging: { q: -5, r: 10 },
-  Tether: { q: 0, r: 10 },
-  Unfold: { q: 5, r: 10 },
-  Deprecated: { q: 10, r: 10 },
+  Forms: { q: 4, r: 0 },
+  Status: { q: 8, r: 0 },
+  Loading: { q: 12, r: 0 },
+  Layout: { q: -2, r: 4 },
+  Images: { q: 2, r: 4 },
+  Navigation: { q: 6, r: 4 },
+  Overlays: { q: 10, r: 4 },
+  Messaging: { q: -4, r: 8 },
+  Tether: { q: 0, r: 8 },
+  Unfold: { q: 4, r: 8 },
+  Deprecated: { q: 8, r: 8 },
 };
 
 const componentsBranch = SITEMAP.find(
