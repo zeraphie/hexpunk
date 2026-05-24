@@ -1,6 +1,6 @@
 {
   "name": "@hexpunk/core",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0-beta",
   "private": false,
   "description": "Hexagonal-first, wireframe-cyberpunk Lit component design system.",
   "keywords": [
