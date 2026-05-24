@@ -637,19 +637,85 @@ export class HpGrid extends LitElement {
     };
   }
 
-  /** Reset zoom to 1 and pan to the best-fit centre — the midpoint of
-   * the legal pan range at zoom 1. With content centred around
-   * `(q=0, r=0)` this resolves to zero; with off-centre layouts
-   * (e.g. the palette) it picks the pan offset that frames every
-   * hex inside the viewport. Public so consumers can recenter
-   * programmatically too. */
+  /** Fit every positioned child inside the viewport and centre the
+   * content. Computes the content's pixel-space bbox from `[q][r]`
+   * children's pre-transform sizes, picks the zoom level that frames
+   * the whole bbox with a small margin (max zoom = 1; never zooms
+   * past native), then pans so the bbox's midpoint sits at the
+   * viewport centre. Falls back to zoom-1 / pan-0 when nothing is
+   * positioned yet (e.g. detached / pre-paint). Public so consumers
+   * can recenter programmatically too. */
   public recenter(): void {
-    this.zoom = 1;
-    this.style.removeProperty("--hp-zoom");
-    const b = this.computePanBounds();
-    const panX = (b.minX + b.maxX) / 2;
-    const panY = (b.minY + b.maxY) / 2;
-    if (panX === 0 && panY === 0) {
+    const gridRect = this.getBoundingClientRect();
+    const vw = gridRect.width;
+    const vh = gridRect.height;
+    if (vw === 0 || vh === 0) {
+      return;
+    }
+    const steps = this.computeStyleSteps();
+    let minX = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+    let foundAny = false;
+    for (const child of this.querySelectorAll<HTMLElement>("[q][r]")) {
+      const q = Number.parseFloat(child.getAttribute("q") ?? "");
+      const r = Number.parseFloat(child.getAttribute("r") ?? "");
+      if (Number.isNaN(q) || Number.isNaN(r)) {
+        continue;
+      }
+      const childStyle = getComputedStyle(child);
+      const baseW = Number.parseFloat(childStyle.width);
+      const baseH = Number.parseFloat(childStyle.height);
+      if (!baseW || !baseH) {
+        continue;
+      }
+      foundAny = true;
+      // Child centre in pixel coords (origin at viewport centre,
+      // pre-zoom — the transform multiplies by --hp-zoom).
+      const cx = steps.col * (q + r / 2);
+      const cy = steps.row * r;
+      const left = cx - baseW / 2;
+      const right = cx + baseW / 2;
+      const top = cy - baseH / 2;
+      const bottom = cy + baseH / 2;
+      if (left < minX) minX = left;
+      if (right > maxX) maxX = right;
+      if (top < minY) minY = top;
+      if (bottom > maxY) maxY = bottom;
+    }
+    if (!foundAny) {
+      this.zoom = 1;
+      this.style.removeProperty("--hp-zoom");
+      this.style.removeProperty("--hp-pan-x");
+      this.style.removeProperty("--hp-pan-y");
+      this.removeAttribute("data-hp-panned");
+      return;
+    }
+    // 5% margin each side, so content never sits flush against
+    // viewport edges.
+    const padding = 1.1;
+    const contentW = Math.max(1, (maxX - minX) * padding);
+    const contentH = Math.max(1, (maxY - minY) * padding);
+    const zoomFit = Math.min(vw / contentW, vh / contentH);
+    // Never zoom IN past native — masonry packing's natural scale is
+    // already correct, we only zoom OUT when content overflows.
+    const z = Math.max(HpGrid.ZOOM_MIN, Math.min(1, zoomFit));
+    this.zoom = z;
+    if (z === 1) {
+      this.style.removeProperty("--hp-zoom");
+    } else {
+      this.style.setProperty("--hp-zoom", String(z));
+    }
+    const contentCx = (minX + maxX) / 2;
+    const contentCy = (minY + maxY) / 2;
+    // Pan so the content's midpoint lands at viewport centre. The
+    // transform applies zoom to (q, r) positions, then adds pan; to
+    // move the content's pixel-centre `contentCx` (at the chosen
+    // zoom) onto the viewport's 0, pan must be `-contentCx * z`.
+    const panX = -contentCx * z;
+    const panY = -contentCy * z;
+    if (panX === 0 && panY === 0 && z === 1) {
       this.style.removeProperty("--hp-pan-x");
       this.style.removeProperty("--hp-pan-y");
       this.removeAttribute("data-hp-panned");
