@@ -16,15 +16,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-hex size="md"></hp-hex>
       <hp-hex size="lg"></hp-hex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-hex></hp-hex>
-    <hp-hex size="md"></hp-hex>
-    <hp-hex size="lg"></hp-hex>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-hex></hp-hex>
+<hp-hex size="md"></hp-hex>
+<hp-hex size="lg"></hp-hex>`}</hp-code>
     </hp-demo>
 
     <h2>Custom stroke colour</h2>
@@ -36,13 +30,7 @@ export default () => (
       <hp-hex style="--hp-stroke-color: var(--hp-alert)"></hp-hex>
       <hp-hex style="--hp-stroke-color: var(--hp-error)"></hp-hex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-hex style="--hp-stroke-color: var(--hp-primary)"></hp-hex>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-hex style="--hp-stroke-color: var(--hp-primary)"></hp-hex>`}</hp-code>
     </hp-demo>
 
     <h2>Filled (transparent stroke)</h2>
@@ -57,13 +45,7 @@ export default () => (
       <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-alert)"></hp-hex>
       <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-error)"></hp-hex>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-primary)"></hp-hex>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-hex style="--hp-stroke-color: transparent; --hp-hex-fill: var(--hp-primary)"></hp-hex>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

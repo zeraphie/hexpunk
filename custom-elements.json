@@ -699,126 +699,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -991,6 +871,206 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/pixel-icons/menu.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "idle",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2], // top-left [ 0, -2], // top [ 2, -2], // top-right [-2, 0], // left [ 0, 0], // centre [ 2, 0], // right [-2, 2], // bottom-left [ 0, 2], // bottom [ 2, 2], // bottom-right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "hover",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [ 0, -3 ], // top-left → top [ 0, -1.5], // top → top-near [ 3, 0 ], // top-right → right-far [-1.5, 0 ], // left → left-near [ 0, 0 ], // centre → centre [ 1.5, 0 ], // right → right-near [-3, 0 ], // bottom-left → left-far [ 0, 1.5], // bottom → bottom-near [ 0, 3 ], // bottom-right→ bottom ]"
+        },
+        {
+          "kind": "variable",
+          "name": "active",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2], // top-left [ 1, -1], // top → upper-right-inner [ 2, -2], // top-right [-1, -1], // left → upper-left-inner [ 0, 0], // centre [ 1, 1], // right → lower-right-inner [-2, 2], // bottom-left [-1, 1], // bottom → lower-left-inner [ 2, 2], // bottom-right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "menu",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ idle, hover, active }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "idle",
+          "declaration": {
+            "name": "idle",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hover",
+          "declaration": {
+            "name": "hover",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "active",
+          "declaration": {
+            "name": "active",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "menu",
+          "declaration": {
+            "name": "menu",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "menu",
+            "module": "src/pixel-icons/menu.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/lib/floating.ts",
       "declarations": [
         {
@@ -1096,86 +1176,6 @@
           "declaration": {
             "name": "onEscape",
             "module": "src/lib/floating.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/pixel-icons/menu.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "idle",
-          "type": {
-            "text": "HpPixelPosition[]"
-          },
-          "default": "[ [-2, -2], // top-left [ 0, -2], // top [ 2, -2], // top-right [-2, 0], // left [ 0, 0], // centre [ 2, 0], // right [-2, 2], // bottom-left [ 0, 2], // bottom [ 2, 2], // bottom-right ]"
-        },
-        {
-          "kind": "variable",
-          "name": "hover",
-          "type": {
-            "text": "HpPixelPosition[]"
-          },
-          "default": "[ [ 0, -3 ], // top-left → top [ 0, -1.5], // top → top-near [ 3, 0 ], // top-right → right-far [-1.5, 0 ], // left → left-near [ 0, 0 ], // centre → centre [ 1.5, 0 ], // right → right-near [-3, 0 ], // bottom-left → left-far [ 0, 1.5], // bottom → bottom-near [ 0, 3 ], // bottom-right→ bottom ]"
-        },
-        {
-          "kind": "variable",
-          "name": "active",
-          "type": {
-            "text": "HpPixelPosition[]"
-          },
-          "default": "[ [-2, -2], // top-left [ 1, -1], // top → upper-right-inner [ 2, -2], // top-right [-1, -1], // left → upper-left-inner [ 0, 0], // centre [ 1, 1], // right → lower-right-inner [-2, 2], // bottom-left [-1, 1], // bottom → lower-left-inner [ 2, 2], // bottom-right ]"
-        },
-        {
-          "kind": "variable",
-          "name": "menu",
-          "type": {
-            "text": "object"
-          },
-          "default": "{ idle, hover, active }"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "idle",
-          "declaration": {
-            "name": "idle",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "hover",
-          "declaration": {
-            "name": "hover",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "active",
-          "declaration": {
-            "name": "active",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "menu",
-          "declaration": {
-            "name": "menu",
-            "module": "src/pixel-icons/menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "menu",
-            "module": "src/pixel-icons/menu.ts"
           }
         }
       ]

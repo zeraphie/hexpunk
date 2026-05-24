@@ -32,15 +32,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 const grid = hexGrid(4, 6);
 console.log(grid);`}</hp-code>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-const code = \`function hexGrid(rows, cols) {
+      <hp-code slot="code" language="html">{`<hp-code>function hexGrid(rows, cols) {
   return Array.from({ length: rows }, (_, r) =>
     Array.from({ length: cols }, (_, c) => ({ r, c })),
   );
-}\`;
-
-export default () => <hp-code>{code}</hp-code>;`}</hp-code>
+}</hp-code>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="With Shiki — language=&quot;javascript&quot;">
@@ -53,15 +49,11 @@ export default () => <hp-code>{code}</hp-code>;`}</hp-code>
 const grid = hexGrid(4, 6);
 console.log(grid);`}</hp-code>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-const code = \`function hexGrid(rows, cols) {
+      <hp-code slot="code" language="html">{`<hp-code language="javascript">function hexGrid(rows, cols) {
   return Array.from({ length: rows }, (_, r) =>
     Array.from({ length: cols }, (_, c) => ({ r, c })),
   );
-}\`;
-
-export default () => <hp-code language="javascript">{code}</hp-code>;`}</hp-code>
+}</hp-code>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="No line numbers">
@@ -70,16 +62,10 @@ export default () => <hp-code language="javascript">{code}</hp-code>;`}</hp-code
   background: var(--hp-primary);
 }`}</hp-code>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-const code = \`.hex {
+      <hp-code slot="code" language="html">{`<hp-code no-line-numbers language="css">.hex {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   background: var(--hp-primary);
-}\`;
-
-export default () => (
-  <hp-code no-line-numbers language="css">{code}</hp-code>
-);`}</hp-code>
+}</hp-code>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
