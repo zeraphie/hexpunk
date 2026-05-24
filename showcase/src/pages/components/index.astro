@@ -1,0 +1,174 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { SITEMAP, isLeaf } from "../../sitemap.ts";
+
+// Derive category data from the sitemap (single source of truth).
+// Walk the Components branch's children → category branches → leaf entries.
+interface CategoryItem {
+  name: string; // hp-cell etc.
+  path: string; // /components/<cat>/<name>
+}
+interface Category {
+  name: string;
+  q: number;
+  r: number;
+  items: CategoryItem[];
+}
+
+// Hand-tuned axial positions per category — clusters spaced 6 apart
+// horizontally and 6 apart vertically so their footprints (4 col-steps
+// + cell ≈ 5 hex widths) don't overlap and a visible gap remains.
+// Layout: 4×3 grid of categories aligned vertically in pixel space
+// (q on odd r rows shifts by -r/2 to compensate the axial-to-pixel
+// x = col_step * (q + r/2) offset).
+const POSITIONS: Record<string, { q: number; r: number }> = {
+  Primitives: { q: 0, r: 0 },
+  Forms: { q: 6, r: 0 },
+  Status: { q: 12, r: 0 },
+  Loading: { q: 18, r: 0 },
+  Layout: { q: -3, r: 6 },
+  Images: { q: 3, r: 6 },
+  Navigation: { q: 9, r: 6 },
+  Overlays: { q: 15, r: 6 },
+  Messaging: { q: -6, r: 12 },
+  Tether: { q: 0, r: 12 },
+  Unfold: { q: 6, r: 12 },
+  Deprecated: { q: 12, r: 12 },
+};
+
+const componentsBranch = SITEMAP.find(
+  (n) => !isLeaf(n) && n.title === "Components"
+);
+const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
+  ? []
+  : componentsBranch.children
+      .filter((c): c is { title: string; children: typeof SITEMAP } => !isLeaf(c))
+      .map((c) => {
+        const pos = POSITIONS[c.title] ?? { q: 0, r: 0 };
+        return {
+          name: c.title.toLowerCase(),
+          q: pos.q,
+          r: pos.r,
+          items: c.children.filter(isLeaf).map((leaf) => ({
+            name: leaf.title,
+            path: leaf.path,
+          })),
+        };
+      });
+---
+
+<Layout title="Components">
+  <h1>Components</h1>
+  <p>
+    Every <code>&lt;hp-*&gt;</code> element grouped by category on a single hex grid.
+    Drag the filled-anchor centre of any cluster to slide it around. Tap any
+    outer hex to jump to that component's docs page. Pan the canvas by dragging
+    empty space; zoom with the &nbsp;<code>+</code>&nbsp;/&nbsp;<code>−</code>&nbsp;
+    controls (bottom-right of the grid) or scroll-wheel.
+  </p>
+
+  <label class="component-filter">
+    <span class="component-filter__label">Filter</span>
+    <input
+      type="search"
+      id="component-search"
+      placeholder="Type a component name..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+  </label>
+
+  <hp-grid draggable id="components-grid" class="components-grid">
+    <hp-background></hp-background>
+    {categories.map((cat) => (
+      <hp-cluster
+        layout="honeycomb"
+        q={cat.q}
+        r={cat.r}
+        drag-handle=":first-child"
+      >
+        <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
+        {cat.items.map((item) => (
+          <a href={item.path} class="component-link">
+            <hp-cell variant="action" tabindex="0">{item.name}</hp-cell>
+          </a>
+        ))}
+      </hp-cluster>
+    ))}
+  </hp-grid>
+
+  <style>
+    .component-filter {
+      display: flex;
+      flex-direction: column;
+      gap: var(--hp-xs);
+      margin: var(--hp-md) 0;
+      max-width: 24rem;
+    }
+
+    .component-filter__label {
+      font-family: var(--hp-typo-label-sm-font-family);
+      font-size: var(--hp-typo-label-sm-font-size);
+      font-weight: var(--hp-typo-label-sm-font-weight);
+      letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+      text-transform: uppercase;
+      color: var(--hp-on-surface-variant);
+    }
+
+    /* Make the grid tall enough to actually use without immediately
+     * needing to pan. hp-grid's own min-height is 400px; bumping here
+     * gives the components gallery more vertical breathing room. */
+    .components-grid {
+      min-height: 600px;
+    }
+
+    /* Component-link anchors wrap each outer hp-cell. Drop the
+     * underline + inherited link colour from elements.css so the
+     * hex stays the visual rest state. */
+    .component-link {
+      text-decoration: none;
+      color: inherit;
+      /* Position-absolute hex layout means we want the anchor itself
+       * to size with the cell — give it block layout. */
+      display: block;
+    }
+    .component-link:hover,
+    .component-link:focus-visible {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Hide cluster centres' "support" rendering quirks if they leak —
+     * not needed currently but cheap insurance. */
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+
+  <script>
+    // Filter logic: walk every <a class="component-link"> descendant of
+    // the grid and toggle `hidden` based on a substring match against
+    // the wrapped hp-cell's text content. Cluster centres (variant=
+    // anchor filled, NOT wrapped in <a>) stay always visible — the
+    // category labels are part of the page's structural map, not
+    // filterable items.
+    const search = document.querySelector<HTMLInputElement>("#component-search");
+    const grid = document.querySelector<HTMLElement>("#components-grid");
+    if (search && grid) {
+      const links = Array.from(grid.querySelectorAll<HTMLAnchorElement>("a.component-link"));
+      const apply = () => {
+        const query = search.value.trim().toLowerCase();
+        for (const link of links) {
+          const cell = link.querySelector("hp-cell");
+          const text = (cell?.textContent ?? "").toLowerCase();
+          link.hidden = query.length > 0 && !text.includes(query);
+        }
+      };
+      search.addEventListener("input", apply);
+      // Run once on load so the initial render is consistent if the
+      // browser restored a value from autocomplete (rare with
+      // autocomplete="off" but harmless).
+      apply();
+    }
+  </script>
+</Layout>
