@@ -85,6 +85,7 @@ import {
 } from "./pack.js";
 import { PanController, stopPanFromButton } from "./pan.js";
 import { hpGridStyles } from "./styles.js";
+import { ZOOM_MIN, ZoomController } from "./zoom.js";
 import type {
   AxialCoord,
   DragState,
@@ -197,25 +198,22 @@ export class HpGrid extends LitElement {
   private drag: DragState | null = null;
 
   /** Pan controller — owns the active pan state, the pan move/end
-   * handlers, and `clampPan`. Field name kept as `panController` so
-   * the public type doesn't clash with HTMLElement's no-op `pan` */
-  private readonly panController = new PanController(this);
+   * handlers, and `clamp`. Public so the zoom controller can reuse
+   * the clamp via the `ZoomHost` interface. */
+  readonly panController = new PanController(this);
+
+  /** Zoom controller — owns wheel zoom + button-zoom. */
+  private readonly zoomController = new ZoomController(this);
 
   /**
    * Current zoom factor. 1 = no zoom; > 1 zooms in, < 1 zooms out.
-   * Bounded by `ZOOM_MIN` / `ZOOM_MAX`. Mirrored to `--hp-zoom` inline
-   * style so the slotted-child transform sees it.
+   * Bounded by `ZOOM_MIN` / `ZOOM_MAX` (see zoom.ts). Mirrored to
+   * `--hp-zoom` inline style so the slotted-child transform sees it.
    *
-   * @internal Public so the `PanController` / future zoom controller
-   *   can read it; not part of the documented API.
+   * @internal Public so the pan / zoom controllers (and the recenter
+   *   pass) can read & write it; not part of the documented API.
    */
   zoom = 1;
-
-  private static readonly ZOOM_MIN = 0.25;
-  private static readonly ZOOM_MAX = 4;
-  /** Multiplicative step per +/- button click. Wheel uses a smaller
-   * per-event factor based on `deltaY`. */
-  private static readonly ZOOM_BUTTON_STEP = 1.25;
 
   static override styles = [hpBase, hpGridStyles];
 
@@ -228,13 +226,13 @@ export class HpGrid extends LitElement {
     this.addEventListener("pointerdown", this.handlePointerDown);
     // Ctrl/⌘ + wheel zooms (Miro/Figma convention). passive: false so
     // we can preventDefault the page scroll.
-    this.addEventListener("wheel", this.handleWheel, { passive: false });
+    this.addEventListener("wheel", this.zoomController.handleWheel, { passive: false });
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("pointerdown", this.handlePointerDown);
-    this.removeEventListener("wheel", this.handleWheel);
+    this.removeEventListener("wheel", this.zoomController.handleWheel);
     this.cancelDrag();
   }
 
@@ -347,10 +345,10 @@ export class HpGrid extends LitElement {
       <div class="step-probe" aria-hidden="true"></div>
       <slot @slotchange=${this.handleSlotChange}></slot>
       <div class="controls" part="controls" @pointerdown=${stopPanFromButton}>
-        <button type="button" aria-label="Zoom out" part="zoom-out" @click=${this.zoomOut}>
+        <button type="button" aria-label="Zoom out" part="zoom-out" @click=${this.zoomController.stepOut}>
           −
         </button>
-        <button type="button" aria-label="Zoom in" part="zoom-in" @click=${this.zoomIn}>+</button>
+        <button type="button" aria-label="Zoom in" part="zoom-in" @click=${this.zoomController.stepIn}>+</button>
         <button type="button" aria-label="Recenter canvas" part="recenter" @click=${this.recenter}>
           <svg
             viewBox="0 0 24 24"
@@ -439,7 +437,7 @@ export class HpGrid extends LitElement {
     const zoomFit = Math.min(vw / paddedW, vh / paddedH);
     // Never zoom IN past native — masonry packing's natural scale is
     // already correct, we only zoom OUT when content overflows.
-    const z = Math.max(HpGrid.ZOOM_MIN, Math.min(1, zoomFit));
+    const z = Math.max(ZOOM_MIN, Math.min(1, zoomFit));
     this.zoom = z;
     if (z === 1) {
       this.style.removeProperty("--hp-zoom");
@@ -471,71 +469,6 @@ export class HpGrid extends LitElement {
       })
     );
   }
-
-  // ── Zoom ───────────────────────────────────────────────────────────
-
-  /** Apply a new zoom factor, optionally centred on a viewport point
-   * so that point stays under the cursor after zooming (Miro/Figma
-   * feel). Without a focus point, zooms around the grid centre. Pan
-   * is clamped after the zoom change so the new content extent
-   * still fits in the viewport. */
-  private applyZoom(target: number, focusClientX?: number, focusClientY?: number): void {
-    const newZoom = Math.max(HpGrid.ZOOM_MIN, Math.min(HpGrid.ZOOM_MAX, target));
-    if (newZoom === this.zoom) {
-      return;
-    }
-    const gridRect = this.getBoundingClientRect();
-    const w = gridRect.width;
-    const h = gridRect.height;
-    const cx = focusClientX === undefined ? w / 2 : focusClientX - gridRect.left;
-    const cy = focusClientY === undefined ? h / 2 : focusClientY - gridRect.top;
-    const oldPanX = Number.parseFloat(this.style.getPropertyValue("--hp-pan-x")) || 0;
-    const oldPanY = Number.parseFloat(this.style.getPropertyValue("--hp-pan-y")) || 0;
-    // Zoom-to-cursor: keep the world point under the cursor stationary.
-    // Derived from: cursorWorld = (cx - W/2 - panX) / zoom, kept constant
-    // across the zoom change.
-    const ratio = newZoom / this.zoom;
-    const targetPanX = (cx - w / 2) * (1 - ratio) + oldPanX * ratio;
-    const targetPanY = (cy - h / 2) * (1 - ratio) + oldPanY * ratio;
-    this.zoom = newZoom;
-    this.style.setProperty("--hp-zoom", String(newZoom));
-    const { panX, panY } = this.panController.clamp(targetPanX, targetPanY);
-    this.style.setProperty("--hp-pan-x", `${panX}px`);
-    this.style.setProperty("--hp-pan-y", `${panY}px`);
-    if (panX !== 0 || panY !== 0 || newZoom !== 1) {
-      this.setAttribute("data-hp-panned", "");
-    } else {
-      this.removeAttribute("data-hp-panned");
-    }
-    this.dispatchEvent(
-      new CustomEvent<HpGridPanEventDetail>("hp-grid-pan", {
-        detail: { panX, panY },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  private handleWheel = (event: WheelEvent): void => {
-    // Ctrl/⌘ + wheel only — plain wheel scrolls the page as normal.
-    if (!event.ctrlKey && !event.metaKey) {
-      return;
-    }
-    event.preventDefault();
-    // Smooth per-event factor scales with the deltaY magnitude so
-    // trackpad pinch (small deltas) and mousewheel (~100 px deltas)
-    // both feel right.
-    const factor = Math.exp(-event.deltaY * 0.0015);
-    this.applyZoom(this.zoom * factor, event.clientX, event.clientY);
-  };
-
-  private zoomIn = (): void => {
-    this.applyZoom(this.zoom * HpGrid.ZOOM_BUTTON_STEP);
-  };
-
-  private zoomOut = (): void => {
-    this.applyZoom(this.zoom / HpGrid.ZOOM_BUTTON_STEP);
-  };
 
   // ── Slot wiring ────────────────────────────────────────────────────
 
