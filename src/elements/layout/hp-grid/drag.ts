@@ -22,12 +22,12 @@
 import { axialNeighbours, slotKey } from "./axial.js";
 import { dispatchBondEvents, findOccupiedNeighbours } from "./bonds.js";
 import type { PanController } from "./pan.js";
+import { TetherTargetTracker, toggleTether } from "./tether.js";
 import type {
   AxialCoord,
   DragState,
   HpGridDropEventDetail,
   HpGridMoveEventDetail,
-  HpGridTetherEventDetail,
 } from "./types.js";
 
 /**
@@ -102,55 +102,15 @@ function snapToSlot(
 }
 
 /**
- * Build the CSS selector that `<hp-tether>`'s `from` / `to`
- * attributes need. Prefers the existing `id` (consumer-authored or
- * the grid's own auto-assigned one), else falls back to the
- * `data-hp-grid-id` stamped at slotchange.
- *
- * @returns Selector string, or `null` if neither id source exists.
- */
-function tetherSelectorFor(el: HTMLElement): string | null {
-  if (el.id) {
-    return `#${CSS.escape(el.id)}`;
-  }
-  const gid = el.dataset.hpGridId;
-  if (gid) {
-    return `[data-hp-grid-id="${gid}"]`;
-  }
-  return null;
-}
-
-/**
- * Find an existing `<hp-tether>` child of `host` whose `from` / `to`
- * pair matches `a` / `b` in either direction. Used by the tetherable
- * toggle: matching pair means we remove instead of create.
- */
-function findTetherBetween(
-  host: DragHost,
-  a: string,
-  b: string
-): HTMLElement | null {
-  const tethers = host.querySelectorAll<HTMLElement>("hp-tether");
-  for (const tether of tethers) {
-    const from = tether.getAttribute("from");
-    const to = tether.getAttribute("to");
-    if ((from === a && to === b) || (from === b && to === a)) {
-      return tether;
-    }
-  }
-  return null;
-}
-
-/**
  * Owns the active drag gesture and the post-drop choreography. One
  * instance per grid; lives for the element's lifetime.
  */
 export class DragController {
   private state: DragState | null = null;
-  /** While dragging in tetherable mode, the sibling `[q][r]`
-   * currently under the cursor (so it can paint a target highlight
-   * via `data-hp-tether-target`). */
-  private currentTetherTarget: HTMLElement | null = null;
+  /** Tetherable-mode target tracker — owns the
+   * `data-hp-tether-target` highlight on the candidate-under-cursor
+   * hex during a drag. */
+  private readonly tetherTracker = new TetherTargetTracker();
 
   /**
    * @param host - The grid element. Drag start / cancel hooks fire on
@@ -258,7 +218,7 @@ export class DragController {
     element.removeAttribute("data-hp-dragging");
     element.style.removeProperty("--hp-drag-x");
     element.style.removeProperty("--hp-drag-y");
-    this.clearTetherTarget();
+    this.tetherTracker.clear();
     this.cleanup(element, pointerId);
   }
 
@@ -279,7 +239,7 @@ export class DragController {
     // elementsFromPoint (the dragged hex itself is one of the hits,
     // so we skip the first matching [q][r] that IS the source).
     if (this.host.tetherable) {
-      this.updateTetherTarget(event.clientX, event.clientY);
+      this.tetherTracker.update(this.host, this.state.element, event.clientX, event.clientY);
     }
   };
 
@@ -419,14 +379,15 @@ export class DragController {
       );
     }
 
-    this.clearTetherTarget();
+    this.tetherTracker.clear();
     this.cleanup(element, pointerId);
   }
 
   /**
    * Tetherable-mode finish path: when a drag-release lands on another
    * `[q][r]` hex (rather than empty space), toggle an arc between
-   * the pair instead of moving. The source snaps back to its origin.
+   * the pair instead of moving. The source snaps back to its origin;
+   * the create-or-remove + event emission lives in `tether.ts`.
    */
   private finishAsTether(
     source: HTMLElement,
@@ -446,92 +407,9 @@ export class DragController {
     source.style.setProperty("--hp-q", String(startCoord.q));
     source.style.setProperty("--hp-r", String(startCoord.r));
 
-    this.clearTetherTarget();
-
-    const sourceId = tetherSelectorFor(source);
-    const targetId = tetherSelectorFor(target);
-    if (!sourceId || !targetId) {
-      this.cleanup(source, pointerId);
-      return;
-    }
-
-    // Toggle: if a tether already connects this pair (in either
-    // direction), remove it. Otherwise create a new one.
-    const existing = findTetherBetween(this.host, sourceId, targetId);
-    if (existing) {
-      existing.remove();
-      this.host.dispatchEvent(
-        new CustomEvent<HpGridTetherEventDetail>("hp-grid-untether", {
-          detail: { source, target, tether: existing },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    } else {
-      const tether = document.createElement("hp-tether");
-      tether.setAttribute("from", sourceId);
-      tether.setAttribute("to", targetId);
-      tether.setAttribute("data-hp-grid-tether", "");
-      // Append as a slotted child of the grid. hp-tether's
-      // `position: absolute; inset: 0` covers the grid's bbox; its
-      // from / to selectors resolve globally so DOM position doesn't
-      // matter for geometry.
-      this.host.appendChild(tether);
-      // Replay the draw-in animation explicitly — the once-on-mount
-      // CSS animation already runs, but the connectedCallback defer
-      // happens to also be ~2 rAFs so this call lands at the right
-      // moment to be perceptible regardless of timing.
-      queueMicrotask(() => {
-        const apiEl = tether as HTMLElement & { drawIn?: () => void };
-        apiEl.drawIn?.();
-      });
-      this.host.dispatchEvent(
-        new CustomEvent<HpGridTetherEventDetail>("hp-grid-tether", {
-          detail: { source, target, tether },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    }
-
+    this.tetherTracker.clear();
+    toggleTether(this.host, source, target);
     this.cleanup(source, pointerId);
-  }
-
-  private updateTetherTarget(clientX: number, clientY: number): void {
-    if (!this.state) {
-      return;
-    }
-    const source = this.state.element;
-    let next: HTMLElement | null = null;
-    const hits = document.elementsFromPoint(clientX, clientY);
-    for (const hit of hits) {
-      const candidate = hit.closest<HTMLElement>("[q][r]");
-      if (!candidate || candidate === source) {
-        continue;
-      }
-      if (!this.host.contains(candidate)) {
-        continue;
-      }
-      next = candidate;
-      break;
-    }
-    if (next === this.currentTetherTarget) {
-      return;
-    }
-    if (this.currentTetherTarget) {
-      this.currentTetherTarget.removeAttribute("data-hp-tether-target");
-    }
-    this.currentTetherTarget = next;
-    if (next) {
-      next.setAttribute("data-hp-tether-target", "");
-    }
-  }
-
-  private clearTetherTarget(): void {
-    if (this.currentTetherTarget) {
-      this.currentTetherTarget.removeAttribute("data-hp-tether-target");
-      this.currentTetherTarget = null;
-    }
   }
 
   /**
