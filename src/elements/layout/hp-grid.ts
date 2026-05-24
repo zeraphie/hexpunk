@@ -70,10 +70,11 @@ import "../tether/hp-tether.js";
 import { scan } from "../../icons/scan.js";
 import { hpBase } from "../../styles/hp-base.js";
 import {
-  type AxialExtent,
+  type FillMask,
   PACK_RANGE,
   findFirstFreePosition,
   markClaimed,
+  parseFillCells,
 } from "./hp-grid-pack.js";
 
 // Pointy-top hex row step is `w · √3/2`. Precomputed to avoid relying
@@ -479,13 +480,13 @@ export class HpGrid extends LitElement {
     }
     interface Item {
       el: HTMLElement;
-      extent: AxialExtent;
+      mask: FillMask;
       currentQ: number;
       currentR: number;
     }
     const items: Item[] = children.map((el) => ({
       el,
-      extent: HpGrid.readChildExtent(el),
+      mask: parseFillCells(el.getAttribute("data-fill-cells")),
       currentQ: Number.parseFloat(el.getAttribute("q") ?? "0") || 0,
       currentR: Number.parseFloat(el.getAttribute("r") ?? "0") || 0,
     }));
@@ -506,7 +507,7 @@ export class HpGrid extends LitElement {
 
     const claimed = new Set<string>();
     for (const item of items) {
-      const pos = findFirstFreePosition(item.extent, claimed, halfColsAvailable);
+      const pos = findFirstFreePosition(item.mask, claimed, halfColsAvailable);
       item.el.setAttribute("q", String(pos.q));
       item.el.setAttribute("r", String(pos.r));
       // Mirror to the CSS custom properties the host stylesheet reads
@@ -514,7 +515,7 @@ export class HpGrid extends LitElement {
       // not fire on attribute mutation.
       item.el.style.setProperty("--hp-q", String(pos.q));
       item.el.style.setProperty("--hp-r", String(pos.r));
-      markClaimed(pos.q, pos.r, item.extent, claimed);
+      markClaimed(pos.q, pos.r, item.mask, claimed);
     }
     // Refresh occupancy + pan bounds now that positions changed.
     this.occupancy.clear();
@@ -522,15 +523,6 @@ export class HpGrid extends LitElement {
       this.occupancy.set(slotKey(String(item.el.getAttribute("q")), String(item.el.getAttribute("r"))), item.el);
     }
     requestAnimationFrame(() => this.recenter());
-  }
-
-  private static readChildExtent(el: HTMLElement): AxialExtent {
-    return {
-      qMin: Number.parseFloat(el.getAttribute("data-axial-q-min") ?? "0") || 0,
-      qMax: Number.parseFloat(el.getAttribute("data-axial-q-max") ?? "0") || 0,
-      rMin: Number.parseFloat(el.getAttribute("data-axial-r-min") ?? "0") || 0,
-      rMax: Number.parseFloat(el.getAttribute("data-axial-r-max") ?? "0") || 0,
-    };
   }
 
   override render() {

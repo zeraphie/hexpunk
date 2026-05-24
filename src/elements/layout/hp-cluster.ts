@@ -301,49 +301,71 @@ export class HpCluster extends LitElement {
     `;
   }
 
+  /** Rosette layout always fills the centre + 4 named slots. The
+   * cluster shape is fixed (cross pattern), so the fill mask is a
+   * compile-time constant. */
+  private static readonly ROSETTE_FILL_CELLS: ReadonlyArray<{ q: number; r: number }> = [
+    { q: 0, r: 0 }, // centre
+    { q: 0, r: -1 }, // top
+    { q: -1, r: 0 }, // middle-left
+    { q: 1, r: 0 }, // middle-right
+    { q: 0, r: 1 }, // bottom
+  ];
+
   override connectedCallback(): void {
     super.connectedCallback();
-    // Rosette extent is static (radius 1) — set it once on connect.
-    // Honeycomb extent depends on child count and is computed on
-    // slotchange.
+    // Rosette fill is static — set it once on connect. Honeycomb is
+    // child-count-dependent and is computed on slotchange.
     if (this.layout === "rosette") {
-      this.writeExtent(-1, 1, -1, 1);
+      this.writeFillCells(HpCluster.ROSETTE_FILL_CELLS);
     }
   }
 
-  /** Walks slotted children, finds which honeycomb positions are filled
-   * (children fill in order matching HONEYCOMB_POSITIONS), and writes
-   * the bounding axial-coord rectangle to `data-axial-q-min` etc.
-   * hp-grid masonry mode reads these to pack clusters with their
-   * actual filled footprint rather than the worst-case host bbox. */
+  /** Walks slotted children, finds which honeycomb positions are
+   * filled (children fill in order matching HONEYCOMB_POSITIONS), and
+   * publishes both the per-cell fill list (`data-fill-cells`) and the
+   * bounding box (`data-axial-q-min` etc.) so hp-grid masonry mode
+   * can pack clusters using their actual hex footprint rather than
+   * the worst-case bbox. Per-cell occupancy lets neighbouring
+   * clusters interpenetrate each other's empty bbox corners — a
+   * ring-2-NE cluster's unfilled NW corner becomes drop space for
+   * the next cluster. */
   private updateAxialExtent = (): void => {
     if (this.layout !== "honeycomb") {
       return;
     }
-    // Count element children (whitespace text nodes ignored).
     const childCount = this.children.length;
     if (childCount === 0) {
-      this.writeExtent(0, 0, 0, 0);
+      this.writeFillCells([{ q: 0, r: 0 }]);
       return;
     }
     const filled = HONEYCOMB_POSITIONS.slice(
       0,
       Math.min(childCount, HONEYCOMB_POSITIONS.length)
     );
+    this.writeFillCells(filled);
+  };
+
+  /** Publishes the cluster's fill mask + bbox on host data attrs.
+   * `data-fill-cells` is the authoritative per-cell mask, space-
+   * separated `"q,r q,r ..."`. `data-axial-q-min`/`q-max`/`r-min`/
+   * `r-max` mirror the bbox derived from it (kept for cheap consumers
+   * that only care about footprint dimensions, like the viewport-
+   * bound calc in hp-grid's pack scan). */
+  private writeFillCells(cells: ReadonlyArray<{ q: number; r: number }>): void {
     let qMin = Number.POSITIVE_INFINITY;
     let qMax = Number.NEGATIVE_INFINITY;
     let rMin = Number.POSITIVE_INFINITY;
     let rMax = Number.NEGATIVE_INFINITY;
-    for (const pos of filled) {
-      if (pos.q < qMin) qMin = pos.q;
-      if (pos.q > qMax) qMax = pos.q;
-      if (pos.r < rMin) rMin = pos.r;
-      if (pos.r > rMax) rMax = pos.r;
+    const parts: string[] = [];
+    for (const c of cells) {
+      if (c.q < qMin) qMin = c.q;
+      if (c.q > qMax) qMax = c.q;
+      if (c.r < rMin) rMin = c.r;
+      if (c.r > rMax) rMax = c.r;
+      parts.push(`${c.q},${c.r}`);
     }
-    this.writeExtent(qMin, qMax, rMin, rMax);
-  };
-
-  private writeExtent(qMin: number, qMax: number, rMin: number, rMax: number): void {
+    this.setAttribute("data-fill-cells", parts.join(" "));
     this.setAttribute("data-axial-q-min", String(qMin));
     this.setAttribute("data-axial-q-max", String(qMax));
     this.setAttribute("data-axial-r-min", String(rMin));
