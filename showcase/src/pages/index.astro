@@ -1,33 +1,141 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+// Mirror Layout.astro's baseUrl helper so the rosette links resolve
+// under the configured BASE_URL (e.g. /hexpunk on the GitHub Pages
+// deployment).
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+function href(path: string): string {
+  return path === "/" ? baseUrl || "/" : `${baseUrl}${path}`;
+}
+
+// Copy-pasteable <head> snippet. esm.sh CDN URLs are the canonical
+// surface — the package isn't published yet, but this is the shape
+// consumers will eventually drop into a vanilla HTML page.
+const SETUP_SNIPPET = `<link rel="stylesheet" href="https://esm.sh/@hexpunk/core/tokens.dark.css" />
+<link rel="stylesheet" href="https://esm.sh/@hexpunk/core/elements.css" />
+<script type="importmap">
+  {
+    "imports": {
+      "lit": "https://esm.sh/lit",
+      "@hexpunk/core": "https://esm.sh/@hexpunk/core"
+    }
+  }
+</script>
+<script type="module">
+  import "@hexpunk/core";
+</script>`;
 ---
 
-<Layout title="Home">
-  <h1>Hexpunk</h1>
-  <p>
-    Hexagonal-first, wireframe-cyberpunk Lit component design system. See
-    <a href="https://github.com/zeraphie/hexpunk/blob/main/DESIGN.md">DESIGN.md</a>
-    for the full spec.
-  </p>
+<Layout title="Hexpunk">
+  <section class="home-hero">
+    <h1 class="home-title">Hexpunk</h1>
+    <p class="home-tagline">
+      Hexagonal-first, wireframe-cyberpunk Lit component design system.
+    </p>
+  </section>
 
-  <h2>Spatial primitives</h2>
-  <p>Three composable layouts that the rest of the system builds on:</p>
-  <ul>
-    <li>
-      <code>&lt;hp-grid&gt;</code> — invisible axial coordinate space with drag, snap, and bond detection.
-    </li>
-    <li>
-      <code>&lt;hp-cluster&gt;</code> — canonical 5-hex navigation rosette.
-    </li>
-    <li>
-      <code>&lt;hp-tether&gt;</code> — curved bezier connecting two distant molecules across the canvas.
-    </li>
-  </ul>
+  <section class="home-setup">
+    <h2>Setup</h2>
+    <p>Drop the canonical four-line block into your page <code>&lt;head&gt;</code>:</p>
+    <div class="home-snippet">
+      <hp-code language="html">{SETUP_SNIPPET}</hp-code>
+      <hp-copy class="home-snippet-copy" value={SETUP_SNIPPET} icon-only>
+        Copy setup block
+      </hp-copy>
+    </div>
+    <p class="home-setup-note">
+      For an npm-style install (build pipelines, bundlers, Astro): see
+      <a href={href("/getting-started/install")}>Install</a>.
+    </p>
+  </section>
 
-  <h2>Quick links</h2>
-  <p>
-    Browse the side nav to jump into any atom or molecule demo. Each page lives at
-    its own URL — cross-document View Transitions will eventually glue them together
-    via <code>&lt;hp-unfold-page&gt;</code>.
-  </p>
+  <section class="home-quick-links">
+    <h2>Get started</h2>
+    <hp-cluster layout="rosette">
+      <a slot="centre" href={href("/getting-started/install")} class="home-link">
+        <hp-cell variant="anchor" filled tabindex="0">Install</hp-cell>
+      </a>
+      <a slot="top" href={href("/getting-started/concepts")} class="home-link">
+        <hp-cell variant="action" tabindex="0">Concepts</hp-cell>
+      </a>
+      <a slot="middle-left" href={href("/components")} class="home-link">
+        <hp-cell variant="action" tabindex="0">Components</hp-cell>
+      </a>
+      <a slot="middle-right" href={href("/palette")} class="home-link">
+        <hp-cell variant="action" tabindex="0">Palette</hp-cell>
+      </a>
+      <a
+        slot="bottom"
+        href="https://github.com/zeraphie/hexpunk"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="home-link"
+      >
+        <hp-cell variant="action" tabindex="0">GitHub</hp-cell>
+      </a>
+    </hp-cluster>
+  </section>
+
+  <style>
+    .home-hero {
+      text-align: center;
+      padding: var(--hp-xxl) 0 var(--hp-xl);
+    }
+
+    .home-title {
+      font-size: var(--hp-typo-display-lg-font-size);
+      font-weight: var(--hp-typo-display-lg-font-weight);
+      line-height: var(--hp-typo-display-lg-line-height);
+      letter-spacing: var(--hp-typo-display-lg-letter-spacing);
+      text-transform: uppercase;
+      margin: 0 0 var(--hp-md);
+    }
+
+    .home-tagline {
+      color: var(--hp-on-surface-variant);
+      font-size: var(--hp-typo-body-lg-font-size);
+      margin: 0;
+    }
+
+    .home-setup {
+      margin-top: var(--hp-xl);
+    }
+
+    /* Setup snippet block: the hp-code panel takes the full content
+     * width; the hp-copy button floats over its top-right corner. */
+    .home-snippet {
+      position: relative;
+    }
+
+    .home-snippet-copy {
+      position: absolute;
+      top: var(--hp-sm);
+      right: var(--hp-sm);
+    }
+
+    .home-setup-note {
+      color: var(--hp-on-surface-variant);
+      font-size: var(--hp-typo-body-sm-font-size);
+    }
+
+    .home-quick-links {
+      margin-top: var(--hp-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .home-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .home-link:hover,
+    .home-link:focus-visible {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
 </Layout>
