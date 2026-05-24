@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0-beta] - 2026-05-24
+
 ### Added
 
 - **`<hp-cluster>` `layout` attribute — `rosette` (default) / `honeycomb` modes.** `rosette` preserves the canonical 5-hex cross via named slots (`centre` / `top` / `middle-left` / `middle-right` / `bottom`). `honeycomb` accepts N default-slot children: the first child is the centre (axial 0, 0); remaining children fill outward clockwise from north — ring 1 holds 6 positions, ring 2 holds 12 (capped at 19 hexes total in v1). Drag handling stays in `<hp-grid>` via `drag-handle="..."`; canonical handle is `:first-child` for honeycomb mode, `[slot='centre']` for rosette. Auto-sizes the host: 2-ring footprint for rosette, 4-ring for honeycomb. Existing rosette usages render unchanged.

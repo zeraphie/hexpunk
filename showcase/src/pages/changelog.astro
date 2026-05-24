@@ -5,6 +5,49 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Releases" prose>
   <h1>Releases</h1>
 
+  <h2>v0.1.0-beta — 2026-05-24</h2>
+  <p>
+    Second pre-release. Four feature PRs land on top of alpha:
+  </p>
+  <ul>
+    <li>
+      <strong>HTML primitive styling</strong> —
+      <code>@hexpunk/core/elements.css</code> (token-driven preflight for native HTML primitives) +
+      opt-in <code>.hp-prose</code> class. New <code>/getting-started/elements</code> + <code>/getting-started/prose</code> walkthroughs.
+    </li>
+    <li>
+      <strong>LaTeX math support</strong> — render-only
+      <code>&lt;hp-latex&gt;</code> primitive with consumer-registered renderer
+      (zero math-engine dependency in core; KaTeX recommended). New
+      <code>&lt;hp-copy&gt;</code> primitive extracted during the work, now
+      powers every copy affordance in the system.
+    </li>
+    <li>
+      <strong>HTML code panels</strong> — all 116
+      <code>&lt;hp-code slot="code"&gt;</code> panels across 51 showcase pages
+      converted from JSX-wrapper to plain HTML markup that matches what
+      Lit-native consumers paste directly.
+    </li>
+    <li>
+      <strong>Showcase redesign + hp-cluster / hp-grid refactor</strong> —
+      new <code>/components</code> index page (full-page-width
+      <code>&lt;hp-grid layout="rows"&gt;</code> with one
+      <code>&lt;hp-cluster layout="honeycomb"&gt;</code> per category), navbar
+      Docs / Components / GitHub links, home page redesign (hero + setup
+      snippet + rosette). Under the hood:
+      <code>&lt;hp-cluster&gt;</code> gains a <code>layout</code> attribute,
+      <code>&lt;hp-grid&gt;</code> gains <code>spiral</code> and <code>rows</code>
+      pack strategies + fit-to-content <code>recenter()</code>, and the
+      <code>hp-grid.ts</code> file (1500+ lines) splits into a folder by
+      concern.
+    </li>
+  </ul>
+  <p>
+    See the
+    <a href="https://github.com/zeraphie/hexpunk/blob/main/CHANGELOG.md">full CHANGELOG.md</a>
+    for the complete entry list.
+  </p>
+
   <h2>v0.1.0-alpha</h2>
   <p>
     Initial alpha. All 14 atoms shipped, plus 3 molecules
