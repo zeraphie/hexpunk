@@ -69,7 +69,8 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import "../../tether/hp-tether.js";
 import { scan } from "../../../icons/scan.js";
 import { hpBase } from "../../../styles/hp-base.js";
-import { axialNeighbours, slotKey } from "./axial.js";
+import { slotKey } from "./axial.js";
+import { DragController } from "./drag.js";
 import { type FillMask, markClaimed, parseFillCells } from "./layouts/index.js";
 import { findRowsPosition } from "./layouts/rows.js";
 import { findSpiralPosition } from "./layouts/spiral.js";
@@ -78,8 +79,6 @@ import { recenter as recenterContent } from "./recenter.js";
 import { hpGridStyles } from "./styles.js";
 import { ZoomController } from "./zoom.js";
 import type {
-  AxialCoord,
-  DragState,
   HpGridBondEventDetail,
   HpGridDropEventDetail,
   HpGridMoveEventDetail,
@@ -176,17 +175,22 @@ export class HpGrid extends LitElement {
   @property({ reflect: true })
   layout: "free" | "spiral" | "rows" = "free";
 
-  /** Track which children occupy which axial slots — keyed `"q,r"`. */
-  private readonly occupancy = new Map<string, HTMLElement>();
+  /**
+   * Track which children occupy which axial slots — keyed `"q,r"`.
+   * Mutated by `handleSlotChange`, `pack()`, and the drag controller
+   * on every successful move.
+   *
+   * @internal Public so concern modules (drag in particular) can
+   *   read & write occupancy through the `DragHost` interface; not
+   *   part of the documented API.
+   */
+  readonly occupancy = new Map<string, HTMLElement>();
 
   /** Monotonic counter for `data-hp-grid-id` auto-assignment on
    * [q][r] children that don't carry an existing `id` attribute.
    * Stable enough for the hp-tether `from` / `to` selectors that get
    * generated when a tether is created. */
   private tetherIdCounter = 0;
-
-  /** Active drag, if any. */
-  private drag: DragState | null = null;
 
   /** Pan controller — owns the active pan state, the pan move/end
    * handlers, and `clamp`. Public so the zoom controller can reuse
@@ -195,6 +199,12 @@ export class HpGrid extends LitElement {
 
   /** Zoom controller — owns wheel zoom + button-zoom. */
   private readonly zoomController = new ZoomController(this);
+
+  /** Drag controller — owns the active drag, snap-to-slot, the
+   * bond-diff + drop events, and the tetherable toggle path. Bond
+   * and tether interactions are byproducts of drag drops, so they
+   * live with the drag pipeline. */
+  private readonly dragController = new DragController(this);
 
   /**
    * Current zoom factor. 1 = no zoom; > 1 zooms in, < 1 zooms out.
@@ -214,7 +224,7 @@ export class HpGrid extends LitElement {
     // events reach us — the slot has no visible area of its own and
     // only fires for slotted-child clicks. Composed event flow still
     // brings slotted children's pointerdowns up to this listener.
-    this.addEventListener("pointerdown", this.handlePointerDown);
+    this.addEventListener("pointerdown", this.dragController.handlePointerDown);
     // Ctrl/⌘ + wheel zooms (Miro/Figma convention). passive: false so
     // we can preventDefault the page scroll.
     this.addEventListener("wheel", this.zoomController.handleWheel, { passive: false });
@@ -222,9 +232,9 @@ export class HpGrid extends LitElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.removeEventListener("pointerdown", this.handlePointerDown);
+    this.removeEventListener("pointerdown", this.dragController.handlePointerDown);
     this.removeEventListener("wheel", this.zoomController.handleWheel);
-    this.cancelDrag();
+    this.dragController.cancel();
   }
 
   override firstUpdated(): void {
@@ -408,443 +418,6 @@ export class HpGrid extends LitElement {
     });
   }
 
-  // ── Drag lifecycle ─────────────────────────────────────────────────
-
-  /** Resolve whether a [q][r] child is eligible to drag. Per-cell
-   * `draggable` attribute wins: `draggable="false"` opts the cell out,
-   * any other presence opts it in. Absent attribute falls through to
-   * the grid's own draggable flag (the surface-wide default). */
-  private static isCellDraggable(cell: HTMLElement, gridDefault: boolean): boolean {
-    const attr = cell.getAttribute("draggable");
-    if (attr === "false") {
-      return false;
-    }
-    if (attr !== null) {
-      return true;
-    }
-    return gridDefault;
-  }
-
-  private handlePointerDown = (event: PointerEvent): void => {
-    if (event.button !== 0) {
-      return;
-    }
-    const target = (event.target as Element).closest<HTMLElement>("[q][r]");
-    if (!target || !this.contains(target)) {
-      // Empty-space pointerdown → start panning the canvas. The grid
-      // itself acts like a Miro/Figma viewport: hexes stay at their
-      // q/r coords, the visible offset shifts via --hp-pan-x/y.
-      // Only when drag/pan is enabled — a static grid ignores empty
-      // pointerdowns so layout surfaces don't accidentally pan.
-      if (this.draggable) {
-        this.panController.start(event);
-      }
-      return;
-    }
-
-    // Drag eligibility per cell: explicit `draggable="false"` blocks
-    // even when the grid is draggable; explicit `draggable` (presence,
-    // any value other than "false") overrides the grid default. With
-    // no attribute, falls through to the grid's own draggable state.
-    if (!HpGrid.isCellDraggable(target, this.draggable)) {
-      return;
-    }
-
-    // Drag-handle gating: if the [q][r] child declares a
-    // `drag-handle` attribute (CSS selector), only initiate drag
-    // when the pointerdown originated inside the cluster's specific
-    // handle element. Lets a composite like <hp-cluster> expose its
-    // centre hex as the sole grip while its outer slots are inert.
-    //
-    // Resolves the handle via `target.querySelector()` rather than
-    // `closest()` from event.target — closest() with `:first-child`
-    // matches ANY first-child ancestor (e.g., the hp-cell inside an
-    // <a class="component-link"><hp-cell></hp-cell></a> wrapper is
-    // its own parent's first child, so closest() returns it and the
-    // gate passes incorrectly). querySelector() returns the first
-    // matching descendant of the cluster in DOM order — the cluster's
-    // actual centre — and we check whether the pointerdown landed on
-    // that specific element or one of its descendants.
-    //
-    // Pointerdown outside the handle does NOT start a canvas pan —
-    // outer cells are typically navigation links, and pan would steal
-    // the click. The event falls through so the link handles its own
-    // click.
-    const handleSelector = target.getAttribute("drag-handle");
-    if (handleSelector) {
-      const handleEl = target.querySelector(handleSelector);
-      const evtTarget = event.target as Node;
-      if (!handleEl || (handleEl !== evtTarget && !handleEl.contains(evtTarget))) {
-        return;
-      }
-    }
-
-    const q = Number.parseFloat(target.getAttribute("q") ?? "0");
-    const r = Number.parseFloat(target.getAttribute("r") ?? "0");
-    if (Number.isNaN(q) || Number.isNaN(r)) {
-      return;
-    }
-
-    target.setPointerCapture(event.pointerId);
-    target.setAttribute("data-hp-dragging", "");
-    target.style.setProperty("--hp-drag-x", "0px");
-    target.style.setProperty("--hp-drag-y", "0px");
-
-    this.drag = {
-      element: target,
-      pointerId: event.pointerId,
-      origin: { clientX: event.clientX, clientY: event.clientY },
-      startCoord: { q, r },
-    };
-
-    target.addEventListener("pointermove", this.handlePointerMove);
-    target.addEventListener("pointerup", this.handlePointerUp);
-    target.addEventListener("pointercancel", this.handlePointerCancel);
-    event.preventDefault();
-  };
-
-  private handlePointerMove = (event: PointerEvent): void => {
-    if (!this.drag || event.pointerId !== this.drag.pointerId) {
-      return;
-    }
-    const dx = event.clientX - this.drag.origin.clientX;
-    const dy = event.clientY - this.drag.origin.clientY;
-    this.drag.element.style.setProperty("--hp-drag-x", `${dx}px`);
-    this.drag.element.style.setProperty("--hp-drag-y", `${dy}px`);
-
-    // In tetherable mode, highlight whichever sibling [q][r] the
-    // dragged hex currently overlaps so consumers / CSS can paint
-    // a "potential tether target" cue (hp-base reacts to
-    // data-hp-tether-target the same way hp-cluster reacts to
-    // data-hp-dragging). The element under the cursor is found via
-    // elementsFromPoint (the dragged hex itself is one of the hits,
-    // so we skip the first matching [q][r] that IS the source).
-    if (this.tetherable) {
-      this.updateTetherTarget(event.clientX, event.clientY);
-    }
-  };
-
-  /** While dragging in tetherable mode, set / clear
-   * `data-hp-tether-target` on the sibling [q][r] hex under the
-   * cursor. Cleared on every move and re-set so the highlight
-   * follows the pointer. */
-  private currentTetherTarget: HTMLElement | null = null;
-
-  private updateTetherTarget(clientX: number, clientY: number): void {
-    if (!this.drag) {
-      return;
-    }
-    const source = this.drag.element;
-    let next: HTMLElement | null = null;
-    const hits = document.elementsFromPoint(clientX, clientY);
-    for (const hit of hits) {
-      const candidate = hit.closest<HTMLElement>("[q][r]");
-      if (!candidate || candidate === source) {
-        continue;
-      }
-      if (!this.contains(candidate)) {
-        continue;
-      }
-      next = candidate;
-      break;
-    }
-    if (next === this.currentTetherTarget) {
-      return;
-    }
-    if (this.currentTetherTarget) {
-      this.currentTetherTarget.removeAttribute("data-hp-tether-target");
-    }
-    this.currentTetherTarget = next;
-    if (next) {
-      next.setAttribute("data-hp-tether-target", "");
-    }
-  }
-
-  private clearTetherTarget(): void {
-    if (this.currentTetherTarget) {
-      this.currentTetherTarget.removeAttribute("data-hp-tether-target");
-      this.currentTetherTarget = null;
-    }
-  }
-
-  private handlePointerUp = (event: PointerEvent): void => {
-    if (!this.drag || event.pointerId !== this.drag.pointerId) {
-      return;
-    }
-    const dx = event.clientX - this.drag.origin.clientX;
-    const dy = event.clientY - this.drag.origin.clientY;
-    this.finishDrag(dx, dy);
-  };
-
-  private handlePointerCancel = (event: PointerEvent): void => {
-    if (!this.drag || event.pointerId !== this.drag.pointerId) {
-      return;
-    }
-    this.finishDrag(0, 0);
-  };
-
-  private finishDrag(dx: number, dy: number): void {
-    if (!this.drag) {
-      return;
-    }
-    const { element, startCoord, pointerId } = this.drag;
-
-    const rawSteps = this.computeStyleSteps();
-    // The cursor delta is in viewport pixels; axial steps need to be
-    // scaled by current zoom so a 1-axial-unit drag at zoom=2 covers
-    // twice the screen distance as at zoom=1.
-    const steps = { col: rawSteps.col * this.zoom, row: rawSteps.row * this.zoom };
-    const cursorSlot = this.snapToSlot(dx, dy, startCoord, steps);
-
-    // Tetherable mode: if the cursor landed on another [q][r] child,
-    // toggle an hp-tether between source and target instead of
-    // BFS-snapping to a free slot. The source returns to its
-    // starting coord (snap-back); the target stays put. Drops on
-    // empty cells fall through to the regular move path so layout
-    // editing still works alongside tethering.
-    if (this.tetherable) {
-      const occupier = this.occupancy.get(slotKey(cursorSlot.q, cursorSlot.r));
-      if (occupier && occupier !== element) {
-        this.finishDragAsTether(element, occupier, startCoord, pointerId);
-        return;
-      }
-    }
-
-    // If the cursor slot is occupied (by another child), BFS axial
-    // neighbours until we find a free slot. Bounce-back is no longer
-    // the default — the hex finds the nearest empty home instead.
-    const target = this.findFreeSlot(cursorSlot, element);
-
-    const fromKey = slotKey(startCoord.q, startCoord.r);
-    const toKey = slotKey(target.q, target.r);
-
-    // Snapshot bonds BEFORE the move so we can diff against the
-    // post-move set and only fire events for adjacencies that
-    // actually changed. The element is still occupying startCoord
-    // in `occupancy` here.
-    const bondsBefore = this.findOccupiedNeighbours(startCoord, element);
-
-    // Drop the dragging attribute FIRST so the base transform
-    // transition re-engages, then change q/r and clear drag offsets in
-    // the same task — the browser animates the snap from the cursor
-    // position into the new slot over `--hp-unfold-trigger` (90ms).
-    element.removeAttribute("data-hp-dragging");
-
-    this.occupancy.delete(fromKey);
-    this.occupancy.set(toKey, element);
-    element.setAttribute("q", String(target.q));
-    element.setAttribute("r", String(target.r));
-    element.style.setProperty("--hp-q", String(target.q));
-    element.style.setProperty("--hp-r", String(target.r));
-    element.style.removeProperty("--hp-drag-x");
-    element.style.removeProperty("--hp-drag-y");
-
-    if (target.q !== startCoord.q || target.r !== startCoord.r) {
-      this.dispatchEvent(
-        new CustomEvent<HpGridMoveEventDetail>("hp-grid-move", {
-          detail: { element, from: startCoord, to: target },
-          bubbles: true,
-          composed: true,
-        })
-      );
-
-      // Bond diff: any partner in `before` but not `after` is an
-      // unbond; any in `after` but not `before` is a new bond. Skip
-      // the diff entirely on a no-op snap (same slot) — that can
-      // happen on a cancelled drag and would produce phantom events.
-      const bondsAfter = this.findOccupiedNeighbours(target, element);
-      for (const partner of bondsBefore) {
-        if (!bondsAfter.includes(partner)) {
-          this.dispatchEvent(
-            new CustomEvent<HpGridBondEventDetail>("hp-grid-unbond", {
-              detail: { moved: element, partner },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        }
-      }
-      for (const partner of bondsAfter) {
-        if (!bondsBefore.includes(partner)) {
-          this.dispatchEvent(
-            new CustomEvent<HpGridBondEventDetail>("hp-grid-bond", {
-              detail: { moved: element, partner },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        }
-      }
-
-      // Post-animation event: fires after the ~90ms snap transition
-      // completes. Listeners auto-detach via AbortController on the
-      // first relevant event. Skipped entirely if the transition gets
-      // cancelled (e.g. the user re-grabs the hex mid-flight before
-      // it settles).
-      const ac = new AbortController();
-      element.addEventListener(
-        "transitionend",
-        (e) => {
-          if ((e as TransitionEvent).propertyName !== "transform") {
-            return;
-          }
-          ac.abort();
-          this.dispatchEvent(
-            new CustomEvent<HpGridDropEventDetail>("hp-grid-drop", {
-              detail: { element, from: startCoord, to: target },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        },
-        { signal: ac.signal }
-      );
-      element.addEventListener(
-        "transitioncancel",
-        (e) => {
-          if ((e as TransitionEvent).propertyName !== "transform") {
-            return;
-          }
-          ac.abort();
-        },
-        { signal: ac.signal }
-      );
-    }
-
-    this.clearTetherTarget();
-    this.cleanupDrag(element, pointerId);
-  }
-
-  /** Tetherable-mode finish path: when a drag-release lands on another
-   * [q][r] hex (rather than empty space), toggle an arc between the
-   * pair instead of moving. Source snaps back to its origin. */
-  private finishDragAsTether(
-    source: HTMLElement,
-    target: HTMLElement,
-    startCoord: AxialCoord,
-    pointerId: number
-  ): void {
-    // Snap source back home: clear the inline drag offsets and the
-    // dragging attribute so the transition lerps the hex from cursor
-    // position back into its starting slot.
-    source.removeAttribute("data-hp-dragging");
-    source.style.removeProperty("--hp-drag-x");
-    source.style.removeProperty("--hp-drag-y");
-    // Make sure --hp-q / --hp-r still match the start (in case
-    // anything diverged). q/r attributes are untouched since the
-    // hex never moved.
-    source.style.setProperty("--hp-q", String(startCoord.q));
-    source.style.setProperty("--hp-r", String(startCoord.r));
-
-    this.clearTetherTarget();
-
-    const sourceId = this.tetherSelectorFor(source);
-    const targetId = this.tetherSelectorFor(target);
-    if (!sourceId || !targetId) {
-      this.cleanupDrag(source, pointerId);
-      return;
-    }
-
-    // Toggle: if a tether already connects this pair (in either
-    // direction), remove it. Otherwise create a new one.
-    const existing = this.findTetherBetween(sourceId, targetId);
-    if (existing) {
-      existing.remove();
-      this.dispatchEvent(
-        new CustomEvent<HpGridTetherEventDetail>("hp-grid-untether", {
-          detail: { source, target, tether: existing },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    } else {
-      const tether = document.createElement("hp-tether");
-      tether.setAttribute("from", sourceId);
-      tether.setAttribute("to", targetId);
-      tether.setAttribute("data-hp-grid-tether", "");
-      // Append as a slotted child of the grid. hp-tether's
-      // `position: absolute; inset: 0` covers the grid's bbox; its
-      // from / to selectors resolve globally so DOM position
-      // doesn't matter for geometry.
-      this.appendChild(tether);
-      // Replay the draw-in animation explicitly — the once-on-mount
-      // CSS animation already runs, but the connectedCallback
-      // defer happens to also be ~2 rAFs so this call lands at the
-      // right moment to be perceptible regardless of timing.
-      queueMicrotask(() => {
-        const apiEl = tether as HTMLElement & { drawIn?: () => void };
-        apiEl.drawIn?.();
-      });
-      this.dispatchEvent(
-        new CustomEvent<HpGridTetherEventDetail>("hp-grid-tether", {
-          detail: { source, target, tether },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    }
-
-    this.cleanupDrag(source, pointerId);
-  }
-
-  /** Build the CSS selector hp-tether's from/to attributes need.
-   * Prefers the existing `id` (consumer-authored or our own auto-
-   * assigned one), else falls back to the data-hp-grid-id we
-   * stamp at slotchange. Returns null if neither is available — a
-   * pathological case that just skips the tether create / remove. */
-  private tetherSelectorFor(el: HTMLElement): string | null {
-    if (el.id) {
-      return `#${CSS.escape(el.id)}`;
-    }
-    const gid = el.dataset.hpGridId;
-    if (gid) {
-      return `[data-hp-grid-id="${gid}"]`;
-    }
-    return null;
-  }
-
-  /** Search this grid's hp-tether children for an existing arc that
-   * connects the given selector pair, in either direction. Used
-   * by the toggle behaviour: matching pair means we remove instead
-   * of create. */
-  private findTetherBetween(a: string, b: string): HTMLElement | null {
-    const tethers = this.querySelectorAll<HTMLElement>("hp-tether");
-    for (const tether of tethers) {
-      const from = tether.getAttribute("from");
-      const to = tether.getAttribute("to");
-      if ((from === a && to === b) || (from === b && to === a)) {
-        return tether;
-      }
-    }
-    return null;
-  }
-
-  /** Shared drag-listener / capture teardown — used by both the
-   * normal finishDrag path and the new finishDragAsTether path. */
-  private cleanupDrag(element: HTMLElement, pointerId: number): void {
-    element.removeEventListener("pointermove", this.handlePointerMove);
-    element.removeEventListener("pointerup", this.handlePointerUp);
-    element.removeEventListener("pointercancel", this.handlePointerCancel);
-    if (element.hasPointerCapture(pointerId)) {
-      element.releasePointerCapture(pointerId);
-    }
-    this.drag = null;
-  }
-
-  private cancelDrag(): void {
-    if (!this.drag) {
-      return;
-    }
-    const { element, pointerId } = this.drag;
-    // Match finishDrag's ordering — dragging attribute first, then the
-    // offset reset so the transform animates back to origin.
-    element.removeAttribute("data-hp-dragging");
-    element.style.removeProperty("--hp-drag-x");
-    element.style.removeProperty("--hp-drag-y");
-    this.clearTetherTarget();
-    this.cleanupDrag(element, pointerId);
-  }
-
   // ── Coordinate math ────────────────────────────────────────────────
 
   /**
@@ -866,78 +439,6 @@ export class HpGrid extends LitElement {
     }
     const rect = probe.getBoundingClientRect();
     return { col: rect.width || 1, row: rect.height || 1 };
-  }
-
-  /** Inverse-project a pixel drag offset onto axial coords + round. */
-  private snapToSlot(
-    dx: number,
-    dy: number,
-    start: AxialCoord,
-    steps: { col: number; row: number }
-  ): AxialCoord {
-    // Inverse of:
-    // x = col * (q + r/2)
-    // y = row * r
-    const dr = dy / steps.row;
-    const dq = dx / steps.col - dr / 2;
-    return {
-      q: Math.round(start.q + dq),
-      r: Math.round(start.r + dr),
-    };
-  }
-
-  /** Find the nearest unoccupied axial slot to `target` via BFS. The
-   * dragged element is treated as if its current slot is free so a
-   * drop on its own origin works without bouncing into a neighbour. */
-  private findFreeSlot(target: AxialCoord, dragged: HTMLElement): AxialCoord {
-    if (this.isFree(target, dragged)) {
-      return target;
-    }
-
-    const visited = new Set<string>([slotKey(target.q, target.r)]);
-    const queue: AxialCoord[] = [target];
-
-    // Safety cap — every drop should resolve within a couple of rings.
-    let attempts = 0;
-    while (queue.length > 0 && attempts < 256) {
-      attempts++;
-      const current = queue.shift() as AxialCoord;
-      for (const neighbour of axialNeighbours(current)) {
-        const key = slotKey(neighbour.q, neighbour.r);
-        if (visited.has(key)) {
-          continue;
-        }
-        visited.add(key);
-        if (this.isFree(neighbour, dragged)) {
-          return neighbour;
-        }
-        queue.push(neighbour);
-      }
-    }
-
-    // Should never get here unless every nearby slot is occupied —
-    // fall back to the cursor target and let the bounce happen.
-    return target;
-  }
-
-  private isFree(coord: AxialCoord, dragged: HTMLElement): boolean {
-    const occupier = this.occupancy.get(slotKey(coord.q, coord.r));
-    return !occupier || occupier === dragged;
-  }
-
-  /** Elements occupying the 6 axial neighbours of `coord`, with
-   * `exclude` filtered out. Used to compute bond before/after sets
-   * on drop so we can dispatch `hp-grid-bond` / `hp-grid-unbond`
-   * only for adjacencies that changed. */
-  private findOccupiedNeighbours(coord: AxialCoord, exclude: HTMLElement): HTMLElement[] {
-    const out: HTMLElement[] = [];
-    for (const n of axialNeighbours(coord)) {
-      const occupier = this.occupancy.get(slotKey(n.q, n.r));
-      if (occupier && occupier !== exclude) {
-        out.push(occupier);
-      }
-    }
-    return out;
   }
 }
 
