@@ -2,6 +2,13 @@
 import Layout from "../../layouts/Layout.astro";
 import { SITEMAP, isLeaf } from "../../sitemap.ts";
 
+// Mirror Layout.astro's baseUrl helper so links resolve under the
+// configured BASE_URL (e.g. /hexpunk on the GitHub Pages deployment).
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+function href(path: string): string {
+  return path === "/" ? baseUrl || "/" : `${baseUrl}${path}`;
+}
+
 // Derive category data from the sitemap (single source of truth).
 // Walk the Components branch's children → category branches → leaf entries.
 interface CategoryItem {
@@ -15,30 +22,30 @@ interface Category {
   items: CategoryItem[];
 }
 
-// Hand-tuned axial positions per category — clusters spaced 6 axial
-// units apart in both directions. Each cluster's ring-2 reach is 2
-// axial units in every direction from its centre; with 6-unit
-// centre-to-centre spacing, neighbour clusters' ring-2 hexes sit
-// 2 axial units apart (i.e. one empty hex of visible gap between
-// them). Anything tighter and the ring-2 edges share stroke or
-// overlap — the spacing has to account for the cluster's reach,
-// not just the centre position.
+// Hand-tuned axial positions per category — clusters spaced 5 axial
+// units apart in both directions. Cluster ring-2 reach is 2 axial
+// units in every direction from the centre, so 5-unit spacing means
+// neighbour clusters' worst-case ring-2 hexes sit at axial distance
+// 1 (adjacent, sharing their stroke edge) — no overlap, no visible
+// empty gap. Smaller categories (Primitives, Tether — ring-1 only)
+// naturally get more visual space around them since their cluster
+// bbox extends further than their actual content reach.
 // Layout: 4×3 grid of categories aligned vertically in pixel space
 // (q on odd r rows shifts by -r/2 to compensate the axial-to-pixel
 // x = col_step * (q + r/2) offset).
 const POSITIONS: Record<string, { q: number; r: number }> = {
   Primitives: { q: 0, r: 0 },
-  Forms: { q: 6, r: 0 },
-  Status: { q: 12, r: 0 },
-  Loading: { q: 18, r: 0 },
-  Layout: { q: -3, r: 6 },
-  Images: { q: 3, r: 6 },
-  Navigation: { q: 9, r: 6 },
-  Overlays: { q: 15, r: 6 },
-  Messaging: { q: -6, r: 12 },
-  Tether: { q: 0, r: 12 },
-  Unfold: { q: 6, r: 12 },
-  Deprecated: { q: 12, r: 12 },
+  Forms: { q: 5, r: 0 },
+  Status: { q: 10, r: 0 },
+  Loading: { q: 15, r: 0 },
+  Layout: { q: -2, r: 5 },
+  Images: { q: 3, r: 5 },
+  Navigation: { q: 8, r: 5 },
+  Overlays: { q: 13, r: 5 },
+  Messaging: { q: -5, r: 10 },
+  Tether: { q: 0, r: 10 },
+  Unfold: { q: 5, r: 10 },
+  Deprecated: { q: 10, r: 10 },
 };
 
 const componentsBranch = SITEMAP.find(
@@ -82,7 +89,6 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
     </header>
 
     <hp-grid draggable id="components-grid" class="components-grid">
-      <hp-background></hp-background>
       {categories.map((cat) => (
         <hp-cluster
           layout="honeycomb"
@@ -92,7 +98,7 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
         >
           <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
           {cat.items.map((item) => (
-            <a href={item.path} class="component-link">
+            <a href={href(item.path)} class="component-link">
               <hp-cell variant="action" tabindex="0">{item.name}</hp-cell>
             </a>
           ))}
