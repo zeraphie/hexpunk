@@ -78,6 +78,15 @@ const SETUP_SNIPPET = `<link rel="stylesheet" href="https://esm.sh/@hexpunk/core
   </section>
 
   <style>
+    /* Home opts into `.hp-prose` for vertical rhythm + list indent,
+     * but the 70ch cap is too narrow for the setup snippet — long
+     * importmap URLs would wrap awkwardly. Remove the cap; the
+     * hero, tagline, and setup-note paragraphs all carry their own
+     * max-widths so this doesn't hurt long-form readability. */
+    :global(main > .hp-prose) {
+      max-width: none;
+    }
+
     .home-hero {
       text-align: center;
       padding: var(--hp-xxl) 0 var(--hp-xl);
