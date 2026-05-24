@@ -35,33 +35,27 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-cell variant="utility" q="-1" r="1">sw</hp-cell>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<!-- draggable on the grid enables both cell drag and canvas pan -->
+<hp-grid draggable>
+  <hp-cell variant="anchor"  q="0"  r="0">centre</hp-cell>
+  <hp-cell variant="action"  q="1"  r="0">east</hp-cell>
+  <hp-cell variant="action"  q="-1" r="0">west</hp-cell>
+  <hp-cell variant="content" q="0"  r="1" size="sm">south-east</hp-cell>
+</hp-grid>
 
-export default () => (
-  <>
-    <!-- draggable on the grid enables both cell drag and canvas pan -->
-    <hp-grid draggable>
-      <hp-cell variant="anchor"  q="0"  r="0">centre</hp-cell>
-      <hp-cell variant="action"  q="1"  r="0">east</hp-cell>
-      <hp-cell variant="action"  q="-1" r="0">west</hp-cell>
-      <hp-cell variant="content" q="0"  r="1" size="sm">south-east</hp-cell>
-    </hp-grid>
+<!-- Per-cell overrides: pin individual cells inside a draggable grid -->
+<hp-grid draggable>
+  <hp-cell variant="anchor" q="0" r="0" draggable="false">pinned</hp-cell>
+  <hp-cell variant="action" q="1" r="0">draggable</hp-cell>
+</hp-grid>
 
-    <!-- Per-cell overrides: pin individual cells inside a draggable grid -->
-    <hp-grid draggable>
-      <hp-cell variant="anchor" q="0" r="0" draggable="false">pinned</hp-cell>
-      <hp-cell variant="action" q="1" r="0">draggable</hp-cell>
-    </hp-grid>
-
-    const grid = document.querySelector("hp-grid");
-    grid.addEventListener("hp-grid-drop", (ev) => {
-      console.log(ev.detail); // { element, from: {q, r}, to: {q, r} }
-    });
-    grid.addEventListener("hp-grid-bond", (ev) => {
-      console.log(ev.detail); // { moved, partner }
-    });
-  </>
-);`}</hp-code>
+const grid = document.querySelector("hp-grid");
+grid.addEventListener("hp-grid-drop", (ev) => {
+  console.log(ev.detail); // { element, from: {q, r}, to: {q, r} }
+});
+grid.addEventListener("hp-grid-bond", (ev) => {
+  console.log(ev.detail); // { moved, partner }
+});`}</hp-code>
     </hp-demo>
 
     <p>
@@ -92,17 +86,11 @@ export default () => (
         <hp-cell tone="positive" q="4" r="3" size="md" active>md status</hp-cell>
       </hp-grid>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-grid draggable>
-      <hp-cell variant="anchor" q="-3" r="0">sm</hp-cell>
-      <hp-cell variant="anchor" size="md" q="0" r="0">md (flat-top)</hp-cell>
-      <hp-cell variant="anchor" size="lg" q="4" r="0">lg</hp-cell>
-    </hp-grid>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-grid draggable>
+  <hp-cell variant="anchor" q="-3" r="0">sm</hp-cell>
+  <hp-cell variant="anchor" size="md" q="0" r="0">md (flat-top)</hp-cell>
+  <hp-cell variant="anchor" size="lg" q="4" r="0">lg</hp-cell>
+</hp-grid>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

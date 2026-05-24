@@ -22,15 +22,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <span>section four</span>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-separator></hp-separator>
-    <hp-separator mark="dot"></hp-separator>
-    <hp-separator mark="none"></hp-separator>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-separator></hp-separator>
+<hp-separator mark="dot"></hp-separator>
+<hp-separator mark="none"></hp-separator>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Vertical">
@@ -42,17 +36,11 @@ export default () => (
         <span>right</span>
       </div>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-separator orientation="vertical"></hp-separator>
+<hp-separator orientation="vertical" mark="dot"></hp-separator>
 
-export default () => (
-  <>
-    <hp-separator orientation="vertical"></hp-separator>
-    <hp-separator orientation="vertical" mark="dot"></hp-separator>
-
-    <!-- decorative — role="presentation" for screen readers -->
-    <hp-separator orientation="vertical" decorative></hp-separator>
-  </>
-);`}</hp-code>
+<!-- decorative — role="presentation" for screen readers -->
+<hp-separator orientation="vertical" decorative></hp-separator>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

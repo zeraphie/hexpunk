@@ -22,16 +22,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-collapsible>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-collapsible>
-      <hp-button slot="trigger">show details</hp-button>
-      <p>Revealed content goes here.</p>
-    </hp-collapsible>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-collapsible>
+  <hp-button slot="trigger">show details</hp-button>
+  <p>Revealed content goes here.</p>
+</hp-collapsible>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Open by default">
@@ -42,16 +36,10 @@ export default () => (
         </div>
       </hp-collapsible>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-collapsible open>
-      <hp-button slot="trigger">hide details</hp-button>
-      <p>Visible at mount.</p>
-    </hp-collapsible>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-collapsible open>
+  <hp-button slot="trigger">hide details</hp-button>
+  <p>Visible at mount.</p>
+</hp-collapsible>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

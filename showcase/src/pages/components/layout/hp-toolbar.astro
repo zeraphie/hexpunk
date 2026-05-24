@@ -24,18 +24,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         <hp-button size="sm">settings</hp-button>
       </hp-toolbar>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-toolbar>
-      <hp-button>save</hp-button>
-      <hp-button>share</hp-button>
-      <hp-separator orientation="vertical"></hp-separator>
-      <hp-toggle></hp-toggle>
-    </hp-toolbar>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-toolbar>
+  <hp-button>save</hp-button>
+  <hp-button>share</hp-button>
+  <hp-separator orientation="vertical"></hp-separator>
+  <hp-toggle></hp-toggle>
+</hp-toolbar>`}</hp-code>
     </hp-demo>
 
     <hp-demo caption="Vertical">
@@ -45,17 +39,11 @@ export default () => (
         <hp-button size="sm">paste</hp-button>
       </hp-toolbar>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-toolbar orientation="vertical">
-      <hp-button>cut</hp-button>
-      <hp-button>copy</hp-button>
-      <hp-button>paste</hp-button>
-    </hp-toolbar>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-toolbar orientation="vertical">
+  <hp-button>cut</hp-button>
+  <hp-button>copy</hp-button>
+  <hp-button>paste</hp-button>
+</hp-toolbar>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

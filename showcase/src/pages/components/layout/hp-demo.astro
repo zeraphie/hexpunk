@@ -17,13 +17,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     <hp-demo>
       <hp-button>Click me</hp-button>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-button>Click me</hp-button>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-button>Click me</hp-button>`}</hp-code>
     </hp-demo>
 
     <h2>With caption</h2>
@@ -34,17 +28,11 @@ export default () => (
       <hp-badge tone="alert">restricted</hp-badge>
       <hp-badge tone="error">failed</hp-badge>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-badge>info</hp-badge>
-    <hp-badge tone="positive">ok</hp-badge>
-    <hp-badge tone="warn">!</hp-badge>
-    <hp-badge tone="alert">restricted</hp-badge>
-    <hp-badge tone="error">failed</hp-badge>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-badge>info</hp-badge>
+<hp-badge tone="positive">ok</hp-badge>
+<hp-badge tone="warn">!</hp-badge>
+<hp-badge tone="alert">restricted</hp-badge>
+<hp-badge tone="error">failed</hp-badge>`}</hp-code>
     </hp-demo>
 
     <h2>No copy button</h2>
@@ -52,14 +40,8 @@ export default () => (
       <hp-spinner></hp-spinner>
       <hp-spinner size="md"></hp-spinner>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
-
-export default () => (
-  <>
-    <hp-spinner></hp-spinner>
-    <hp-spinner size="md"></hp-spinner>
-  </>
-);`}</hp-code>
+      <hp-code slot="code" language="html">{`<hp-spinner></hp-spinner>
+<hp-spinner size="md"></hp-spinner>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="code">

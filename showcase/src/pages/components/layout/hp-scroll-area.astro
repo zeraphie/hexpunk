@@ -24,18 +24,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </div>
       </hp-scroll-area>
 
-      <hp-code slot="code" language="jsx">{`import "@hexpunk/core";
+      <hp-code slot="code" language="html">{`<hp-scroll-area style="height: 240px">
+  <p>Long content...</p>
+</hp-scroll-area>
 
-export default () => (
-  <>
-    <hp-scroll-area style="height: 240px">
-      <p>Long content...</p>
-    </hp-scroll-area>
-
-    <!-- Visibility modes: auto (default) | always | hover -->
-    <hp-scroll-area visibility="hover">...</hp-scroll-area>
-  </>
-);`}</hp-code>
+<!-- Visibility modes: auto (default) | always | hover -->
+<hp-scroll-area visibility="hover">...</hp-scroll-area>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
