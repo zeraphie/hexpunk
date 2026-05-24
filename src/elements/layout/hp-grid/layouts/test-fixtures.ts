@@ -24,10 +24,7 @@ export function place(claimed: Set<string>, q: number, r: number, mask: FillMask
  * to two terms. Used to assert ≥1-hex gap between any two placed
  * clusters' filled hexes.
  */
-export function hexDist(
-  a: { q: number; r: number },
-  b: { q: number; r: number }
-): number {
+export function hexDist(a: { q: number; r: number }, b: { q: number; r: number }): number {
   return (Math.abs(a.q - b.q) + Math.abs(a.q + a.r - b.q - b.r) + Math.abs(a.r - b.r)) / 2;
 }
 

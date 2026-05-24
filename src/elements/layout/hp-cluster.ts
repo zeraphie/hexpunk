@@ -352,10 +352,7 @@ export class HpCluster extends LitElement {
       this.writeFillCells([{ q: 0, r: 0 }]);
       return;
     }
-    const filled = HONEYCOMB_POSITIONS.slice(
-      0,
-      Math.min(childCount, HONEYCOMB_POSITIONS.length)
-    );
+    const filled = HONEYCOMB_POSITIONS.slice(0, Math.min(childCount, HONEYCOMB_POSITIONS.length));
     this.writeFillCells(filled);
   };
 
@@ -372,10 +369,18 @@ export class HpCluster extends LitElement {
     let rMax = Number.NEGATIVE_INFINITY;
     const parts: string[] = [];
     for (const c of cells) {
-      if (c.q < qMin) qMin = c.q;
-      if (c.q > qMax) qMax = c.q;
-      if (c.r < rMin) rMin = c.r;
-      if (c.r > rMax) rMax = c.r;
+      if (c.q < qMin) {
+        qMin = c.q;
+      }
+      if (c.q > qMax) {
+        qMax = c.q;
+      }
+      if (c.r < rMin) {
+        rMin = c.r;
+      }
+      if (c.r > rMax) {
+        rMax = c.r;
+      }
       parts.push(`${c.q},${c.r}`);
     }
     this.setAttribute("data-fill-cells", parts.join(" "));

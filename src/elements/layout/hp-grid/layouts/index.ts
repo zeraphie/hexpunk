@@ -112,12 +112,7 @@ export function isPositionClear(
  * @param mask - The cluster's filled-cell offsets from `(q, r)`.
  * @param claimed - Set to mutate.
  */
-export function markClaimed(
-  q: number,
-  r: number,
-  mask: FillMask,
-  claimed: Set<string>
-): void {
+export function markClaimed(q: number, r: number, mask: FillMask, claimed: Set<string>): void {
   for (const cell of mask) {
     claimed.add(`${q + cell.q},${r + cell.r}`);
   }
@@ -136,8 +131,12 @@ export function maskBounds(mask: FillMask): { qMin: number; qMax: number } {
   let qMin = Number.POSITIVE_INFINITY;
   let qMax = Number.NEGATIVE_INFINITY;
   for (const c of mask) {
-    if (c.q < qMin) qMin = c.q;
-    if (c.q > qMax) qMax = c.q;
+    if (c.q < qMin) {
+      qMin = c.q;
+    }
+    if (c.q > qMax) {
+      qMax = c.q;
+    }
   }
   if (!Number.isFinite(qMin)) {
     qMin = 0;
@@ -161,11 +160,15 @@ export function parseFillCells(value: string | null | undefined): FillMask {
   }
   const cells: Array<{ q: number; r: number }> = [];
   for (const token of value.split(/\s+/)) {
-    if (token.length === 0) continue;
+    if (token.length === 0) {
+      continue;
+    }
     const [qStr, rStr] = token.split(",");
     const q = Number.parseFloat(qStr ?? "");
     const r = Number.parseFloat(rStr ?? "");
-    if (!Number.isFinite(q) || !Number.isFinite(r)) continue;
+    if (!Number.isFinite(q) || !Number.isFinite(r)) {
+      continue;
+    }
     cells.push({ q, r });
   }
   return cells.length === 0 ? [{ q: 0, r: 0 }] : cells;

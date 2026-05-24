@@ -64,10 +64,18 @@ export function recenter(host: RecenterHost): void {
     for (const cell of cells) {
       const cx = steps.col * (q + cell.q + (r + cell.r) / 2);
       const cy = steps.row * (r + cell.r);
-      if (cx < minCx) minCx = cx;
-      if (cx > maxCx) maxCx = cx;
-      if (cy < minCy) minCy = cy;
-      if (cy > maxCy) maxCy = cy;
+      if (cx < minCx) {
+        minCx = cx;
+      }
+      if (cx > maxCx) {
+        maxCx = cx;
+      }
+      if (cy < minCy) {
+        minCy = cy;
+      }
+      if (cy > maxCy) {
+        maxCy = cy;
+      }
       foundAny = true;
     }
   }

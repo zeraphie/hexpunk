@@ -14,13 +14,7 @@
  * too much horizontal space unused.
  */
 
-import {
-  type AxialPos,
-  type FillMask,
-  PACK_RANGE,
-  isPositionClear,
-  maskBounds,
-} from "./index.js";
+import { type AxialPos, type FillMask, PACK_RANGE, isPositionClear, maskBounds } from "./index.js";
 
 /**
  * Find the first position whose 1-hex-padded mask doesn't collide,

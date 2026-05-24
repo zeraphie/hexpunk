@@ -140,10 +140,18 @@ export class PanController {
       const upperX = w / 2 - offsetX - wi / 2;
       const lowerY = hi / 2 - h / 2 - offsetY;
       const upperY = h / 2 - offsetY - hi / 2;
-      if (lowerX > minX) minX = lowerX;
-      if (upperX < maxX) maxX = upperX;
-      if (lowerY > minY) minY = lowerY;
-      if (upperY < maxY) maxY = upperY;
+      if (lowerX > minX) {
+        minX = lowerX;
+      }
+      if (upperX < maxX) {
+        maxX = upperX;
+      }
+      if (lowerY > minY) {
+        minY = lowerY;
+      }
+      if (upperY < maxY) {
+        maxY = upperY;
+      }
     }
     if (!foundAny) {
       return { minX: 0, maxX: 0, minY: 0, maxY: 0 };

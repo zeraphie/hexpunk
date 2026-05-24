@@ -10,12 +10,7 @@
  * around it with a ≥1-hex gap.
  */
 
-import {
-  type AxialPos,
-  type FillMask,
-  PACK_RANGE,
-  isPositionClear,
-} from "./index.js";
+import { type AxialPos, type FillMask, PACK_RANGE, isPositionClear } from "./index.js";
 
 /**
  * Hex axial distance from `(0, 0)` — `(|q| + |q+r| + |r|) / 2`. Used

@@ -43,19 +43,21 @@ export const SINGLE_CELL_MASK: ReadonlyArray<AxialCoord> = [{ q: 0, r: 0 }];
  * @param value - Raw attribute string, or `null` / `undefined`.
  * @returns Parsed cell offsets, never empty.
  */
-export function parseFillCellsForBbox(
-  value: string | null | undefined
-): ReadonlyArray<AxialCoord> {
+export function parseFillCellsForBbox(value: string | null | undefined): ReadonlyArray<AxialCoord> {
   if (!value) {
     return SINGLE_CELL_MASK;
   }
   const cells: AxialCoord[] = [];
   for (const token of value.split(/\s+/)) {
-    if (token.length === 0) continue;
+    if (token.length === 0) {
+      continue;
+    }
     const [qStr, rStr] = token.split(",");
     const q = Number.parseFloat(qStr ?? "");
     const r = Number.parseFloat(rStr ?? "");
-    if (!Number.isFinite(q) || !Number.isFinite(r)) continue;
+    if (!Number.isFinite(q) || !Number.isFinite(r)) {
+      continue;
+    }
     cells.push({ q, r });
   }
   return cells.length === 0 ? SINGLE_CELL_MASK : cells;

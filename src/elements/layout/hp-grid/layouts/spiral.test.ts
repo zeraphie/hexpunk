@@ -82,13 +82,17 @@ describe("findSpiralPosition", () => {
     for (const mask of sorted) {
       const pos = findSpiralPosition(mask, claimed);
       markClaimed(pos.q, pos.r, mask, claimed);
-      for (const c of mask) cells.push({ q: pos.q + c.q, r: pos.r + c.r });
+      for (const c of mask) {
+        cells.push({ q: pos.q + c.q, r: pos.r + c.r });
+      }
     }
     let maxDist = 0;
     for (let i = 0; i < cells.length; i++) {
       for (let j = i + 1; j < cells.length; j++) {
         const d = hexDist(cells[i]!, cells[j]!);
-        if (d > maxDist) maxDist = d;
+        if (d > maxDist) {
+          maxDist = d;
+        }
       }
     }
     expect(maxDist).toBeGreaterThanOrEqual(6);

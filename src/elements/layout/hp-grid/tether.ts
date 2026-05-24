@@ -54,11 +54,7 @@ export function tetherSelectorFor(el: HTMLElement): string | null {
  * @param b - The other endpoint selector.
  * @returns Matching tether, or `null` if none exists.
  */
-export function findTetherBetween(
-  host: HTMLElement,
-  a: string,
-  b: string
-): HTMLElement | null {
+export function findTetherBetween(host: HTMLElement, a: string, b: string): HTMLElement | null {
   const tethers = host.querySelectorAll<HTMLElement>("hp-tether");
   for (const tether of tethers) {
     const from = tether.getAttribute("from");
@@ -84,11 +80,7 @@ export function findTetherBetween(
  * @param source - The dragged hex.
  * @param target - The hex the drag landed on.
  */
-export function toggleTether(
-  host: HTMLElement,
-  source: HTMLElement,
-  target: HTMLElement
-): void {
+export function toggleTether(host: HTMLElement, source: HTMLElement, target: HTMLElement): void {
   const sourceId = tetherSelectorFor(source);
   const targetId = tetherSelectorFor(target);
   if (!sourceId || !targetId) {

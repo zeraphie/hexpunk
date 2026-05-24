@@ -336,7 +336,10 @@ export class HpGrid extends LitElement {
     // Refresh occupancy + pan bounds now that positions changed.
     this.occupancy.clear();
     for (const item of items) {
-      this.occupancy.set(slotKey(String(item.el.getAttribute("q")), String(item.el.getAttribute("r"))), item.el);
+      this.occupancy.set(
+        slotKey(String(item.el.getAttribute("q")), String(item.el.getAttribute("r"))),
+        item.el
+      );
     }
     requestAnimationFrame(() => this.recenter());
   }
@@ -346,10 +349,22 @@ export class HpGrid extends LitElement {
       <div class="step-probe" aria-hidden="true"></div>
       <slot @slotchange=${this.handleSlotChange}></slot>
       <div class="controls" part="controls" @pointerdown=${stopPanFromButton}>
-        <button type="button" aria-label="Zoom out" part="zoom-out" @click=${this.zoomController.stepOut}>
+        <button
+          type="button"
+          aria-label="Zoom out"
+          part="zoom-out"
+          @click=${this.zoomController.stepOut}
+        >
           −
         </button>
-        <button type="button" aria-label="Zoom in" part="zoom-in" @click=${this.zoomController.stepIn}>+</button>
+        <button
+          type="button"
+          aria-label="Zoom in"
+          part="zoom-in"
+          @click=${this.zoomController.stepIn}
+        >
+          +
+        </button>
         <button type="button" aria-label="Recenter canvas" part="recenter" @click=${this.recenter}>
           <svg
             viewBox="0 0 24 24"
@@ -366,7 +381,6 @@ export class HpGrid extends LitElement {
       </div>
     `;
   }
-
 
   /**
    * Fit every positioned child inside the viewport and centre the
