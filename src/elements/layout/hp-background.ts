@@ -403,6 +403,13 @@ export class HpBackground extends LitElement {
   override firstUpdated(): void {
     this.canvas = this.shadowRoot?.querySelector("canvas") ?? null;
     this.initGL();
+    // Belt-and-braces: re-check sizing after one animation frame so
+    // any post-firstUpdated layout settling (Astro async hydration,
+    // shiki highlighting, font loading) is picked up. ResizeObserver
+    // *should* catch this too, but ancestor-driven sizing (`inset: 0`
+    // against a growing parent) doesn't always trip the observer's
+    // content-rect-changed condition reliably.
+    requestAnimationFrame(() => this.handleResize());
   }
 
   override updated(changed: Map<string, unknown>): void {
@@ -671,7 +678,14 @@ export class HpBackground extends LitElement {
     this.style.setProperty("--hp-bg-tile-height", `${tileH.toFixed(2)}px`);
   }
 
-  private handleResize(): void {
+  /** Reconcile the canvas backing-store size with the host's current
+   * bbox. Idempotent — does nothing if the size is already correct.
+   * Called both from `handleResize` (ResizeObserver-driven) and from
+   * the top of every `draw()` so any size mismatch self-corrects on
+   * the next draw call. Cheap (~0.01ms of getBoundingClientRect)
+   * compared to the cost of getting it wrong and clipping the
+   * pattern to a stale dimension. */
+  private syncCanvasSize(): void {
     const canvas = this.canvas;
     if (!canvas) {
       return;
@@ -687,6 +701,10 @@ export class HpBackground extends LitElement {
         this.gl.viewport(0, 0, w, h);
       }
     }
+  }
+
+  private handleResize(): void {
+    this.syncCanvasSize();
     this.draw();
   }
 
@@ -699,6 +717,12 @@ export class HpBackground extends LitElement {
     if (!gl || !this.runtimeProgram || !this.tileTexture) {
       return;
     }
+    // Reconcile canvas size before drawing — catches the case where
+    // the host grew after firstUpdated (Astro hydrating, async
+    // syntax highlighting, etc.) and ResizeObserver didn't fire on
+    // the host's content rect (which can happen when sizing is
+    // ancestor-driven via inset: 0 rather than intrinsic).
+    this.syncCanvasSize();
     const dpr = window.devicePixelRatio || 1;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
