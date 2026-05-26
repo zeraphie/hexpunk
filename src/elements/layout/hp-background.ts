@@ -68,6 +68,210 @@ function buildFallbackTileDataUrl(hexSize: number): string {
   return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
 }
 
+/** √3 — pointy-top hex geometry constant (column step = side × √3). */
+const SQRT3 = Math.sqrt(3);
+/** Supersample factor used at bake-time. Bake-texture pixels per visual
+ * device pixel. Bilinear filtering downsamples at runtime, giving free
+ * AA without per-frame `fwidth` work. */
+const SUPER_SAMPLE = 2;
+/** Stroke half-width in CSS pixels — matches the SVG `stroke-width:
+ * 0.75` of the prior implementation, halved because shader AA bands
+ * the stroke symmetrically around its centre line. */
+const BASE_STROKE_HALF_WIDTH = 0.375;
+/** Sentinel mouse position. `vec2(-1e6)` puts the cursor far enough
+ * off-canvas that the smoothstep halo collapses to zero everywhere
+ * the visible viewport could ever reach. */
+const OFFSCREEN_MOUSE = -1e6;
+
+/** Vertex shader shared by the bake and runtime programs. Emits a
+ * single triangle that covers the entire clip-space viewport, using
+ * `gl_VertexID` so no vertex buffer is needed. */
+const VERTEX_SHADER_SOURCE = `#version 300 es
+void main() {
+  vec2 pos = vec2(
+    (gl_VertexID == 1) ? 3.0 : -1.0,
+    (gl_VertexID == 2) ? 3.0 : -1.0
+  );
+  gl_Position = vec4(pos, 0.0, 1.0);
+}
+`;
+
+/** Bake-time fragment shader. Computes pointy-top hex stroke coverage
+ * for one tessellation tile via the "two-candidate-centre + closer-
+ * wins" pattern, then emits AA-modulated coverage in the red channel.
+ * The output texture is then sampled at runtime with REPEAT wrap to
+ * tile the pattern across the canvas. */
+const BAKE_FRAGMENT_SHADER_SOURCE = `#version 300 es
+precision highp float;
+
+uniform float uHexSide;          // hex side length in bake-texture pixels
+uniform float uStrokeHalfWidth;  // stroke half-width in bake-texture pixels
+
+out vec4 fragColor;
+
+const float SQRT3 = 1.7320508;
+
+void main() {
+  vec2 p = gl_FragCoord.xy;
+
+  float s = uHexSide;
+  float tileW = s * SQRT3;
+  float tileH = 3.0 * s;
+
+  // Tile-local position. The bake-texture is exactly one tile so this
+  // mod is effectively identity, but kept explicit so the math is
+  // robust to any future bake-target size change.
+  vec2 tp = vec2(mod(p.x, tileW), mod(p.y, tileH));
+
+  // Two hex-centre candidates per tile period: (0, 0) and its
+  // wrap-equivalents at the four tile corners, plus the interior
+  // centre at (tileW / 2, 1.5 * s). Pick whichever is nearest to
+  // determine which hex this pixel belongs to.
+  vec2 dA = tp - vec2(0.0, 0.0);
+  vec2 dB = tp - vec2(tileW, 0.0);
+  vec2 dC = tp - vec2(0.0, tileH);
+  vec2 dD = tp - vec2(tileW, tileH);
+  vec2 dE = tp - vec2(tileW * 0.5, 1.5 * s);
+
+  vec2 best = dA;
+  float bestSq = dot(dA, dA);
+  float dBSq = dot(dB, dB);
+  if (dBSq < bestSq) { best = dB; bestSq = dBSq; }
+  float dCSq = dot(dC, dC);
+  if (dCSq < bestSq) { best = dC; bestSq = dCSq; }
+  float dDSq = dot(dD, dD);
+  if (dDSq < bestSq) { best = dD; bestSq = dDSq; }
+  float dESq = dot(dE, dE);
+  if (dESq < bestSq) { best = dE; }
+
+  // Distance from 'best' (offset from the nearest hex centre) to that
+  // hex's nearest edge. Apothem = centre-to-edge distance = s * sqrt(3) / 2.
+  // The three abs(dot) terms cover all six edges via the hex's
+  // 3-fold symmetry.
+  float apothem = s * SQRT3 * 0.5;
+  float d1 = apothem - abs(best.x);
+  float d2 = apothem - abs(0.5 * best.x + 0.5 * SQRT3 * best.y);
+  float d3 = apothem - abs(0.5 * best.x - 0.5 * SQRT3 * best.y);
+  float dist = min(d1, min(d2, d3));
+
+  // Anti-aliased stroke coverage: 1 on the edge centre, smoothly
+  // decaying to 0 at strokeHalfWidth + 1 derivative-pixel away.
+  float fw = fwidth(dist);
+  float coverage = 1.0 - smoothstep(uStrokeHalfWidth - fw, uStrokeHalfWidth + fw, dist);
+
+  fragColor = vec4(coverage, 0.0, 0.0, 1.0);
+}
+`;
+
+/** Runtime fragment shader. Samples the baked tile texture with REPEAT
+ * wrap, computes the cursor-halo blend, and outputs premultiplied
+ * RGBA matching the canvas context's `premultipliedAlpha: true` mode. */
+const RUNTIME_FRAGMENT_SHADER_SOURCE = `#version 300 es
+precision highp float;
+
+uniform sampler2D uTileTex;
+uniform vec2 uTileSize;          // visual tile period in device px (UV divisor)
+uniform vec2 uMouse;             // mouse position in device px
+uniform float uPointerRadius;    // halo radius in device px
+uniform vec4 uFaintColor;        // premultiplied
+uniform vec4 uBrightColor;       // premultiplied
+
+out vec4 fragColor;
+
+void main() {
+  float coverage = texture(uTileTex, gl_FragCoord.xy / uTileSize).r;
+  float halo = smoothstep(uPointerRadius, 0.0, distance(gl_FragCoord.xy, uMouse));
+  vec4 col = mix(uFaintColor, uBrightColor, halo);
+  fragColor = col * coverage;
+}
+`;
+
+/** Module-scoped canvas-2D context used to canonicalise / rasterise
+ * CSS colour strings into [r, g, b, a] floats. Lazy-initialised on
+ * first call. Falls back to `[0, 0, 0, 1]` if canvas-2D is somehow
+ * unavailable (extremely unlikely in any browser that has WebGL2). */
+let colorParserCtx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
+
+function ensureColorParserCtx(): typeof colorParserCtx {
+  if (colorParserCtx) {
+    return colorParserCtx;
+  }
+  if (typeof OffscreenCanvas !== "undefined") {
+    colorParserCtx = new OffscreenCanvas(1, 1).getContext("2d");
+  }
+  if (!colorParserCtx && typeof document !== "undefined") {
+    const c = document.createElement("canvas");
+    c.width = 1;
+    c.height = 1;
+    colorParserCtx = c.getContext("2d");
+  }
+  return colorParserCtx;
+}
+
+/** Resolve a CSS colour string to non-premultiplied `[r, g, b, a]` in
+ * `[0, 1]`. Uses the browser's canvas-2D rasteriser to handle every
+ * CSS colour form (`#rgb`, `oklch()`, `color-mix()`, named colours,
+ * etc.) without a hand-rolled parser. */
+function parseColor(s: string): [number, number, number, number] {
+  const ctx = ensureColorParserCtx();
+  if (!ctx) {
+    return [0, 0, 0, 1];
+  }
+  ctx.clearRect(0, 0, 1, 1);
+  ctx.fillStyle = s.trim() || "transparent";
+  ctx.fillRect(0, 0, 1, 1);
+  const data = ctx.getImageData(0, 0, 1, 1).data;
+  return [data[0]! / 255, data[1]! / 255, data[2]! / 255, data[3]! / 255];
+}
+
+/** Compile a WebGL2 shader, throwing with a useful message on failure. */
+function compileShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
+  const shader = gl.createShader(type);
+  if (!shader) {
+    throw new Error("hp-background: gl.createShader returned null");
+  }
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(shader);
+    gl.deleteShader(shader);
+    throw new Error(`hp-background: shader compile failed: ${log}`);
+  }
+  return shader;
+}
+
+/** Build a linked WebGL2 program from inline VS + FS sources. */
+function createProgram(
+  gl: WebGL2RenderingContext,
+  vsSource: string,
+  fsSource: string
+): WebGLProgram {
+  const vs = compileShader(gl, gl.VERTEX_SHADER, vsSource);
+  const fs = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
+  const program = gl.createProgram();
+  if (!program) {
+    gl.deleteShader(vs);
+    gl.deleteShader(fs);
+    throw new Error("hp-background: gl.createProgram returned null");
+  }
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  const ok = gl.getProgramParameter(program, gl.LINK_STATUS);
+  // Attached shaders are flagged for deletion; they're freed once the
+  // program is deleted. Detaching first lets us delete them now.
+  gl.detachShader(program, vs);
+  gl.detachShader(program, fs);
+  gl.deleteShader(vs);
+  gl.deleteShader(fs);
+  if (!ok) {
+    const log = gl.getProgramInfoLog(program);
+    gl.deleteProgram(program);
+    throw new Error(`hp-background: program link failed: ${log}`);
+  }
+  return program;
+}
+
 /**
  * Pointer-aware hex grid backdrop. Faint SVG hex tiles that brighten
  * softly around the cursor. Positioned absolutely; drop inside any
@@ -113,6 +317,39 @@ export class HpBackground extends LitElement {
   /** Active WebGL2 context, null while in the fallback state. */
   private gl: WebGL2RenderingContext | null = null;
 
+  // ── GL resources (re-created on context restore) ───────────────────
+  private bakeProgram: WebGLProgram | null = null;
+  private runtimeProgram: WebGLProgram | null = null;
+  private tileTexture: WebGLTexture | null = null;
+  private bakeFbo: WebGLFramebuffer | null = null;
+  private vao: WebGLVertexArrayObject | null = null;
+
+  // ── Cached uniform locations ───────────────────────────────────────
+  private uHexSideLoc: WebGLUniformLocation | null = null;
+  private uStrokeHalfWidthLoc: WebGLUniformLocation | null = null;
+  private uTileTexLoc: WebGLUniformLocation | null = null;
+  private uTileSizeLoc: WebGLUniformLocation | null = null;
+  private uMouseLoc: WebGLUniformLocation | null = null;
+  private uPointerRadiusLoc: WebGLUniformLocation | null = null;
+  private uFaintColorLoc: WebGLUniformLocation | null = null;
+  private uBrightColorLoc: WebGLUniformLocation | null = null;
+
+  // ── Bake-state cache (drives "is a re-bake needed?" decisions) ─────
+  /** `devicePixelRatio` snapshotted at last bake. Re-bake triggers when
+   * this no longer matches the live value (e.g. window dragged between
+   * displays of different DPR). */
+  private bakedDpr = 0;
+  /** `hexSize` snapshotted at last bake; re-bake on mismatch. */
+  private bakedHexSize = 0;
+  /** Visual tile period in device pixels at last bake — used by the
+   * runtime shader's `uTileSize` UV divisor. Cached so each draw
+   * doesn't recompute it. */
+  private bakedTileSize: [number, number] = [0, 0];
+  /** Active matchMedia query that watches for DPR changes. Re-created
+   * each time the DPR changes (the query string includes a fixed value
+   * so a different DPR causes it to no longer match). */
+  private dprMediaQuery: MediaQueryList | null = null;
+
   override connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute("aria-hidden", "true");
@@ -136,6 +373,11 @@ export class HpBackground extends LitElement {
       this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
       this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
     }
+    if (this.dprMediaQuery) {
+      this.dprMediaQuery.removeEventListener("change", this.handleDprChange);
+      this.dprMediaQuery = null;
+    }
+    this.releaseGLResources();
     this.gl = null;
     this.canvas = null;
   }
@@ -146,13 +388,15 @@ export class HpBackground extends LitElement {
   }
 
   override updated(changed: Map<string, unknown>): void {
-    // `hex-size` drives the fallback tile geometry; refresh the
-    // data-URL background when the attribute changes while we're in
-    // the fallback state. (The GL path will react to this via a
-    // re-bake in Step 2; no shader yet in Step 1, so nothing to do
-    // there for now.)
-    if (changed.has("hexSize") && this.fallback) {
-      this.updateFallbackTile();
+    if (changed.has("hexSize")) {
+      if (this.fallback) {
+        this.updateFallbackTile();
+      } else if (this.gl) {
+        // Tile geometry changed — re-bake at the new size, then
+        // redraw to pick up the new uTileSize uniform.
+        this.bake();
+        this.draw();
+      }
     }
   }
 
@@ -161,10 +405,10 @@ export class HpBackground extends LitElement {
     if (!canvas) {
       return;
     }
-    // `antialias: false` because the shader will do AA via `fwidth`
-    // (Step 2) and browser MSAA would be redundant. `low-power` flags
-    // the decorative use case so battery-conscious systems can route
-    // to the integrated GPU.
+    // `antialias: false` because the bake pass does AA via `fwidth` +
+    // 2× supersampling; browser MSAA on the canvas would be
+    // redundant fillrate. `low-power` flags the decorative use case
+    // so battery-conscious systems can route to the integrated GPU.
     const gl = canvas.getContext("webgl2", {
       alpha: true,
       premultipliedAlpha: true,
@@ -176,18 +420,208 @@ export class HpBackground extends LitElement {
       return;
     }
     this.gl = gl;
+    // Remove + re-add so context-restore calls don't accumulate duplicate
+    // listeners. The handlers are stable arrow-function refs so remove()
+    // works idempotently on the first call too.
+    canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+    canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
     canvas.addEventListener("webglcontextlost", this.handleContextLost);
     canvas.addEventListener("webglcontextrestored", this.handleContextRestored);
+    try {
+      this.initGLResources(gl);
+    } catch {
+      // Shader compile, link, or FBO allocation failed — fall back to
+      // the static SVG tile background. Rare in practice (a healthy
+      // WebGL2 context that supports R8 + REPEAT + mipmaps covers
+      // every desktop/mobile target hexpunk realistically ships to).
+      this.releaseGLResources();
+      this.gl = null;
+      this.enterFallback();
+      return;
+    }
+    this.watchDpr();
     this.handleResize();
+    this.bake();
     this.draw();
   }
+
+  /** Compile both programs, create the bake FBO + tile texture + VAO,
+   * cache uniform locations. Throws on any GL error so `initGL` can
+   * catch and route to the fallback path. */
+  private initGLResources(gl: WebGL2RenderingContext): void {
+    this.bakeProgram = createProgram(gl, VERTEX_SHADER_SOURCE, BAKE_FRAGMENT_SHADER_SOURCE);
+    this.runtimeProgram = createProgram(gl, VERTEX_SHADER_SOURCE, RUNTIME_FRAGMENT_SHADER_SOURCE);
+
+    this.uHexSideLoc = gl.getUniformLocation(this.bakeProgram, "uHexSide");
+    this.uStrokeHalfWidthLoc = gl.getUniformLocation(this.bakeProgram, "uStrokeHalfWidth");
+    this.uTileTexLoc = gl.getUniformLocation(this.runtimeProgram, "uTileTex");
+    this.uTileSizeLoc = gl.getUniformLocation(this.runtimeProgram, "uTileSize");
+    this.uMouseLoc = gl.getUniformLocation(this.runtimeProgram, "uMouse");
+    this.uPointerRadiusLoc = gl.getUniformLocation(this.runtimeProgram, "uPointerRadius");
+    this.uFaintColorLoc = gl.getUniformLocation(this.runtimeProgram, "uFaintColor");
+    this.uBrightColorLoc = gl.getUniformLocation(this.runtimeProgram, "uBrightColor");
+
+    // VAO is required for any draw call in WebGL2 (even with
+    // attribute-less single-triangle rendering). Bind it once; we'll
+    // never unbind.
+    this.vao = gl.createVertexArray();
+    if (!this.vao) {
+      throw new Error("hp-background: gl.createVertexArray returned null");
+    }
+    gl.bindVertexArray(this.vao);
+
+    this.tileTexture = gl.createTexture();
+    if (!this.tileTexture) {
+      throw new Error("hp-background: gl.createTexture returned null");
+    }
+    gl.bindTexture(gl.TEXTURE_2D, this.tileTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    this.bakeFbo = gl.createFramebuffer();
+    if (!this.bakeFbo) {
+      throw new Error("hp-background: gl.createFramebuffer returned null");
+    }
+  }
+
+  /** Detach and delete every GL resource. Safe to call when `this.gl`
+   * is already null (e.g. after context loss). Used on context loss,
+   * init failure, and disconnect. */
+  private releaseGLResources(): void {
+    const gl = this.gl;
+    if (gl) {
+      if (this.bakeProgram) {
+        gl.deleteProgram(this.bakeProgram);
+      }
+      if (this.runtimeProgram) {
+        gl.deleteProgram(this.runtimeProgram);
+      }
+      if (this.tileTexture) {
+        gl.deleteTexture(this.tileTexture);
+      }
+      if (this.bakeFbo) {
+        gl.deleteFramebuffer(this.bakeFbo);
+      }
+      if (this.vao) {
+        gl.deleteVertexArray(this.vao);
+      }
+    }
+    this.bakeProgram = null;
+    this.runtimeProgram = null;
+    this.tileTexture = null;
+    this.bakeFbo = null;
+    this.vao = null;
+    this.uHexSideLoc = null;
+    this.uStrokeHalfWidthLoc = null;
+    this.uTileTexLoc = null;
+    this.uTileSizeLoc = null;
+    this.uMouseLoc = null;
+    this.uPointerRadiusLoc = null;
+    this.uFaintColorLoc = null;
+    this.uBrightColorLoc = null;
+  }
+
+  /** Bake the hex-stroke-coverage tile texture. Tile dimensions are
+   * `hexSize × dpr × superSample × (√3, 3)`, so a single tile period
+   * fits exactly in the texture and `gl.REPEAT` wrapping handles
+   * tiling at runtime. Generates mipmaps after rendering so the
+   * runtime sampler can downsample cleanly on low-DPR displays or
+   * during zoom transitions. */
+  private bake(): void {
+    const gl = this.gl;
+    if (!gl || !this.bakeProgram || !this.tileTexture || !this.bakeFbo) {
+      return;
+    }
+    const dpr = window.devicePixelRatio || 1;
+    const hexSide = this.hexSize * dpr * SUPER_SAMPLE;
+    const strokeHalf = BASE_STROKE_HALF_WIDTH * dpr * SUPER_SAMPLE;
+    const tileWBake = Math.max(1, Math.round(hexSide * SQRT3));
+    const tileHBake = Math.max(1, Math.round(hexSide * 3));
+
+    // (Re-)allocate the R8 texture at the new bake size. We always
+    // re-allocate rather than just re-rendering because bake-pass
+    // dimensions depend on hexSize and DPR.
+    gl.bindTexture(gl.TEXTURE_2D, this.tileTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, tileWBake, tileHBake, 0, gl.RED, gl.UNSIGNED_BYTE, null);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.bakeFbo);
+    gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,
+      gl.COLOR_ATTACHMENT0,
+      gl.TEXTURE_2D,
+      this.tileTexture,
+      0
+    );
+    // Defensive completeness check — if this fires the GL driver is
+    // misbehaving (R8 + REPEAT + LINEAR_MIPMAP_LINEAR is required
+    // color-renderable in WebGL2) and we should fall back.
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      this.releaseGLResources();
+      this.gl = null;
+      this.enterFallback();
+      return;
+    }
+    gl.viewport(0, 0, tileWBake, tileHBake);
+    gl.disable(gl.BLEND);
+    gl.useProgram(this.bakeProgram);
+    gl.uniform1f(this.uHexSideLoc, hexSide);
+    gl.uniform1f(this.uStrokeHalfWidthLoc, strokeHalf);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // Mipmaps for clean downsampling at non-1× DPR sample rates.
+    gl.bindTexture(gl.TEXTURE_2D, this.tileTexture);
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+    // Done with the FBO; subsequent draws target the canvas backbuffer.
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    this.bakedDpr = dpr;
+    this.bakedHexSize = this.hexSize;
+    this.bakedTileSize = [this.hexSize * dpr * SQRT3, this.hexSize * dpr * 3];
+  }
+
+  /** Subscribe to DPR-change notifications via matchMedia. When the
+   * resolution changes (e.g. window drags to a different-DPR display)
+   * the current query stops matching and we re-bake at the new DPR. */
+  private watchDpr(): void {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return;
+    }
+    if (this.dprMediaQuery) {
+      this.dprMediaQuery.removeEventListener("change", this.handleDprChange);
+    }
+    const dpr = window.devicePixelRatio || 1;
+    this.dprMediaQuery = window.matchMedia(`(resolution: ${dpr}dppx)`);
+    this.dprMediaQuery.addEventListener("change", this.handleDprChange);
+  }
+
+  private readonly handleDprChange = (): void => {
+    if (this.fallback || !this.gl) {
+      // If we're in fallback the SVG tile is DPR-independent; nothing
+      // to do beyond re-arming the watcher for the new DPR.
+      this.watchDpr();
+      return;
+    }
+    this.bake();
+    // The canvas backing-store size also changes with DPR; let the
+    // resize handler recompute it then redraw.
+    this.handleResize();
+    this.watchDpr();
+  };
 
   private readonly handleContextLost = (event: Event): void => {
     // Default behaviour is to permanently lose the context. preventDefault
     // tells the browser we want it restored when possible. Swap to the
     // fallback bg in the meantime so the host doesn't go visually blank.
     event.preventDefault();
+    // Drop refs to the now-invalid GL objects. We pre-null `gl` so
+    // releaseGLResources skips the (illegal) deletes against the
+    // lost context.
     this.gl = null;
+    this.releaseGLResources();
     this.enterFallback();
   };
 
@@ -232,15 +666,64 @@ export class HpBackground extends LitElement {
     this.draw();
   }
 
-  /** Step 1: clear to fully transparent. Step 2 replaces this with the
-   * bake + runtime sample-and-blend pipeline. */
+  /** Runtime pass: sample the baked tile texture, blend faint→bright
+   * by cursor proximity, output premultiplied. Reads colour CSS
+   * custom properties via `getComputedStyle` each draw so token /
+   * theme changes pick up at the next redraw without bookkeeping. */
   private draw(): void {
     const gl = this.gl;
-    if (!gl) {
+    if (!gl || !this.runtimeProgram || !this.tileTexture) {
       return;
     }
+    const dpr = window.devicePixelRatio || 1;
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    // Premultiplied source-over blending: the shader outputs
+    // (rgb · α, α) already, so the standard premultiplied blend
+    // equation is (ONE, ONE_MINUS_SRC_ALPHA).
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    gl.useProgram(this.runtimeProgram);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.tileTexture);
+    gl.uniform1i(this.uTileTexLoc, 0);
+
+    gl.uniform2f(this.uTileSizeLoc, this.bakedTileSize[0], this.bakedTileSize[1]);
+    // Step 2 keeps the mouse off-screen; Step 3 wires real pointermove.
+    gl.uniform2f(this.uMouseLoc, OFFSCREEN_MOUSE, OFFSCREEN_MOUSE);
+    gl.uniform1f(this.uPointerRadiusLoc, this.pointerRadius * dpr);
+
+    const cs = getComputedStyle(this);
+    const faintOpacity = parseFloat(cs.getPropertyValue("--hp-bg-faint-opacity")) || 0;
+    const brightOpacity = parseFloat(cs.getPropertyValue("--hp-bg-bright-opacity")) || 0;
+    const faintRaw = parseColor(cs.getPropertyValue("--hp-bg-stroke"));
+    const brightRaw = parseColor(cs.getPropertyValue("--hp-bg-stroke-bright"));
+    // Pre-multiply: rgb · final_alpha, where final_alpha = parsed_alpha
+    // · token_opacity. The shader's `col * coverage` and the blend
+    // equation both expect premultiplied input.
+    const faintA = faintRaw[3] * faintOpacity;
+    const brightA = brightRaw[3] * brightOpacity;
+    gl.uniform4f(
+      this.uFaintColorLoc,
+      faintRaw[0] * faintA,
+      faintRaw[1] * faintA,
+      faintRaw[2] * faintA,
+      faintA
+    );
+    gl.uniform4f(
+      this.uBrightColorLoc,
+      brightRaw[0] * brightA,
+      brightRaw[1] * brightA,
+      brightRaw[2] * brightA,
+      brightA
+    );
+
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
   private handleWindowPointerMove = (event: PointerEvent): void => {
