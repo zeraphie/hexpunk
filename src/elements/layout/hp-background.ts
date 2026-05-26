@@ -70,10 +70,15 @@ function buildFallbackTileDataUrl(hexSize: number): string {
 
 /** √3 — pointy-top hex geometry constant (column step = side × √3). */
 const SQRT3 = Math.sqrt(3);
-/** Supersample factor used at bake-time. Bake-texture pixels per visual
- * device pixel. Bilinear filtering downsamples at runtime, giving free
- * AA without per-frame `fwidth` work. */
-const SUPER_SAMPLE = 2;
+/** Supersample factor used at bake-time. Kept at 1 (native device-
+ * pixel rate) — supersampling + mipmap or supersampling + LINEAR
+ * downsampling both averaged the thin stroke band across neighbouring
+ * texels and visibly dimmed the pattern below the SVG reference. At
+ * 1× the bake renders with fwidth AA directly at the final sample
+ * rate, matching SVG-equivalent line intensity. Left as a named
+ * constant so future tuning (e.g. an opt-in higher-quality mode) can
+ * just bump this. */
+const SUPER_SAMPLE = 1;
 /** Stroke half-width in CSS pixels — matches the SVG `stroke-width:
  * 0.75` of the prior implementation, halved because shader AA bands
  * the stroke symmetrically around its centre line. */
@@ -171,7 +176,8 @@ precision highp float;
 
 uniform sampler2D uTileTex;
 uniform vec2 uTileSize;          // visual tile period in device px (UV divisor)
-uniform vec2 uMouse;             // mouse position in device px
+uniform vec2 uOffset;            // page-coord offset in device px (see note)
+uniform vec2 uMouse;             // mouse position in device px (canvas-local)
 uniform float uPointerRadius;    // halo radius in device px
 uniform vec4 uFaintColor;        // premultiplied
 uniform vec4 uBrightColor;       // premultiplied
@@ -179,7 +185,18 @@ uniform vec4 uBrightColor;       // premultiplied
 out vec4 fragColor;
 
 void main() {
-  float coverage = texture(uTileTex, gl_FragCoord.xy / uTileSize).r;
+  // Page-attached sampling: every hp-background on the page samples
+  // the same tiled texture using *page coordinates* rather than
+  // canvas-local coordinates, so adjacent instances read as windows
+  // onto one shared global hex grid. uOffset.x = (rect.left +
+  // scrollX) * dpr; uOffset.y = (rect.bottom + scrollY) * dpr.
+  // gl_FragCoord.y is y-up in WebGL while page Y is y-down, so we
+  // flip the y component before adding the offset.
+  vec2 page = vec2(gl_FragCoord.x, -gl_FragCoord.y) + uOffset;
+  float coverage = texture(uTileTex, page / uTileSize).r;
+
+  // Cursor halo stays canvas-local — it follows the actual on-screen
+  // pointer, not a page-locked position.
   float halo = smoothstep(uPointerRadius, 0.0, distance(gl_FragCoord.xy, uMouse));
   vec4 col = mix(uFaintColor, uBrightColor, halo);
   fragColor = col * coverage;
@@ -329,6 +346,7 @@ export class HpBackground extends LitElement {
   private uStrokeHalfWidthLoc: WebGLUniformLocation | null = null;
   private uTileTexLoc: WebGLUniformLocation | null = null;
   private uTileSizeLoc: WebGLUniformLocation | null = null;
+  private uOffsetLoc: WebGLUniformLocation | null = null;
   private uMouseLoc: WebGLUniformLocation | null = null;
   private uPointerRadiusLoc: WebGLUniformLocation | null = null;
   private uFaintColorLoc: WebGLUniformLocation | null = null;
@@ -456,6 +474,7 @@ export class HpBackground extends LitElement {
     this.uStrokeHalfWidthLoc = gl.getUniformLocation(this.bakeProgram, "uStrokeHalfWidth");
     this.uTileTexLoc = gl.getUniformLocation(this.runtimeProgram, "uTileTex");
     this.uTileSizeLoc = gl.getUniformLocation(this.runtimeProgram, "uTileSize");
+    this.uOffsetLoc = gl.getUniformLocation(this.runtimeProgram, "uOffset");
     this.uMouseLoc = gl.getUniformLocation(this.runtimeProgram, "uMouse");
     this.uPointerRadiusLoc = gl.getUniformLocation(this.runtimeProgram, "uPointerRadius");
     this.uFaintColorLoc = gl.getUniformLocation(this.runtimeProgram, "uFaintColor");
@@ -477,7 +496,11 @@ export class HpBackground extends LitElement {
     gl.bindTexture(gl.TEXTURE_2D, this.tileTexture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    // LINEAR (not LINEAR_MIPMAP_LINEAR) — at SUPER_SAMPLE=1 the texel
+    // rate matches the device-pixel rate so no mipmap level is ever
+    // selected. Mipmaps would actively hurt intensity by averaging the
+    // thin stroke across coarser LODs.
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
     this.bakeFbo = gl.createFramebuffer();
@@ -517,6 +540,7 @@ export class HpBackground extends LitElement {
     this.uStrokeHalfWidthLoc = null;
     this.uTileTexLoc = null;
     this.uTileSizeLoc = null;
+    this.uOffsetLoc = null;
     this.uMouseLoc = null;
     this.uPointerRadiusLoc = null;
     this.uFaintColorLoc = null;
@@ -571,9 +595,9 @@ export class HpBackground extends LitElement {
     gl.uniform1f(this.uStrokeHalfWidthLoc, strokeHalf);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // Mipmaps for clean downsampling at non-1× DPR sample rates.
-    gl.bindTexture(gl.TEXTURE_2D, this.tileTexture);
-    gl.generateMipmap(gl.TEXTURE_2D);
+    // No mipmap generation — see TEXTURE_MIN_FILTER comment in
+    // initGLResources for why LINEAR (LOD 0 only) is the right pick
+    // at SUPER_SAMPLE=1.
 
     // Done with the FBO; subsequent draws target the canvas backbuffer.
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -694,6 +718,17 @@ export class HpBackground extends LitElement {
     gl.uniform1i(this.uTileTexLoc, 0);
 
     gl.uniform2f(this.uTileSizeLoc, this.bakedTileSize[0], this.bakedTileSize[1]);
+    // Page-attached offset: every hp-background on the page samples
+    // the tile texture in shared page-coordinate space, so adjacent
+    // instances read as windows onto a single continuous grid. y is
+    // (rect.bottom + scrollY) because the shader flips gl_FragCoord.y
+    // (WebGL is y-up, page is y-down).
+    const rect = this.getBoundingClientRect();
+    gl.uniform2f(
+      this.uOffsetLoc,
+      (rect.left + window.scrollX) * dpr,
+      (rect.bottom + window.scrollY) * dpr
+    );
     // Step 2 keeps the mouse off-screen; Step 3 wires real pointermove.
     gl.uniform2f(this.uMouseLoc, OFFSCREEN_MOUSE, OFFSCREEN_MOUSE);
     gl.uniform1f(this.uPointerRadiusLoc, this.pointerRadius * dpr);
