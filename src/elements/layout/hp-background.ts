@@ -27,10 +27,46 @@
 // currentColor, so consumers can tint via the standard `color`
 // property or the --hp-outline-faint / --hp-outline tokens.
 
-import { LitElement, css, html, svg } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import { hpBase } from "../../styles/hp-base.js";
+
+/** Build a CSS data-URL repeating-hex-tile background, used as the
+ * Option-C fallback when WebGL2 init fails or the context is lost.
+ * Embeds a 5-hex tile (1 centered + 4 corner-quartered) sized to
+ * `hexSize` so neighbouring tiles assemble into a continuous
+ * tessellation when CSS `background-repeat: repeat` tiles them. The
+ * stroke uses `currentColor` so the host's `color` (set to
+ * `--hp-bg-stroke` via the fallback `:host` rules) drives the tint. */
+function buildFallbackTileDataUrl(hexSize: number): string {
+  const s = hexSize;
+  const cw = s * Math.sqrt(3);
+  const ch = s * 1.5;
+  const tileW = cw;
+  const tileH = 2 * ch;
+  const hex = (cx: number, cy: number): string => {
+    const pts: Array<[number, number]> = [
+      [cx, cy - s],
+      [cx + cw / 2, cy - s / 2],
+      [cx + cw / 2, cy + s / 2],
+      [cx, cy + s],
+      [cx - cw / 2, cy + s / 2],
+      [cx - cw / 2, cy - s / 2],
+    ];
+    return pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
+  };
+  const centres: Array<[number, number]> = [
+    [cw / 2, ch],
+    [0, 0],
+    [tileW, 0],
+    [0, tileH],
+    [tileW, tileH],
+  ];
+  const polygons = centres.map(([cx, cy]) => `<polygon points="${hex(cx, cy)}"/>`).join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${tileW.toFixed(2)}" height="${tileH.toFixed(2)}" viewBox="0 0 ${tileW.toFixed(2)} ${tileH.toFixed(2)}"><g fill="none" stroke="currentColor" stroke-width="0.75">${polygons}</g></svg>`;
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+}
 
 /**
  * Pointer-aware hex grid backdrop. Faint SVG hex tiles that brighten
@@ -56,16 +92,31 @@ export class HpBackground extends LitElement {
   @property({ type: Number, attribute: "pointer-radius" })
   pointerRadius = 200;
 
-  /** Cached grid dimensions; recomputed by the ResizeObserver. */
+  /** Cached grid dimensions; recomputed by the ResizeObserver.
+   *
+   * @deprecated Unused in the WebGL2 path — kept in Step 1 to keep the
+   *   diff focused; removed in Step 3 along with the rest of the SVG
+   *   rendering machinery. */
   @state() private cols = 0;
+  /** @deprecated See {@link cols}. */
   @state() private rows = 0;
 
+  /** True when WebGL2 init failed or the context was lost — the host
+   * renders the static SVG-data-URL fallback (Option C) in this state.
+   * Reflected to a `data-hp-fallback` attribute on the host so CSS
+   * targets the alternate visual. */
+  @state() private fallback = false;
+
   private resizeObserver?: ResizeObserver;
+  /** Cached canvas element handle, grabbed in `firstUpdated`. */
+  private canvas: HTMLCanvasElement | null = null;
+  /** Active WebGL2 context, null while in the fallback state. */
+  private gl: WebGL2RenderingContext | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute("aria-hidden", "true");
-    this.resizeObserver = new ResizeObserver(() => this.computeGridSize());
+    this.resizeObserver = new ResizeObserver(() => this.handleResize());
     this.resizeObserver.observe(this);
     // Window-level pointer listener — the host has pointer-events: none
     // so it can't catch its own events, but window always sees them.
@@ -74,9 +125,6 @@ export class HpBackground extends LitElement {
     window.addEventListener("pointermove", this.handleWindowPointerMove, {
       passive: true,
     });
-    // First compute happens after the next layout pass so getBoundingClientRect
-    // sees real dimensions.
-    queueMicrotask(() => this.computeGridSize());
   }
 
   override disconnectedCallback(): void {
@@ -84,6 +132,115 @@ export class HpBackground extends LitElement {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     window.removeEventListener("pointermove", this.handleWindowPointerMove);
+    if (this.canvas) {
+      this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+      this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
+    }
+    this.gl = null;
+    this.canvas = null;
+  }
+
+  override firstUpdated(): void {
+    this.canvas = this.shadowRoot?.querySelector("canvas") ?? null;
+    this.initGL();
+  }
+
+  override updated(changed: Map<string, unknown>): void {
+    // `hex-size` drives the fallback tile geometry; refresh the
+    // data-URL background when the attribute changes while we're in
+    // the fallback state. (The GL path will react to this via a
+    // re-bake in Step 2; no shader yet in Step 1, so nothing to do
+    // there for now.)
+    if (changed.has("hexSize") && this.fallback) {
+      this.updateFallbackTile();
+    }
+  }
+
+  private initGL(): void {
+    const canvas = this.canvas;
+    if (!canvas) {
+      return;
+    }
+    // `antialias: false` because the shader will do AA via `fwidth`
+    // (Step 2) and browser MSAA would be redundant. `low-power` flags
+    // the decorative use case so battery-conscious systems can route
+    // to the integrated GPU.
+    const gl = canvas.getContext("webgl2", {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+      powerPreference: "low-power",
+    });
+    if (!gl) {
+      this.enterFallback();
+      return;
+    }
+    this.gl = gl;
+    canvas.addEventListener("webglcontextlost", this.handleContextLost);
+    canvas.addEventListener("webglcontextrestored", this.handleContextRestored);
+    this.handleResize();
+    this.draw();
+  }
+
+  private readonly handleContextLost = (event: Event): void => {
+    // Default behaviour is to permanently lose the context. preventDefault
+    // tells the browser we want it restored when possible. Swap to the
+    // fallback bg in the meantime so the host doesn't go visually blank.
+    event.preventDefault();
+    this.gl = null;
+    this.enterFallback();
+  };
+
+  private readonly handleContextRestored = (): void => {
+    // The original context object is gone; re-acquire and re-init.
+    // initGL will set fallback back to false on success.
+    this.fallback = false;
+    this.removeAttribute("data-hp-fallback");
+    this.initGL();
+  };
+
+  private enterFallback(): void {
+    this.fallback = true;
+    this.setAttribute("data-hp-fallback", "");
+    this.updateFallbackTile();
+  }
+
+  private updateFallbackTile(): void {
+    this.style.setProperty("--hp-bg-fallback-image", buildFallbackTileDataUrl(this.hexSize));
+    const tileW = this.hexSize * Math.sqrt(3);
+    const tileH = this.hexSize * 3;
+    this.style.setProperty("--hp-bg-tile-width", `${tileW.toFixed(2)}px`);
+    this.style.setProperty("--hp-bg-tile-height", `${tileH.toFixed(2)}px`);
+  }
+
+  private handleResize(): void {
+    const canvas = this.canvas;
+    if (!canvas) {
+      return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(rect.width * dpr));
+    const h = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+      if (this.gl) {
+        this.gl.viewport(0, 0, w, h);
+      }
+    }
+    this.draw();
+  }
+
+  /** Step 1: clear to fully transparent. Step 2 replaces this with the
+   * bake + runtime sample-and-blend pipeline. */
+  private draw(): void {
+    const gl = this.gl;
+    if (!gl) {
+      return;
+    }
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
   }
 
   private handleWindowPointerMove = (event: PointerEvent): void => {
@@ -126,6 +283,32 @@ export class HpBackground extends LitElement {
         --hp-bg-stroke-bright: var(--hp-outline);
         --hp-bg-faint-opacity: 0.25;
         --hp-bg-bright-opacity: 0.3;
+      }
+
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* Option-C fallback: WebGL2 unavailable or context lost. The
+       * canvas hides; the host paints a repeating SVG-data-URL hex
+       * tile that gives a "degraded but present" hex pattern with no
+       * cursor reactivity. Tile dimensions + image are written as
+       * inline custom properties by updateFallbackTile() so hex-size
+       * changes propagate. */
+      :host([data-hp-fallback]) canvas {
+        display: none;
+      }
+
+      :host([data-hp-fallback]) {
+        color: var(--hp-bg-stroke);
+        opacity: var(--hp-bg-faint-opacity);
+        background-image: var(--hp-bg-fallback-image);
+        background-repeat: repeat;
+        background-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height);
       }
 
       svg {
@@ -172,39 +355,7 @@ export class HpBackground extends LitElement {
   ];
 
   override render() {
-    const s = this.hexSize;
-    const cw = s * Math.sqrt(3);
-    const ch = s * 1.5;
-    const polygons = [];
-    for (let row = 0; row < this.rows; row++) {
-      const offsetX = row % 2 === 0 ? 0 : cw / 2;
-      for (let col = 0; col < this.cols; col++) {
-        const cx = col * cw + offsetX;
-        const cy = row * ch;
-        // Pointy-top hex vertices around (cx, cy): top, top-right,
-        // bottom-right, bottom, bottom-left, top-left.
-        const points = [
-          [cx, cy - s],
-          [cx + cw / 2, cy - s / 2],
-          [cx + cw / 2, cy + s / 2],
-          [cx, cy + s],
-          [cx - cw / 2, cy + s / 2],
-          [cx - cw / 2, cy - s / 2],
-        ]
-          .map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`)
-          .join(" ");
-        polygons.push(svg`<polygon points=${points}></polygon>`);
-      }
-    }
-    return html`
-      <svg
-        style="--hp-bg-pointer-radius: ${this.pointerRadius}px"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <g class="faint">${polygons}</g>
-        <g class="bright">${polygons}</g>
-      </svg>
-    `;
+    return html`<canvas></canvas>`;
   }
 }
 
