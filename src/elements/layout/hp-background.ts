@@ -372,7 +372,15 @@ export class HpBackground extends LitElement {
     super.connectedCallback();
     this.setAttribute("aria-hidden", "true");
     this.resizeObserver = new ResizeObserver(() => this.handleResize());
+    // Observe `this` (catches intrinsic / direct size changes) plus
+    // the parent element (catches ancestor-driven size changes —
+    // when the parent grows, hp-background's inset:0 grows it but
+    // the observer on `this` doesn't always fire reliably for
+    // ancestor-only changes; observing the parent closes that gap).
     this.resizeObserver.observe(this);
+    if (this.parentElement) {
+      this.resizeObserver.observe(this.parentElement);
+    }
     // Window-level pointer listener — the host has pointer-events: none
     // so it can't catch its own events, but window always sees them.
     // Pointermove is high-frequency; passive flag avoids forcing the
@@ -380,13 +388,34 @@ export class HpBackground extends LitElement {
     window.addEventListener("pointermove", this.handleWindowPointerMove, {
       passive: true,
     });
+    // Final-settling triggers for late layout: window 'load' fires
+    // once every resource (images, stylesheets, deferred scripts) has
+    // loaded; document.fonts.ready resolves after webfont swapping.
+    // Both can shift layout in ways that ResizeObserver sometimes
+    // misses when the host's own bbox technically didn't change
+    // (e.g. ancestor grew without bbox-changing the host immediately).
+    if (typeof window !== "undefined" && document.readyState !== "complete") {
+      window.addEventListener("load", this.handleLoadSettled, { once: true });
+    }
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(this.handleFontsReady);
+    }
   }
+
+  private readonly handleLoadSettled = (): void => {
+    this.handleResize();
+  };
+
+  private readonly handleFontsReady = (): void => {
+    this.handleResize();
+  };
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     window.removeEventListener("pointermove", this.handleWindowPointerMove);
+    window.removeEventListener("load", this.handleLoadSettled);
     if (this.canvas) {
       this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
       this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
@@ -813,7 +842,15 @@ export class HpBackground extends LitElement {
         display: block;
         pointer-events: none;
         overflow: hidden;
-        contain: strict;
+        /* contain: paint keeps the decorative painting isolated
+         * (canvas can't leak outside the host) without the size
+         * containment that contain: strict would impose. Size
+         * containment suppressed ResizeObserver from firing on
+         * ancestor-driven inset:0 size changes — the canvas would
+         * size correctly at first paint but not grow when the
+         * containing main grew (async content settling, fonts
+         * loading, hp-code highlighting). */
+        contain: paint;
         /* Both layers use full outline tokens, dialed by independent
  * opacities. The opacity dial lets us land between the system
  * outline rungs (--hp-outline-faint reads as nothing on common
