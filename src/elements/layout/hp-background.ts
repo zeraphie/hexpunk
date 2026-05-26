@@ -463,11 +463,18 @@ export class HpBackground extends LitElement {
     // 2× supersampling; browser MSAA on the canvas would be
     // redundant fillrate. `low-power` flags the decorative use case
     // so battery-conscious systems can route to the integrated GPU.
+    // `preserveDrawingBuffer: true` is critical for our on-demand
+    // render model — the default behaviour invalidates the buffer
+    // after each compositing pass, which would mean any portion of
+    // the canvas not visible at draw time gets cleared once it
+    // scrolls into view. Apps that redraw every rAF don't notice;
+    // ours does. The cost is a small extra GPU memory copy.
     const gl = canvas.getContext("webgl2", {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       powerPreference: "low-power",
+      preserveDrawingBuffer: true,
     });
     if (!gl) {
       this.enterFallback();
