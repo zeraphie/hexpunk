@@ -3,10 +3,11 @@
 
   Pointer-aware hex backdrop rendered by WebGL2: a baked tile
   sampled in shared page coordinates (one global grid, revealed
-  wherever an instance sits) with a cursor halo blended per
-  draw. This file is only lifecycle + wiring; each concern
-  lives in its sibling module.
-  (PLAN.hp-grid-smoothness.md § Steps › Step 3)
+  wherever an instance sits), brightened by an energy field the
+  pointer stirs — a wake that drifts and fades. This file is
+  only lifecycle + wiring; each concern lives in its sibling
+  module.
+  (PLAN.hp-grid-smoothness.md § Steps › Steps 3-4)
 */
 
 import { LitElement, html } from "lit";
@@ -15,23 +16,45 @@ import { customElement, property, state } from "lit/decorators.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import { TilePipeline } from "./bake.js";
 import { applyFallbackTile } from "./fallback.js";
+import { EnergyField, FIELD_EPSILON, FIELD_SCALE } from "./field.js";
 import { reconcileCanvasGeometry } from "./geometry.js";
 import { acquireContext, describeRenderer, isSoftwareRenderer } from "./gl.js";
 import { PointerTracker } from "./input.js";
 import { RenderPass } from "./render.js";
 import { backgroundStyles } from "./styles.js";
 
+/** Reference frame duration the `decay` knob is expressed against —
+ * actual per-step decay is dt-normalized so 120 Hz displays and
+ * dropped frames fade at the same wall-clock rate. */
+const REFERENCE_FRAME_MS = 1000 / 60;
+
+/** Pointer speed (device px per frame) that maps to a full-strength
+ * splat. Slow hovers land well under it (gentle glow); brisk sweeps
+ * saturate it (bright wake). */
+const SPLAT_SPEED_NORM = 40;
+
+/** Adaptive backstop: sim frames sampled on the first wake, and the
+ * median frame interval (ms) above which the instance demotes to the
+ * CSS tile — the renderer claimed hardware but can't sustain even a
+ * low-res sim, so treat it as tier 2. */
+const ADAPTIVE_SAMPLE_FRAMES = 32;
+const ADAPTIVE_DEMOTE_MS = 30;
+
 /**
  * Pointer-aware hex grid backdrop. A faint hex pattern fills the
- * host; strokes brighten softly around the cursor. Two layout modes:
- * contained (default — absolute, fills a positioned parent) and
- * `page` (fixed full-viewport backdrop behind page content).
+ * host; pointer movement stirs a soft energy wake that brightens
+ * the strokes it passes through, then drifts and fades. Two layout
+ * modes: contained (default — absolute, fills a positioned parent)
+ * and `page` (fixed full-viewport backdrop behind page content).
  *
  * @cssproperty --hp-bg-stroke - Base stroke colour
- * @cssproperty --hp-bg-stroke-bright - Cursor-halo stroke colour
+ * @cssproperty --hp-bg-stroke-bright - Energy-wake stroke colour
  * @cssproperty --hp-bg-faint-opacity - Base layer opacity (default 0.25)
- * @cssproperty --hp-bg-bright-opacity - Halo layer opacity (default 0.3)
- * @cssproperty --hp-bg-pointer-radius - Halo radius on the CSS fallback path (set from pointer-radius)
+ * @cssproperty --hp-bg-bright-opacity - Wake layer opacity (default 0.3)
+ * @cssproperty --hp-bg-pointer-radius - Reveal radius on the CSS fallback path (set from pointer-radius)
+ * @cssproperty --hp-bg-decay - Overrides the decay attribute
+ * @cssproperty --hp-bg-splat-strength - Overrides the splat-strength attribute
+ * @cssproperty --hp-bg-splat-radius - Overrides the splat-radius attribute
  * @cssproperty --hp-bg-z - Stacking position in page mode (default -1)
  */
 @customElement("hp-background")
@@ -42,10 +65,28 @@ export class HpBackground extends LitElement {
   @property({ type: Number, attribute: "hex-size" })
   hexSize = 14;
 
-  /** Radius in pixels where the brighter strokes are fully visible
-   * around the cursor. Falls to transparent at the edge. Default 200. */
+  /** Radius in pixels of the pointer reveal on the CSS fallback
+   * path (tiers 2/3). The GL path's wake size is governed by
+   * splat-radius + diffusion instead. Default 200. */
   @property({ type: Number, attribute: "pointer-radius" })
   pointerRadius = 200;
+
+  /** Energy retention per 60 Hz frame in the GL wake sim — higher
+   * values leave longer trails. Clamped to [0.5, 0.995]; wall-clock
+   * fade time is roughly proportional to 1/(1 − decay). Default
+   * 0.97 ≈ a 1.5–2 s visible fade. */
+  @property({ type: Number })
+  decay = 0.97;
+
+  /** Multiplier on the energy injected per pointer move. Default 1. */
+  @property({ type: Number, attribute: "splat-strength" })
+  splatStrength = 1;
+
+  /** Gaussian radius of the pointer splat in CSS pixels — the width
+   * of the freshly-painted wake before diffusion spreads it.
+   * Default 80. */
+  @property({ type: Number, attribute: "splat-radius" })
+  splatRadius = 80;
 
   // Page-backdrop mode is a pure CSS-driven attribute (`page`), handled
   // entirely by the `:host([page])` style rule — NOT a reactive
@@ -81,9 +122,28 @@ export class HpBackground extends LitElement {
 
   private readonly tile = new TilePipeline();
   private readonly renderPass = new RenderPass();
+  private readonly field = new EnergyField();
   private readonly pointer = new PointerTracker(() => this.handlePointerActivity());
 
   private resizeObserver?: ResizeObserver;
+
+  // ── Sim-loop state ──────────────────────────────────────────────────
+  /** rAF handle of the running sim loop; null while asleep. */
+  private loopHandle: number | null = null;
+  /** performance.now() of the last splat — drives loop self-stop. */
+  private lastSplatAt = 0;
+  /** performance.now() of the previous loop frame, for dt. */
+  private lastFrameAt = 0;
+  /** Canvas-local device-px position of the last splatted point;
+   * NaN when the loop was asleep (prevents a stale segment). */
+  private prevSplatX = Number.NaN;
+  private prevSplatY = Number.NaN;
+  /** Frame intervals collected on the first wake for the adaptive
+   * demotion backstop; null once evaluated. */
+  private adaptiveSamples: number[] | null = [];
+  /** True after adaptive demotion — a context restore must not
+   * resurrect the GL path just to demote again. */
+  private demoted = false;
 
   /** Active matchMedia query watching for DPR changes. Re-created on
    * each change (the query string embeds the current value, so any
@@ -122,6 +182,7 @@ export class HpBackground extends LitElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.stopLoop();
     if (this.pendingFrame !== null) {
       cancelAnimationFrame(this.pendingFrame);
       this.pendingFrame = null;
@@ -177,6 +238,13 @@ export class HpBackground extends LitElement {
     if (!this.canvas) {
       return;
     }
+    if (this.demoted) {
+      // Adaptive demotion is sticky — a context restore lands
+      // straight back on the tile instead of re-running the sim
+      // only to demote again.
+      this.enterFallback();
+      return;
+    }
     const gl = acquireContext(this.canvas);
     if (!gl) {
       this.logRenderPath("CSS tile (WebGL2 unavailable)");
@@ -206,6 +274,7 @@ export class HpBackground extends LitElement {
     try {
       this.tile.init(gl);
       this.renderPass.init(gl);
+      this.field.init(gl);
     } catch {
       // Compile/link/allocation failure — rare on a healthy WebGL2
       // context; degrade to the static tile.
@@ -235,16 +304,18 @@ export class HpBackground extends LitElement {
     this.scheduleRedraw();
   }
 
-  /** Delete GL resources across both pipelines and drop the context
+  /** Delete GL resources across all pipelines and drop the context
    * ref. Safe after context loss (pipelines skip deletes when passed
    * null). */
   private releaseGL(): void {
     this.tile.release(this.gl);
     this.renderPass.release(this.gl);
+    this.field.release(this.gl);
     this.gl = null;
   }
 
   private enterFallback(): void {
+    this.stopLoop();
     this.fallback = true;
     this.setAttribute("data-hp-fallback", "");
     applyFallbackTile(this, this.hexSize, this.pointerRadius);
@@ -301,15 +372,26 @@ export class HpBackground extends LitElement {
     this.watchDpr();
   };
 
-  /** Pointer/preference activity routes by mode: the GL path
-   * schedules a redraw; the fallback path repositions the CSS reveal
-   * mask by writing the pointer coordinates as custom properties —
-   * input data, not visual state, matching the original SVG
-   * implementation's contract. No rAF needed there: the engine
-   * repaints the moved mask on its own schedule. */
+  /** Pointer/preference activity routes by mode. GL path: each move
+   * marks the field alive and (re)wakes the sim loop; under reduced
+   * motion the field is cleared instead so the wake vanishes.
+   * Fallback path: reposition the CSS reveal mask by writing the
+   * pointer coordinates as custom properties — input data, not
+   * visual state, matching the original SVG implementation's
+   * contract; no rAF needed, the engine repaints the moved mask on
+   * its own schedule. */
   private handlePointerActivity(): void {
     if (!this.fallback) {
-      this.scheduleRedraw();
+      if (this.pointer.reducedMotion) {
+        this.stopLoop();
+        if (this.gl) {
+          this.field.clear(this.gl);
+        }
+        this.scheduleRedraw();
+        return;
+      }
+      this.lastSplatAt = performance.now();
+      this.wakeLoop();
       return;
     }
     if (this.pointer.reducedMotion) {
@@ -320,12 +402,155 @@ export class HpBackground extends LitElement {
     this.style.setProperty("--hp-bg-y", `${this.pointer.mouseClientY - rect.top}px`);
   }
 
+  // ── Sim loop ────────────────────────────────────────────────────────
+
+  /** Start the sim loop if asleep. The loop supersedes single-frame
+   * scheduling while it runs. */
+  private wakeLoop(): void {
+    if (this.loopHandle !== null || !this.gl) {
+      return;
+    }
+    if (this.pendingFrame !== null) {
+      cancelAnimationFrame(this.pendingFrame);
+      this.pendingFrame = null;
+    }
+    this.lastFrameAt = performance.now();
+    this.prevSplatX = Number.NaN;
+    this.prevSplatY = Number.NaN;
+    this.loopHandle = requestAnimationFrame(this.runLoopFrame);
+  }
+
+  private stopLoop(): void {
+    if (this.loopHandle !== null) {
+      cancelAnimationFrame(this.loopHandle);
+      this.loopHandle = null;
+    }
+    this.prevSplatX = Number.NaN;
+    this.prevSplatY = Number.NaN;
+  }
+
+  /** Read a tuning knob: the CSS custom property wins when set and
+   * numeric; the attribute/property value is the default. */
+  private knob(cs: CSSStyleDeclaration, name: string, fallback: number): number {
+    const v = Number.parseFloat(cs.getPropertyValue(name));
+    return Number.isFinite(v) ? v : fallback;
+  }
+
+  /** One sim-loop frame: advance the field (decay + diffusion +
+   * this frame's pointer splat), draw, then either continue or —
+   * once the field must have decayed below the visible epsilon —
+   * sleep. Kept as an arrow field so tests can drive frames
+   * manually with an explicit timestamp. */
+  private readonly runLoopFrame = (now: number): void => {
+    this.loopHandle = null;
+    const gl = this.gl;
+    const canvas = this.canvas;
+    if (!gl || !canvas || this.fallback) {
+      return;
+    }
+    const geometry = reconcileCanvasGeometry(this, canvas, gl);
+    if (!geometry.visible) {
+      // Nothing to paint (zero-sized host). Try again next frame
+      // while the field is nominally alive rather than dying mid-
+      // interaction.
+      this.loopHandle = requestAnimationFrame(this.runLoopFrame);
+      return;
+    }
+    // Clamp dt so a background-tab stall doesn't decay the field to
+    // nothing in one giant step (rAF pauses while hidden anyway).
+    const dt = Math.min(50, Math.max(1, now - this.lastFrameAt));
+    this.lastFrameAt = now;
+
+    const cs = getComputedStyle(this);
+    const decayPerFrame = Math.min(
+      0.995,
+      Math.max(0.5, this.knob(cs, "--hp-bg-decay", this.decay))
+    );
+    const effDecay = Math.pow(decayPerFrame, dt / REFERENCE_FRAME_MS);
+
+    // Pointer position in canvas-local device px, y-up — the same
+    // space as gl_FragCoord in the field pass (divided down to field
+    // px). The viewport origin comes from the page-coord offset.
+    const dpr = window.devicePixelRatio || 1;
+    const visLeft = geometry.offLeft / dpr - window.scrollX;
+    const visBottom = geometry.offBottom / dpr - window.scrollY;
+    const curX = (this.pointer.mouseClientX - visLeft) * dpr;
+    const curY = (visBottom - this.pointer.mouseClientY) * dpr;
+
+    let splat = null;
+    if (Number.isNaN(this.prevSplatX)) {
+      this.prevSplatX = curX;
+      this.prevSplatY = curY;
+    }
+    const moved = Math.hypot(curX - this.prevSplatX, curY - this.prevSplatY);
+    if (moved > 0.5) {
+      const strength =
+        this.knob(cs, "--hp-bg-splat-strength", this.splatStrength) *
+        Math.min(1, moved / (SPLAT_SPEED_NORM * dpr));
+      const radius = (this.knob(cs, "--hp-bg-splat-radius", this.splatRadius) * dpr) / FIELD_SCALE;
+      splat = {
+        ax: this.prevSplatX / FIELD_SCALE,
+        ay: this.prevSplatY / FIELD_SCALE,
+        bx: curX / FIELD_SCALE,
+        by: curY / FIELD_SCALE,
+        radius,
+        strength,
+      };
+      this.prevSplatX = curX;
+      this.prevSplatY = curY;
+    }
+
+    this.field.ensureSize(gl, canvas.width, canvas.height);
+    this.field.step(gl, effDecay, splat);
+    this.draw();
+
+    // Adaptive backstop: a "hardware" renderer that can't sustain
+    // even this low-res sim gets treated as tier 2. Median over the
+    // first wake's samples, skipping the first two warm-up frames.
+    if (this.adaptiveSamples) {
+      this.adaptiveSamples.push(dt);
+      if (this.adaptiveSamples.length >= ADAPTIVE_SAMPLE_FRAMES) {
+        const sorted = this.adaptiveSamples.slice(2).sort((a, b) => a - b);
+        const median = sorted[Math.floor(sorted.length / 2)] ?? 0;
+        this.adaptiveSamples = null;
+        if (median > ADAPTIVE_DEMOTE_MS) {
+          this.demote(median);
+          return;
+        }
+      }
+    }
+
+    // Sleep once every texel must be below the visible epsilon —
+    // computed analytically from the decay rate, no GPU readback.
+    const aliveMs = (Math.log(FIELD_EPSILON) / Math.log(decayPerFrame)) * REFERENCE_FRAME_MS;
+    if (now - this.lastSplatAt < aliveMs) {
+      this.loopHandle = requestAnimationFrame(this.runLoopFrame);
+    } else {
+      this.stopLoop();
+    }
+  };
+
+  /** Tier-2 demotion decided by measurement rather than the renderer
+   * string (see the three-tier decision). Sticky via `demoted`. */
+  private demote(medianMs: number): void {
+    this.demoted = true;
+    this.logRenderPath(`CSS tile (adaptive demotion: ${medianMs.toFixed(1)}ms median sim frame)`);
+    if (this.canvas) {
+      this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+      this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
+    }
+    this.gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    this.releaseGL();
+    this.enterFallback();
+  }
+
   /** Coalesce redraws onto the next animation frame. Multiple
    * triggers in one frame (resize + scroll + settle, say) collapse to
    * a single draw that runs *after* layout settles — never
    * synchronously inside an observer callback. */
   private scheduleRedraw(): void {
-    if (this.pendingFrame !== null) {
+    if (this.pendingFrame !== null || this.loopHandle !== null) {
+      // A running sim loop already repaints every frame.
       return;
     }
     this.pendingFrame = requestAnimationFrame(() => {
@@ -336,19 +561,21 @@ export class HpBackground extends LitElement {
 
   private draw(): void {
     const gl = this.gl;
-    if (!gl) {
+    const canvas = this.canvas;
+    if (!gl || !canvas) {
       return;
     }
-    const geometry = reconcileCanvasGeometry(this, this.canvas, gl);
+    const geometry = reconcileCanvasGeometry(this, canvas, gl);
     if (!geometry.visible) {
       return;
     }
+    // Single-frame draws (scroll, resize, settle) sample whatever
+    // state the field holds — usually zeros while the loop sleeps.
+    this.field.ensureSize(gl, canvas.width, canvas.height);
     this.renderPass.draw(gl, this, {
       geometry,
       tile: this.tile,
-      mouseClientX: this.pointer.effectiveClientX,
-      mouseClientY: this.pointer.effectiveClientY,
-      pointerRadius: this.pointerRadius,
+      field: this.field,
     });
   }
 

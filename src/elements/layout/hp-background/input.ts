@@ -61,17 +61,6 @@ export class PointerTracker {
     }
   }
 
-  /** The X to hand the render pass — off-screen under reduced motion
-   * so the halo collapses without branching in the shader. */
-  get effectiveClientX(): number {
-    return this.reducedMotion ? OFFSCREEN_MOUSE : this.mouseClientX;
-  }
-
-  /** See {@link effectiveClientX}. */
-  get effectiveClientY(): number {
-    return this.reducedMotion ? OFFSCREEN_MOUSE : this.mouseClientY;
-  }
-
   private readonly handlePointerMove = (event: PointerEvent): void => {
     this.mouseClientX = event.clientX;
     this.mouseClientY = event.clientY;

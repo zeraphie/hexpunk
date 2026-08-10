@@ -699,6 +699,126 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -898,126 +1018,6 @@
           "declaration": {
             "name": "sun",
             "module": "src/icons/sun.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
           }
         }
       ]
@@ -10338,6 +10338,322 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/field.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "FIELD_SCALE",
+          "type": {
+            "text": "number"
+          },
+          "default": "8",
+          "description": "Field resolution divisor: one field texel per 8×8 device-pixel\nblock. Diffusion at 1 field-px/step then spreads ~8 screen px per\nframe — organic drift without a velocity sim — and the whole pass\ncosts ~1.5% of a fullscreen-resolution one."
+        },
+        {
+          "kind": "variable",
+          "name": "FIELD_EPSILON",
+          "type": {
+            "text": "number"
+          },
+          "default": "0.004",
+          "description": "Energy below this reads as fully faded (the runtime smoothstep\noutput is imperceptible), so the loop can sleep once the whole\nfield must be under it."
+        },
+        {
+          "kind": "class",
+          "description": "Owns the ping-pong energy textures and the simulation pass. One\ninstance per element; resources are (re)created on context init /\nrestore via init and dropped via release.",
+          "name": "EnergyField",
+          "members": [
+            {
+              "kind": "field",
+              "name": "program",
+              "type": {
+                "text": "WebGLProgram | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "textures",
+              "type": {
+                "text": "[WebGLTexture | null, WebGLTexture | null]"
+              },
+              "privacy": "private",
+              "default": "[null, null]"
+            },
+            {
+              "kind": "field",
+              "name": "fbos",
+              "type": {
+                "text": "[WebGLFramebuffer | null, WebGLFramebuffer | null]"
+              },
+              "privacy": "private",
+              "default": "[null, null]"
+            },
+            {
+              "kind": "field",
+              "name": "readIndex",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Index of the texture currently holding the latest field state."
+            },
+            {
+              "kind": "field",
+              "name": "halfFloat",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "True when R16F render targets are available; RGBA8 otherwise\n(energy then clamps at 1.0 — visually equivalent, less headroom)."
+            },
+            {
+              "kind": "field",
+              "name": "uFieldLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uFieldSizeLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uDecayLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatALoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatBLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatRadiusLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatStrengthLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "width",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Field texture dimensions (device px / FIELD_SCALE)."
+            },
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "texture",
+              "type": {
+                "text": "WebGLTexture | null"
+              },
+              "description": "The texture holding the latest field state — what the runtime\npass samples. Null before init.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                }
+              ],
+              "description": "Compile the sim program and detect half-float renderability.\nTextures are allocated lazily by ensureSize."
+            },
+            {
+              "kind": "method",
+              "name": "ensureSize",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                },
+                {
+                  "name": "canvasW",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Canvas backing-store width in device px."
+                },
+                {
+                  "name": "canvasH",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Canvas backing-store height in device px."
+                }
+              ],
+              "description": "Match the field to the canvas backing store, reallocating both\nping-pong textures when the size changes (which zeroes the field\n— acceptable on resize)."
+            },
+            {
+              "kind": "method",
+              "name": "step",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                },
+                {
+                  "name": "decay",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Effective per-step decay (already dt-normalized)."
+                },
+                {
+                  "name": "splat",
+                  "type": {
+                    "text": "FieldSplat | null"
+                  },
+                  "description": "This frame's pointer splat, or null for none."
+                }
+              ],
+              "description": "Advance the simulation one step: read the current field, write\ndecay × diffusion + splat into the other texture, swap."
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                }
+              ],
+              "description": "Zero the field (both textures) without releasing resources —\nused when reduced motion engages so the wake vanishes cleanly."
+            },
+            {
+              "kind": "method",
+              "name": "release",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext | null"
+                  },
+                  "description": "The context to delete against, or null when lost."
+                }
+              ],
+              "description": "Delete GL resources and drop refs. Pass null after context loss."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FIELD_SCALE",
+          "declaration": {
+            "name": "FIELD_SCALE",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FIELD_EPSILON",
+          "declaration": {
+            "name": "FIELD_EPSILON",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EnergyField",
+          "declaration": {
+            "name": "EnergyField",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/layout/hp-background/geometry.ts",
       "declarations": [
         {
@@ -10416,6 +10732,25 @@
         },
         {
           "kind": "function",
+          "name": "describeRenderer",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "gl",
+              "type": {
+                "text": "WebGL2RenderingContext"
+              },
+              "description": "A live WebGL2 context."
+            }
+          ],
+          "description": "The context's unmasked renderer string — the truthful \"who is\nactually rasterizing\" answer, used for software detection and the\ndev-facing render-path log."
+        },
+        {
+          "kind": "function",
           "name": "isSoftwareRenderer",
           "return": {
             "type": {
@@ -10431,7 +10766,7 @@
               "description": "A live WebGL2 context."
             }
           ],
-          "description": "Detect a software rasterizer (tier 2 of the three-tier degradation\ndecision): hardware acceleration off, WebGL alive via SwiftShader /\nllvmpipe / similar. Best-effort — Firefox sanitizes the renderer\nstring, in which case we report hardware and rely on the future\nadaptive frame-time backstop (Step 4). A false negative only means\nthe energy sim runs slower; the static pattern is unaffected."
+          "description": "Detect a software rasterizer (tier 2 of the three-tier degradation\ndecision): hardware acceleration off, WebGL alive via SwiftShader /\nllvmpipe / WARP. Best-effort — where the renderer string is\nwithheld we report hardware and rely on the future adaptive\nframe-time backstop (Step 4). A false negative only means the\nenergy sim runs slower; the static pattern is unaffected."
         },
         {
           "kind": "function",
@@ -10486,6 +10821,14 @@
         },
         {
           "kind": "js",
+          "name": "describeRenderer",
+          "declaration": {
+            "name": "describeRenderer",
+            "module": "src/elements/layout/hp-background/gl.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "isSoftwareRenderer",
           "declaration": {
             "name": "isSoftwareRenderer",
@@ -10508,7 +10851,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; strokes brighten softly around the cursor. Two layout modes:\ncontained (default — absolute, fills a positioned parent) and\n`page` (fixed full-viewport backdrop behind page content).",
+          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Two layout\nmodes: contained (default — absolute, fills a positioned parent)\nand `page` (fixed full-viewport backdrop behind page content).",
           "name": "HpBackground",
           "cssProperties": [
             {
@@ -10516,7 +10859,7 @@
               "name": "--hp-bg-stroke"
             },
             {
-              "description": "Cursor-halo stroke colour",
+              "description": "Energy-wake stroke colour",
               "name": "--hp-bg-stroke-bright"
             },
             {
@@ -10524,12 +10867,24 @@
               "name": "--hp-bg-faint-opacity"
             },
             {
-              "description": "Halo layer opacity (default 0.3)",
+              "description": "Wake layer opacity (default 0.3)",
               "name": "--hp-bg-bright-opacity"
             },
             {
-              "description": "Halo radius on the CSS fallback path (set from pointer-radius)",
+              "description": "Reveal radius on the CSS fallback path (set from pointer-radius)",
               "name": "--hp-bg-pointer-radius"
+            },
+            {
+              "description": "Overrides the decay attribute",
+              "name": "--hp-bg-decay"
+            },
+            {
+              "description": "Overrides the splat-strength attribute",
+              "name": "--hp-bg-splat-strength"
+            },
+            {
+              "description": "Overrides the splat-radius attribute",
+              "name": "--hp-bg-splat-radius"
             },
             {
               "description": "Stacking position in page mode (default -1)",
@@ -10554,8 +10909,38 @@
                 "text": "number"
               },
               "default": "200",
-              "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200.",
+              "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200.",
               "attribute": "pointer-radius"
+            },
+            {
+              "kind": "field",
+              "name": "decay",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.97",
+              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.97 ≈ a 1.5–2 s visible fade.",
+              "attribute": "decay"
+            },
+            {
+              "kind": "field",
+              "name": "splatStrength",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "description": "Multiplier on the energy injected per pointer move. Default 1.",
+              "attribute": "splat-strength"
+            },
+            {
+              "kind": "field",
+              "name": "splatRadius",
+              "type": {
+                "text": "number"
+              },
+              "default": "80",
+              "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80.",
+              "attribute": "splat-radius"
             },
             {
               "kind": "field",
@@ -10613,6 +10998,13 @@
             },
             {
               "kind": "field",
+              "name": "field",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new EnergyField()"
+            },
+            {
+              "kind": "field",
               "name": "pointer",
               "privacy": "private",
               "readonly": true,
@@ -10625,6 +11017,67 @@
                 "text": "ResizeObserver | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "loopHandle",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "rAF handle of the running sim loop; null while asleep."
+            },
+            {
+              "kind": "field",
+              "name": "lastSplatAt",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "performance.now() of the last splat — drives loop self-stop."
+            },
+            {
+              "kind": "field",
+              "name": "lastFrameAt",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "performance.now() of the previous loop frame, for dt."
+            },
+            {
+              "kind": "field",
+              "name": "prevSplatX",
+              "privacy": "private",
+              "description": "Canvas-local device-px position of the last splatted point;\nNaN when the loop was asleep (prevents a stale segment)."
+            },
+            {
+              "kind": "field",
+              "name": "prevSplatY",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "adaptiveSamples",
+              "type": {
+                "text": "number[] | null"
+              },
+              "privacy": "private",
+              "default": "[]",
+              "description": "Frame intervals collected on the first wake for the adaptive\ndemotion backstop; null once evaluated."
+            },
+            {
+              "kind": "field",
+              "name": "demoted",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "True after adaptive demotion — a context restore must not\nresurrect the GL path just to demote again."
             },
             {
               "kind": "field",
@@ -10645,6 +11098,25 @@
               "privacy": "private",
               "default": "null",
               "description": "Pending rAF handle for a coalesced redraw; null when none."
+            },
+            {
+              "kind": "method",
+              "name": "logRenderPath",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Dev-facing render-path log: which of the three tiers this\ninstance is actually using, and why. console.debug so it only\nshows when the DevTools console level includes Verbose — silent\nfor consumers at default settings."
             },
             {
               "kind": "method",
@@ -10676,7 +11148,7 @@
                   "text": "void"
                 }
               },
-              "description": "Delete GL resources across both pipelines and drop the context\nref. Safe after context loss (pipelines skip deletes when passed\nnull)."
+              "description": "Delete GL resources across all pipelines and drop the context\nref. Safe after context loss (pipelines skip deletes when passed\nnull)."
             },
             {
               "kind": "method",
@@ -10737,7 +11209,85 @@
                   "text": "void"
                 }
               },
-              "description": "Pointer/preference activity routes by mode: the GL path\nschedules a redraw; the fallback path repositions the CSS reveal\nmask by writing the pointer coordinates as custom properties —\ninput data, not visual state, matching the original SVG\nimplementation's contract. No rAF needed there: the engine\nrepaints the moved mask on its own schedule."
+              "description": "Pointer/preference activity routes by mode. GL path: each move\nmarks the field alive and (re)wakes the sim loop; under reduced\nmotion the field is cleared instead so the wake vanishes.\nFallback path: reposition the CSS reveal mask by writing the\npointer coordinates as custom properties — input data, not\nvisual state, matching the original SVG implementation's\ncontract; no rAF needed, the engine repaints the moved mask on\nits own schedule."
+            },
+            {
+              "kind": "method",
+              "name": "wakeLoop",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Start the sim loop if asleep. The loop supersedes single-frame\nscheduling while it runs."
+            },
+            {
+              "kind": "method",
+              "name": "stopLoop",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "knob",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "cs",
+                  "type": {
+                    "text": "CSSStyleDeclaration"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "fallback",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Read a tuning knob: the CSS custom property wins when set and\nnumeric; the attribute/property value is the default."
+            },
+            {
+              "kind": "field",
+              "name": "runLoopFrame",
+              "privacy": "private",
+              "readonly": true,
+              "description": "One sim-loop frame: advance the field (decay + diffusion +\nthis frame's pointer splat), draw, then either continue or —\nonce the field must have decayed below the visible epsilon —\nsleep. Kept as an arrow field so tests can drive frames\nmanually with an explicit timestamp."
+            },
+            {
+              "kind": "method",
+              "name": "demote",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "medianMs",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Tier-2 demotion decided by measurement rather than the renderer\nstring (see the three-tier decision). Sticky via `demoted`."
             },
             {
               "kind": "method",
@@ -10777,8 +11327,35 @@
                 "text": "number"
               },
               "default": "200",
-              "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200.",
+              "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200.",
               "fieldName": "pointerRadius"
+            },
+            {
+              "name": "decay",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.97",
+              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.97 ≈ a 1.5–2 s visible fade.",
+              "fieldName": "decay"
+            },
+            {
+              "name": "splat-strength",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "description": "Multiplier on the energy injected per pointer move. Default 1.",
+              "fieldName": "splatStrength"
+            },
+            {
+              "name": "splat-radius",
+              "type": {
+                "text": "number"
+              },
+              "default": "80",
+              "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80.",
+              "fieldName": "splatRadius"
             }
           ],
           "superclass": {
@@ -10868,24 +11445,6 @@
             },
             {
               "kind": "field",
-              "name": "effectiveClientX",
-              "type": {
-                "text": "number"
-              },
-              "description": "The X to hand the render pass — off-screen under reduced motion\nso the halo collapses without branching in the shader.",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "effectiveClientY",
-              "type": {
-                "text": "number"
-              },
-              "description": "See effectiveClientX.",
-              "readonly": true
-            },
-            {
-              "kind": "field",
               "name": "handlePointerMove",
               "privacy": "private",
               "readonly": true
@@ -10921,7 +11480,7 @@
             "text": "number"
           },
           "default": "-1e6",
-          "description": "Sentinel mouse position. -1e6 puts the cursor far enough\noff-canvas that the smoothstep halo collapses to zero everywhere\nthe visible viewport could ever reach."
+          "description": "Sentinel pointer position: far enough off-canvas that no splat\ngeometry derived from it can reach the visible viewport."
         },
         {
           "kind": "class",
@@ -10957,6 +11516,15 @@
             },
             {
               "kind": "field",
+              "name": "uFieldTexLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
               "name": "uTileSizeLoc",
               "type": {
                 "text": "WebGLUniformLocation | null"
@@ -10975,16 +11543,7 @@
             },
             {
               "kind": "field",
-              "name": "uMouseLoc",
-              "type": {
-                "text": "WebGLUniformLocation | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "uPointerRadiusLoc",
+              "name": "uCanvasSizeLoc",
               "type": {
                 "text": "WebGLUniformLocation | null"
               },

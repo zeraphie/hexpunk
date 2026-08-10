@@ -1338,7 +1338,7 @@
     },
     {
       "name": "hp-background",
-      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; strokes brighten softly around the cursor. Two layout modes:\ncontained (default — absolute, fills a positioned parent) and\n`page` (fixed full-viewport backdrop behind page content).",
+      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Two layout\nmodes: contained (default — absolute, fills a positioned parent)\nand `page` (fixed full-viewport backdrop behind page content).",
       "attributes": [
         {
           "name": "hex-size",
@@ -1346,7 +1346,19 @@
         },
         {
           "name": "pointer-radius",
-          "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200."
+          "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200."
+        },
+        {
+          "name": "decay",
+          "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.97 ≈ a 1.5–2 s visible fade."
+        },
+        {
+          "name": "splat-strength",
+          "description": "Multiplier on the energy injected per pointer move. Default 1."
+        },
+        {
+          "name": "splat-radius",
+          "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80."
         }
       ]
     },

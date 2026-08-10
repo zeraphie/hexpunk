@@ -2,33 +2,34 @@
   ─ Runtime pass ─
 
   One fullscreen triangle per redraw: sample the baked tile in
-  shared page coordinates, blend faint→bright by cursor
-  proximity, output premultiplied. Colour tokens are read from
-  computed style at draw time so theme changes just work.
-  (PLAN.hp-grid-smoothness.md § Steps › Step 2)
+  shared page coordinates, brighten strokes by the energy
+  field's local value, output premultiplied. Colour tokens are
+  read from computed style at draw time so theme changes just
+  work.
+  (PLAN.hp-grid-smoothness.md § Steps › Step 4)
 */
 
 import { type RgbaTuple, parseCssColor } from "../../../lib/css-color.js";
 import type { TilePipeline } from "./bake.js";
+import type { EnergyField } from "./field.js";
 import type { CanvasGeometry } from "./geometry.js";
 import { VERTEX_SHADER_SOURCE, createProgram } from "./gl.js";
 
-/** Sentinel mouse position. -1e6 puts the cursor far enough
- * off-canvas that the smoothstep halo collapses to zero everywhere
- * the visible viewport could ever reach. */
+/** Sentinel pointer position: far enough off-canvas that no splat
+ * geometry derived from it can reach the visible viewport. */
 export const OFFSCREEN_MOUSE = -1e6;
 
 /** Runtime fragment shader. Samples the baked tile texture with
- * REPEAT wrap, computes the cursor-halo blend, and outputs
+ * REPEAT wrap, brightens by the energy field, and outputs
  * premultiplied RGBA matching the context's premultipliedAlpha mode. */
 const RUNTIME_FRAGMENT_SHADER_SOURCE = `#version 300 es
 precision highp float;
 
 uniform sampler2D uTileTex;
+uniform sampler2D uFieldTex;
 uniform vec2 uTileSize;          // visual tile period in device px (UV divisor)
 uniform vec2 uOffset;            // page-coord offset in device px (see note)
-uniform vec2 uMouse;             // mouse position in device px (canvas-local)
-uniform float uPointerRadius;    // halo radius in device px
+uniform vec2 uCanvasSize;        // drawing buffer size in device px
 uniform vec4 uFaintColor;        // premultiplied
 uniform vec4 uBrightColor;       // premultiplied
 
@@ -43,10 +44,12 @@ void main() {
   vec2 page = vec2(gl_FragCoord.x, -gl_FragCoord.y) + uOffset;
   float coverage = texture(uTileTex, page / uTileSize).r;
 
-  // Cursor halo stays canvas-local — it follows the actual on-screen
-  // pointer, not a page-locked position.
-  float halo = smoothstep(uPointerRadius, 0.0, distance(gl_FragCoord.xy, uMouse));
-  vec4 col = mix(uFaintColor, uBrightColor, halo);
+  // The energy field is viewport-attached and rendered in the same
+  // gl_FragCoord orientation as this pass, so the UV is a straight
+  // divide — no flip. Bilinear filtering on the low-res field gives
+  // the wake its soft edge for free.
+  float energy = texture(uFieldTex, gl_FragCoord.xy / uCanvasSize).r;
+  vec4 col = mix(uFaintColor, uBrightColor, smoothstep(0.0, 1.0, energy));
   fragColor = col * coverage;
 }
 `;
@@ -57,13 +60,8 @@ export interface DrawInput {
   geometry: CanvasGeometry;
   /** The baked tile to sample. */
   tile: TilePipeline;
-  /** Pointer position in viewport CSS px, or {@link OFFSCREEN_MOUSE}
-   * sentinels when the halo should be suppressed (no pointer yet,
-   * reduced motion). */
-  mouseClientX: number;
-  mouseClientY: number;
-  /** Halo radius in CSS px. */
-  pointerRadius: number;
+  /** The energy field whose current state brightens the strokes. */
+  field: EnergyField;
 }
 
 /**
@@ -75,10 +73,10 @@ export class RenderPass {
   private program: WebGLProgram | null = null;
   private vao: WebGLVertexArrayObject | null = null;
   private uTileTexLoc: WebGLUniformLocation | null = null;
+  private uFieldTexLoc: WebGLUniformLocation | null = null;
   private uTileSizeLoc: WebGLUniformLocation | null = null;
   private uOffsetLoc: WebGLUniformLocation | null = null;
-  private uMouseLoc: WebGLUniformLocation | null = null;
-  private uPointerRadiusLoc: WebGLUniformLocation | null = null;
+  private uCanvasSizeLoc: WebGLUniformLocation | null = null;
   private uFaintColorLoc: WebGLUniformLocation | null = null;
   private uBrightColorLoc: WebGLUniformLocation | null = null;
 
@@ -92,10 +90,10 @@ export class RenderPass {
   init(gl: WebGL2RenderingContext): void {
     this.program = createProgram(gl, VERTEX_SHADER_SOURCE, RUNTIME_FRAGMENT_SHADER_SOURCE);
     this.uTileTexLoc = gl.getUniformLocation(this.program, "uTileTex");
+    this.uFieldTexLoc = gl.getUniformLocation(this.program, "uFieldTex");
     this.uTileSizeLoc = gl.getUniformLocation(this.program, "uTileSize");
     this.uOffsetLoc = gl.getUniformLocation(this.program, "uOffset");
-    this.uMouseLoc = gl.getUniformLocation(this.program, "uMouse");
-    this.uPointerRadiusLoc = gl.getUniformLocation(this.program, "uPointerRadius");
+    this.uCanvasSizeLoc = gl.getUniformLocation(this.program, "uCanvasSize");
     this.uFaintColorLoc = gl.getUniformLocation(this.program, "uFaintColor");
     this.uBrightColorLoc = gl.getUniformLocation(this.program, "uBrightColor");
 
@@ -117,7 +115,6 @@ export class RenderPass {
     if (!this.program || !input.tile.texture) {
       return;
     }
-    const dpr = window.devicePixelRatio || 1;
     const geo = input.geometry;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -134,23 +131,13 @@ export class RenderPass {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, input.tile.texture);
     gl.uniform1i(this.uTileTexLoc, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, input.field.texture);
+    gl.uniform1i(this.uFieldTexLoc, 1);
 
     gl.uniform2f(this.uTileSizeLoc, input.tile.tileSize[0], input.tile.tileSize[1]);
     gl.uniform2f(this.uOffsetLoc, geo.offLeft, geo.offBottom);
-
-    // Convert stored viewport CSS coords to canvas-local device px.
-    // The visible slice's viewport origin is recoverable from the
-    // page-coord offset:
-    //   visLeft   = offLeft   / dpr - scrollX
-    //   visBottom = offBottom / dpr - scrollY
-    const visLeft = geo.offLeft / dpr - window.scrollX;
-    const visBottom = geo.offBottom / dpr - window.scrollY;
-    gl.uniform2f(
-      this.uMouseLoc,
-      (input.mouseClientX - visLeft) * dpr,
-      (visBottom - input.mouseClientY) * dpr
-    );
-    gl.uniform1f(this.uPointerRadiusLoc, input.pointerRadius * dpr);
+    gl.uniform2f(this.uCanvasSizeLoc, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
     const cs = getComputedStyle(host);
     const faintOpacity = parseFloat(cs.getPropertyValue("--hp-bg-faint-opacity")) || 0;
@@ -193,10 +180,10 @@ export class RenderPass {
     this.program = null;
     this.vao = null;
     this.uTileTexLoc = null;
+    this.uFieldTexLoc = null;
     this.uTileSizeLoc = null;
     this.uOffsetLoc = null;
-    this.uMouseLoc = null;
-    this.uPointerRadiusLoc = null;
+    this.uCanvasSizeLoc = null;
     this.uFaintColorLoc = null;
     this.uBrightColorLoc = null;
   }
