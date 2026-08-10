@@ -31,6 +31,7 @@ import { backgroundStyles } from "./styles.js";
  * @cssproperty --hp-bg-stroke-bright - Cursor-halo stroke colour
  * @cssproperty --hp-bg-faint-opacity - Base layer opacity (default 0.25)
  * @cssproperty --hp-bg-bright-opacity - Halo layer opacity (default 0.3)
+ * @cssproperty --hp-bg-pointer-radius - Halo radius on the CSS fallback path (set from pointer-radius)
  * @cssproperty --hp-bg-z - Stacking position in page mode (default -1)
  */
 @customElement("hp-background")
@@ -80,7 +81,7 @@ export class HpBackground extends LitElement {
 
   private readonly tile = new TilePipeline();
   private readonly renderPass = new RenderPass();
-  private readonly pointer = new PointerTracker(() => this.scheduleRedraw());
+  private readonly pointer = new PointerTracker(() => this.handlePointerActivity());
 
   private resizeObserver?: ResizeObserver;
 
@@ -152,10 +153,10 @@ export class HpBackground extends LitElement {
   }
 
   override updated(changed: Map<string, unknown>): void {
-    if (changed.has("hexSize")) {
+    if (changed.has("hexSize") || changed.has("pointerRadius")) {
       if (this.fallback) {
-        applyFallbackTile(this, this.hexSize);
-      } else if (this.gl) {
+        applyFallbackTile(this, this.hexSize, this.pointerRadius);
+      } else if (this.gl && changed.has("hexSize")) {
         this.rebake();
       }
     }
@@ -201,9 +202,6 @@ export class HpBackground extends LitElement {
       this.enterFallback();
       return;
     }
-    // A context restore can land here after a fallback stint —
-    // pointer-driven redraws are wanted again on the live GL path.
-    this.pointer.suppressPointerScheduling = false;
     this.watchDpr();
     this.rebake();
     this.draw();
@@ -235,10 +233,7 @@ export class HpBackground extends LitElement {
   private enterFallback(): void {
     this.fallback = true;
     this.setAttribute("data-hp-fallback", "");
-    // The static tile never repaints on pointer movement — stop
-    // pointermove from scheduling frames that draw() would discard.
-    this.pointer.suppressPointerScheduling = true;
-    applyFallbackTile(this, this.hexSize);
+    applyFallbackTile(this, this.hexSize, this.pointerRadius);
   }
 
   private readonly handleContextLost = (event: Event): void => {
@@ -290,6 +285,25 @@ export class HpBackground extends LitElement {
     // In fallback the SVG tile is DPR-independent; just re-arm.
     this.watchDpr();
   };
+
+  /** Pointer/preference activity routes by mode: the GL path
+   * schedules a redraw; the fallback path repositions the CSS reveal
+   * mask by writing the pointer coordinates as custom properties —
+   * input data, not visual state, matching the original SVG
+   * implementation's contract. No rAF needed there: the engine
+   * repaints the moved mask on its own schedule. */
+  private handlePointerActivity(): void {
+    if (!this.fallback) {
+      this.scheduleRedraw();
+      return;
+    }
+    if (this.pointer.reducedMotion) {
+      return;
+    }
+    const rect = this.getBoundingClientRect();
+    this.style.setProperty("--hp-bg-x", `${this.pointer.mouseClientX - rect.left}px`);
+    this.style.setProperty("--hp-bg-y", `${this.pointer.mouseClientY - rect.top}px`);
+  }
 
   /** Coalesce redraws onto the next animation frame. Multiple
    * triggers in one frame (resize + scroll + settle, say) collapse to

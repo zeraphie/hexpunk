@@ -54,17 +54,20 @@ export function buildFallbackTileDataUrl(hexSize: number): string {
 }
 
 /**
- * Write the fallback tile image + dimensions onto the host as inline
- * custom properties so the `:host([data-hp-fallback])` CSS picks them
- * up and `hex-size` changes propagate.
+ * Write the fallback tile image + dimensions + pointer-reveal radius
+ * onto the host as inline custom properties so the
+ * `:host([data-hp-fallback])` CSS picks them up and `hex-size` /
+ * `pointer-radius` changes propagate.
  *
  * @param host - The hp-background element in fallback state.
  * @param hexSize - Hex side length in CSS pixels.
+ * @param pointerRadius - Bright-reveal radius in CSS pixels.
  */
-export function applyFallbackTile(host: HTMLElement, hexSize: number): void {
+export function applyFallbackTile(host: HTMLElement, hexSize: number, pointerRadius: number): void {
   host.style.setProperty("--hp-bg-fallback-image", buildFallbackTileDataUrl(hexSize));
   const tileW = hexSize * Math.sqrt(3);
   const tileH = hexSize * 3;
   host.style.setProperty("--hp-bg-tile-width", `${tileW.toFixed(2)}px`);
   host.style.setProperty("--hp-bg-tile-height", `${tileH.toFixed(2)}px`);
+  host.style.setProperty("--hp-bg-pointer-radius", `${pointerRadius}px`);
 }

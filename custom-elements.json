@@ -699,126 +699,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -1018,6 +898,126 @@
           "declaration": {
             "name": "sun",
             "module": "src/icons/sun.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
           }
         }
       ]
@@ -8639,6 +8639,218 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/status/hp-badge.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+          "name": "HpBadge",
+          "slots": [
+            {
+              "description": "Badge label or count",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "attribute": "active",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "fieldName": "tone"
+            },
+            {
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "fieldName": "active"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-badge",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBadge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-badge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/status/hp-tag.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
+          "name": "HpTag",
+          "cssParts": [
+            {
+              "description": "The dismiss button (when removable)",
+              "name": "remove"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Tag label",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "attribute": "removable",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "handleRemove",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleRemoveKey",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "description": "When the dismiss × is activated (click / Enter / Space)",
+              "name": "hp-tag-remove"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "fieldName": "removable"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tag",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpTag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/tether/hp-tether.ts",
       "declarations": [
         {
@@ -9844,218 +10056,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/status/hp-badge.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-          "name": "HpBadge",
-          "slots": [
-            {
-              "description": "Badge label or count",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "attribute": "active",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "fieldName": "tone"
-            },
-            {
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "fieldName": "active"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-badge",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBadge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-badge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/status/hp-tag.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-          "name": "HpTag",
-          "cssParts": [
-            {
-              "description": "The dismiss button (when removable)",
-              "name": "remove"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Tag label",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "attribute": "removable",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "handleRemove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleRemoveKey",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When the dismiss × is activated (click / Enter / Space)",
-              "name": "hp-tag-remove"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "fieldName": "removable"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tag",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpTag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-tag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/layout/hp-background/bake.ts",
       "declarations": [
         {
@@ -10281,7 +10281,7 @@
               "description": "Hex side length in CSS pixels (centre-to-vertex)."
             }
           ],
-          "description": "Build a CSS data-URL repeating-hex-tile background. Embeds a 5-hex\ntile (1 centered + 4 corner-quartered) sized to `hexSize` so\nneighbouring tiles assemble into a continuous tessellation under\nCSS `background-repeat: repeat`. The stroke uses `currentColor` so\nthe host's `color` (set to `--hp-bg-stroke` by the fallback\n`:host` rules) drives the tint."
+          "description": "Build a CSS data-URL repeating-hex-tile image, used as a\n**mask** (not a background): a data-URL SVG is a separate document\nthat cannot see the page's `currentColor` — stroked that way it\nalways renders black. Instead the host paints\n`background-color: var(--hp-bg-stroke)` and this tile masks it\ninto hex outlines, so the colour tracks the token cascade and\nlight/dark theme flips with no JS. Embeds a 5-hex tile (1 centred\n+ 4 corner-quartered) sized to `hexSize` so neighbouring tiles\nassemble into a continuous tessellation under `mask-repeat`."
         },
         {
           "kind": "function",
@@ -10305,9 +10305,16 @@
                 "text": "number"
               },
               "description": "Hex side length in CSS pixels."
+            },
+            {
+              "name": "pointerRadius",
+              "type": {
+                "text": "number"
+              },
+              "description": "Bright-reveal radius in CSS pixels."
             }
           ],
-          "description": "Write the fallback tile image + dimensions onto the host as inline\ncustom properties so the `:host([data-hp-fallback])` CSS picks them\nup and `hex-size` changes propagate."
+          "description": "Write the fallback tile image + dimensions + pointer-reveal radius\nonto the host as inline custom properties so the\n`:host([data-hp-fallback])` CSS picks them up and `hex-size` /\n`pointer-radius` changes propagate."
         }
       ],
       "exports": [
@@ -10521,6 +10528,10 @@
               "name": "--hp-bg-bright-opacity"
             },
             {
+              "description": "Halo radius on the CSS fallback path (set from pointer-radius)",
+              "name": "--hp-bg-pointer-radius"
+            },
+            {
               "description": "Stacking position in page mode (default -1)",
               "name": "--hp-bg-z"
             }
@@ -10584,7 +10595,7 @@
               },
               "privacy": "private",
               "default": "false",
-              "description": "Tier-2 flag: WebGL alive but software-rasterized (HW accel\noff). The halo is suppressed — pattern-only, same rendering as\nreduced motion — because per-pointermove fullscreen redraws crawl\non software rasterizers. See the three-tier decision in the ADR."
+              "description": "Tier-2 flag: WebGL alive but software-rasterized (HW accel\noff). Routed to the static CSS tile in initGL — the software\ncompositor displays WebGL canvases unreliably even when the\nbuffer is fully drawn. See the three-tier decision in the ADR."
             },
             {
               "kind": "field",
@@ -10605,7 +10616,7 @@
               "name": "pointer",
               "privacy": "private",
               "readonly": true,
-              "default": "new PointerTracker(() => this.scheduleRedraw())"
+              "default": "new PointerTracker(() => this.handlePointerActivity())"
             },
             {
               "kind": "field",
@@ -10719,6 +10730,17 @@
             },
             {
               "kind": "method",
+              "name": "handlePointerActivity",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Pointer/preference activity routes by mode: the GL path\nschedules a redraw; the fallback path repositions the CSS reveal\nmask by writing the pointer coordinates as custom properties —\ninput data, not visual state, matching the original SVG\nimplementation's contract. No rAF needed there: the engine\nrepaints the moved mask on its own schedule."
+            },
+            {
+              "kind": "method",
               "name": "scheduleRedraw",
               "privacy": "private",
               "return": {
@@ -10814,15 +10836,6 @@
               },
               "default": "false",
               "description": "True while the user prefers reduced motion — the halo is\nsuppressed (mouse reads as off-screen) but the faint base\npattern still renders."
-            },
-            {
-              "kind": "field",
-              "name": "suppressPointerScheduling",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Set by the owner when pointer movement cannot change the\nrendered output (tier-2 software rendering suppresses the halo)\n— coords are still recorded, but no redraw is scheduled per\nmove. Preference changes always schedule, since they do change\nthe output."
             },
             {
               "kind": "field",
@@ -11133,7 +11146,7 @@
         {
           "kind": "variable",
           "name": "backgroundStyles",
-          "default": "css` :host { position: absolute; inset: 0; display: block; pointer-events: none; overflow: hidden; /* contain: paint keeps the decorative painting isolated (canvas * can't leak outside the host) without the size containment that * contain: strict would impose — size containment suppressed * ResizeObserver from firing on ancestor-driven inset:0 size * changes (async content settling, fonts loading, hp-code * highlighting). */ contain: paint; /* Both layers use full outline tokens, dialed by independent * opacities. The opacity dial lets us land between the system * outline rungs (--hp-outline-faint reads as nothing on common * backdrops; --hp-outline-variant reads as too present at 1.0). * Default 0.25 for the base sits the grid at \"barely there, but * there\"; 0.3 for the cursor halo keeps the brightening a soft * trail rather than a search-light. */ --hp-bg-stroke: var(--hp-outline-variant); --hp-bg-stroke-bright: var(--hp-outline); --hp-bg-faint-opacity: 0.25; --hp-bg-bright-opacity: 0.3; } canvas { /* Canvas fills the host. The host is viewport-bounded in both * modes (fixed-viewport in page mode, bounded parent in * contained mode), so this is never an oversized canvas. The * backing-store resolution is reconciled per draw by * reconcileCanvasGeometry; these rules fix the on-screen box. */ position: absolute; inset: 0; width: 100%; height: 100%; display: block; } /* Page-backdrop mode: host is fixed to the viewport, behind page * content. It never moves on scroll (the browser pins fixed * elements natively — no JS reposition for the software compositor * to lag on); the pattern scrolls via the uOffset uniform instead. * z-index keeps it behind foreground content in the same stacking * context; consumers can raise/lower via --hp-bg-z. Caveat: a * fixed host anchors to the nearest ancestor with a transform / * filter / contain, not the viewport — mount page mode directly * under body-level containers. */ :host([page]) { position: fixed; inset: 0; z-index: var(--hp-bg-z, -1); } /* Option-C fallback: WebGL2 unavailable or context lost. The * canvas hides; the host paints a repeating SVG-data-URL hex tile * that gives a \"degraded but present\" pattern with no cursor * reactivity. Tile image + dimensions are written as inline custom * properties by applyFallbackTile so hex-size changes propagate. */ :host([data-hp-fallback]) canvas { display: none; } :host([data-hp-fallback]) { color: var(--hp-bg-stroke); opacity: var(--hp-bg-faint-opacity); background-image: var(--hp-bg-fallback-image); background-repeat: repeat; background-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height); } `"
+          "default": "css` :host { position: absolute; inset: 0; display: block; pointer-events: none; overflow: hidden; /* contain: paint keeps the decorative painting isolated (canvas * can't leak outside the host) without the size containment that * contain: strict would impose — size containment suppressed * ResizeObserver from firing on ancestor-driven inset:0 size * changes (async content settling, fonts loading, hp-code * highlighting). */ contain: paint; /* Both layers use full outline tokens, dialed by independent * opacities. The opacity dial lets us land between the system * outline rungs (--hp-outline-faint reads as nothing on common * backdrops; --hp-outline-variant reads as too present at 1.0). * Default 0.25 for the base sits the grid at \"barely there, but * there\"; 0.3 for the cursor halo keeps the brightening a soft * trail rather than a search-light. */ --hp-bg-stroke: var(--hp-outline-variant); --hp-bg-stroke-bright: var(--hp-outline); --hp-bg-faint-opacity: 0.25; --hp-bg-bright-opacity: 0.3; } canvas { /* Canvas fills the host. The host is viewport-bounded in both * modes (fixed-viewport in page mode, bounded parent in * contained mode), so this is never an oversized canvas. The * backing-store resolution is reconciled per draw by * reconcileCanvasGeometry; these rules fix the on-screen box. */ position: absolute; inset: 0; width: 100%; height: 100%; display: block; } /* Page-backdrop mode: host is fixed to the viewport, behind page * content. It never moves on scroll (the browser pins fixed * elements natively — no JS reposition for the software compositor * to lag on); the pattern scrolls via the uOffset uniform instead. * z-index keeps it behind foreground content in the same stacking * context; consumers can raise/lower via --hp-bg-z. Caveat: a * fixed host anchors to the nearest ancestor with a transform / * filter / contain, not the viewport — mount page mode directly * under body-level containers. */ :host([page]) { position: fixed; inset: 0; z-index: var(--hp-bg-z, -1); } /* CSS-tile fallback: WebGL2 unavailable, context lost, or tier-2 * software rendering (where the compositor displays WebGL canvases * unreliably — see the three-tier decision in the ADR). The canvas * hides and two pseudo-element layers recreate the v1 two-SVG * effect: a faint base layer, and a bright layer revealed in a * radial window around the pointer. Both paint the stroke token as * background-color masked into hex outlines by the SVG-data-URL * tile. Mask-not-background because a data-URL SVG can't see * currentColor (it would render black); with the mask the colour * rides the token cascade, so light/dark theme flips apply live. * * The layers MUST be pseudo-elements, not the host: mask and * opacity are group effects — a mask or opacity on the host would * clip and dim everything it paints, capping the bright layer at * the faint layer's opacity. The host itself paints nothing. * * Tile image + dimensions + pointer radius are written as inline * custom properties by applyFallbackTile; the pointer position * arrives as inline properties per pointermove (input data, not * visual state — same contract as the original SVG version). */ :host([data-hp-fallback]) canvas { display: none; } :host([data-hp-fallback])::before, :host([data-hp-fallback])::after { content: \"\"; position: absolute; inset: 0; -webkit-mask-repeat: repeat; mask-repeat: repeat; } :host([data-hp-fallback])::before { background-color: var(--hp-bg-stroke); opacity: var(--hp-bg-faint-opacity); -webkit-mask-image: var(--hp-bg-fallback-image); mask-image: var(--hp-bg-fallback-image); -webkit-mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height); mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height); } /* Bright layer: the tile mask intersected with a radial window at * the pointer. Off-screen default coords keep it invisible until * the first pointermove. */ :host([data-hp-fallback])::after { background-color: var(--hp-bg-stroke-bright); opacity: var(--hp-bg-bright-opacity); -webkit-mask-image: radial-gradient( circle var(--hp-bg-pointer-radius, 200px) at var(--hp-bg-x, -9999px) var(--hp-bg-y, -9999px), black 0%, transparent 100% ), var(--hp-bg-fallback-image); mask-image: radial-gradient( circle var(--hp-bg-pointer-radius, 200px) at var(--hp-bg-x, -9999px) var(--hp-bg-y, -9999px), black 0%, transparent 100% ), var(--hp-bg-fallback-image); -webkit-mask-size: auto, var(--hp-bg-tile-width) var(--hp-bg-tile-height); mask-size: auto, var(--hp-bg-tile-width) var(--hp-bg-tile-height); -webkit-mask-repeat: no-repeat, repeat; mask-repeat: no-repeat, repeat; -webkit-mask-composite: source-in; mask-composite: intersect; } /* Pointer-following brightness is a motion cue; suppress it for * users who opted out. The faint layer still renders — same * contract as the GL halo under reduced motion. */ @media (prefers-reduced-motion: reduce) { :host([data-hp-fallback])::after { display: none; } } `"
         }
       ],
       "exports": [

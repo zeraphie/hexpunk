@@ -1207,6 +1207,48 @@
       "attributes": []
     },
     {
+      "name": "hp-badge",
+      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+          "values": [
+            {
+              "name": "HpBadgeTone"
+            }
+          ]
+        },
+        {
+          "name": "active",
+          "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
+        }
+      ]
+    },
+    {
+      "name": "hp-tag",
+      "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone — same set as hp-cell.",
+          "values": [
+            {
+              "name": "HpTagTone"
+            }
+          ]
+        },
+        {
+          "name": "removable",
+          "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks dismiss action and dims the visual."
+        }
+      ]
+    },
+    {
       "name": "hp-tether",
       "description": "Arc-tether between two distant molecules — curved SVG bezier\nconnecting two hexes referenced by CSS selector (`from` / `to`).\nReroutes around obstacles, re-settles after drags.",
       "attributes": [
@@ -1291,48 +1333,6 @@
         {
           "name": "preview",
           "description": "When set, clicking the source plays the expand-and-shrink\nanimation in place without navigating. The overlay scales up\nto viewport coverage, holds, then scales back down. Use for\nshowcase demos and visual previews."
-        }
-      ]
-    },
-    {
-      "name": "hp-badge",
-      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-          "values": [
-            {
-              "name": "HpBadgeTone"
-            }
-          ]
-        },
-        {
-          "name": "active",
-          "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
-        }
-      ]
-    },
-    {
-      "name": "hp-tag",
-      "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone — same set as hp-cell.",
-          "values": [
-            {
-              "name": "HpTagTone"
-            }
-          ]
-        },
-        {
-          "name": "removable",
-          "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks dismiss action and dims the visual."
         }
       ]
     },

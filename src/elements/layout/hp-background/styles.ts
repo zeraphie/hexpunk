@@ -63,28 +63,86 @@ export const backgroundStyles = css`
     z-index: var(--hp-bg-z, -1);
   }
 
-  /* Static-tile fallback: WebGL2 unavailable, context lost, or
-   * tier-2 software rendering (where the compositor displays WebGL
-   * canvases unreliably — see the three-tier decision in the ADR).
-   * The canvas hides; the host paints the stroke token as
-   * background-color, masked into hex outlines by the SVG-data-URL
+  /* CSS-tile fallback: WebGL2 unavailable, context lost, or tier-2
+   * software rendering (where the compositor displays WebGL canvases
+   * unreliably — see the three-tier decision in the ADR). The canvas
+   * hides and two pseudo-element layers recreate the v1 two-SVG
+   * effect: a faint base layer, and a bright layer revealed in a
+   * radial window around the pointer. Both paint the stroke token as
+   * background-color masked into hex outlines by the SVG-data-URL
    * tile. Mask-not-background because a data-URL SVG can't see
    * currentColor (it would render black); with the mask the colour
    * rides the token cascade, so light/dark theme flips apply live.
-   * Tile image + dimensions are written as inline custom properties
-   * by applyFallbackTile so hex-size changes propagate. */
+   *
+   * The layers MUST be pseudo-elements, not the host: mask and
+   * opacity are group effects — a mask or opacity on the host would
+   * clip and dim everything it paints, capping the bright layer at
+   * the faint layer's opacity. The host itself paints nothing.
+   *
+   * Tile image + dimensions + pointer radius are written as inline
+   * custom properties by applyFallbackTile; the pointer position
+   * arrives as inline properties per pointermove (input data, not
+   * visual state — same contract as the original SVG version). */
   :host([data-hp-fallback]) canvas {
     display: none;
   }
 
-  :host([data-hp-fallback]) {
-    opacity: var(--hp-bg-faint-opacity);
-    background-color: var(--hp-bg-stroke);
-    -webkit-mask-image: var(--hp-bg-fallback-image);
-    mask-image: var(--hp-bg-fallback-image);
+  :host([data-hp-fallback])::before,
+  :host([data-hp-fallback])::after {
+    content: "";
+    position: absolute;
+    inset: 0;
     -webkit-mask-repeat: repeat;
     mask-repeat: repeat;
+  }
+
+  :host([data-hp-fallback])::before {
+    background-color: var(--hp-bg-stroke);
+    opacity: var(--hp-bg-faint-opacity);
+    -webkit-mask-image: var(--hp-bg-fallback-image);
+    mask-image: var(--hp-bg-fallback-image);
     -webkit-mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height);
     mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height);
+  }
+
+  /* Bright layer: the tile mask intersected with a radial window at
+   * the pointer. Off-screen default coords keep it invisible until
+   * the first pointermove. */
+  :host([data-hp-fallback])::after {
+    background-color: var(--hp-bg-stroke-bright);
+    opacity: var(--hp-bg-bright-opacity);
+    -webkit-mask-image:
+      radial-gradient(
+        circle var(--hp-bg-pointer-radius, 200px) at var(--hp-bg-x, -9999px) var(--hp-bg-y, -9999px),
+        black 0%,
+        transparent 100%
+      ),
+      var(--hp-bg-fallback-image);
+    mask-image:
+      radial-gradient(
+        circle var(--hp-bg-pointer-radius, 200px) at var(--hp-bg-x, -9999px) var(--hp-bg-y, -9999px),
+        black 0%,
+        transparent 100%
+      ),
+      var(--hp-bg-fallback-image);
+    -webkit-mask-size:
+      auto,
+      var(--hp-bg-tile-width) var(--hp-bg-tile-height);
+    mask-size:
+      auto,
+      var(--hp-bg-tile-width) var(--hp-bg-tile-height);
+    -webkit-mask-repeat: no-repeat, repeat;
+    mask-repeat: no-repeat, repeat;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /* Pointer-following brightness is a motion cue; suppress it for
+   * users who opted out. The faint layer still renders — same
+   * contract as the GL halo under reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    :host([data-hp-fallback])::after {
+      display: none;
+    }
   }
 `;
