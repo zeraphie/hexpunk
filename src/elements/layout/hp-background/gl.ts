@@ -51,22 +51,35 @@ export function acquireContext(canvas: HTMLCanvasElement): WebGL2RenderingContex
 }
 
 /**
+ * The context's unmasked renderer string — the truthful "who is
+ * actually rasterizing" answer, used for software detection and the
+ * dev-facing render-path log.
+ *
+ * @param gl - A live WebGL2 context.
+ * @returns The renderer string, or a placeholder where the browser
+ *   withholds it (Firefox sanitizes this for privacy).
+ */
+export function describeRenderer(gl: WebGL2RenderingContext): string {
+  const info = gl.getExtension("WEBGL_debug_renderer_info");
+  if (!info) {
+    return "renderer string unavailable";
+  }
+  return String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "unknown");
+}
+
+/**
  * Detect a software rasterizer (tier 2 of the three-tier degradation
  * decision): hardware acceleration off, WebGL alive via SwiftShader /
- * llvmpipe / similar. Best-effort — Firefox sanitizes the renderer
- * string, in which case we report hardware and rely on the future
- * adaptive frame-time backstop (Step 4). A false negative only means
- * the energy sim runs slower; the static pattern is unaffected.
+ * llvmpipe / WARP. Best-effort — where the renderer string is
+ * withheld we report hardware and rely on the future adaptive
+ * frame-time backstop (Step 4). A false negative only means the
+ * energy sim runs slower; the static pattern is unaffected.
  *
  * @param gl - A live WebGL2 context.
  * @returns True when the context is software-rendered.
  */
 export function isSoftwareRenderer(gl: WebGL2RenderingContext): boolean {
-  const info = gl.getExtension("WEBGL_debug_renderer_info");
-  if (!info) {
-    return false;
-  }
-  const renderer = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "");
+  const renderer = describeRenderer(gl);
   // "Basic Render Driver" is WARP — Chrome-on-Windows' software D3D11
   // path when hardware acceleration is off (ANGLE reports it as
   // "Microsoft Basic Render Driver"). SwiftShader/Subzero and llvmpipe

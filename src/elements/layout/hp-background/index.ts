@@ -16,7 +16,7 @@ import { hpBase } from "../../../styles/hp-base.js";
 import { TilePipeline } from "./bake.js";
 import { applyFallbackTile } from "./fallback.js";
 import { reconcileCanvasGeometry } from "./geometry.js";
-import { acquireContext, isSoftwareRenderer } from "./gl.js";
+import { acquireContext, describeRenderer, isSoftwareRenderer } from "./gl.js";
 import { PointerTracker } from "./input.js";
 import { RenderPass } from "./render.js";
 import { backgroundStyles } from "./styles.js";
@@ -164,12 +164,22 @@ export class HpBackground extends LitElement {
 
   // ── GL lifecycle ────────────────────────────────────────────────────
 
+  /** Dev-facing render-path log: which of the three tiers this
+   * instance is actually using, and why. console.debug so it only
+   * shows when the DevTools console level includes Verbose — silent
+   * for consumers at default settings. */
+  private logRenderPath(path: string): void {
+    // eslint-disable-next-line no-console
+    console.debug(`hp-background: rendering via ${path}`);
+  }
+
   private initGL(): void {
     if (!this.canvas) {
       return;
     }
     const gl = acquireContext(this.canvas);
     if (!gl) {
+      this.logRenderPath("CSS tile (WebGL2 unavailable)");
       this.enterFallback();
       return;
     }
@@ -181,6 +191,7 @@ export class HpBackground extends LitElement {
     // SwiftShader resources aren't cheap to keep idle.
     this.softwareRenderer = isSoftwareRenderer(gl);
     if (this.softwareRenderer) {
+      this.logRenderPath(`CSS tile (software renderer: ${describeRenderer(gl)})`);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
       this.enterFallback();
       return;
@@ -198,10 +209,12 @@ export class HpBackground extends LitElement {
     } catch {
       // Compile/link/allocation failure — rare on a healthy WebGL2
       // context; degrade to the static tile.
+      this.logRenderPath("CSS tile (GL pipeline init failed)");
       this.releaseGL();
       this.enterFallback();
       return;
     }
+    this.logRenderPath(`WebGL2 (${describeRenderer(gl)})`);
     this.watchDpr();
     this.rebake();
     this.draw();
@@ -214,6 +227,7 @@ export class HpBackground extends LitElement {
       return;
     }
     if (!this.tile.bake(this.gl, this.hexSize)) {
+      this.logRenderPath("CSS tile (bake framebuffer incomplete)");
       this.releaseGL();
       this.enterFallback();
       return;
@@ -242,6 +256,7 @@ export class HpBackground extends LitElement {
     // blank. Pre-null `gl` so release skips (illegal) deletes against
     // the lost context.
     event.preventDefault();
+    this.logRenderPath("CSS tile (context lost — awaiting restore)");
     this.gl = null;
     this.releaseGL();
     this.enterFallback();
