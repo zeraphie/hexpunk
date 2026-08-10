@@ -165,10 +165,11 @@ export class HpBackground extends LitElement {
    * frame, which keeps trails glued to the pattern across scroll. */
   private readonly runners = new LatticeRunners();
 
-  /** Press point (page CSS px) while the pointer is held on empty
-   * space — new runner waves keep launching from it every WAVE_MS
-   * until release. Null when nothing is held. */
-  private igniteHeld: { pageX: number; pageY: number } | null = null;
+  /** True while the pointer is held down on empty space — new
+   * runner waves keep launching every WAVE_MS from the pointer's
+   * LIVE position (the ignite centre follows a held drag) until
+   * release. */
+  private igniteHeld = false;
   private lastWaveAt = 0;
 
   private resizeObserver?: ResizeObserver;
@@ -503,18 +504,16 @@ export class HpBackground extends LitElement {
     if (!this.pointerWithinReach(clientX, clientY)) {
       return;
     }
-    const pageX = clientX + window.scrollX;
-    const pageY = clientY + window.scrollY;
-    this.igniteHeld = { pageX, pageY };
+    this.igniteHeld = true;
     this.lastWaveAt = performance.now();
-    this.runners.spawn(pageX, pageY, this.hexSize);
+    this.runners.spawn(clientX + window.scrollX, clientY + window.scrollY, this.hexSize);
     this.wakeLoop();
   }
 
   /** Release ends the hold; live runners finish their own lives, so
    * the effect winds down rather than cutting off. */
   private handleIgniteEnd(): void {
-    this.igniteHeld = null;
+    this.igniteHeld = false;
   }
 
   // ── Sim loop ────────────────────────────────────────────────────────
@@ -549,7 +548,7 @@ export class HpBackground extends LitElement {
     this.prevSplatX = Number.NaN;
     this.prevSplatY = Number.NaN;
     this.runners.clear();
-    this.igniteHeld = null;
+    this.igniteHeld = false;
   }
 
   /** Read a tuning knob: the CSS custom property wins when set and
@@ -640,11 +639,17 @@ export class HpBackground extends LitElement {
       this.simTimeSinceSplat = 0;
     }
 
-    // Held ignition: keep launching waves from the press point
-    // until release.
-    if (this.igniteHeld && now - this.lastWaveAt >= WAVE_MS) {
+    // Held ignition: keep launching waves until release, from the
+    // pointer's LIVE position — the ignite centre follows a held
+    // drag. Skip waves while the pointer is out of this instance's
+    // reach (their splats couldn't land in the field anyway).
+    if (this.igniteHeld && now - this.lastWaveAt >= WAVE_MS && this.pointerWithinReach()) {
       this.lastWaveAt = now;
-      this.runners.spawn(this.igniteHeld.pageX, this.igniteHeld.pageY, this.hexSize);
+      this.runners.spawn(
+        this.pointer.mouseClientX + window.scrollX,
+        this.pointer.mouseClientY + window.scrollY,
+        this.hexSize
+      );
     }
 
     // Ignition runners: advance heads along the lattice and convert
