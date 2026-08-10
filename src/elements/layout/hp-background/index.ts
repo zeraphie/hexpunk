@@ -18,7 +18,7 @@ import { applyFallbackTile } from "./fallback.js";
 import { reconcileCanvasGeometry } from "./geometry.js";
 import { acquireContext, isSoftwareRenderer } from "./gl.js";
 import { PointerTracker } from "./input.js";
-import { OFFSCREEN_MOUSE, RenderPass } from "./render.js";
+import { RenderPass } from "./render.js";
 import { backgroundStyles } from "./styles.js";
 
 /**
@@ -73,9 +73,9 @@ export class HpBackground extends LitElement {
   private gl: WebGL2RenderingContext | null = null;
 
   /** Tier-2 flag: WebGL alive but software-rasterized (HW accel
-   * off). The halo is suppressed — pattern-only, same rendering as
-   * reduced motion — because per-pointermove fullscreen redraws crawl
-   * on software rasterizers. See the three-tier decision in the ADR. */
+   * off). Routed to the static CSS tile in initGL — the software
+   * compositor displays WebGL canvases unreliably even when the
+   * buffer is fully drawn. See the three-tier decision in the ADR. */
   private softwareRenderer = false;
 
   private readonly tile = new TilePipeline();
@@ -172,9 +172,19 @@ export class HpBackground extends LitElement {
       this.enterFallback();
       return;
     }
-    this.gl = gl;
+    // Tier 2: WebGL alive but software-rasterized (HW accel off).
+    // Field finding (2026-08-09): even a fully-drawn buffer displays
+    // partially under Chrome's software compositor — the canvas
+    // itself is unreliable, so route to the CSS tile, which
+    // composites as ordinary paint. Free the context; WARP/
+    // SwiftShader resources aren't cheap to keep idle.
     this.softwareRenderer = isSoftwareRenderer(gl);
-    this.pointer.suppressPointerScheduling = this.softwareRenderer;
+    if (this.softwareRenderer) {
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      this.enterFallback();
+      return;
+    }
+    this.gl = gl;
     // Remove + re-add so context-restore cycles don't accumulate
     // duplicate listeners (the handlers are stable arrow refs).
     this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
@@ -191,6 +201,9 @@ export class HpBackground extends LitElement {
       this.enterFallback();
       return;
     }
+    // A context restore can land here after a fallback stint —
+    // pointer-driven redraws are wanted again on the live GL path.
+    this.pointer.suppressPointerScheduling = false;
     this.watchDpr();
     this.rebake();
     this.draw();
@@ -222,6 +235,9 @@ export class HpBackground extends LitElement {
   private enterFallback(): void {
     this.fallback = true;
     this.setAttribute("data-hp-fallback", "");
+    // The static tile never repaints on pointer movement — stop
+    // pointermove from scheduling frames that draw() would discard.
+    this.pointer.suppressPointerScheduling = true;
     applyFallbackTile(this, this.hexSize);
   }
 
@@ -298,12 +314,11 @@ export class HpBackground extends LitElement {
     if (!geometry.visible) {
       return;
     }
-    const suppressHalo = this.softwareRenderer;
     this.renderPass.draw(gl, this, {
       geometry,
       tile: this.tile,
-      mouseClientX: suppressHalo ? OFFSCREEN_MOUSE : this.pointer.effectiveClientX,
-      mouseClientY: suppressHalo ? OFFSCREEN_MOUSE : this.pointer.effectiveClientY,
+      mouseClientX: this.pointer.effectiveClientX,
+      mouseClientY: this.pointer.effectiveClientY,
       pointerRadius: this.pointerRadius,
     });
   }

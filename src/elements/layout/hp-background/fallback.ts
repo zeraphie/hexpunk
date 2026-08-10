@@ -9,16 +9,18 @@
 */
 
 /**
- * Build a CSS data-URL repeating-hex-tile background. Embeds a 5-hex
- * tile (1 centered + 4 corner-quartered) sized to `hexSize` so
- * neighbouring tiles assemble into a continuous tessellation under
- * CSS `background-repeat: repeat`. The stroke uses `currentColor` so
- * the host's `color` (set to `--hp-bg-stroke` by the fallback
- * `:host` rules) drives the tint.
+ * Build a CSS data-URL repeating-hex-tile image, used as a
+ * **mask** (not a background): a data-URL SVG is a separate document
+ * that cannot see the page's `currentColor` — stroked that way it
+ * always renders black. Instead the host paints
+ * `background-color: var(--hp-bg-stroke)` and this tile masks it
+ * into hex outlines, so the colour tracks the token cascade and
+ * light/dark theme flips with no JS. Embeds a 5-hex tile (1 centred
+ * + 4 corner-quartered) sized to `hexSize` so neighbouring tiles
+ * assemble into a continuous tessellation under `mask-repeat`.
  *
  * @param hexSize - Hex side length in CSS pixels (centre-to-vertex).
- * @returns A `url("data:image/svg+xml;…")` value for
- *   `background-image`.
+ * @returns A `url("data:image/svg+xml;…")` value for `mask-image`.
  */
 export function buildFallbackTileDataUrl(hexSize: number): string {
   const s = hexSize;
@@ -45,7 +47,9 @@ export function buildFallbackTileDataUrl(hexSize: number): string {
     [tileW, tileH],
   ];
   const polygons = centres.map(([cx, cy]) => `<polygon points="${hex(cx, cy)}"/>`).join("");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${tileW.toFixed(2)}" height="${tileH.toFixed(2)}" viewBox="0 0 ${tileW.toFixed(2)} ${tileH.toFixed(2)}"><g fill="none" stroke="currentColor" stroke-width="0.75">${polygons}</g></svg>`;
+  // Stroke colour is irrelevant — CSS mask-image uses the alpha
+  // channel; white keeps the intent obvious.
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${tileW.toFixed(2)}" height="${tileH.toFixed(2)}" viewBox="0 0 ${tileW.toFixed(2)} ${tileH.toFixed(2)}"><g fill="none" stroke="#fff" stroke-width="0.75">${polygons}</g></svg>`;
   return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
 }
 

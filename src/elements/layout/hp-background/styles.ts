@@ -63,20 +63,28 @@ export const backgroundStyles = css`
     z-index: var(--hp-bg-z, -1);
   }
 
-  /* Option-C fallback: WebGL2 unavailable or context lost. The
-   * canvas hides; the host paints a repeating SVG-data-URL hex tile
-   * that gives a "degraded but present" pattern with no cursor
-   * reactivity. Tile image + dimensions are written as inline custom
-   * properties by applyFallbackTile so hex-size changes propagate. */
+  /* Static-tile fallback: WebGL2 unavailable, context lost, or
+   * tier-2 software rendering (where the compositor displays WebGL
+   * canvases unreliably — see the three-tier decision in the ADR).
+   * The canvas hides; the host paints the stroke token as
+   * background-color, masked into hex outlines by the SVG-data-URL
+   * tile. Mask-not-background because a data-URL SVG can't see
+   * currentColor (it would render black); with the mask the colour
+   * rides the token cascade, so light/dark theme flips apply live.
+   * Tile image + dimensions are written as inline custom properties
+   * by applyFallbackTile so hex-size changes propagate. */
   :host([data-hp-fallback]) canvas {
     display: none;
   }
 
   :host([data-hp-fallback]) {
-    color: var(--hp-bg-stroke);
     opacity: var(--hp-bg-faint-opacity);
-    background-image: var(--hp-bg-fallback-image);
-    background-repeat: repeat;
-    background-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height);
+    background-color: var(--hp-bg-stroke);
+    -webkit-mask-image: var(--hp-bg-fallback-image);
+    mask-image: var(--hp-bg-fallback-image);
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height);
+    mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height);
   }
 `;

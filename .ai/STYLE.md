@@ -23,12 +23,12 @@ The TypeScript + Lit adaptation of the shared style guide (root
   3. explaining a highly complex piece of code (shader math, GL
      state, perf tricks) — what it does and why it was done that
      way.
-  Anything else is deleted: narration of what the code already
-  says, waffle, and references to anything outside the repo (chat
-  artifacts, removed code). Explanations longer than a few lines
-  belong in DESIGN.md or the driving ADR — link the section.
-  CEM-facing JSDoc (below) is API surface, not commentary — it
-  follows its own rule.
+     Anything else is deleted: narration of what the code already
+     says, waffle, and references to anything outside the repo (chat
+     artifacts, removed code). Explanations longer than a few lines
+     belong in DESIGN.md or the driving ADR — link the section.
+     CEM-facing JSDoc (below) is API surface, not commentary — it
+     follows its own rule.
 - Non-obvious modules open with an intent preamble: box-drawing
   title rule, then tapered prose (each line slightly shorter),
   ending on the DESIGN.md / ADR reference. Max ~6 prose lines;
@@ -83,17 +83,17 @@ The TypeScript + Lit adaptation of the shared style guide (root
 
 ## Naming
 
-| Thing                 | Convention                    | Example                    |
-| --------------------- | ----------------------------- | -------------------------- |
-| Files                 | `kebab-case`                  | `hp-background.ts`         |
-| Custom elements       | `hp-<kebab>`                  | `<hp-toggle-group>`        |
-| Element classes       | `Hp`-prefixed PascalCase      | `HpToggleGroup`            |
-| Events                | `hp-<component>-<verb>`       | `hp-grid-move`             |
-| Variables / functions | `camelCase`                   | `computePanBounds`         |
-| Constants             | `SCREAMING_SNAKE_CASE`        | `ZOOM_MAX`                 |
-| Private class members | `private camelCase`           | `private pendingFrame`     |
-| Tokens / CSS props    | `--hp-*`                      | `--hp-bg-stroke`           |
-| Git branches          | gitflow `type/short-desc`     | `feature/hp-grid-smoothness` |
+| Thing                 | Convention                | Example                      |
+| --------------------- | ------------------------- | ---------------------------- |
+| Files                 | `kebab-case`              | `hp-background.ts`           |
+| Custom elements       | `hp-<kebab>`              | `<hp-toggle-group>`          |
+| Element classes       | `Hp`-prefixed PascalCase  | `HpToggleGroup`              |
+| Events                | `hp-<component>-<verb>`   | `hp-grid-move`               |
+| Variables / functions | `camelCase`               | `computePanBounds`           |
+| Constants             | `SCREAMING_SNAKE_CASE`    | `ZOOM_MAX`                   |
+| Private class members | `private camelCase`       | `private pendingFrame`       |
+| Tokens / CSS props    | `--hp-*`                  | `--hp-bg-stroke`             |
+| Git branches          | gitflow `type/short-desc` | `feature/hp-grid-smoothness` |
 
 ## Tests
 

@@ -67,7 +67,11 @@ export function isSoftwareRenderer(gl: WebGL2RenderingContext): boolean {
     return false;
   }
   const renderer = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "");
-  return /swiftshader|llvmpipe|software|subzero/i.test(renderer);
+  // "Basic Render Driver" is WARP — Chrome-on-Windows' software D3D11
+  // path when hardware acceleration is off (ANGLE reports it as
+  // "Microsoft Basic Render Driver"). SwiftShader/Subzero and llvmpipe
+  // cover the Vulkan/GL software paths on other platforms.
+  return /swiftshader|llvmpipe|software|subzero|basic render driver|\bwarp\b/i.test(renderer);
 }
 
 /** Compile a WebGL2 shader, throwing with a useful message on failure. */
