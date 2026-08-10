@@ -13,6 +13,40 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       a radial pointer reveal) where WebGL is unavailable or software-rendered.
     </p>
 
+    <Fragment slot="notice">
+      <table class="perf-status">
+        <thead>
+          <tr>
+            <th scope="col">Cost</th>
+            <th scope="col">Measured</th>
+            <th scope="col">Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Script</td>
+            <td>43&nbsp;KB min · 14&nbsp;KB gzip</td>
+            <td>≈2.5× a typical hexpunk atom (5.6&nbsp;KB gzip)</td>
+          </tr>
+          <tr>
+            <td>Init (once, at connect)</td>
+            <td>~20&nbsp;ms</td>
+            <td>WebGL context + shader compile + tile bake; slower on weak GPUs</td>
+          </tr>
+          <tr>
+            <td>Animating</td>
+            <td>~0.1&nbsp;ms CPU / frame</td>
+            <td>p90 0.7&nbsp;ms; field sim at 1/8 viewport resolution</td>
+          </tr>
+          <tr>
+            <td>Idle</td>
+            <td>0 frames</td>
+            <td>render loop sleeps; wakes on pointer / scroll / ignite</td>
+          </tr>
+        </tbody>
+      </table>
+    </Fragment>
+
     <p>
       Move the cursor across the canvas for the wake. Click — or click <em>and hold</em>, then
       drag — on empty space to ignite runners; the leading pixels burn hotter than the trails
