@@ -8639,218 +8639,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/status/hp-badge.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-          "name": "HpBadge",
-          "slots": [
-            {
-              "description": "Badge label or count",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "attribute": "active",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "fieldName": "tone"
-            },
-            {
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "fieldName": "active"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-badge",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBadge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-badge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/status/hp-tag.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-          "name": "HpTag",
-          "cssParts": [
-            {
-              "description": "The dismiss button (when removable)",
-              "name": "remove"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Tag label",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "attribute": "removable",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "handleRemove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleRemoveKey",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When the dismiss × is activated (click / Enter / Space)",
-              "name": "hp-tag-remove"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "fieldName": "removable"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tag",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpTag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-tag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/tether/hp-tether.ts",
       "declarations": [
         {
@@ -9462,6 +9250,218 @@
           "declaration": {
             "name": "HpTether",
             "module": "src/elements/tether/hp-tether.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/status/hp-badge.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+          "name": "HpBadge",
+          "slots": [
+            {
+              "description": "Badge label or count",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "attribute": "active",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "fieldName": "tone"
+            },
+            {
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "fieldName": "active"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-badge",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBadge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-badge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/status/hp-tag.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
+          "name": "HpTag",
+          "cssParts": [
+            {
+              "description": "The dismiss button (when removable)",
+              "name": "remove"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Tag label",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "attribute": "removable",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "handleRemove",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleRemoveKey",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "description": "When the dismiss × is activated (click / Enter / Space)",
+              "name": "hp-tag-remove"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "fieldName": "removable"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tag",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpTag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
           }
         }
       ]
@@ -10359,6 +10359,24 @@
           "description": "Energy below this reads as fully faded (the runtime smoothstep\noutput is imperceptible), so the loop can sleep once the whole\nfield must be under it."
         },
         {
+          "kind": "variable",
+          "name": "FIELD_MAX",
+          "type": {
+            "text": "number"
+          },
+          "default": "1.5",
+          "description": "Energy ceiling in the sim (headroom above 1.0 for the ignition\nring's hot tier). The analytic sleep window must assume this as\nthe starting energy."
+        },
+        {
+          "kind": "variable",
+          "name": "MAX_RINGS",
+          "type": {
+            "text": "number"
+          },
+          "default": "4",
+          "description": "Maximum concurrent ignition rings — matches the shader's fixed\nuniform array. Older rings are dropped first."
+        },
+        {
           "kind": "class",
           "description": "Owns the ping-pong energy textures and the simulation pass. One\ninstance per element; resources are (re)created on context init /\nrestore via init and dropped via release.",
           "name": "EnergyField",
@@ -10475,6 +10493,32 @@
             },
             {
               "kind": "field",
+              "name": "uRingsLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uRingThicknessLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "ringData",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Float32Array(MAX_RINGS * 4)",
+              "description": "Scratch buffer for the ring uniform array (4 × vec4)."
+            },
+            {
+              "kind": "field",
               "name": "width",
               "type": {
                 "text": "number"
@@ -10580,6 +10624,19 @@
                     "text": "FieldSplat | null"
                   },
                   "description": "This frame's pointer splat, or null for none."
+                },
+                {
+                  "name": "rings",
+                  "default": "[]",
+                  "type": {
+                    "text": "FieldRing[]"
+                  },
+                  "description": "Active ignition rings (at most {@link MAX_RINGS});\n   *   pass an empty array for none.\n   * "
+                },
+                {
+                  "name": "ringThickness",
+                  "default": "1",
+                  "description": "Ring band gaussian half-width in field px."
                 }
               ],
               "description": "Advance the simulation one step: read the current field, write\ndecay × diffusion + splat into the other texture, swap."
@@ -10639,6 +10696,22 @@
           "name": "FIELD_EPSILON",
           "declaration": {
             "name": "FIELD_EPSILON",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FIELD_MAX",
+          "declaration": {
+            "name": "FIELD_MAX",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MAX_RINGS",
+          "declaration": {
+            "name": "MAX_RINGS",
             "module": "src/elements/layout/hp-background/field.ts"
           }
         },
@@ -10851,7 +10924,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Two layout\nmodes: contained (default — absolute, fills a positioned parent)\nand `page` (fixed full-viewport backdrop behind page content).",
+          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites an expanding ripple that\ntravels along the lattice lines. Two layout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
           "name": "HpBackground",
           "cssProperties": [
             {
@@ -10863,12 +10936,20 @@
               "name": "--hp-bg-stroke-bright"
             },
             {
+              "description": "Ignition-wavefront colour (defaults to the bright colour)",
+              "name": "--hp-bg-stroke-hot"
+            },
+            {
               "description": "Base layer opacity (default 0.25)",
               "name": "--hp-bg-faint-opacity"
             },
             {
               "description": "Wake layer opacity (default 0.3)",
               "name": "--hp-bg-bright-opacity"
+            },
+            {
+              "description": "Ignition-wavefront opacity (default 2× bright, capped at 1)",
+              "name": "--hp-bg-hot-opacity"
             },
             {
               "description": "Reveal radius on the CSS fallback path (set from pointer-radius)",
@@ -10918,8 +10999,8 @@
               "type": {
                 "text": "number"
               },
-              "default": "0.97",
-              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.97 ≈ a 1.5–2 s visible fade.",
+              "default": "0.964",
+              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\").",
               "attribute": "decay"
             },
             {
@@ -11008,7 +11089,17 @@
               "name": "pointer",
               "privacy": "private",
               "readonly": true,
-              "default": "new PointerTracker(() => this.handlePointerActivity())"
+              "default": "new PointerTracker( () => this.handlePointerActivity(), (x, y) => this.handleIgnite(x, y) )"
+            },
+            {
+              "kind": "field",
+              "name": "rings",
+              "type": {
+                "text": "Array<{\n    clientX: number;\n    clientY: number;\n    startAt: number;\n    x: number;\n    y: number;\n    placed: boolean;\n  }>"
+              },
+              "privacy": "private",
+              "default": "[]",
+              "description": "Active ignition rings. Client coords are converted to canvas-\nlocal device px on the first loop frame that sees the ring\n(geometry is fresh there), then frozen — the ripple is viewport-\nattached like the rest of the field."
             },
             {
               "kind": "field",
@@ -11213,6 +11304,31 @@
             },
             {
               "kind": "method",
+              "name": "handleIgnite",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "clientY",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Ignition: a press on a non-interactive target launches an\nexpanding energy ring from the press point. GL tier only — the\nCSS fallback has no sim to carry it — and suppressed under\nreduced motion (it is pure motion flourish)."
+            },
+            {
+              "kind": "method",
               "name": "wakeLoop",
               "privacy": "private",
               "return": {
@@ -11335,8 +11451,8 @@
               "type": {
                 "text": "number"
               },
-              "default": "0.97",
-              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.97 ≈ a 1.5–2 s visible fade.",
+              "default": "0.964",
+              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\").",
               "fieldName": "decay"
             },
             {
@@ -11446,6 +11562,12 @@
             {
               "kind": "field",
               "name": "handlePointerMove",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handlePointerDown",
               "privacy": "private",
               "readonly": true
             },
@@ -11562,6 +11684,15 @@
             {
               "kind": "field",
               "name": "uBrightColorLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uHotColorLoc",
               "type": {
                 "text": "WebGLUniformLocation | null"
               },

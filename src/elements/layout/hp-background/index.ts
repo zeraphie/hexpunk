@@ -16,7 +16,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import { TilePipeline } from "./bake.js";
 import { applyFallbackTile } from "./fallback.js";
-import { EnergyField, FIELD_EPSILON, FIELD_SCALE } from "./field.js";
+import { EnergyField, FIELD_EPSILON, FIELD_MAX, FIELD_SCALE, MAX_RINGS } from "./field.js";
 import { reconcileCanvasGeometry } from "./geometry.js";
 import { acquireContext, describeRenderer, isSoftwareRenderer } from "./gl.js";
 import { PointerTracker } from "./input.js";
@@ -40,17 +40,32 @@ const SPLAT_SPEED_NORM = 40;
 const ADAPTIVE_SAMPLE_FRAMES = 32;
 const ADAPTIVE_DEMOTE_MS = 30;
 
+/** Ignition-ring tuning. Speed is CSS px/s of wavefront travel; life
+ * caps how far a ring reaches (speed × life ≈ 620 CSS px radius —
+ * most of a viewport, matching the "ripple across the page" intent
+ * without lingering); thickness is the gaussian half-width of the
+ * band; strength starts above 1.0 so the wavefront lands in the
+ * runtime's hot tier and fades linearly over the ring's life. */
+const RING_SPEED = 700;
+const RING_LIFE_MS = 900;
+const RING_THICKNESS = 26;
+const RING_STRENGTH = 1.35;
+
 /**
  * Pointer-aware hex grid backdrop. A faint hex pattern fills the
  * host; pointer movement stirs a soft energy wake that brightens
- * the strokes it passes through, then drifts and fades. Two layout
- * modes: contained (default — absolute, fills a positioned parent)
- * and `page` (fixed full-viewport backdrop behind page content).
+ * the strokes it passes through, then drifts and fades. Pressing on
+ * empty (non-interactive) space ignites an expanding ripple that
+ * travels along the lattice lines. Two layout modes: contained
+ * (default — absolute, fills a positioned parent) and `page` (fixed
+ * full-viewport backdrop behind page content).
  *
  * @cssproperty --hp-bg-stroke - Base stroke colour
  * @cssproperty --hp-bg-stroke-bright - Energy-wake stroke colour
+ * @cssproperty --hp-bg-stroke-hot - Ignition-wavefront colour (defaults to the bright colour)
  * @cssproperty --hp-bg-faint-opacity - Base layer opacity (default 0.25)
  * @cssproperty --hp-bg-bright-opacity - Wake layer opacity (default 0.3)
+ * @cssproperty --hp-bg-hot-opacity - Ignition-wavefront opacity (default 2× bright, capped at 1)
  * @cssproperty --hp-bg-pointer-radius - Reveal radius on the CSS fallback path (set from pointer-radius)
  * @cssproperty --hp-bg-decay - Overrides the decay attribute
  * @cssproperty --hp-bg-splat-strength - Overrides the splat-strength attribute
@@ -74,9 +89,10 @@ export class HpBackground extends LitElement {
   /** Energy retention per 60 Hz frame in the GL wake sim — higher
    * values leave longer trails. Clamped to [0.5, 0.995]; wall-clock
    * fade time is roughly proportional to 1/(1 − decay). Default
-   * 0.97 ≈ a 1.5–2 s visible fade. */
+   * 0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from
+   * 0.97 — "1.2× faster"). */
   @property({ type: Number })
-  decay = 0.97;
+  decay = 0.964;
 
   /** Multiplier on the energy injected per pointer move. Default 1. */
   @property({ type: Number, attribute: "splat-strength" })
@@ -123,7 +139,23 @@ export class HpBackground extends LitElement {
   private readonly tile = new TilePipeline();
   private readonly renderPass = new RenderPass();
   private readonly field = new EnergyField();
-  private readonly pointer = new PointerTracker(() => this.handlePointerActivity());
+  private readonly pointer = new PointerTracker(
+    () => this.handlePointerActivity(),
+    (x, y) => this.handleIgnite(x, y)
+  );
+
+  /** Active ignition rings. Client coords are converted to canvas-
+   * local device px on the first loop frame that sees the ring
+   * (geometry is fresh there), then frozen — the ripple is viewport-
+   * attached like the rest of the field. */
+  private rings: Array<{
+    clientX: number;
+    clientY: number;
+    startAt: number;
+    x: number;
+    y: number;
+    placed: boolean;
+  }> = [];
 
   private resizeObserver?: ResizeObserver;
 
@@ -402,6 +434,29 @@ export class HpBackground extends LitElement {
     this.style.setProperty("--hp-bg-y", `${this.pointer.mouseClientY - rect.top}px`);
   }
 
+  /** Ignition: a press on a non-interactive target launches an
+   * expanding energy ring from the press point. GL tier only — the
+   * CSS fallback has no sim to carry it — and suppressed under
+   * reduced motion (it is pure motion flourish). */
+  private handleIgnite(clientX: number, clientY: number): void {
+    if (this.fallback || !this.gl || this.pointer.reducedMotion) {
+      return;
+    }
+    if (this.rings.length >= MAX_RINGS) {
+      this.rings.shift();
+    }
+    this.rings.push({
+      clientX,
+      clientY,
+      startAt: performance.now(),
+      x: 0,
+      y: 0,
+      placed: false,
+    });
+    this.lastSplatAt = performance.now();
+    this.wakeLoop();
+  }
+
   // ── Sim loop ────────────────────────────────────────────────────────
 
   /** Start the sim loop if asleep. The loop supersedes single-frame
@@ -427,6 +482,7 @@ export class HpBackground extends LitElement {
     }
     this.prevSplatX = Number.NaN;
     this.prevSplatY = Number.NaN;
+    this.rings = [];
   }
 
   /** Read a tuning knob: the CSS custom property wins when set and
@@ -500,8 +556,38 @@ export class HpBackground extends LitElement {
       this.prevSplatY = curY;
     }
 
+    // Ignition rings: place on first sighting (geometry is fresh
+    // here), advance the wavefront, cull the expired. Active rings
+    // count as splats for the sleep window.
+    const activeRings = [];
+    if (this.rings.length > 0) {
+      const keep = [];
+      for (const ring of this.rings) {
+        const age = now - ring.startAt;
+        if (age > RING_LIFE_MS) {
+          continue;
+        }
+        if (!ring.placed) {
+          ring.x = (ring.clientX - visLeft) * dpr;
+          ring.y = (visBottom - ring.clientY) * dpr;
+          ring.placed = true;
+        }
+        keep.push(ring);
+        activeRings.push({
+          x: ring.x / FIELD_SCALE,
+          y: ring.y / FIELD_SCALE,
+          radius: ((age / 1000) * RING_SPEED * dpr) / FIELD_SCALE,
+          strength: RING_STRENGTH * (1 - age / RING_LIFE_MS),
+        });
+      }
+      this.rings = keep;
+      if (keep.length > 0) {
+        this.lastSplatAt = now;
+      }
+    }
+
     this.field.ensureSize(gl, canvas.width, canvas.height);
-    this.field.step(gl, effDecay, splat);
+    this.field.step(gl, effDecay, splat, activeRings, (RING_THICKNESS * dpr) / FIELD_SCALE);
     this.draw();
 
     // Adaptive backstop: a "hardware" renderer that can't sustain
@@ -521,8 +607,11 @@ export class HpBackground extends LitElement {
     }
 
     // Sleep once every texel must be below the visible epsilon —
-    // computed analytically from the decay rate, no GPU readback.
-    const aliveMs = (Math.log(FIELD_EPSILON) / Math.log(decayPerFrame)) * REFERENCE_FRAME_MS;
+    // computed analytically from the decay rate (starting from the
+    // sim's energy cap, which ignition rings can reach), no GPU
+    // readback.
+    const aliveMs =
+      (Math.log(FIELD_EPSILON / FIELD_MAX) / Math.log(decayPerFrame)) * REFERENCE_FRAME_MS;
     if (now - this.lastSplatAt < aliveMs) {
       this.loopHandle = requestAnimationFrame(this.runLoopFrame);
     } else {

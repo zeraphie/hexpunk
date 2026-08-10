@@ -1207,6 +1207,46 @@
       "attributes": []
     },
     {
+      "name": "hp-tether",
+      "description": "Arc-tether between two distant molecules — curved SVG bezier\nconnecting two hexes referenced by CSS selector (`from` / `to`).\nReroutes around obstacles, re-settles after drags.",
+      "attributes": [
+        {
+          "name": "from",
+          "description": "CSS selector for the source molecule. Resolved against document.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "to",
+          "description": "CSS selector for the target molecule. Resolved against document.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "state",
+          "description": "`active` (default) shows full-opacity stroke + travelling pulse;\n`idle` drops to the container shade and silences the pulse.",
+          "values": [
+            {
+              "name": "idle"
+            },
+            {
+              "name": "active"
+            }
+          ]
+        },
+        {
+          "name": "directed",
+          "description": "Render an arrowhead at the target end for directed graphs."
+        }
+      ]
+    },
+    {
       "name": "hp-badge",
       "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
       "attributes": [
@@ -1245,46 +1285,6 @@
         {
           "name": "disabled",
           "description": "Disabled — blocks dismiss action and dims the visual."
-        }
-      ]
-    },
-    {
-      "name": "hp-tether",
-      "description": "Arc-tether between two distant molecules — curved SVG bezier\nconnecting two hexes referenced by CSS selector (`from` / `to`).\nReroutes around obstacles, re-settles after drags.",
-      "attributes": [
-        {
-          "name": "from",
-          "description": "CSS selector for the source molecule. Resolved against document.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "to",
-          "description": "CSS selector for the target molecule. Resolved against document.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "state",
-          "description": "`active` (default) shows full-opacity stroke + travelling pulse;\n`idle` drops to the container shade and silences the pulse.",
-          "values": [
-            {
-              "name": "idle"
-            },
-            {
-              "name": "active"
-            }
-          ]
-        },
-        {
-          "name": "directed",
-          "description": "Render an arrowhead at the target end for directed graphs."
         }
       ]
     },
@@ -1338,7 +1338,7 @@
     },
     {
       "name": "hp-background",
-      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Two layout\nmodes: contained (default — absolute, fills a positioned parent)\nand `page` (fixed full-viewport backdrop behind page content).",
+      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites an expanding ripple that\ntravels along the lattice lines. Two layout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
       "attributes": [
         {
           "name": "hex-size",
@@ -1350,7 +1350,7 @@
         },
         {
           "name": "decay",
-          "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.97 ≈ a 1.5–2 s visible fade."
+          "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\")."
         },
         {
           "name": "splat-strength",

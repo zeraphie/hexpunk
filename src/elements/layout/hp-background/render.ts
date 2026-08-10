@@ -32,6 +32,7 @@ uniform vec2 uOffset;            // page-coord offset in device px (see note)
 uniform vec2 uCanvasSize;        // drawing buffer size in device px
 uniform vec4 uFaintColor;        // premultiplied
 uniform vec4 uBrightColor;       // premultiplied
+uniform vec4 uHotColor;          // premultiplied — ignition wavefront tier
 
 out vec4 fragColor;
 
@@ -50,6 +51,10 @@ void main() {
   // the wake its soft edge for free.
   float energy = texture(uFieldTex, gl_FragCoord.xy / uCanvasSize).r;
   vec4 col = mix(uFaintColor, uBrightColor, smoothstep(0.0, 1.0, energy));
+  // Hot tier: energy above 1.0 (ignition rings overshoot there)
+  // pushes past bright toward the hot colour, so the travelling
+  // wavefront reads brighter than any pointer wake.
+  col = mix(col, uHotColor, smoothstep(1.0, 1.4, energy));
   fragColor = col * coverage;
 }
 `;
@@ -79,6 +84,7 @@ export class RenderPass {
   private uCanvasSizeLoc: WebGLUniformLocation | null = null;
   private uFaintColorLoc: WebGLUniformLocation | null = null;
   private uBrightColorLoc: WebGLUniformLocation | null = null;
+  private uHotColorLoc: WebGLUniformLocation | null = null;
 
   /**
    * Create the runtime program and the (attribute-less) VAO WebGL2
@@ -96,6 +102,7 @@ export class RenderPass {
     this.uCanvasSizeLoc = gl.getUniformLocation(this.program, "uCanvasSize");
     this.uFaintColorLoc = gl.getUniformLocation(this.program, "uFaintColor");
     this.uBrightColorLoc = gl.getUniformLocation(this.program, "uBrightColor");
+    this.uHotColorLoc = gl.getUniformLocation(this.program, "uHotColor");
 
     this.vao = gl.createVertexArray();
     if (!this.vao) {
@@ -144,8 +151,18 @@ export class RenderPass {
     const brightOpacity = parseFloat(cs.getPropertyValue("--hp-bg-bright-opacity")) || 0;
     const faint = parseCssColor(cs.getPropertyValue("--hp-bg-stroke"));
     const bright = parseCssColor(cs.getPropertyValue("--hp-bg-stroke-bright"));
+    // Hot tier defaults: the bright colour at double its opacity
+    // (capped at 1) — visibly hotter without introducing a new hue
+    // unless the consumer sets --hp-bg-stroke-hot explicitly.
+    const hotRaw = cs.getPropertyValue("--hp-bg-stroke-hot").trim();
+    const hot = hotRaw ? parseCssColor(hotRaw) : bright;
+    const hotOpacityRaw = parseFloat(cs.getPropertyValue("--hp-bg-hot-opacity"));
+    const hotOpacity = Number.isFinite(hotOpacityRaw)
+      ? hotOpacityRaw
+      : Math.min(1, brightOpacity * 2);
     this.bindPremultiplied(gl, this.uFaintColorLoc, faint, faintOpacity);
     this.bindPremultiplied(gl, this.uBrightColorLoc, bright, brightOpacity);
+    this.bindPremultiplied(gl, this.uHotColorLoc, hot, hotOpacity);
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
@@ -186,5 +203,6 @@ export class RenderPass {
     this.uCanvasSizeLoc = null;
     this.uFaintColorLoc = null;
     this.uBrightColorLoc = null;
+    this.uHotColorLoc = null;
   }
 }

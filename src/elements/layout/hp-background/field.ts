@@ -22,6 +22,15 @@ export const FIELD_SCALE = 8;
  * field must be under it. */
 export const FIELD_EPSILON = 0.004;
 
+/** Energy ceiling in the sim (headroom above 1.0 for the ignition
+ * ring's hot tier). The analytic sleep window must assume this as
+ * the starting energy. */
+export const FIELD_MAX = 1.5;
+
+/** Maximum concurrent ignition rings — matches the shader's fixed
+ * uniform array. Older rings are dropped first. */
+export const MAX_RINGS = 4;
+
 /** Sim fragment shader: one step of decay × diffusion plus a
  * segment-shaped splat from the previous to the current pointer
  * position (a segment, not a point, so fast sweeps paint a
@@ -36,6 +45,8 @@ uniform vec2 uSplatA;          // segment start, field px
 uniform vec2 uSplatB;          // segment end, field px
 uniform float uSplatRadius;    // gaussian radius, field px
 uniform float uSplatStrength;  // 0 disables the splat term
+uniform vec4 uRings[4];        // ignition rings: xy centre, z radius, w strength (field px)
+uniform float uRingThickness;  // gaussian half-width of the ring band, field px
 
 out vec4 fragColor;
 
@@ -63,9 +74,18 @@ void main() {
   float d = sdSegment(gl_FragCoord.xy, uSplatA, uSplatB);
   energy += uSplatStrength * exp(-(d * d) / max(uSplatRadius * uSplatRadius, 1e-4));
 
-  // Headroom above 1.0 lets repeated splats overshoot briefly (the
-  // runtime smoothstep clamps visually); the cap keeps half-float
-  // precision comfortable.
+  // Ignition rings: an expanding annulus per active ring. The
+  // runtime pass only brightens where hex strokes exist, so the
+  // wavefront reads as light travelling along the lattice lines.
+  float th2 = max(uRingThickness * uRingThickness, 1e-4);
+  for (int i = 0; i < 4; i++) {
+    float rd = abs(distance(gl_FragCoord.xy, uRings[i].xy) - uRings[i].z);
+    energy += uRings[i].w * exp(-(rd * rd) / th2);
+  }
+
+  // Headroom above 1.0 feeds the runtime's hot tier (ignition
+  // wavefront brighter than the pointer wake); the cap keeps
+  // half-float precision comfortable.
   fragColor = vec4(min(energy, 1.5), 0.0, 0.0, 1.0);
 }
 `;
@@ -76,6 +96,14 @@ export interface FieldSplat {
   ay: number;
   bx: number;
   by: number;
+  radius: number;
+  strength: number;
+}
+
+/** One ignition ring for this step, all values in field pixels. */
+export interface FieldRing {
+  x: number;
+  y: number;
   radius: number;
   strength: number;
 }
@@ -102,6 +130,10 @@ export class EnergyField {
   private uSplatBLoc: WebGLUniformLocation | null = null;
   private uSplatRadiusLoc: WebGLUniformLocation | null = null;
   private uSplatStrengthLoc: WebGLUniformLocation | null = null;
+  private uRingsLoc: WebGLUniformLocation | null = null;
+  private uRingThicknessLoc: WebGLUniformLocation | null = null;
+  /** Scratch buffer for the ring uniform array (4 × vec4). */
+  private readonly ringData = new Float32Array(MAX_RINGS * 4);
 
   /** Field texture dimensions (device px / FIELD_SCALE). */
   width = 0;
@@ -129,6 +161,8 @@ export class EnergyField {
     this.uSplatBLoc = gl.getUniformLocation(this.program, "uSplatB");
     this.uSplatRadiusLoc = gl.getUniformLocation(this.program, "uSplatRadius");
     this.uSplatStrengthLoc = gl.getUniformLocation(this.program, "uSplatStrength");
+    this.uRingsLoc = gl.getUniformLocation(this.program, "uRings");
+    this.uRingThicknessLoc = gl.getUniformLocation(this.program, "uRingThickness");
     // R16F is only renderable with this extension; half-float LINEAR
     // filtering is core WebGL2.
     this.halfFloat = gl.getExtension("EXT_color_buffer_float") !== null;
@@ -186,8 +220,17 @@ export class EnergyField {
    * @param gl - A live WebGL2 context.
    * @param decay - Effective per-step decay (already dt-normalized).
    * @param splat - This frame's pointer splat, or null for none.
+   * @param rings - Active ignition rings (at most {@link MAX_RINGS});
+   *   pass an empty array for none.
+   * @param ringThickness - Ring band gaussian half-width in field px.
    */
-  step(gl: WebGL2RenderingContext, decay: number, splat: FieldSplat | null): void {
+  step(
+    gl: WebGL2RenderingContext,
+    decay: number,
+    splat: FieldSplat | null,
+    rings: FieldRing[] = [],
+    ringThickness = 1
+  ): void {
     if (!this.program || !this.textures[0]) {
       return;
     }
@@ -212,6 +255,16 @@ export class EnergyField {
       gl.uniform2f(this.uSplatBLoc, 0, 0);
       gl.uniform1f(this.uSplatRadiusLoc, 1);
     }
+    this.ringData.fill(0);
+    for (let i = 0; i < Math.min(rings.length, MAX_RINGS); i++) {
+      const ring = rings[i]!;
+      this.ringData[i * 4] = ring.x;
+      this.ringData[i * 4 + 1] = ring.y;
+      this.ringData[i * 4 + 2] = ring.radius;
+      this.ringData[i * 4 + 3] = ring.strength;
+    }
+    gl.uniform4fv(this.uRingsLoc, this.ringData);
+    gl.uniform1f(this.uRingThicknessLoc, ringThickness);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     this.readIndex = write;
@@ -263,6 +316,8 @@ export class EnergyField {
     this.uSplatBLoc = null;
     this.uSplatRadiusLoc = null;
     this.uSplatStrengthLoc = null;
+    this.uRingsLoc = null;
+    this.uRingThicknessLoc = null;
     this.width = 0;
     this.height = 0;
     this.readIndex = 0;

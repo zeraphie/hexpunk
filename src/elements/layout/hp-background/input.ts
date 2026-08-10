@@ -10,6 +10,53 @@
 
 import { OFFSCREEN_MOUSE } from "./render.js";
 
+/** Elements whose activation a click is "for" — igniting on these
+ * would visually compete with the component's own feedback. Shadow
+ * internals are covered because the check walks composedPath(). */
+const INTERACTIVE_SELECTOR = [
+  "a[href]",
+  "button",
+  "input",
+  "select",
+  "textarea",
+  "summary",
+  "option",
+  "audio[controls]",
+  "video[controls]",
+  '[contenteditable=""]',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="link"]',
+  '[role="menuitem"]',
+  '[role="menuitemcheckbox"]',
+  '[role="menuitemradio"]',
+  '[role="tab"]',
+  '[role="checkbox"]',
+  '[role="radio"]',
+  '[role="switch"]',
+  '[role="slider"]',
+  '[role="option"]',
+  '[role="combobox"]',
+].join(",");
+
+/** True when the event's composed path contains anything a click
+ * meaningfully activates (incl. focusable hosts via tabindex >= 0). */
+function isInteractionTarget(event: Event): boolean {
+  for (const node of event.composedPath()) {
+    if (!(node instanceof Element)) {
+      continue;
+    }
+    if (node.matches(INTERACTIVE_SELECTOR)) {
+      return true;
+    }
+    const tabindex = node.getAttribute("tabindex");
+    if (tabindex !== null && Number.parseInt(tabindex, 10) >= 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /**
  * Tracks the pointer position and the `prefers-reduced-motion`
  * preference for one element. The owner supplies a redraw scheduler;
@@ -37,14 +84,21 @@ export class PointerTracker {
    *   or preference flip). The owner decides what a repaint means —
    *   scheduling a GL redraw on the canvas path, or repositioning
    *   the CSS reveal mask on the fallback path.
+   * @param onIgnite - Called with viewport CSS coords when the user
+   *   presses on something that is NOT an interaction target — the
+   *   ignition-ripple trigger. Owner applies mode/motion gating.
    */
-  constructor(private readonly onActivity: () => void) {}
+  constructor(
+    private readonly onActivity: () => void,
+    private readonly onIgnite: (clientX: number, clientY: number) => void
+  ) {}
 
   /** Attach window/media listeners. Call from connectedCallback. */
   connect(): void {
     // Pointermove is high-frequency; passive keeps it off the scroll
     // critical path.
     window.addEventListener("pointermove", this.handlePointerMove, { passive: true });
+    window.addEventListener("pointerdown", this.handlePointerDown, { passive: true });
     if (typeof window.matchMedia === "function") {
       this.reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       this.reducedMotion = this.reducedMotionQuery.matches;
@@ -55,6 +109,7 @@ export class PointerTracker {
   /** Detach everything attached by {@link connect}. */
   disconnect(): void {
     window.removeEventListener("pointermove", this.handlePointerMove);
+    window.removeEventListener("pointerdown", this.handlePointerDown);
     if (this.reducedMotionQuery) {
       this.reducedMotionQuery.removeEventListener("change", this.handleReducedMotionChange);
       this.reducedMotionQuery = null;
@@ -65,6 +120,13 @@ export class PointerTracker {
     this.mouseClientX = event.clientX;
     this.mouseClientY = event.clientY;
     this.onActivity();
+  };
+
+  private readonly handlePointerDown = (event: PointerEvent): void => {
+    if (isInteractionTarget(event)) {
+      return;
+    }
+    this.onIgnite(event.clientX, event.clientY);
   };
 
   private readonly handleReducedMotionChange = (e: MediaQueryListEvent): void => {
