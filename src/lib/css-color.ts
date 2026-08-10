@@ -16,14 +16,17 @@ function ensureColorParserCtx(): typeof colorParserCtx {
   if (colorParserCtx) {
     return colorParserCtx;
   }
+  // willReadFrequently keeps the browser from round-tripping this
+  // 1×1 canvas through the GPU — every use here is an immediate
+  // getImageData readback.
   if (typeof OffscreenCanvas !== "undefined") {
-    colorParserCtx = new OffscreenCanvas(1, 1).getContext("2d");
+    colorParserCtx = new OffscreenCanvas(1, 1).getContext("2d", { willReadFrequently: true });
   }
   if (!colorParserCtx && typeof document !== "undefined") {
     const c = document.createElement("canvas");
     c.width = 1;
     c.height = 1;
-    colorParserCtx = c.getContext("2d");
+    colorParserCtx = c.getContext("2d", { willReadFrequently: true });
   }
   return colorParserCtx;
 }
