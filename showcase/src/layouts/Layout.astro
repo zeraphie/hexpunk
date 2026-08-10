@@ -218,7 +218,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         set:html={sidebarNavHtml}
       ></hp-sidebar>
       <main>
-        <hp-background></hp-background>
+        <hp-background page></hp-background>
         {prose ? <div class="hp-prose"><slot /></div> : <slot />}
       </main>
       <hp-sidebar
