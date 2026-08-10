@@ -1191,6 +1191,126 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/pixel-icons/expandable.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "idle",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-1, -1], // top-left [ 0, -1], // top [ 1, -1], // top-right [-1, 0], // left [ 0, 0], // centre [ 1, 0], // right [-1, 1], // bottom-left [ 0, 1], // bottom [ 1, 1], // bottom-right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "hover",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [ 0, -2], // top-left → arm top-far [ 0, -1], // top → arm top-near [ 2, 0], // top-right → arm right-far [-1, 0], // left → arm left-near [ 0, 0], // centre [ 1, 0], // right → arm right-near [-2, 0], // bottom-left → arm left-far [ 0, 1], // bottom → arm bottom-near [ 0, 2], // bottom-right→ arm bottom-far ]"
+        },
+        {
+          "kind": "variable",
+          "name": "active",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2], // top-left → diag ↖ far [-1, -1], // top → diag ↖ near [ 2, -2], // top-right → diag ↗ far [ 1, -1], // left → diag ↗ near [ 0, 0], // centre [ 1, 1], // right → diag ↘ near [-2, 2], // bottom-left → diag ↙ far [-1, 1], // bottom → diag ↙ near [ 2, 2], // bottom-right→ diag ↘ far ]"
+        },
+        {
+          "kind": "variable",
+          "name": "expandable",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ idle, hover, active }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "idle",
+          "declaration": {
+            "name": "idle",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hover",
+          "declaration": {
+            "name": "hover",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "active",
+          "declaration": {
+            "name": "active",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "expandable",
+          "declaration": {
+            "name": "expandable",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "expandable",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/pixel-icons/index.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "pixelIcons",
+          "type": {
+            "text": "Record<string, HpPixelStates>"
+          },
+          "default": "{ menu, expandable, }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "expandable",
+          "declaration": {
+            "name": "expandable",
+            "module": "src/pixel-icons/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "menu",
+          "declaration": {
+            "name": "menu",
+            "module": "src/pixel-icons/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pixelIcons",
+          "declaration": {
+            "name": "pixelIcons",
+            "module": "src/pixel-icons/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/pixel-icons/menu.ts",
       "declarations": [
         {
@@ -3470,6 +3590,16 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "\"menu\" | \"expandable\" | undefined"
+              },
+              "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` wins when both are set.",
+              "attribute": "type",
+              "reflects": true
+            },
+            {
+              "kind": "field",
               "name": "states",
               "type": {
                 "text": "HpPixelStates | undefined"
@@ -3606,6 +3736,14 @@
               },
               "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
               "fieldName": "art"
+            },
+            {
+              "name": "type",
+              "type": {
+                "text": "\"menu\" | \"expandable\" | undefined"
+              },
+              "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` wins when both are set.",
+              "fieldName": "type"
             },
             {
               "name": "state",

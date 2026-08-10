@@ -5,13 +5,16 @@
 // offset from it. Crisp at any size, animatable via box-shadow
 // transitions, no SVG or canvas required.
 //
-// Three modes, chosen by which prop is set (precedence: states > art):
+// Three modes, chosen by which prop is set (precedence:
+// states > type > art):
 //
 // 1. **Static** — `.art` is an ASCII string (`#` = lit, `.` = empty).
 // 2. **State morph** — `.states` is a record of named position arrays
 // (e.g. `{ idle: [[x,y]…], hover: [[x,y]…] }`). The shadow string
 // is computed per state and smoothly interpolated between them via
-// CSS `transition: box-shadow`.
+// CSS `transition: box-shadow`. The `type` attribute resolves a
+// built-in set from src/pixel-icons/ (`menu`, `expandable`) with
+// no JS wiring.
 // 3. **Sprite-sheet frames** — `.frames` array, `steps()` animation.
 // *Not yet implemented* — coming when the first real consumer needs
 // a loader animation.
@@ -31,6 +34,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { PropertyValues } from "lit";
 
+import { pixelIcons } from "../../pixel-icons/index.js";
 import { hpBase } from "../../styles/hp-base.js";
 
 /** Pixel position — `[x, y]` in pixel-grid units (centred on `0,0`),
@@ -127,6 +131,10 @@ export class HpPixel extends LitElement {
   /** Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`. */
   @property() art?: string;
 
+  /** Built-in icon set by name — no JS wiring needed. Explicit
+   * `.states` wins when both are set. */
+  @property({ reflect: true }) type?: "menu" | "expandable";
+
   /** Named position-set states. All states must have the same length. */
   @property({ attribute: false }) states?: HpPixelStates;
 
@@ -195,6 +203,7 @@ export class HpPixel extends LitElement {
   override willUpdate(changed: PropertyValues<this>): void {
     if (
       changed.has("art") ||
+      changed.has("type") ||
       changed.has("states") ||
       changed.has("state") ||
       changed.has("pixelSize") ||
@@ -208,8 +217,9 @@ export class HpPixel extends LitElement {
     const pixelSize = this.pixelSize;
     this.style.setProperty("--hp-pixel-size", `${pixelSize}px`);
 
-    if (this.states) {
-      this.applyStates(this.states, pixelSize);
+    const states = this.states ?? (this.type ? pixelIcons[this.type] : undefined);
+    if (states) {
+      this.applyStates(states, pixelSize);
     } else if (this.art) {
       this.applyStaticArt(this.art, pixelSize);
     } else {
