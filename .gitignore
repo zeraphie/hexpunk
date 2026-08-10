@@ -5,9 +5,11 @@ dist/
 *.tsbuildinfo
 .cache/
 
-# Local-only working docs
+# Local-only working docs (PLAN files stay local; committed
+# decisions land in DESIGN.md). Root STYLE.md is a personal
+# dotfiles symlink — anchored so .ai/STYLE.md stays tracked.
 PLAN*.md
-STYLE.md
+/STYLE.md
 
 # AI tooling working dirs
 .claude/

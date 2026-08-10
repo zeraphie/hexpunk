@@ -384,6 +384,20 @@ export class HpCell extends LitElement {
         transition: color var(--hp-duration-medium) var(--hp-ease-default);
       }
 
+      /* Inline-control tiers get the smaller label scale and tighter
+       * padding — label-md overflows a 20-32px hex. Longer text still
+       * belongs beside these sizes, not inside (the hp-checkbox +
+       * hp-label pattern). */
+      :host([size="xs"]) .label,
+      :host([size="xxs"]) .label {
+        padding: var(--hp-xxs, 2px);
+        font-family: var(--hp-typo-label-sm-font-family);
+        font-size: var(--hp-typo-label-sm-font-size);
+        font-weight: var(--hp-typo-label-sm-font-weight);
+        line-height: var(--hp-typo-label-sm-line-height);
+        letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+      }
+
       /* utility + toned cells use the smaller label scale (short
  * labels, icon labels, status pills). */
       :host([variant="utility"]) .label,

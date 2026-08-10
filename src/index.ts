@@ -12,7 +12,7 @@
 
 export { HpAlertDialog } from "./elements/overlays/hp-alert-dialog.js";
 export { HpAvatar } from "./elements/images/hp-avatar.js";
-export { HpBackground } from "./elements/layout/hp-background.js";
+export { HpBackground } from "./elements/layout/hp-background/index.js";
 export { HpBadge, type HpBadgeTone } from "./elements/status/hp-badge.js";
 export { HpBond, type HpBondState } from "./elements/hp-bond.js";
 export { HpButton } from "./elements/forms/hp-button.js";

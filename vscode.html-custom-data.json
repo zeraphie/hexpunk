@@ -461,6 +461,24 @@
           ]
         },
         {
+          "name": "type",
+          "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` / `.palette` win when both are set.",
+          "values": [
+            {
+              "name": "menu"
+            },
+            {
+              "name": "expandable"
+            },
+            {
+              "name": "dropside"
+            },
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
           "name": "state",
           "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
           "values": [
@@ -476,20 +494,6 @@
         {
           "name": "interactive",
           "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required."
-        }
-      ]
-    },
-    {
-      "name": "hp-background",
-      "description": "Pointer-aware hex grid backdrop. Faint SVG hex tiles that brighten\nsoftly around the cursor. Positioned absolutely; drop inside any\npositioned container.",
-      "attributes": [
-        {
-          "name": "hex-size",
-          "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement."
-        },
-        {
-          "name": "pointer-radius",
-          "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200."
         }
       ]
     },
@@ -560,35 +564,6 @@
         {
           "name": "no-theme-toggle",
           "description": "Suppress the per-demo theme toggle."
-        }
-      ]
-    },
-    {
-      "name": "hp-grid",
-      "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tetherable",
-          "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on."
-        },
-        {
-          "name": "draggable",
-          "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put)."
         }
       ]
     },
@@ -1376,6 +1351,94 @@
         {
           "name": "preview",
           "description": "When set, clicking the source plays the expand-and-shrink\nanimation in place without navigating. The overlay scales up\nto viewport coverage, holds, then scales back down. Use for\nshowcase demos and visual previews."
+        }
+      ]
+    },
+    {
+      "name": "hp-background",
+      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
+      "attributes": [
+        {
+          "name": "hex-size",
+          "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement."
+        },
+        {
+          "name": "pointer-radius",
+          "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200."
+        },
+        {
+          "name": "decay",
+          "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\")."
+        },
+        {
+          "name": "splat-strength",
+          "description": "Multiplier on the energy injected per pointer move. Default 1."
+        },
+        {
+          "name": "splat-radius",
+          "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80."
+        },
+        {
+          "name": "scroll-stir",
+          "description": "Where scroll velocity stirs the field: \"edge\" (a band along\nthe viewport edge new content arrives from), \"pointer\" (at the\ncursor/touch position), \"band\" (a soft full-width band at the\nviewport centre), or \"off\". Scroll stirring is capped at the\nbright tier and disabled under reduced motion.",
+          "values": [
+            {
+              "name": "edge"
+            },
+            {
+              "name": "pointer"
+            },
+            {
+              "name": "band"
+            },
+            {
+              "name": "off"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-grid",
+      "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "tetherable",
+          "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on."
+        },
+        {
+          "name": "draggable",
+          "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put)."
+        },
+        {
+          "name": "layout",
+          "description": "Layout mode.\n\n- `free` (default) respects each child's authored `q` / `r`\n attributes.\n- `spiral` runs an FFD bin-pack with a spiral-from-origin scan:\n children are sorted by mask size descending, then each is\n placed at the first free position picked from a scan ordered\n by axial distance from `(0, 0)` (ring 0, then ring 1's 6\n positions, ring 2's 12, …). Produces a tight roughly-square\n honeycomb — largest cluster anchors the centre, smaller ones\n nest around it with a ≥1-hex gap.\n- `rows` runs the same FFD pack but with a row-major scan capped\n at `WIDE_HALF_COLS` axial cells wide, so the layout grows as\n left-to-right rows that wrap downward — roughly-rectangular\n wide arrangement, ideal for full-page-width surfaces (component\n index pages) where the spiral's square shape leaves too much\n horizontal space unused.\n\nChildren publish their actual filled hexes via `data-fill-cells`\n(composite elements like `<hp-cluster>` set this on slotchange);\nchildren without it are treated as single-hex. The gap check\nuses hex-adjacency (the 6 axial neighbours) — not rectangular\nbbox padding — so non-symmetric clusters' empty corners stay\navailable for neighbours to tuck into.\n\nTriggered automatically on first render when set to `spiral` or\n`rows`, and re-runs when the attribute changes. Manual repack\nvia `.pack()`. Drag interactions stay live; calling `.pack()`\nagain re-runs the FFD pack from scratch (dragged positions are\nignored).",
+          "values": [
+            {
+              "name": "free"
+            },
+            {
+              "name": "spiral"
+            },
+            {
+              "name": "rows"
+            }
+          ]
         }
       ]
     }

@@ -28,7 +28,7 @@
           "name": "HpBackground",
           "declaration": {
             "name": "HpBackground",
-            "module": "./elements/layout/hp-background.js"
+            "module": "./elements/layout/hp-background/index.js"
           }
         },
         {
@@ -212,7 +212,7 @@
           "name": "HpGrid",
           "declaration": {
             "name": "HpGrid",
-            "module": "./elements/layout/hp-grid.js"
+            "module": "./elements/layout/hp-grid/index.js"
           }
         },
         {
@@ -220,7 +220,7 @@
           "name": "HpGridBondEventDetail",
           "declaration": {
             "name": "HpGridBondEventDetail",
-            "module": "./elements/layout/hp-grid.js"
+            "module": "./elements/layout/hp-grid/index.js"
           }
         },
         {
@@ -228,7 +228,7 @@
           "name": "HpGridDropEventDetail",
           "declaration": {
             "name": "HpGridDropEventDetail",
-            "module": "./elements/layout/hp-grid.js"
+            "module": "./elements/layout/hp-grid/index.js"
           }
         },
         {
@@ -236,7 +236,7 @@
           "name": "HpGridTetherEventDetail",
           "declaration": {
             "name": "HpGridTetherEventDetail",
-            "module": "./elements/layout/hp-grid.js"
+            "module": "./elements/layout/hp-grid/index.js"
           }
         },
         {
@@ -244,7 +244,7 @@
           "name": "HpGridMoveEventDetail",
           "declaration": {
             "name": "HpGridMoveEventDetail",
-            "module": "./elements/layout/hp-grid.js"
+            "module": "./elements/layout/hp-grid/index.js"
           }
         },
         {
@@ -252,7 +252,7 @@
           "name": "HpGridPanEventDetail",
           "declaration": {
             "name": "HpGridPanEventDetail",
-            "module": "./elements/layout/hp-grid.js"
+            "module": "./elements/layout/hp-grid/index.js"
           }
         },
         {
@@ -844,6 +844,31 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/icons/github.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "github",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z\"/>'",
+          "description": "Inner SVG content for the `github` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\">` to control size; this icon ships as\na brand mark (filled shape) rather than a Lucide stroke icon, so\nit ignores the standard `stroke-*` props."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "github",
+          "declaration": {
+            "name": "github",
+            "module": "src/icons/github.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/icons/index.ts",
       "declarations": [],
       "exports": [
@@ -853,6 +878,14 @@
           "declaration": {
             "name": "copy",
             "module": "./copy.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "github",
+          "declaration": {
+            "name": "github",
+            "module": "./github.js"
           }
         },
         {
@@ -991,6 +1024,41 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/lib/css-color.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "parseCssColor",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "s",
+              "type": {
+                "text": "string"
+              },
+              "description": "Any CSS colour string (`#rgb`, `oklch()`, `color-mix()`,\nnamed colours, …). Empty / whitespace parses as `transparent`."
+            }
+          ],
+          "description": "Resolve a CSS colour string to non-premultiplied `[r, g, b, a]` in\n`[0, 1]`. Falls back to opaque black if canvas-2D is somehow\nunavailable (extremely unlikely in any browser that has WebGL2)."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "parseCssColor",
+          "declaration": {
+            "name": "parseCssColor",
+            "module": "src/lib/css-color.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/lib/floating.ts",
       "declarations": [
         {
@@ -1096,6 +1164,248 @@
           "declaration": {
             "name": "onEscape",
             "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/pixel-icons/dropside.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "palette",
+          "type": {
+            "text": "array"
+          },
+          "default": "[\"currentColor\", \"transparent\"]",
+          "description": "Bundled palette: index 1 = parked/faded pixels."
+        },
+        {
+          "kind": "variable",
+          "name": "idle",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2, 0], // top-left corner [ 0, -2, 0], // top edge [ 2, -2, 0], // top-right corner [-2, 0, 0], // left edge [ 2, 0, 0], // right edge [-2, 2, 0], // bottom-left corner [ 0, 2, 0], // bottom edge [ 2, 2, 0], // bottom-right corner [ 0, 0, 0], // centre ]"
+        },
+        {
+          "kind": "variable",
+          "name": "hover",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-3, -3, 1], // top-left → parked ↖ (fades out) [-1, -2, 0], // top edge → chevron wing top [ 3, -3, 1], // top-right → parked ↗ (fades out) [-1, 2, 0], // left edge → chevron wing bottom [ 0, -1, 0], // right edge → chevron inner top [-3, 3, 1], // bottom-left → parked ↙ (fades out) [ 0, 1, 0], // bottom edge → chevron inner bottom [ 3, 3, 1], // bottom-right→ parked ↘ (fades out) [ 1, 0, 0], // centre → chevron tip (right) ]"
+        },
+        {
+          "kind": "variable",
+          "name": "active",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-3, -3, 1], // top-left → parked ↖ (fades out) [ 1, -2, 0], // top edge → chevron wing top [ 3, -3, 1], // top-right → parked ↗ (fades out) [ 1, 2, 0], // left edge → chevron wing bottom [ 0, -1, 0], // right edge → chevron inner top [-3, 3, 1], // bottom-left → parked ↙ (fades out) [ 0, 1, 0], // bottom edge → chevron inner bottom [ 3, 3, 1], // bottom-right→ parked ↘ (fades out) [-1, 0, 0], // centre → chevron tip (left) ]"
+        },
+        {
+          "kind": "variable",
+          "name": "dropside",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ idle, hover, active }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "palette",
+          "declaration": {
+            "name": "palette",
+            "module": "src/pixel-icons/dropside.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "idle",
+          "declaration": {
+            "name": "idle",
+            "module": "src/pixel-icons/dropside.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hover",
+          "declaration": {
+            "name": "hover",
+            "module": "src/pixel-icons/dropside.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "active",
+          "declaration": {
+            "name": "active",
+            "module": "src/pixel-icons/dropside.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "dropside",
+          "declaration": {
+            "name": "dropside",
+            "module": "src/pixel-icons/dropside.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "dropside",
+            "module": "src/pixel-icons/dropside.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/pixel-icons/expandable.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "palette",
+          "type": {
+            "text": "array"
+          },
+          "default": "[\"currentColor\", \"transparent\"]",
+          "description": "Bundled palette: index 1 = parked/faded pixels."
+        },
+        {
+          "kind": "variable",
+          "name": "idle",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-2, -2, 0], // top-left corner [ 0, -2, 0], // top edge [ 2, -2, 0], // top-right corner [-2, 0, 0], // left edge [ 2, 0, 0], // right edge [-2, 2, 0], // bottom-left corner [ 0, 2, 0], // bottom edge [ 2, 2, 0], // bottom-right corner [ 0, 0, 0], // centre ]"
+        },
+        {
+          "kind": "variable",
+          "name": "hover",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-3, -3, 1], // top-left → parked ↖ (fades out) [-2, -1, 0], // top edge → chevron wing left [ 3, -3, 1], // top-right → parked ↗ (fades out) [-1, 0, 0], // left edge → chevron inner left [ 1, 0, 0], // right edge → chevron inner right [-3, 3, 1], // bottom-left → parked ↙ (fades out) [ 0, 1, 0], // bottom edge → chevron tip (down) [ 3, 3, 1], // bottom-right→ parked ↘ (fades out) [ 2, -1, 0], // centre → chevron wing right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "active",
+          "type": {
+            "text": "HpPixelPosition[]"
+          },
+          "default": "[ [-3, -3, 1], // top-left → parked ↖ (fades out) [-2, 1, 0], // top edge → chevron wing left [ 3, -3, 1], // top-right → parked ↗ (fades out) [-1, 0, 0], // left edge → chevron inner left [ 1, 0, 0], // right edge → chevron inner right [-3, 3, 1], // bottom-left → parked ↙ (fades out) [ 0, -1, 0], // bottom edge → chevron tip (up) [ 3, 3, 1], // bottom-right→ parked ↘ (fades out) [ 2, 1, 0], // centre → chevron wing right ]"
+        },
+        {
+          "kind": "variable",
+          "name": "expandable",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ idle, hover, active }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "palette",
+          "declaration": {
+            "name": "palette",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "idle",
+          "declaration": {
+            "name": "idle",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hover",
+          "declaration": {
+            "name": "hover",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "active",
+          "declaration": {
+            "name": "active",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "expandable",
+          "declaration": {
+            "name": "expandable",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "expandable",
+            "module": "src/pixel-icons/expandable.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/pixel-icons/index.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "pixelIcons",
+          "type": {
+            "text": "Record<string, PixelIcon>"
+          },
+          "default": "{ menu: { states: menu }, expandable: { states: expandable, palette: expandablePalette }, dropside: { states: dropside, palette: dropsidePalette }, }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "dropside",
+          "declaration": {
+            "name": "dropside",
+            "module": "src/pixel-icons/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "expandable",
+          "declaration": {
+            "name": "expandable",
+            "module": "src/pixel-icons/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "menu",
+          "declaration": {
+            "name": "menu",
+            "module": "src/pixel-icons/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pixelIcons",
+          "declaration": {
+            "name": "pixelIcons",
+            "module": "src/pixel-icons/index.ts"
           }
         }
       ]
@@ -3402,6 +3712,16 @@
             },
             {
               "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "\"menu\" | \"expandable\" | \"dropside\" | undefined"
+              },
+              "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` / `.palette` win when both are set.",
+              "attribute": "type",
+              "reflects": true
+            },
+            {
+              "kind": "field",
               "name": "states",
               "type": {
                 "text": "HpPixelStates | undefined"
@@ -3478,6 +3798,13 @@
                   "type": {
                     "text": "number"
                   }
+                },
+                {
+                  "name": "palette",
+                  "optional": true,
+                  "type": {
+                    "text": "string[]"
+                  }
                 }
               ]
             },
@@ -3540,6 +3867,14 @@
               "fieldName": "art"
             },
             {
+              "name": "type",
+              "type": {
+                "text": "\"menu\" | \"expandable\" | \"dropside\" | undefined"
+              },
+              "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` / `.palette` win when both are set.",
+              "fieldName": "type"
+            },
+            {
               "name": "state",
               "type": {
                 "text": "string | undefined"
@@ -3589,147 +3924,6 @@
           "declaration": {
             "name": "HpPixel",
             "module": "src/elements/images/hp-pixel.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/layout/hp-background.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Pointer-aware hex grid backdrop. Faint SVG hex tiles that brighten\nsoftly around the cursor. Positioned absolutely; drop inside any\npositioned container.",
-          "name": "HpBackground",
-          "cssProperties": [
-            {
-              "description": "Base stroke colour",
-              "name": "--hp-bg-stroke"
-            },
-            {
-              "description": "Cursor-halo stroke colour",
-              "name": "--hp-bg-stroke-bright"
-            },
-            {
-              "description": "Base layer opacity (default 0.25)",
-              "name": "--hp-bg-faint-opacity"
-            },
-            {
-              "description": "Halo layer opacity (default 0.3)",
-              "name": "--hp-bg-bright-opacity"
-            },
-            {
-              "description": "Pixel radius of the cursor halo",
-              "name": "--hp-bg-pointer-radius"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "hexSize",
-              "type": {
-                "text": "number"
-              },
-              "default": "14",
-              "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement.",
-              "attribute": "hex-size"
-            },
-            {
-              "kind": "field",
-              "name": "pointerRadius",
-              "type": {
-                "text": "number"
-              },
-              "default": "200",
-              "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200.",
-              "attribute": "pointer-radius"
-            },
-            {
-              "kind": "field",
-              "name": "cols",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "default": "0",
-              "description": "Cached grid dimensions; recomputed by the ResizeObserver."
-            },
-            {
-              "kind": "field",
-              "name": "rows",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "default": "0"
-            },
-            {
-              "kind": "field",
-              "name": "resizeObserver",
-              "type": {
-                "text": "ResizeObserver | undefined"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleWindowPointerMove",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "computeGridSize",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "hex-size",
-              "type": {
-                "text": "number"
-              },
-              "default": "14",
-              "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement.",
-              "fieldName": "hexSize"
-            },
-            {
-              "name": "pointer-radius",
-              "type": {
-                "text": "number"
-              },
-              "default": "200",
-              "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200.",
-              "fieldName": "pointerRadius"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-background",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBackground",
-          "declaration": {
-            "name": "HpBackground",
-            "module": "src/elements/layout/hp-background.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-background",
-          "declaration": {
-            "name": "HpBackground",
-            "module": "src/elements/layout/hp-background.ts"
           }
         }
       ]
@@ -3790,6 +3984,43 @@
               "description": "Layout mode. `rosette` is the canonical 5-hex navigation\nrosette (named slots, current behaviour). `honeycomb` accepts\nN default-slot children packed into rings outward from the\nfirst child.",
               "attribute": "layout",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "ROSETTE_FILL_CELLS",
+              "type": {
+                "text": "ReadonlyArray<{ q: number; r: number }>"
+              },
+              "privacy": "private",
+              "static": true,
+              "readonly": true,
+              "default": "[ { q: 0, r: 0 }, // centre { q: 0, r: -1 }, // top { q: -1, r: 0 }, // middle-left { q: 1, r: 0 }, // middle-right { q: 0, r: 1 }, // bottom ]",
+              "description": "Rosette layout always fills the centre + 4 named slots. The\ncluster shape is fixed (cross pattern), so the fill mask is a\ncompile-time constant."
+            },
+            {
+              "kind": "field",
+              "name": "updateAxialExtent",
+              "privacy": "private",
+              "description": "Walks slotted children, finds which honeycomb positions are\nfilled (children fill in order matching HONEYCOMB_POSITIONS), and\npublishes both the per-cell fill list (`data-fill-cells`) and the\nbounding box (`data-axial-q-min` etc.) so hp-grid packed layouts\ncan pack clusters using their actual hex footprint rather than\nthe worst-case bbox. Per-cell occupancy lets neighbouring\nclusters interpenetrate each other's empty bbox corners — a\nring-2-NE cluster's unfilled NW corner becomes drop space for\nthe next cluster."
+            },
+            {
+              "kind": "method",
+              "name": "writeFillCells",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "cells",
+                  "type": {
+                    "text": "ReadonlyArray<{ q: number; r: number }>"
+                  }
+                }
+              ],
+              "description": "Publishes the cluster's fill mask + bbox on host data attrs.\n`data-fill-cells` is the authoritative per-cell mask, space-\nseparated `\"q,r q,r ...\"`. `data-axial-q-min`/`q-max`/`r-min`/\n`r-max` mirror the bbox derived from it (kept for cheap consumers\nthat only care about footprint dimensions, like the viewport-\nbound calc in hp-grid's pack scan)."
             }
           ],
           "attributes": [
@@ -4169,761 +4400,6 @@
           "declaration": {
             "name": "HpDemo",
             "module": "src/elements/layout/hp-demo.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/layout/hp-grid.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
-          "name": "HpGrid",
-          "cssProperties": [
-            {
-              "description": "Cell width",
-              "name": "--hp-cell"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Slotted cells with q / r attributes",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"sm\"",
-              "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tetherable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on.",
-              "attribute": "tetherable",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "draggable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put).",
-              "attribute": "draggable",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "occupancy",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new Map<string, HTMLElement>()",
-              "description": "Track which children occupy which axial slots — keyed `\"q,r\"`."
-            },
-            {
-              "kind": "field",
-              "name": "tetherIdCounter",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "default": "0",
-              "description": "Monotonic counter for `data-hp-grid-id` auto-assignment on\n[q][r] children that don't carry an existing `id` attribute.\nStable enough for the hp-tether `from` / `to` selectors that get\ngenerated when a tether is created."
-            },
-            {
-              "kind": "field",
-              "name": "drag",
-              "type": {
-                "text": "DragState | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "Active drag, if any."
-            },
-            {
-              "kind": "field",
-              "name": "pan",
-              "type": {
-                "text": "PanState | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "Active pan, if any."
-            },
-            {
-              "kind": "field",
-              "name": "zoom",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "default": "1",
-              "description": "Current zoom factor. 1 = no zoom; > 1 zooms in, < 1 zooms out.\nBounded by ZOOM_MIN / ZOOM_MAX. Mirrored to `--hp-zoom` inline\nstyle so the slotted-child transform sees it."
-            },
-            {
-              "kind": "field",
-              "name": "ZOOM_MIN",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "static": true,
-              "readonly": true,
-              "default": "0.25"
-            },
-            {
-              "kind": "field",
-              "name": "ZOOM_MAX",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "static": true,
-              "readonly": true,
-              "default": "4"
-            },
-            {
-              "kind": "field",
-              "name": "ZOOM_BUTTON_STEP",
-              "type": {
-                "text": "number"
-              },
-              "privacy": "private",
-              "static": true,
-              "readonly": true,
-              "default": "1.25",
-              "description": "Multiplicative step per +/- button click. Wheel uses a smaller\nper-event factor based on `deltaY`."
-            },
-            {
-              "kind": "method",
-              "name": "stopPanFromButton",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "Event"
-                  }
-                }
-              ],
-              "description": "Recenter button stops propagation so pointerdown doesn't bubble\nup to the host's pan handler. Otherwise clicking the button\nwould also start a pan."
-            },
-            {
-              "kind": "method",
-              "name": "computePanBounds",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "{ minX: number; maxX: number; minY: number; maxY: number }"
-                }
-              },
-              "description": "Compute the legal pan range so every [q][r] child stays fully\ninside the viewport. For each child, `pan_x` is bounded by\n`[child_half_w - viewport_half_w - offset_x,\nviewport_half_w - offset_x - child_half_w]`; intersecting\nevery child's range gives the grid-wide bounds. Contradictory\nranges (children too big to fit) collapse to their midpoint —\nthe best-fit center. Returns zero bounds when layout is not\nyet ready."
-            },
-            {
-              "kind": "method",
-              "name": "clampPan",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "{ panX: number; panY: number }"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "panX",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "panY",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "recenter",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Reset zoom to 1 and pan to the best-fit centre — the midpoint of\nthe legal pan range at zoom 1. With content centred around\n`(q=0, r=0)` this resolves to zero; with off-centre layouts\n(e.g. the palette) it picks the pan offset that frames every\nhex inside the viewport. Public so consumers can recenter\nprogrammatically too."
-            },
-            {
-              "kind": "method",
-              "name": "applyZoom",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "focusClientX",
-                  "optional": true,
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "focusClientY",
-                  "optional": true,
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ],
-              "description": "Apply a new zoom factor, optionally centred on a viewport point\nso that point stays under the cursor after zooming (Miro/Figma\nfeel). Without a focus point, zooms around the grid centre. Pan\nis clamped after the zoom change so the new content extent\nstill fits in the viewport."
-            },
-            {
-              "kind": "field",
-              "name": "handleWheel",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "zoomIn",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "zoomOut",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleSlotChange",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "Event"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "isCellDraggable",
-              "privacy": "private",
-              "static": true,
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "cell",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "gridDefault",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ],
-              "description": "Resolve whether a [q][r] child is eligible to drag. Per-cell\n`draggable` attribute wins: `draggable=\"false\"` opts the cell out,\nany other presence opts it in. Absent attribute falls through to\nthe grid's own draggable flag (the surface-wide default)."
-            },
-            {
-              "kind": "field",
-              "name": "handlePointerDown",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handlePointerMove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "currentTetherTarget",
-              "type": {
-                "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "While dragging in tetherable mode, set / clear\n`data-hp-tether-target` on the sibling [q][r] hex under the\ncursor. Cleared on every move and re-set so the highlight\nfollows the pointer."
-            },
-            {
-              "kind": "method",
-              "name": "updateTetherTarget",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "clientX",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "clientY",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "clearTetherTarget",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handlePointerUp",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handlePointerCancel",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "finishDrag",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "dx",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "dy",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "finishDragAsTether",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "source",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "startCoord",
-                  "type": {
-                    "text": "AxialCoord"
-                  }
-                },
-                {
-                  "name": "pointerId",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ],
-              "description": "Tetherable-mode finish path: when a drag-release lands on another\n[q][r] hex (rather than empty space), toggle an arc between the\npair instead of moving. Source snaps back to its origin."
-            },
-            {
-              "kind": "method",
-              "name": "tetherSelectorFor",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "string | null"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "el",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "Build the CSS selector hp-tether's from/to attributes need.\nPrefers the existing `id` (consumer-authored or our own auto-\nassigned one), else falls back to the data-hp-grid-id we\nstamp at slotchange. Returns null if neither is available — a\npathological case that just skips the tether create / remove."
-            },
-            {
-              "kind": "method",
-              "name": "findTetherBetween",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement | null"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "a",
-                  "type": {
-                    "text": "string"
-                  }
-                },
-                {
-                  "name": "b",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "Search this grid's hp-tether children for an existing arc that\nconnects the given selector pair, in either direction. Used\nby the toggle behaviour: matching pair means we remove instead\nof create."
-            },
-            {
-              "kind": "method",
-              "name": "cleanupDrag",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "element",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "pointerId",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ],
-              "description": "Shared drag-listener / capture teardown — used by both the\nnormal finishDrag path and the new finishDragAsTether path."
-            },
-            {
-              "kind": "method",
-              "name": "cancelDrag",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "startPan",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "PointerEvent"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "handlePanMove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handlePanEnd",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "computeStyleSteps",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "{ col: number; row: number }"
-                }
-              },
-              "description": "Resolve --hp-col-step / --hp-row-step to numeric pixel values via\nthe hidden probe element. getComputedStyle on a custom property\nreturns the raw calc() expression (unresolved), so we apply the\nvars to width/height on a hidden div and read the resolved size."
-            },
-            {
-              "kind": "method",
-              "name": "snapToSlot",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "AxialCoord"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "dx",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "dy",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "start",
-                  "type": {
-                    "text": "AxialCoord"
-                  }
-                },
-                {
-                  "name": "steps",
-                  "type": {
-                    "text": "{ col: number; row: number }"
-                  }
-                }
-              ],
-              "description": "Inverse-project a pixel drag offset onto axial coords + round."
-            },
-            {
-              "kind": "method",
-              "name": "findFreeSlot",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "AxialCoord"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "AxialCoord"
-                  }
-                },
-                {
-                  "name": "dragged",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "Find the nearest unoccupied axial slot to `target` via BFS. The\ndragged element is treated as if its current slot is free so a\ndrop on its own origin works without bouncing into a neighbour."
-            },
-            {
-              "kind": "method",
-              "name": "isFree",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "coord",
-                  "type": {
-                    "text": "AxialCoord"
-                  }
-                },
-                {
-                  "name": "dragged",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "findOccupiedNeighbours",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "coord",
-                  "type": {
-                    "text": "AxialCoord"
-                  }
-                },
-                {
-                  "name": "exclude",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                }
-              ],
-              "description": "Elements occupying the 6 axial neighbours of `coord`, with\n`exclude` filtered out. Used to compute bond before/after sets\non drop so we can dispatch `hp-grid-bond` / `hp-grid-unbond`\nonly for adjacencies that changed."
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-grid-pan",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "Fires while the canvas is panning"
-            },
-            {
-              "name": "hp-grid-move",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "Fires immediately on drop. detail: { element, from, to }"
-            },
-            {
-              "name": "hp-grid-unbond",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "Previously-adjacent cells separated"
-            },
-            {
-              "name": "hp-grid-bond",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "Two cells became axially adjacent. detail: { moved, partner }"
-            },
-            {
-              "name": "hp-grid-drop",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "Fires after the snap-back animation completes"
-            },
-            {
-              "name": "hp-grid-untether",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "drag-to-tether removed an existing arc"
-            },
-            {
-              "name": "hp-grid-tether",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "drag-to-tether created an arc. detail: { source, target, tether }"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"sm\"",
-              "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
-              "fieldName": "size"
-            },
-            {
-              "name": "tetherable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on.",
-              "fieldName": "tetherable"
-            },
-            {
-              "name": "draggable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put).",
-              "fieldName": "draggable"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-grid",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpGrid",
-          "declaration": {
-            "name": "HpGrid",
-            "module": "src/elements/layout/hp-grid.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-grid",
-          "declaration": {
-            "name": "HpGrid",
-            "module": "src/elements/layout/hp-grid.ts"
           }
         }
       ]
@@ -10841,6 +10317,3765 @@
           "declaration": {
             "name": "HpUnfoldPage",
             "module": "src/elements/unfold/hp-unfold-page.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/bake.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "SQRT3",
+          "description": "√3 — pointy-top hex geometry constant (column step = side × √3)."
+        },
+        {
+          "kind": "variable",
+          "name": "SUPER_SAMPLE",
+          "type": {
+            "text": "number"
+          },
+          "default": "1",
+          "description": "Supersample factor used at bake-time. Kept at 1 (native device-\npixel rate) — supersampling + any downsampling filter averaged the\nthin stroke band across neighbouring texels and visibly dimmed the\npattern below the SVG reference. At 1× the bake renders with\nfwidth AA directly at the final sample rate. Left as a named\nconstant so future tuning (an opt-in higher-quality mode) can just\nbump this."
+        },
+        {
+          "kind": "variable",
+          "name": "BASE_STROKE_HALF_WIDTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "0.375",
+          "description": "Stroke half-width in CSS pixels — matches the SVG stroke-width of\n0.75 from the original implementation, halved because shader AA\nbands the stroke symmetrically around its centre line."
+        },
+        {
+          "kind": "class",
+          "description": "Owns the baked tile texture and the pass that produces it. One\ninstance per element; resources are (re)created on context init /\nrestore via init and dropped via release.",
+          "name": "TilePipeline",
+          "members": [
+            {
+              "kind": "field",
+              "name": "program",
+              "type": {
+                "text": "WebGLProgram | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "fbo",
+              "type": {
+                "text": "WebGLFramebuffer | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uHexSideLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uStrokeHalfWidthLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "texture",
+              "type": {
+                "text": "WebGLTexture | null"
+              },
+              "default": "null",
+              "description": "The baked coverage texture (REPEAT wrap, LINEAR filter), or null\nbefore the first successful init."
+            },
+            {
+              "kind": "field",
+              "name": "tileSize",
+              "type": {
+                "text": "[number, number]"
+              },
+              "default": "[0, 0]",
+              "description": "Visual tile period in device pixels at last bake — the runtime\nshader's UV divisor."
+            },
+            {
+              "kind": "field",
+              "name": "bakedDpr",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "`devicePixelRatio` snapshotted at last bake; a mismatch with the\nlive value means a re-bake is due (window dragged between\ndisplays of different DPR)."
+            },
+            {
+              "kind": "field",
+              "name": "bakedHexSize",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "`hexSize` snapshotted at last bake; re-bake on mismatch."
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                }
+              ],
+              "description": "Create the program, texture, and FBO on a fresh context.\n\nLINEAR (not LINEAR_MIPMAP_LINEAR): at SUPER_SAMPLE=1 the texel\nrate matches the device-pixel rate so no mipmap level would ever\nbe selected — and mipmaps actively hurt intensity by averaging\nthe thin stroke across coarser LODs."
+            },
+            {
+              "kind": "method",
+              "name": "bake",
+              "return": {
+                "type": {
+                  "text": ""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                },
+                {
+                  "name": "hexSize",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Hex side length in CSS pixels."
+                }
+              ],
+              "description": "Render the coverage tile for the current hex size and DPR. Tile\ndimensions are `hexSize × dpr × superSample × (√3, 3)` — exactly\none tessellation period, tiled at runtime by REPEAT wrap."
+            },
+            {
+              "kind": "method",
+              "name": "release",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext | null"
+                  },
+                  "description": "The context to delete against, or null when lost."
+                }
+              ],
+              "description": "Delete GL resources and drop refs. Pass null after context loss —\ndeleting against a lost context is illegal, but the refs still\nneed clearing."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SQRT3",
+          "declaration": {
+            "name": "SQRT3",
+            "module": "src/elements/layout/hp-background/bake.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SUPER_SAMPLE",
+          "declaration": {
+            "name": "SUPER_SAMPLE",
+            "module": "src/elements/layout/hp-background/bake.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BASE_STROKE_HALF_WIDTH",
+          "declaration": {
+            "name": "BASE_STROKE_HALF_WIDTH",
+            "module": "src/elements/layout/hp-background/bake.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "TilePipeline",
+          "declaration": {
+            "name": "TilePipeline",
+            "module": "src/elements/layout/hp-background/bake.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/fallback.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "buildFallbackTileDataUrl",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "hexSize",
+              "type": {
+                "text": "number"
+              },
+              "description": "Hex side length in CSS pixels (centre-to-vertex)."
+            }
+          ],
+          "description": "Build a CSS data-URL repeating-hex-tile image, used as a\n**mask** (not a background): a data-URL SVG is a separate document\nthat cannot see the page's `currentColor` — stroked that way it\nalways renders black. Instead the host paints\n`background-color: var(--hp-bg-stroke)` and this tile masks it\ninto hex outlines, so the colour tracks the token cascade and\nlight/dark theme flips with no JS. Embeds a 5-hex tile (1 centred\n+ 4 corner-quartered) sized to `hexSize` so neighbouring tiles\nassemble into a continuous tessellation under `mask-repeat`."
+        },
+        {
+          "kind": "function",
+          "name": "applyFallbackTile",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The hp-background element in fallback state."
+            },
+            {
+              "name": "hexSize",
+              "type": {
+                "text": "number"
+              },
+              "description": "Hex side length in CSS pixels."
+            },
+            {
+              "name": "pointerRadius",
+              "type": {
+                "text": "number"
+              },
+              "description": "Bright-reveal radius in CSS pixels."
+            }
+          ],
+          "description": "Write the fallback tile image + dimensions + pointer-reveal radius\nonto the host as inline custom properties so the\n`:host([data-hp-fallback])` CSS picks them up and `hex-size` /\n`pointer-radius` changes propagate."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "buildFallbackTileDataUrl",
+          "declaration": {
+            "name": "buildFallbackTileDataUrl",
+            "module": "src/elements/layout/hp-background/fallback.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyFallbackTile",
+          "declaration": {
+            "name": "applyFallbackTile",
+            "module": "src/elements/layout/hp-background/fallback.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/field.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "FIELD_SCALE",
+          "type": {
+            "text": "number"
+          },
+          "default": "8",
+          "description": "Field resolution divisor: one field texel per 8×8 device-pixel\nblock. Diffusion at 1 field-px/step then spreads ~8 screen px per\nframe — organic drift without a velocity sim — and the whole pass\ncosts ~1.5% of a fullscreen-resolution one."
+        },
+        {
+          "kind": "variable",
+          "name": "FIELD_EPSILON",
+          "type": {
+            "text": "number"
+          },
+          "default": "0.004",
+          "description": "Energy below this reads as fully faded (the runtime smoothstep\noutput is imperceptible), so the loop can sleep once the whole\nfield must be under it."
+        },
+        {
+          "kind": "variable",
+          "name": "FIELD_MAX",
+          "type": {
+            "text": "number"
+          },
+          "default": "1.5",
+          "description": "Energy ceiling in the sim (headroom above 1.0 for the ignition\nring's hot tier). The analytic sleep window must assume this as\nthe starting energy."
+        },
+        {
+          "kind": "variable",
+          "name": "MAX_RUNNER_SPLATS",
+          "type": {
+            "text": "number"
+          },
+          "default": "12",
+          "description": "Maximum concurrent ignition-runner splats per step — matches the\nshader's fixed uniform array (keep the GLSL array sizes and loop\nbound in sync when changing this)."
+        },
+        {
+          "kind": "class",
+          "description": "Owns the ping-pong energy textures and the simulation pass. One\ninstance per element; resources are (re)created on context init /\nrestore via init and dropped via release.",
+          "name": "EnergyField",
+          "members": [
+            {
+              "kind": "field",
+              "name": "program",
+              "type": {
+                "text": "WebGLProgram | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "textures",
+              "type": {
+                "text": "[WebGLTexture | null, WebGLTexture | null]"
+              },
+              "privacy": "private",
+              "default": "[null, null]"
+            },
+            {
+              "kind": "field",
+              "name": "fbos",
+              "type": {
+                "text": "[WebGLFramebuffer | null, WebGLFramebuffer | null]"
+              },
+              "privacy": "private",
+              "default": "[null, null]"
+            },
+            {
+              "kind": "field",
+              "name": "readIndex",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Index of the texture currently holding the latest field state."
+            },
+            {
+              "kind": "field",
+              "name": "halfFloat",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "True when R16F render targets are available; RGBA8 otherwise\n(energy then clamps at 1.0 — visually equivalent, less headroom)."
+            },
+            {
+              "kind": "field",
+              "name": "uFieldLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uFieldSizeLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uDecayLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatALoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatBLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatRadiusLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uSplatStrengthLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uRunnerSegLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uRunnerParamsLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "runnerSegData",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Float32Array(MAX_RUNNER_SPLATS * 4)",
+              "description": "Scratch buffers for the runner uniform arrays."
+            },
+            {
+              "kind": "field",
+              "name": "runnerParamData",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Float32Array(MAX_RUNNER_SPLATS * 2)"
+            },
+            {
+              "kind": "field",
+              "name": "width",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Field texture dimensions (device px / FIELD_SCALE)."
+            },
+            {
+              "kind": "field",
+              "name": "height",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "texture",
+              "type": {
+                "text": "WebGLTexture | null"
+              },
+              "description": "The texture holding the latest field state — what the runtime\npass samples. Null before init.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                }
+              ],
+              "description": "Compile the sim program and detect half-float renderability.\nTextures are allocated lazily by ensureSize."
+            },
+            {
+              "kind": "method",
+              "name": "ensureSize",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                },
+                {
+                  "name": "canvasW",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Canvas backing-store width in device px."
+                },
+                {
+                  "name": "canvasH",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Canvas backing-store height in device px."
+                }
+              ],
+              "description": "Match the field to the canvas backing store, reallocating both\nping-pong textures when the size changes (which zeroes the field\n— acceptable on resize)."
+            },
+            {
+              "kind": "method",
+              "name": "step",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                },
+                {
+                  "name": "decay",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Effective per-step decay (already dt-normalized)."
+                },
+                {
+                  "name": "splat",
+                  "type": {
+                    "text": "FieldSplat | null"
+                  },
+                  "description": "This frame's pointer splat, or null for none."
+                },
+                {
+                  "name": "runners",
+                  "default": "[]",
+                  "type": {
+                    "text": "RunnerSplat[]"
+                  },
+                  "description": "Ignition-runner head segments (at most\n   *   {@link MAX_RUNNER_SPLATS}); pass an empty array for none.\n   "
+                }
+              ],
+              "description": "Advance the simulation one step: read the current field, write\ndecay × diffusion + splat into the other texture, swap."
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                }
+              ],
+              "description": "Zero the field (both textures) without releasing resources —\nused when reduced motion engages so the wake vanishes cleanly."
+            },
+            {
+              "kind": "method",
+              "name": "release",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext | null"
+                  },
+                  "description": "The context to delete against, or null when lost."
+                }
+              ],
+              "description": "Delete GL resources and drop refs. Pass null after context loss."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FIELD_SCALE",
+          "declaration": {
+            "name": "FIELD_SCALE",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FIELD_EPSILON",
+          "declaration": {
+            "name": "FIELD_EPSILON",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FIELD_MAX",
+          "declaration": {
+            "name": "FIELD_MAX",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MAX_RUNNER_SPLATS",
+          "declaration": {
+            "name": "MAX_RUNNER_SPLATS",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EnergyField",
+          "declaration": {
+            "name": "EnergyField",
+            "module": "src/elements/layout/hp-background/field.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/geometry.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "reconcileCanvasGeometry",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The hp-background element (its bbox is the canvas\nbox — the canvas fills the host via CSS)."
+            },
+            {
+              "name": "canvas",
+              "type": {
+                "text": "HTMLCanvasElement | null"
+              },
+              "description": "The shadow-root canvas whose backing store is\nreconciled in place."
+            },
+            {
+              "name": "gl",
+              "type": {
+                "text": "WebGL2RenderingContext | null"
+              },
+              "description": "Live context, if any; its viewport is updated when the\nbacking store changes."
+            }
+          ],
+          "description": "Reconcile the canvas backing store against the host's current\nlayout box and compute the page-coordinate offset for this frame.\n\n**Two modes, both viewport-bounded.**\n\n- `page` mode: the host is `position: fixed` filling the viewport.\n  The *browser* keeps a fixed element pinned with zero JS, so the\n  software compositor has nothing to chase; the pattern scrolls\n  purely through the offset (which includes scroll). Backing store\n  = viewport × dpr.\n- contained mode (default): the host is `position: absolute;\n  inset: 0` inside a bounded parent. Backing store = host × dpr.\n\nWhy this shape: a canvas larger than the viewport has its\noff-screen region dropped by the software compositor (HW accel\noff — VMs, RDP, locked-down browsers), leaving blank bands; and\nJS-repositioning a canvas to chase native scroll lags a frame on\nthat same software path, flashing a blank strip at the leading\nedge. Both bugs are structurally impossible when the canvas never\nexceeds the viewport and never moves from JS.\n\nCalled at the top of every draw — `getBoundingClientRect` costs\n~0.01 ms, cheap enough that self-correction needs no caching even\nat pointer-move rates."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "reconcileCanvasGeometry",
+          "declaration": {
+            "name": "reconcileCanvasGeometry",
+            "module": "src/elements/layout/hp-background/geometry.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/gl.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "VERTEX_SHADER_SOURCE",
+          "default": "`#version 300 es void main() { vec2 pos = vec2( (gl_VertexID == 1) ? 3.0 : -1.0, (gl_VertexID == 2) ? 3.0 : -1.0 ); gl_Position = vec4(pos, 0.0, 1.0); } `",
+          "description": "Vertex shader shared by the bake and runtime programs. Emits a\nsingle triangle that covers the entire clip-space viewport, using\n`gl_VertexID` so no vertex buffer is needed."
+        },
+        {
+          "kind": "function",
+          "name": "acquireContext",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "canvas",
+              "type": {
+                "text": "HTMLCanvasElement"
+              },
+              "description": "The shadow-root canvas element."
+            }
+          ],
+          "description": "Acquire a WebGL2 context configured for hp-background's on-demand\nrender model. Returns null when WebGL2 is unavailable (the caller\nroutes to the Option-C fallback).\n\nAttribute rationale:\n- `antialias: false` — the bake pass does AA via `fwidth`; browser\n  MSAA on the canvas would be redundant fillrate.\n- `powerPreference: \"low-power\"` — decorative use case; lets\n  battery-conscious systems route to the integrated GPU.\n- `preserveDrawingBuffer: true` — critical for on-demand rendering.\n  The default invalidates the buffer after each compositing pass,\n  so any canvas region not visible at draw time would re-composite\n  as blank once scrolled into view. Apps that redraw every rAF\n  never notice; ours draws on demand. Costs one extra GPU copy."
+        },
+        {
+          "kind": "function",
+          "name": "describeRenderer",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "gl",
+              "type": {
+                "text": "WebGL2RenderingContext"
+              },
+              "description": "A live WebGL2 context."
+            }
+          ],
+          "description": "The context's unmasked renderer string — the truthful \"who is\nactually rasterizing\" answer, used for software detection and the\ndev-facing render-path log."
+        },
+        {
+          "kind": "function",
+          "name": "isSoftwareRenderer",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "gl",
+              "type": {
+                "text": "WebGL2RenderingContext"
+              },
+              "description": "A live WebGL2 context."
+            }
+          ],
+          "description": "Detect a software rasterizer (tier 2 of the three-tier degradation\ndecision): hardware acceleration off, WebGL alive via SwiftShader /\nllvmpipe / WARP. Best-effort — where the renderer string is\nwithheld we report hardware and rely on the future adaptive\nframe-time backstop (Step 4). A false negative only means the\nenergy sim runs slower; the static pattern is unaffected."
+        },
+        {
+          "kind": "function",
+          "name": "createProgram",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "gl",
+              "type": {
+                "text": "WebGL2RenderingContext"
+              },
+              "description": "A live WebGL2 context."
+            },
+            {
+              "name": "vsSource",
+              "type": {
+                "text": "string"
+              },
+              "description": "Vertex shader GLSL."
+            },
+            {
+              "name": "fsSource",
+              "type": {
+                "text": "string"
+              },
+              "description": "Fragment shader GLSL."
+            }
+          ],
+          "description": "Build a linked WebGL2 program from inline VS + FS sources. Shaders\nare detached and deleted immediately after linking — they are only\nneeded at link time."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "VERTEX_SHADER_SOURCE",
+          "declaration": {
+            "name": "VERTEX_SHADER_SOURCE",
+            "module": "src/elements/layout/hp-background/gl.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "acquireContext",
+          "declaration": {
+            "name": "acquireContext",
+            "module": "src/elements/layout/hp-background/gl.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "describeRenderer",
+          "declaration": {
+            "name": "describeRenderer",
+            "module": "src/elements/layout/hp-background/gl.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isSoftwareRenderer",
+          "declaration": {
+            "name": "isSoftwareRenderer",
+            "module": "src/elements/layout/hp-background/gl.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createProgram",
+          "declaration": {
+            "name": "createProgram",
+            "module": "src/elements/layout/hp-background/gl.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
+          "name": "HpBackground",
+          "cssProperties": [
+            {
+              "description": "Base stroke colour",
+              "name": "--hp-bg-stroke"
+            },
+            {
+              "description": "Energy-wake stroke colour",
+              "name": "--hp-bg-stroke-bright"
+            },
+            {
+              "description": "Ignition-wavefront colour (defaults to the bright colour)",
+              "name": "--hp-bg-stroke-hot"
+            },
+            {
+              "description": "Base layer opacity (default 0.25)",
+              "name": "--hp-bg-faint-opacity"
+            },
+            {
+              "description": "Wake layer opacity (default 0.3)",
+              "name": "--hp-bg-bright-opacity"
+            },
+            {
+              "description": "Ignition-wavefront opacity (default 2× bright, capped at 1)",
+              "name": "--hp-bg-hot-opacity"
+            },
+            {
+              "description": "Reveal radius on the CSS fallback path (set from pointer-radius)",
+              "name": "--hp-bg-pointer-radius"
+            },
+            {
+              "description": "Overrides the decay attribute",
+              "name": "--hp-bg-decay"
+            },
+            {
+              "description": "Overrides the splat-strength attribute",
+              "name": "--hp-bg-splat-strength"
+            },
+            {
+              "description": "Overrides the splat-radius attribute",
+              "name": "--hp-bg-splat-radius"
+            },
+            {
+              "description": "Stacking position in page mode (default -1)",
+              "name": "--hp-bg-z"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "hexSize",
+              "type": {
+                "text": "number"
+              },
+              "default": "14",
+              "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement.",
+              "attribute": "hex-size"
+            },
+            {
+              "kind": "field",
+              "name": "pointerRadius",
+              "type": {
+                "text": "number"
+              },
+              "default": "200",
+              "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200.",
+              "attribute": "pointer-radius"
+            },
+            {
+              "kind": "field",
+              "name": "decay",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.964",
+              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\").",
+              "attribute": "decay"
+            },
+            {
+              "kind": "field",
+              "name": "splatStrength",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "description": "Multiplier on the energy injected per pointer move. Default 1.",
+              "attribute": "splat-strength"
+            },
+            {
+              "kind": "field",
+              "name": "splatRadius",
+              "type": {
+                "text": "number"
+              },
+              "default": "80",
+              "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80.",
+              "attribute": "splat-radius"
+            },
+            {
+              "kind": "field",
+              "name": "scrollStir",
+              "type": {
+                "text": "\"edge\" | \"pointer\" | \"band\" | \"off\""
+              },
+              "default": "\"edge\"",
+              "description": "Where scroll velocity stirs the field: \"edge\" (a band along\nthe viewport edge new content arrives from), \"pointer\" (at the\ncursor/touch position), \"band\" (a soft full-width band at the\nviewport centre), or \"off\". Scroll stirring is capped at the\nbright tier and disabled under reduced motion.",
+              "attribute": "scroll-stir"
+            },
+            {
+              "kind": "field",
+              "name": "fallback",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "True when WebGL2 init failed or the context was lost — the host\nrenders the static SVG-data-URL fallback (Option C), reflected as\na `data-hp-fallback` attribute for the CSS."
+            },
+            {
+              "kind": "field",
+              "name": "canvas",
+              "type": {
+                "text": "HTMLCanvasElement | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "Cached canvas element handle, grabbed in `firstUpdated`."
+            },
+            {
+              "kind": "field",
+              "name": "gl",
+              "type": {
+                "text": "WebGL2RenderingContext | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "Active WebGL2 context, null while in the fallback state."
+            },
+            {
+              "kind": "field",
+              "name": "softwareRenderer",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "Tier-2 flag: WebGL alive but software-rasterized (HW accel\noff). Routed to the static CSS tile in initGL — the software\ncompositor displays WebGL canvases unreliably even when the\nbuffer is fully drawn. See the three-tier decision in the ADR."
+            },
+            {
+              "kind": "field",
+              "name": "tile",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new TilePipeline()"
+            },
+            {
+              "kind": "field",
+              "name": "renderPass",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new RenderPass()"
+            },
+            {
+              "kind": "field",
+              "name": "field",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new EnergyField()"
+            },
+            {
+              "kind": "field",
+              "name": "pointer",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new PointerTracker( () => this.handlePointerActivity(), (x, y) => this.handleIgnite(x, y), () => this.handleIgniteEnd() )"
+            },
+            {
+              "kind": "field",
+              "name": "runners",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LatticeRunners()",
+              "description": "Ignition runners — path logic lives in runners.ts; the element\nconverts their page-space head segments to field space per\nframe, which keeps trails glued to the pattern across scroll."
+            },
+            {
+              "kind": "field",
+              "name": "igniteHeld",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "True while the pointer is held down on empty space — new\nrunner waves keep launching every WAVE_MS from the pointer's\nLIVE position (the ignite centre follows a held drag) until\nrelease."
+            },
+            {
+              "kind": "field",
+              "name": "lastWaveAt",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "pendingScrollDelta",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Scroll distance (CSS px, signed) accumulated since the last\nconsumed loop frame, and the scroll position it's measured\nagainst."
+            },
+            {
+              "kind": "field",
+              "name": "lastScrollY",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "resizeObserver",
+              "type": {
+                "text": "ResizeObserver | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "loopHandle",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "rAF handle of the running sim loop; null while asleep."
+            },
+            {
+              "kind": "field",
+              "name": "simTimeSinceSplat",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Accumulated *sim* time (sum of clamped dt) since the field\nlast received energy. Drives the sleep check — sim time, not\nwall clock, so a tab-hide mid-wake can't strand a bright field\n(rAF pauses freeze both the field AND this accumulator)."
+            },
+            {
+              "kind": "field",
+              "name": "lastFrameAt",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "performance.now() of the previous loop frame, for dt."
+            },
+            {
+              "kind": "field",
+              "name": "prevSplatX",
+              "privacy": "private",
+              "description": "Canvas-local device-px position of the last splatted point;\nNaN when the loop was asleep (prevents a stale segment)."
+            },
+            {
+              "kind": "field",
+              "name": "prevSplatY",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "lastLoopCanvasW",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Geometry snapshot from the previous loop frame — a change means\nsplat coordinates jumped spaces, so prevSplat must resync\n(otherwise a resize / monitor-DPR move paints a phantom\nfull-strength streak between unrelated points)."
+            },
+            {
+              "kind": "field",
+              "name": "lastLoopCanvasH",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "lastLoopDpr",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "adaptiveSamples",
+              "type": {
+                "text": "number[] | null"
+              },
+              "privacy": "private",
+              "default": "[]",
+              "description": "Frame intervals collected over one contiguous wake for the\nadaptive demotion backstop; null once evaluated. Reset on every\nwake so cross-wake stalls can't poison the median."
+            },
+            {
+              "kind": "field",
+              "name": "demoted",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "True after adaptive demotion — a context restore must not\nresurrect the GL path just to demote again."
+            },
+            {
+              "kind": "field",
+              "name": "dprMediaQuery",
+              "type": {
+                "text": "MediaQueryList | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "Active matchMedia query watching for DPR changes. Re-created on\neach change (the query string embeds the current value, so any\ndifferent DPR stops it matching)."
+            },
+            {
+              "kind": "field",
+              "name": "pendingFrame",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "Pending rAF handle for a coalesced redraw; null when none."
+            },
+            {
+              "kind": "method",
+              "name": "logRenderPath",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Dev-facing render-path log: which of the three tiers this\ninstance is actually using, and why. console.debug so it only\nshows when the DevTools console level includes Verbose — silent\nfor consumers at default settings."
+            },
+            {
+              "kind": "method",
+              "name": "initGL",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "rebake",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Bake (or re-bake) the tile; routes to the fallback if the FBO\nturns out incomplete (misbehaving driver)."
+            },
+            {
+              "kind": "method",
+              "name": "releaseGL",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Delete GL resources across all pipelines and drop the context\nref. Safe after context loss (pipelines skip deletes when passed\nnull)."
+            },
+            {
+              "kind": "method",
+              "name": "enterFallback",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleContextLost",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleContextRestored",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleScroll",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleSettled",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "watchDpr",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleDprChange",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "handlePointerActivity",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Pointer/preference activity routes by mode. GL path: each move\nmarks the field alive and (re)wakes the sim loop; under reduced\nmotion the field is cleared instead so the wake vanishes.\nFallback path: reposition the CSS reveal mask by writing the\npointer coordinates as custom properties — input data, not\nvisual state, matching the original SVG implementation's\ncontract; no rAF needed, the engine repaints the moved mask on\nits own schedule."
+            },
+            {
+              "kind": "method",
+              "name": "pointerWithinReach",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "clientY",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "True when the given (or current) pointer position is close\nenough to the host rect to affect its field."
+            },
+            {
+              "kind": "method",
+              "name": "handleIgnite",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "clientY",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Ignition: a press on a non-interactive target launches lattice\nrunners from the press point, and keeps launching waves while\nthe press is held (see the loop). GL tier only — the CSS\nfallback has no sim to carry it — and suppressed under reduced\nmotion (it is pure motion flourish)."
+            },
+            {
+              "kind": "method",
+              "name": "handleIgniteEnd",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Release ends the hold; live runners finish their own lives, so\nthe effect winds down rather than cutting off."
+            },
+            {
+              "kind": "method",
+              "name": "wakeLoop",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Start the sim loop if asleep. The loop supersedes single-frame\nscheduling while it runs."
+            },
+            {
+              "kind": "method",
+              "name": "stopLoop",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "knob",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "cs",
+                  "type": {
+                    "text": "CSSStyleDeclaration"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "fallback",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Read a tuning knob: the CSS custom property wins when set and\nnumeric; the attribute/property value is the default."
+            },
+            {
+              "kind": "field",
+              "name": "runLoopFrame",
+              "privacy": "private",
+              "readonly": true,
+              "description": "One sim-loop frame: advance the field (decay + diffusion +\nthis frame's pointer splat), draw, then either continue or —\nonce the field must have decayed below the visible epsilon —\nsleep. Kept as an arrow field so tests can drive frames\nmanually with an explicit timestamp."
+            },
+            {
+              "kind": "method",
+              "name": "demote",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "medianMs",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Tier-2 demotion decided by measurement rather than the renderer\nstring (see the three-tier decision). Sticky via `demoted`."
+            },
+            {
+              "kind": "method",
+              "name": "scheduleRedraw",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Coalesce redraws onto the next animation frame. Multiple\ntriggers in one frame (resize + scroll + settle, say) collapse to\na single draw that runs *after* layout settles — never\nsynchronously inside an observer callback."
+            },
+            {
+              "kind": "method",
+              "name": "draw",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "hex-size",
+              "type": {
+                "text": "number"
+              },
+              "default": "14",
+              "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement.",
+              "fieldName": "hexSize"
+            },
+            {
+              "name": "pointer-radius",
+              "type": {
+                "text": "number"
+              },
+              "default": "200",
+              "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200.",
+              "fieldName": "pointerRadius"
+            },
+            {
+              "name": "decay",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.964",
+              "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\").",
+              "fieldName": "decay"
+            },
+            {
+              "name": "splat-strength",
+              "type": {
+                "text": "number"
+              },
+              "default": "1",
+              "description": "Multiplier on the energy injected per pointer move. Default 1.",
+              "fieldName": "splatStrength"
+            },
+            {
+              "name": "splat-radius",
+              "type": {
+                "text": "number"
+              },
+              "default": "80",
+              "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80.",
+              "fieldName": "splatRadius"
+            },
+            {
+              "name": "scroll-stir",
+              "type": {
+                "text": "\"edge\" | \"pointer\" | \"band\" | \"off\""
+              },
+              "default": "\"edge\"",
+              "description": "Where scroll velocity stirs the field: \"edge\" (a band along\nthe viewport edge new content arrives from), \"pointer\" (at the\ncursor/touch position), \"band\" (a soft full-width band at the\nviewport centre), or \"off\". Scroll stirring is capped at the\nbright tier and disabled under reduced motion.",
+              "fieldName": "scrollStir"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-background",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBackground",
+          "declaration": {
+            "name": "HpBackground",
+            "module": "src/elements/layout/hp-background/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-background",
+          "declaration": {
+            "name": "HpBackground",
+            "module": "src/elements/layout/hp-background/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/input.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Tracks the pointer position and the `prefers-reduced-motion`\npreference for one element. The owner supplies a redraw scheduler;\nthe tracker never draws.\n\nStep 5 extends this module with touch + scroll energy splats — the\ncapture surface is deliberately isolated here so the element wiring\ndoesn't change when it does.",
+          "name": "PointerTracker",
+          "members": [
+            {
+              "kind": "field",
+              "name": "mouseClientX",
+              "default": "OFFSCREEN_MOUSE",
+              "description": "Last pointer position in viewport CSS coords, or the off-screen\nsentinel before the first move / under reduced motion."
+            },
+            {
+              "kind": "field",
+              "name": "mouseClientY",
+              "default": "OFFSCREEN_MOUSE"
+            },
+            {
+              "kind": "field",
+              "name": "reducedMotion",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "True while the user prefers reduced motion — the halo is\nsuppressed (mouse reads as off-screen) but the faint base\npattern still renders."
+            },
+            {
+              "kind": "field",
+              "name": "reducedMotionQuery",
+              "type": {
+                "text": "MediaQueryList | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "connect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Attach window/media listeners. Call from connectedCallback."
+            },
+            {
+              "kind": "method",
+              "name": "disconnect",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Detach everything attached by connect."
+            },
+            {
+              "kind": "field",
+              "name": "handlePointerMove",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handlePointerDown",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handlePointerUp",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleReducedMotionChange",
+              "privacy": "private",
+              "readonly": true
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PointerTracker",
+          "declaration": {
+            "name": "PointerTracker",
+            "module": "src/elements/layout/hp-background/input.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/render.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "OFFSCREEN_MOUSE",
+          "type": {
+            "text": "number"
+          },
+          "default": "-1e6",
+          "description": "Sentinel pointer position: far enough off-canvas that no splat\ngeometry derived from it can reach the visible viewport."
+        },
+        {
+          "kind": "variable",
+          "name": "MAX_HEADS",
+          "type": {
+            "text": "number"
+          },
+          "default": "12",
+          "description": "Maximum head highlights per draw — matches the shader's fixed\nuniform array (keep the GLSL array size and loop bound in sync)."
+        },
+        {
+          "kind": "class",
+          "description": "Owns the runtime program and the per-frame draw. One instance per\nelement; resources are (re)created on context init / restore via\ninit and dropped via release.",
+          "name": "RenderPass",
+          "members": [
+            {
+              "kind": "field",
+              "name": "program",
+              "type": {
+                "text": "WebGLProgram | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "vao",
+              "type": {
+                "text": "WebGLVertexArrayObject | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uTileTexLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uFieldTexLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uTileSizeLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uOffsetLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uCanvasSizeLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uFaintColorLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uBrightColorLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uHotColorLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "uHeadsLoc",
+              "type": {
+                "text": "WebGLUniformLocation | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "headData",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Float32Array(MAX_HEADS * 4)",
+              "description": "Scratch buffer for the head uniform array."
+            },
+            {
+              "kind": "method",
+              "name": "init",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                }
+              ],
+              "description": "Create the runtime program and the (attribute-less) VAO WebGL2\nrequires for any draw call."
+            },
+            {
+              "kind": "method",
+              "name": "draw",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  },
+                  "description": "A live WebGL2 context."
+                },
+                {
+                  "name": "host",
+                  "type": {
+                    "text": "HTMLElement"
+                  },
+                  "description": "The element, for computed-style token reads."
+                },
+                {
+                  "name": "input",
+                  "type": {
+                    "text": "DrawInput"
+                  },
+                  "description": "This frame's geometry, tile, and pointer state."
+                }
+              ],
+              "description": "Draw one frame into the canvas backbuffer."
+            },
+            {
+              "kind": "method",
+              "name": "bindPremultiplied",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext"
+                  }
+                },
+                {
+                  "name": "loc",
+                  "type": {
+                    "text": "WebGLUniformLocation | null"
+                  }
+                },
+                {
+                  "name": "rgba",
+                  "type": {
+                    "text": "RgbaTuple"
+                  }
+                },
+                {
+                  "name": "opacity",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Bind a colour uniform premultiplied: rgb · finalα where finalα =\nparsedα · token opacity — what the shader's `col * coverage` and\nthe blend equation both expect."
+            },
+            {
+              "kind": "method",
+              "name": "release",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "gl",
+                  "type": {
+                    "text": "WebGL2RenderingContext | null"
+                  },
+                  "description": "The context to delete against, or null when lost."
+                }
+              ],
+              "description": "Delete GL resources and drop refs. Pass null after context loss."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "OFFSCREEN_MOUSE",
+          "declaration": {
+            "name": "OFFSCREEN_MOUSE",
+            "module": "src/elements/layout/hp-background/render.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MAX_HEADS",
+          "declaration": {
+            "name": "MAX_HEADS",
+            "module": "src/elements/layout/hp-background/render.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RenderPass",
+          "declaration": {
+            "name": "RenderPass",
+            "module": "src/elements/layout/hp-background/render.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/runners.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Owns every active runner across presses. Pure CPU-side path\nlogic — the element converts the emitted page-space segments to\nfield space and feeds them to the sim.",
+          "name": "LatticeRunners",
+          "members": [
+            {
+              "kind": "field",
+              "name": "runners",
+              "type": {
+                "text": "Runner[]"
+              },
+              "privacy": "private",
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "True while any head is still crawling.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "spawn",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pageX",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Press X in page CSS px."
+                },
+                {
+                  "name": "pageY",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Press Y in page CSS px."
+                },
+                {
+                  "name": "hexSize",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Lattice side length in CSS px."
+                }
+              ],
+              "description": "Launch runners from a press point."
+            },
+            {
+              "kind": "method",
+              "name": "heads",
+              "return": {
+                "type": {
+                  "text": "Array<{ x: number; y: number }>"
+                }
+              },
+              "description": "Live head positions in page CSS px — the \"leading pixels\" the\nruntime pass highlights above the trail they leave."
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Drop every head (loop teardown)."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LatticeRunners",
+          "declaration": {
+            "name": "LatticeRunners",
+            "module": "src/elements/layout/hp-background/runners.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/styles.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "backgroundStyles",
+          "default": "css` :host { position: absolute; inset: 0; display: block; pointer-events: none; overflow: hidden; /* contain: paint keeps the decorative painting isolated (canvas * can't leak outside the host) without the size containment that * contain: strict would impose — size containment suppressed * ResizeObserver from firing on ancestor-driven inset:0 size * changes (async content settling, fonts loading, hp-code * highlighting). */ contain: paint; /* Both layers use full outline tokens, dialed by independent * opacities. The opacity dial lets us land between the system * outline rungs (--hp-outline-faint reads as nothing on common * backdrops; --hp-outline-variant reads as too present at 1.0). * Default 0.25 for the base sits the grid at \"barely there, but * there\"; 0.3 for the cursor halo keeps the brightening a soft * trail rather than a search-light. */ --hp-bg-stroke: var(--hp-outline-variant); --hp-bg-stroke-bright: var(--hp-outline); --hp-bg-faint-opacity: 0.25; --hp-bg-bright-opacity: 0.3; } canvas { /* Canvas fills the host. The host is viewport-bounded in both * modes (fixed-viewport in page mode, bounded parent in * contained mode), so this is never an oversized canvas. The * backing-store resolution is reconciled per draw by * reconcileCanvasGeometry; these rules fix the on-screen box. */ position: absolute; inset: 0; width: 100%; height: 100%; display: block; } /* Page-backdrop mode: host is fixed to the viewport, behind page * content. It never moves on scroll (the browser pins fixed * elements natively — no JS reposition for the software compositor * to lag on); the pattern scrolls via the uOffset uniform instead. * z-index keeps it behind foreground content in the same stacking * context; consumers can raise/lower via --hp-bg-z. Caveat: a * fixed host anchors to the nearest ancestor with a transform / * filter / contain, not the viewport — mount page mode directly * under body-level containers. */ :host([page]) { position: fixed; inset: 0; z-index: var(--hp-bg-z, -1); } /* CSS-tile fallback: WebGL2 unavailable, context lost, or tier-2 * software rendering (where the compositor displays WebGL canvases * unreliably — see the three-tier decision in the ADR). The canvas * hides and two pseudo-element layers recreate the v1 two-SVG * effect: a faint base layer, and a bright layer revealed in a * radial window around the pointer. Both paint the stroke token as * background-color masked into hex outlines by the SVG-data-URL * tile. Mask-not-background because a data-URL SVG can't see * currentColor (it would render black); with the mask the colour * rides the token cascade, so light/dark theme flips apply live. * * The layers MUST be pseudo-elements, not the host: mask and * opacity are group effects — a mask or opacity on the host would * clip and dim everything it paints, capping the bright layer at * the faint layer's opacity. The host itself paints nothing. * * Tile image + dimensions + pointer radius are written as inline * custom properties by applyFallbackTile; the pointer position * arrives as inline properties per pointermove (input data, not * visual state — same contract as the original SVG version). */ :host([data-hp-fallback]) canvas { display: none; } :host([data-hp-fallback])::before, :host([data-hp-fallback])::after { content: \"\"; position: absolute; inset: 0; -webkit-mask-repeat: repeat; mask-repeat: repeat; } :host([data-hp-fallback])::before { background-color: var(--hp-bg-stroke); opacity: var(--hp-bg-faint-opacity); -webkit-mask-image: var(--hp-bg-fallback-image); mask-image: var(--hp-bg-fallback-image); -webkit-mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height); mask-size: var(--hp-bg-tile-width) var(--hp-bg-tile-height); } /* Bright layer: the tile mask intersected with a radial window at * the pointer. Off-screen default coords keep it invisible until * the first pointermove. */ :host([data-hp-fallback])::after { background-color: var(--hp-bg-stroke-bright); opacity: var(--hp-bg-bright-opacity); -webkit-mask-image: radial-gradient( circle var(--hp-bg-pointer-radius, 200px) at var(--hp-bg-x, -9999px) var(--hp-bg-y, -9999px), black 0%, transparent 100% ), var(--hp-bg-fallback-image); mask-image: radial-gradient( circle var(--hp-bg-pointer-radius, 200px) at var(--hp-bg-x, -9999px) var(--hp-bg-y, -9999px), black 0%, transparent 100% ), var(--hp-bg-fallback-image); -webkit-mask-size: auto, var(--hp-bg-tile-width) var(--hp-bg-tile-height); mask-size: auto, var(--hp-bg-tile-width) var(--hp-bg-tile-height); -webkit-mask-repeat: no-repeat, repeat; mask-repeat: no-repeat, repeat; -webkit-mask-composite: source-in; mask-composite: intersect; } /* Pointer-following brightness is a motion cue; suppress it for * users who opted out. The faint layer still renders — same * contract as the GL halo under reduced motion. */ @media (prefers-reduced-motion: reduce) { :host([data-hp-fallback])::after { display: none; } } `"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "backgroundStyles",
+          "declaration": {
+            "name": "backgroundStyles",
+            "module": "src/elements/layout/hp-background/styles.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/axial.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "ROW_STEP_FACTOR",
+          "type": {
+            "text": "number"
+          },
+          "default": "0.8660254",
+          "description": "Pointy-top hex row step as a fraction of cell width — `w · √3/2`.\nPre-computed to avoid CSS `sqrt()` which isn't reliable across\nBaseline 2025."
+        },
+        {
+          "kind": "variable",
+          "name": "HEX_HALF_HEIGHT_FACTOR",
+          "type": {
+            "text": "number"
+          },
+          "default": "0.5773503",
+          "description": "Pointy-top hex half-height as a fraction of cell width\n(= 1 / √3 ≈ 0.5774). Used by `recenter()` to compute the vertical\npixel extent of a single hex when fitting content."
+        },
+        {
+          "kind": "variable",
+          "name": "SINGLE_CELL_MASK",
+          "type": {
+            "text": "ReadonlyArray<AxialCoord>"
+          },
+          "default": "[{ q: 0, r: 0 }]",
+          "description": "Fallback fill mask for children without a `data-fill-cells`\nattribute — a single hex at the child's own `(q, r)`. Shared\nconstant so we don't allocate a fresh `[{q: 0, r: 0}]` per\nfit-to-content pass."
+        },
+        {
+          "kind": "function",
+          "name": "parseFillCellsForBbox",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "Raw attribute string, or `null` / `undefined`."
+            }
+          ],
+          "description": "Parse an `hp-cluster`-style `data-fill-cells` attribute (space-\nseparated `\"q,r q,r ...\"` pairs) into an `AxialCoord[]`. Returns\n`SINGLE_CELL_MASK` for missing / empty / unparseable input so the\ncaller can treat every child uniformly.\n\nDuplicates `parseFillCells` from pack.ts on purpose — the pack\nvariant returns a non-empty mask even for unparseable input, which\nwould mask legitimately-missing attributes when computing the\nfit-to-content bbox."
+        },
+        {
+          "kind": "function",
+          "name": "slotKey",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "q",
+              "type": {
+                "text": "number | string"
+              },
+              "description": "Axial column."
+            },
+            {
+              "name": "r",
+              "type": {
+                "text": "number | string"
+              },
+              "description": "Axial row."
+            }
+          ],
+          "description": "Format a `(q, r)` axial coordinate as a Map key — `\"q,r\"`. Accepts\neither numbers (typical) or strings (when reading directly off\nelement attributes)."
+        },
+        {
+          "kind": "function",
+          "name": "axialNeighbours",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "coord",
+              "type": {
+                "text": "AxialCoord"
+              },
+              "description": "Centre coordinate."
+            }
+          ],
+          "description": "The six pointy-top axial neighbours of `(q, r)`. Direction order:\nE, W, S, N, NE, SW."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ROW_STEP_FACTOR",
+          "declaration": {
+            "name": "ROW_STEP_FACTOR",
+            "module": "src/elements/layout/hp-grid/axial.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HEX_HALF_HEIGHT_FACTOR",
+          "declaration": {
+            "name": "HEX_HALF_HEIGHT_FACTOR",
+            "module": "src/elements/layout/hp-grid/axial.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SINGLE_CELL_MASK",
+          "declaration": {
+            "name": "SINGLE_CELL_MASK",
+            "module": "src/elements/layout/hp-grid/axial.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parseFillCellsForBbox",
+          "declaration": {
+            "name": "parseFillCellsForBbox",
+            "module": "src/elements/layout/hp-grid/axial.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "slotKey",
+          "declaration": {
+            "name": "slotKey",
+            "module": "src/elements/layout/hp-grid/axial.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "axialNeighbours",
+          "declaration": {
+            "name": "axialNeighbours",
+            "module": "src/elements/layout/hp-grid/axial.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/bonds.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "findOccupiedNeighbours",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "occupancy",
+              "type": {
+                "text": "ReadonlyMap<string, HTMLElement>"
+              },
+              "description": "Live `\"q,r\"` → element map from the grid."
+            },
+            {
+              "name": "coord",
+              "type": {
+                "text": "AxialCoord"
+              },
+              "description": "Centre coordinate to look outward from."
+            },
+            {
+              "name": "exclude",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "Element to skip (typically the moved hex itself,\nso its own slot isn't reported as a self-bond)."
+            }
+          ],
+          "description": "Elements occupying the 6 axial neighbours of `coord`, with\n`exclude` filtered out. Drag-finish calls this twice (once for\n`startCoord`, once for `target`) and feeds the results to\n`dispatchBondEvents`."
+        },
+        {
+          "kind": "function",
+          "name": "dispatchBondEvents",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "Element to dispatch on (typically the grid)."
+            },
+            {
+              "name": "moved",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The hex that just moved."
+            },
+            {
+              "name": "before",
+              "type": {
+                "text": "ReadonlyArray<HTMLElement>"
+              },
+              "description": "Neighbours of the start coord, pre-move."
+            },
+            {
+              "name": "after",
+              "type": {
+                "text": "ReadonlyArray<HTMLElement>"
+              },
+              "description": "Neighbours of the target coord, post-move."
+            }
+          ],
+          "description": "Diff a before/after pair of neighbour sets and dispatch\n`hp-grid-bond` (added) / `hp-grid-unbond` (removed) on the host\nfor each adjacency that changed.\n\nSafe to call with empty arrays — fires nothing if neither side\nchanged."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "findOccupiedNeighbours",
+          "declaration": {
+            "name": "findOccupiedNeighbours",
+            "module": "src/elements/layout/hp-grid/bonds.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "dispatchBondEvents",
+          "declaration": {
+            "name": "dispatchBondEvents",
+            "module": "src/elements/layout/hp-grid/bonds.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/drag.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Owns the active drag gesture and the post-drop choreography. One\ninstance per grid; lives for the element's lifetime.",
+          "name": "DragController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "DragState | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "tetherTracker",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new TetherTargetTracker()",
+              "description": "Tetherable-mode target tracker — owns the\n`data-hp-tether-target` highlight on the candidate-under-cursor\nhex during a drag."
+            },
+            {
+              "kind": "field",
+              "name": "handlePointerDown",
+              "readonly": true,
+              "description": "Bound pointerdown handler. Empty-space pointerdowns route to the\npan controller; pointerdowns on a `[q][r]` child (subject to\n`draggable` and `drag-handle` gating) start a drag."
+            },
+            {
+              "kind": "method",
+              "name": "cancel",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Abort an in-flight drag (e.g. on disconnect). Resets the\ndragging cell's transform back to its origin slot via the same\ncleanup the normal finish path uses."
+            },
+            {
+              "kind": "field",
+              "name": "handleMove",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleUp",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleCancel",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "finish",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "dx",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "dy",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Resolve a pointerup drag offset to a target axial slot, then\neither snap the dragged hex into the nearest free slot (regular\nmode) or toggle an `<hp-tether>` arc to the dropped-on hex\n(tetherable mode + drop landed on another hex).\n\nFires `hp-grid-move` on a successful move, `hp-grid-bond` /\n`hp-grid-unbond` for any adjacency that changed, and\n`hp-grid-drop` once the 90ms snap animation completes."
+            },
+            {
+              "kind": "method",
+              "name": "finishAsTether",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "source",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "startCoord",
+                  "type": {
+                    "text": "AxialCoord"
+                  }
+                },
+                {
+                  "name": "pointerId",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Tetherable-mode finish path: when a drag-release lands on another\n`[q][r]` hex (rather than empty space), toggle an arc between\nthe pair instead of moving. The source snaps back to its origin;\nthe create-or-remove + event emission lives in `tether.ts`."
+            },
+            {
+              "kind": "method",
+              "name": "findFreeSlot",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "AxialCoord"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord"
+                  }
+                },
+                {
+                  "name": "dragged",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ],
+              "description": "Find the nearest unoccupied axial slot to `target` via BFS. The\ndragged element is treated as if its current slot is free so a\ndrop on its own origin works without bouncing into a neighbour."
+            },
+            {
+              "kind": "method",
+              "name": "isFree",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "coord",
+                  "type": {
+                    "text": "AxialCoord"
+                  }
+                },
+                {
+                  "name": "dragged",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "cleanup",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "element",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "pointerId",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Shared drag-listener / capture teardown — used by both the\nnormal finish path and the tether finish path."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DragController",
+          "declaration": {
+            "name": "DragController",
+            "module": "src/elements/layout/hp-grid/drag.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
+          "name": "HpGrid",
+          "cssProperties": [
+            {
+              "description": "Cell width",
+              "name": "--hp-cell"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Slotted cells with q / r attributes",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"sm\"",
+              "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tetherable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on.",
+              "attribute": "tetherable",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "draggable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put).",
+              "attribute": "draggable",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "layout",
+              "type": {
+                "text": "\"free\" | \"spiral\" | \"rows\""
+              },
+              "default": "\"free\"",
+              "description": "Layout mode.\n\n- `free` (default) respects each child's authored `q` / `r`\n attributes.\n- `spiral` runs an FFD bin-pack with a spiral-from-origin scan:\n children are sorted by mask size descending, then each is\n placed at the first free position picked from a scan ordered\n by axial distance from `(0, 0)` (ring 0, then ring 1's 6\n positions, ring 2's 12, …). Produces a tight roughly-square\n honeycomb — largest cluster anchors the centre, smaller ones\n nest around it with a ≥1-hex gap.\n- `rows` runs the same FFD pack but with a row-major scan capped\n at `WIDE_HALF_COLS` axial cells wide, so the layout grows as\n left-to-right rows that wrap downward — roughly-rectangular\n wide arrangement, ideal for full-page-width surfaces (component\n index pages) where the spiral's square shape leaves too much\n horizontal space unused.\n\nChildren publish their actual filled hexes via `data-fill-cells`\n(composite elements like `<hp-cluster>` set this on slotchange);\nchildren without it are treated as single-hex. The gap check\nuses hex-adjacency (the 6 axial neighbours) — not rectangular\nbbox padding — so non-symmetric clusters' empty corners stay\navailable for neighbours to tuck into.\n\nTriggered automatically on first render when set to `spiral` or\n`rows`, and re-runs when the attribute changes. Manual repack\nvia `.pack()`. Drag interactions stay live; calling `.pack()`\nagain re-runs the FFD pack from scratch (dragged positions are\nignored).",
+              "attribute": "layout",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tetherIdCounter",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Monotonic counter for `data-hp-grid-id` auto-assignment on\n[q][r] children that don't carry an existing `id` attribute.\nStable enough for the hp-tether `from` / `to` selectors that get\ngenerated when a tether is created."
+            },
+            {
+              "kind": "field",
+              "name": "panController",
+              "readonly": true,
+              "default": "new PanController(this)",
+              "description": "Pan controller — owns the active pan state, the pan move/end\nhandlers, and `clamp`. Public so the zoom controller can reuse\nthe clamp via the `ZoomHost` interface."
+            },
+            {
+              "kind": "field",
+              "name": "zoomController",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ZoomController(this)",
+              "description": "Zoom controller — owns wheel zoom + button-zoom."
+            },
+            {
+              "kind": "field",
+              "name": "dragController",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new DragController(this)",
+              "description": "Drag controller — owns the active drag, snap-to-slot, the\nbond-diff + drop events, and the tetherable toggle path. Bond\nand tether interactions are byproducts of drag drops, so they\nlive with the drag pipeline."
+            },
+            {
+              "kind": "method",
+              "name": "isPackedLayout",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "WIDE_HALF_COLS",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "static": true,
+              "readonly": true,
+              "default": "10",
+              "description": "Axial-cell width cap for `layout=\"rows\"`. Sized to force 2–3\nrows for the typical components-page workload (~12 mixed-size\nclusters): at halfCols=10 the layout spans ~20 axial wide,\nwhich fits 4–6 medium clusters per row before wrapping. Pinned\nhere rather than viewport-derived so wide layouts stay\npredictable across screen sizes."
+            },
+            {
+              "kind": "method",
+              "name": "pack",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Run the FFD bin-pack for `layout=\"spiral\"` or `layout=\"rows\"`.\nChildren are sorted by mask size descending (largest first; ties\nbroken by document order), then each is placed at the first free\nposition the chosen strategy returns. Strategies live in\n`./layouts/spiral.ts` and `./layouts/rows.ts`; this method just\norchestrates.\n\nChildren publish their actual filled hexes via `data-fill-cells`\n(composite elements like `<hp-cluster>` set this on slotchange);\nchildren without it are treated as single-hex."
+            },
+            {
+              "kind": "method",
+              "name": "recenter",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Fit every positioned child inside the viewport and centre the\ncontent. Public so consumers can recenter programmatically; the\nbound `recenter` button in the controls slot calls it on click,\nand the FFD pack pipeline runs it after every placement\npass. Implementation lives in `./recenter.ts`."
+            },
+            {
+              "kind": "method",
+              "name": "handleSlotChange",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "description": "Fires immediately on drop. detail: { element, from, to }",
+              "name": "hp-grid-move"
+            },
+            {
+              "description": "Fires after the snap-back animation completes",
+              "name": "hp-grid-drop"
+            },
+            {
+              "description": "Two cells became axially adjacent. detail: { moved, partner }",
+              "name": "hp-grid-bond"
+            },
+            {
+              "description": "Previously-adjacent cells separated",
+              "name": "hp-grid-unbond"
+            },
+            {
+              "description": "Fires while the canvas is panning",
+              "name": "hp-grid-pan"
+            },
+            {
+              "description": "drag-to-tether created an arc. detail: { source, target, tether }",
+              "name": "hp-grid-tether"
+            },
+            {
+              "description": "drag-to-tether removed an existing arc",
+              "name": "hp-grid-untether"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"sm\"",
+              "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
+              "fieldName": "size"
+            },
+            {
+              "name": "tetherable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on.",
+              "fieldName": "tetherable"
+            },
+            {
+              "name": "draggable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put).",
+              "fieldName": "draggable"
+            },
+            {
+              "name": "layout",
+              "type": {
+                "text": "\"free\" | \"spiral\" | \"rows\""
+              },
+              "default": "\"free\"",
+              "description": "Layout mode.\n\n- `free` (default) respects each child's authored `q` / `r`\n attributes.\n- `spiral` runs an FFD bin-pack with a spiral-from-origin scan:\n children are sorted by mask size descending, then each is\n placed at the first free position picked from a scan ordered\n by axial distance from `(0, 0)` (ring 0, then ring 1's 6\n positions, ring 2's 12, …). Produces a tight roughly-square\n honeycomb — largest cluster anchors the centre, smaller ones\n nest around it with a ≥1-hex gap.\n- `rows` runs the same FFD pack but with a row-major scan capped\n at `WIDE_HALF_COLS` axial cells wide, so the layout grows as\n left-to-right rows that wrap downward — roughly-rectangular\n wide arrangement, ideal for full-page-width surfaces (component\n index pages) where the spiral's square shape leaves too much\n horizontal space unused.\n\nChildren publish their actual filled hexes via `data-fill-cells`\n(composite elements like `<hp-cluster>` set this on slotchange);\nchildren without it are treated as single-hex. The gap check\nuses hex-adjacency (the 6 axial neighbours) — not rectangular\nbbox padding — so non-symmetric clusters' empty corners stay\navailable for neighbours to tuck into.\n\nTriggered automatically on first render when set to `spiral` or\n`rows`, and re-runs when the attribute changes. Manual repack\nvia `.pack()`. Drag interactions stay live; calling `.pack()`\nagain re-runs the FFD pack from scratch (dragged positions are\nignored).",
+              "fieldName": "layout"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-grid",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpGridBondEventDetail",
+          "declaration": {
+            "name": "HpGridBondEventDetail",
+            "module": "./types.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpGridDropEventDetail",
+          "declaration": {
+            "name": "HpGridDropEventDetail",
+            "module": "./types.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpGridMoveEventDetail",
+          "declaration": {
+            "name": "HpGridMoveEventDetail",
+            "module": "./types.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpGridPanEventDetail",
+          "declaration": {
+            "name": "HpGridPanEventDetail",
+            "module": "./types.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpGridTetherEventDetail",
+          "declaration": {
+            "name": "HpGridTetherEventDetail",
+            "module": "./types.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpGrid",
+          "declaration": {
+            "name": "HpGrid",
+            "module": "src/elements/layout/hp-grid/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-grid",
+          "declaration": {
+            "name": "HpGrid",
+            "module": "src/elements/layout/hp-grid/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/pan.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Owns the active pan gesture and the clamped pan-bounds maths.\nOne instance per grid; lives for the element's lifetime.",
+          "name": "PanController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "PanState | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "start",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "PointerEvent"
+                  },
+                  "description": "The originating pointerdown."
+                }
+              ],
+              "description": "Begin a pan from an empty-space pointerdown. Captures the pointer\nso subsequent pointermove / pointerup events route to the host\neven if the cursor leaves it, snapshots the current pan offset\n(so the delta is added to it), and wires up the move / end\nlisteners."
+            },
+            {
+              "kind": "method",
+              "name": "clamp",
+              "return": {
+                "type": {
+                  "text": ""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "panX",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Requested horizontal pan in px."
+                },
+                {
+                  "name": "panY",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Requested vertical pan in px."
+                }
+              ],
+              "description": "Clamp a target pan offset to the legal range — every `[q][r]`\nchild must remain at least partially inside the viewport. Used\nby both the live pan handler and the zoom controller (so zoom-\nto-cursor never pushes content fully offscreen)."
+            },
+            {
+              "kind": "field",
+              "name": "handleMove",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleEnd",
+              "privacy": "private",
+              "readonly": true
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "stopPanFromButton",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "event",
+              "type": {
+                "text": "Event"
+              },
+              "description": "The originating pointerdown."
+            }
+          ],
+          "description": "Stop a pointerdown from bubbling up to the host's empty-space pan\nhandler. The viewport controls (zoom +/-, recenter) need this so\nclicking a button doesn't simultaneously initiate a pan."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PanController",
+          "declaration": {
+            "name": "PanController",
+            "module": "src/elements/layout/hp-grid/pan.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stopPanFromButton",
+          "declaration": {
+            "name": "stopPanFromButton",
+            "module": "src/elements/layout/hp-grid/pan.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/recenter.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "recenter",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "RecenterHost"
+              },
+              "description": "The grid element to recenter."
+            }
+          ],
+          "description": "Fit every positioned child inside the host's viewport and centre\nthe content. Pure function (takes the host explicitly) so the\norchestration stays out of the index."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "recenter",
+          "declaration": {
+            "name": "recenter",
+            "module": "src/elements/layout/hp-grid/recenter.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/styles.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "hpGridStyles",
+          "default": "css` :host { position: relative; display: block; width: 100%; min-height: 400px; overflow: hidden; cursor: grab; --hp-cell: var(--hp-hex-cell-sm); /* Effective cell width — reduced by the stroke so adjacent hexes * overlap exactly along their shared edge instead of producing * a double-thick line. */ --hp-effective-cell: calc(var(--hp-cell) - var(--hp-hex-stroke)); --hp-col-step: var(--hp-effective-cell); --hp-row-step: calc(var(--hp-effective-cell) * ${ROW_STEP_FACTOR}); touch-action: none; } /* Surface tint laid as a translucent pseudo behind everything else * in the shadow tree. 75%-opaque --hp-surface lets whatever sits * behind the grid (the main hp-background, the page colour) show * through at 25%, so the canvas reads as a tinted recess rather * than an opaque block. Sits at the back of the stacking order * automatically — pseudo precedes the slot in shadow tree order. */ :host::before { content: \"\"; position: absolute; inset: 0; background: var(--hp-surface); opacity: 0.75; pointer-events: none; } /* Slotted hp-background backdrop: dim the entire element so the * texture stays ambient on top of the tinted canvas surface. */ ::slotted(hp-background) { opacity: 0.6; } :host([data-hp-panning]) { cursor: grabbing; } :host([size=\"md\"]) { --hp-cell: var(--hp-hex-cell-md); } :host([size=\"lg\"]) { --hp-cell: var(--hp-hex-cell-lg); } /* Each slotted child with both q and r positions itself via the * transform — origin is the grid's centre. The drag offset vars * default to 0 and only get set on the dragged child. The * transition animates the snap-into-slot when the drag ends * (data-hp-dragging is removed first, then drag-x/drag-y + q/r * change — the transition fires across that change). */ ::slotted([q][r]) { position: absolute; left: 50%; top: 50%; translate: -50% -50%; /* Axial position is multiplied by --hp-zoom (defaults to 1) so * the canvas content scales as a unit; drag and pan are in * viewport pixels and added post-scale. The scale() after the * translate then visually resizes each hex. */ transform: translate( calc( var(--hp-col-step) * (var(--hp-q, 0) + var(--hp-r, 0) / 2) * var(--hp-zoom, 1) + var(--hp-drag-x, 0px) + var(--hp-pan-x, 0px) ), calc( var(--hp-row-step) * var(--hp-r, 0) * var(--hp-zoom, 1) + var(--hp-drag-y, 0px) + var(--hp-pan-y, 0px) ) ) scale(var(--hp-zoom, 1)); transition: transform var(--hp-unfold-trigger) var(--hp-ease-default); /* --hp-cursor crosses the shadow boundary because custom * properties cascade through it. Each draggable atom reads * cursor: var(--hp-cursor, pointer) on its own :host. */ --hp-cursor: grab; } ::slotted([q][r][data-hp-dragging]) { z-index: var(--hp-layer-dragging); opacity: 0.85; --hp-cursor: grabbing; transition: none; /* GPU-composite the transform during the drag for smoother 60fps * tracking; cleared once data-hp-dragging is removed. */ will-change: transform; } /* Hidden probe — read getBoundingClientRect to recover the resolved * pixel values of --hp-col-step and --hp-row-step. getComputedStyle * returns the raw calc() expression for custom properties, so * parseFloat can't recover the pixels directly. */ .step-probe { position: absolute; top: 0; left: 0; width: var(--hp-col-step); height: var(--hp-row-step); visibility: hidden; pointer-events: none; } /* Viewport controls — bottom-right cluster of zoom-out / zoom-in / * recenter buttons. Always visible but at 60% opacity so they * don't compete with the content; full opacity on hover. */ .controls { position: absolute; right: var(--hp-sm); bottom: var(--hp-sm); z-index: 1; display: flex; gap: var(--hp-xxs); opacity: 0.6; transition: opacity var(--hp-duration-fast) var(--hp-ease-default); } .controls:hover { opacity: 1; } .controls button { font: inherit; font-size: var(--hp-typo-label-sm-font-size); padding: 0 var(--hp-sm); background: var(--hp-surface-container); color: var(--hp-on-surface); border: 1px solid var(--hp-outline-variant); border-radius: var(--hp-rounded-sm); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; height: 2rem; } .controls button:hover { color: var(--hp-secondary); } .controls svg { width: 1rem; height: 1rem; } `",
+          "description": "Static `css` template assembled with the resolved `ROW_STEP_FACTOR`\nbaked into the `--hp-row-step` calc. Consumed as one entry of the\nelement's `static styles` array (combined with `hpBase`)."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "hpGridStyles",
+          "declaration": {
+            "name": "hpGridStyles",
+            "module": "src/elements/layout/hp-grid/styles.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/tether.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "tetherSelectorFor",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "el",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The hex to identify."
+            }
+          ],
+          "description": "Build the CSS selector that `<hp-tether>`'s `from` / `to`\nattributes need. Prefers the existing `id` (consumer-authored or\nthe grid's own auto-assigned one), else falls back to the\n`data-hp-grid-id` stamped at slotchange."
+        },
+        {
+          "kind": "function",
+          "name": "findTetherBetween",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The grid element."
+            },
+            {
+              "name": "a",
+              "type": {
+                "text": "string"
+              },
+              "description": "One endpoint selector."
+            },
+            {
+              "name": "b",
+              "type": {
+                "text": "string"
+              },
+              "description": "The other endpoint selector."
+            }
+          ],
+          "description": "Find an existing `<hp-tether>` child of `host` whose `from` / `to`\npair matches the selector pair in either direction. Used by the\ntoggle behaviour: matching pair means we remove instead of create."
+        },
+        {
+          "kind": "function",
+          "name": "toggleTether",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "Grid element. New tethers are appended as children;\nevents dispatch on this element."
+            },
+            {
+              "name": "source",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The dragged hex."
+            },
+            {
+              "name": "target",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "description": "The hex the drag landed on."
+            }
+          ],
+          "description": "Toggle an `<hp-tether>` arc between `source` and `target`. Creates\na new tether if none exists between the pair (in either direction);\nremoves the existing tether otherwise. Fires `hp-grid-tether` /\n`hp-grid-untether` on the host so consumers can react.\n\nNo-op when either endpoint can't be expressed as a selector (no\nid and no `data-hp-grid-id` to fall back to)."
+        },
+        {
+          "kind": "class",
+          "description": "Tracks the \"candidate tether-target\" hex under the cursor during a\ntetherable-mode drag. Sets `data-hp-tether-target` on whichever\nsibling `[q][r]` the pointer is over so consumers / CSS can paint\na highlight (hp-base reacts to it the same way it reacts to\n`data-hp-dragging`).\n\nOwned by DragController and cleared on drop / cancel.",
+          "name": "TetherTargetTracker",
+          "members": [
+            {
+              "kind": "field",
+              "name": "current",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Clear the current target on drop / cancel."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "tetherSelectorFor",
+          "declaration": {
+            "name": "tetherSelectorFor",
+            "module": "src/elements/layout/hp-grid/tether.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findTetherBetween",
+          "declaration": {
+            "name": "findTetherBetween",
+            "module": "src/elements/layout/hp-grid/tether.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "toggleTether",
+          "declaration": {
+            "name": "toggleTether",
+            "module": "src/elements/layout/hp-grid/tether.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "TetherTargetTracker",
+          "declaration": {
+            "name": "TetherTargetTracker",
+            "module": "src/elements/layout/hp-grid/tether.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/types.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/zoom.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "ZOOM_MIN",
+          "type": {
+            "text": "number"
+          },
+          "default": "0.25",
+          "description": "Minimum zoom factor. Going below this makes content unreadable at\ntypical viewport sizes; the recenter pass also clamps to this."
+        },
+        {
+          "kind": "variable",
+          "name": "ZOOM_MAX",
+          "type": {
+            "text": "number"
+          },
+          "default": "4",
+          "description": "Maximum zoom factor. Above this the pointy-top hex grid starts\nlooking like wallpaper and useful detail is lost in a single cell."
+        },
+        {
+          "kind": "variable",
+          "name": "ZOOM_BUTTON_STEP",
+          "type": {
+            "text": "number"
+          },
+          "default": "1.25",
+          "description": "Multiplicative step per +/- button click. Wheel zoom uses a\nsmoother per-event factor derived from `deltaY` so trackpad pinch\nand mousewheel both feel right."
+        },
+        {
+          "kind": "class",
+          "description": "Owns wheel-zoom + button-zoom for the grid. One instance per grid;\nlives for the element's lifetime. The host wires the wheel handler\nup via `addEventListener` and the buttons via Lit `@click`\nbindings.",
+          "name": "ZoomController",
+          "members": [
+            {
+              "kind": "method",
+              "name": "apply",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Requested raw zoom (will be clamped to\n`[ZOOM_MIN, ZOOM_MAX]`)."
+                },
+                {
+                  "name": "focusClientX",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Optional viewport-X to zoom about (px).\nDefaults to viewport centre."
+                },
+                {
+                  "name": "focusClientY",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Optional viewport-Y to zoom about (px).\nDefaults to viewport centre."
+                }
+              ],
+              "description": "Apply a new zoom factor, optionally centred on a viewport point\nso that point stays under the cursor after zooming (Miro/Figma\nfeel). Without a focus point, zooms around the grid centre. Pan\nis clamped after the change so the new content extent still fits\nin the viewport."
+            },
+            {
+              "kind": "field",
+              "name": "stepIn",
+              "readonly": true,
+              "description": "Bound handler for the in-shadow `zoom-in` button. Multiplies the\ncurrent zoom by `ZOOM_BUTTON_STEP`."
+            },
+            {
+              "kind": "field",
+              "name": "stepOut",
+              "readonly": true,
+              "description": "Bound handler for the in-shadow `zoom-out` button. Divides the\ncurrent zoom by `ZOOM_BUTTON_STEP`."
+            },
+            {
+              "kind": "field",
+              "name": "handleWheel",
+              "readonly": true,
+              "description": "Bound wheel handler. Ctrl/⌘ + wheel zooms; plain wheel scrolls\nthe page as normal so embedding the grid inside scrollable\ncontent stays sane. Per-event factor scales with `deltaY`\nmagnitude so trackpad pinch (small deltas) and mousewheel\n(~100 px deltas) both feel right.",
+              "parameters": [
+                {
+                  "description": "The originating wheel event.",
+                  "name": "event"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ZOOM_MIN",
+          "declaration": {
+            "name": "ZOOM_MIN",
+            "module": "src/elements/layout/hp-grid/zoom.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ZOOM_MAX",
+          "declaration": {
+            "name": "ZOOM_MAX",
+            "module": "src/elements/layout/hp-grid/zoom.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ZOOM_BUTTON_STEP",
+          "declaration": {
+            "name": "ZOOM_BUTTON_STEP",
+            "module": "src/elements/layout/hp-grid/zoom.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ZoomController",
+          "declaration": {
+            "name": "ZoomController",
+            "module": "src/elements/layout/hp-grid/zoom.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/layouts/index.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "PACK_RANGE",
+          "type": {
+            "text": "number"
+          },
+          "default": "40",
+          "description": "Outer scan bound — strategies walk `r` from `-PACK_RANGE` to\n`+PACK_RANGE`, inner `q` constrained by strategy. 40 is enough for\nany reasonable cluster count on hexpunk's targeted viewport sizes;\nbumping it is cheap (O(n) per row) if a layout ever needs it."
+        },
+        {
+          "kind": "variable",
+          "name": "HEX_NEIGHBOURS",
+          "type": {
+            "text": "ReadonlyArray<readonly [number, number]>"
+          },
+          "default": "[ [1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [-1, 1], ]",
+          "description": "The 6 axial-distance-1 hex neighbours of `(0, 0)`. Pre-computed so\n`isPositionClear`'s inner-loop hot path doesn't allocate."
+        },
+        {
+          "kind": "function",
+          "name": "isPositionClear",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "q",
+              "type": {
+                "text": "number"
+              },
+              "description": "Candidate axial column."
+            },
+            {
+              "name": "r",
+              "type": {
+                "text": "number"
+              },
+              "description": "Candidate axial row."
+            },
+            {
+              "name": "mask",
+              "type": {
+                "text": "FillMask"
+              },
+              "description": "The cluster's filled-cell offsets from `(q, r)`."
+            },
+            {
+              "name": "claimed",
+              "type": {
+                "text": "ReadonlySet<string>"
+              },
+              "description": "Set of `\"q,r\"` strings already occupied by placed\nclusters."
+            }
+          ],
+          "description": "Check if placing a cluster with the given mask at `(q, r)` leaves a\n≥1-hex gap from every already-claimed cell. The candidate's own\ncells must be unclaimed, *and* every hex-neighbour of each candidate\ncell must also be unclaimed — guarantees no two filled hexes from\ndifferent clusters share an edge."
+        },
+        {
+          "kind": "function",
+          "name": "markClaimed",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "q",
+              "type": {
+                "text": "number"
+              },
+              "description": "Cluster origin axial column."
+            },
+            {
+              "name": "r",
+              "type": {
+                "text": "number"
+              },
+              "description": "Cluster origin axial row."
+            },
+            {
+              "name": "mask",
+              "type": {
+                "text": "FillMask"
+              },
+              "description": "The cluster's filled-cell offsets from `(q, r)`."
+            },
+            {
+              "name": "claimed",
+              "type": {
+                "text": "Set<string>"
+              },
+              "description": "Set to mutate."
+            }
+          ],
+          "description": "Mark the cluster's *unpadded* cells as claimed. Padding lives in\n`isPositionClear`, so two clusters can still share a 1-cell gap\nwithout the claim set growing by 6× per cell."
+        },
+        {
+          "kind": "function",
+          "name": "maskBounds",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "mask",
+              "type": {
+                "text": "FillMask"
+              },
+              "description": "Cell offsets."
+            }
+          ],
+          "description": "Axial-coord bounding box of a fill mask. Used by the row-major\nstrategy to bound the q-window so the layout wraps to a new r row\nwhen the current row fills."
+        },
+        {
+          "kind": "function",
+          "name": "parseFillCells",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string | null | undefined"
+              },
+              "description": "Raw attribute string, or `null` / `undefined`."
+            }
+          ],
+          "description": "Parse an `hp-cluster`-style `data-fill-cells` attribute (space-\nseparated `\"q,r q,r ...\"` pairs) into a `FillMask`. Returns a\nsingle-hex mask `[{q: 0, r: 0}]` for missing / empty / unparseable\ninput."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "PACK_RANGE",
+          "declaration": {
+            "name": "PACK_RANGE",
+            "module": "src/elements/layout/hp-grid/layouts/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HEX_NEIGHBOURS",
+          "declaration": {
+            "name": "HEX_NEIGHBOURS",
+            "module": "src/elements/layout/hp-grid/layouts/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isPositionClear",
+          "declaration": {
+            "name": "isPositionClear",
+            "module": "src/elements/layout/hp-grid/layouts/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "markClaimed",
+          "declaration": {
+            "name": "markClaimed",
+            "module": "src/elements/layout/hp-grid/layouts/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "maskBounds",
+          "declaration": {
+            "name": "maskBounds",
+            "module": "src/elements/layout/hp-grid/layouts/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parseFillCells",
+          "declaration": {
+            "name": "parseFillCells",
+            "module": "src/elements/layout/hp-grid/layouts/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/layouts/rows.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "findRowsPosition",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "mask",
+              "type": {
+                "text": "FillMask"
+              },
+              "description": "Cluster's filled-cell offsets."
+            },
+            {
+              "name": "claimed",
+              "type": {
+                "text": "ReadonlySet<string>"
+              },
+              "description": "Cells already taken by previously placed clusters."
+            },
+            {
+              "name": "halfColsAvailable",
+              "type": {
+                "text": "number"
+              },
+              "description": "Half-width of the viewport in axial\ncells (post-`r/2` shift compensation). Pinned by\n`HpGrid.WIDE_HALF_COLS` in the `rows` layout flow."
+            }
+          ],
+          "description": "Find the first position whose 1-hex-padded mask doesn't collide,\nscanning row-major (lowest r first, then lowest q) inside the\nviewport-aware q-window.\n\nReturns `{q: 0, r: 0}` as a defensive fallback when nothing fits;\nreal packs never hit it."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "findRowsPosition",
+          "declaration": {
+            "name": "findRowsPosition",
+            "module": "src/elements/layout/hp-grid/layouts/rows.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/layouts/spiral.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "findSpiralPosition",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "mask",
+              "type": {
+                "text": "FillMask"
+              },
+              "description": "Cluster's filled-cell offsets."
+            },
+            {
+              "name": "claimed",
+              "type": {
+                "text": "ReadonlySet<string>"
+              },
+              "description": "Cells already taken by previously placed clusters."
+            }
+          ],
+          "description": "Find the first position whose 1-hex-padded mask doesn't collide,\nscanning outward from the origin in honeycomb rings.\n\nReturns `{q: 0, r: 0}` as a defensive fallback when nothing fits\nin `±PACK_RANGE`; real packs never hit it."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "findSpiralPosition",
+          "declaration": {
+            "name": "findSpiralPosition",
+            "module": "src/elements/layout/hp-grid/layouts/spiral.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-grid/layouts/test-fixtures.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "place",
+          "return": {
+            "type": {
+              "text": "Set<string>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "claimed",
+              "type": {
+                "text": "Set<string>"
+              }
+            },
+            {
+              "name": "q",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "r",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "mask",
+              "type": {
+                "text": "FillMask"
+              }
+            }
+          ],
+          "description": "Claim a mask at `(q, r)` and return the mutated set so tests can\nchain placements."
+        },
+        {
+          "kind": "function",
+          "name": "hexDist",
+          "return": {
+            "type": {
+              "text": "number"
+            }
+          },
+          "parameters": [
+            {
+              "name": "a",
+              "type": {
+                "text": "{ q: number; r: number }"
+              }
+            },
+            {
+              "name": "b",
+              "type": {
+                "text": "{ q: number; r: number }"
+              }
+            }
+          ],
+          "description": "Hex axial distance between two cells — the cube-coord trick reduced\nto two terms. Used to assert ≥1-hex gap between any two placed\nclusters' filled hexes."
+        },
+        {
+          "kind": "variable",
+          "name": "HONEYCOMB_FILL_ORDER",
+          "type": {
+            "text": "Array<{ q: number; r: number }>"
+          },
+          "default": "[ { q: 0, r: 0 }, { q: 0, r: -1 }, { q: 1, r: -1 }, { q: 1, r: 0 }, { q: 0, r: 1 }, { q: -1, r: 1 }, { q: -1, r: 0 }, { q: 0, r: -2 }, { q: 1, r: -2 }, { q: 2, r: -2 }, { q: 2, r: -1 }, { q: 2, r: 0 }, { q: 1, r: 1 }, { q: 0, r: 2 }, { q: -1, r: 2 }, { q: -2, r: 2 }, { q: -2, r: 1 }, { q: -2, r: 0 }, { q: -1, r: -1 }, ]",
+          "description": "Real `hp-cluster` fill order — every honeycomb cluster with N\nchildren fills the first N entries of this list. Kept in lock-step\nwith the CSS / `HONEYCOMB_POSITIONS` table in `hp-cluster.ts`."
+        },
+        {
+          "kind": "function",
+          "name": "honeycombMask",
+          "return": {
+            "type": {
+              "text": "FillMask"
+            }
+          },
+          "parameters": [
+            {
+              "name": "childCount",
+              "type": {
+                "text": "number"
+              },
+              "description": "Number of children in the synthetic cluster\n(1–19; clamped)."
+            }
+          ],
+          "description": "Build a honeycomb fill mask containing the first N positions."
+        },
+        {
+          "kind": "variable",
+          "name": "SINGLE",
+          "type": {
+            "text": "FillMask"
+          },
+          "default": "[{ q: 0, r: 0 }]",
+          "description": "Single-cell mask — the default for non-cluster children."
+        },
+        {
+          "kind": "variable",
+          "name": "RING1",
+          "type": {
+            "text": "FillMask"
+          },
+          "description": "7-child honeycomb — centre + full ring 1."
+        },
+        {
+          "kind": "variable",
+          "name": "TEN_HONEYCOMB",
+          "type": {
+            "text": "FillMask"
+          },
+          "description": "10-child honeycomb — centre + ring 1 + 3 ring-2 hexes (the Forms /\nLayout cluster shape on the components-page workload)."
+        },
+        {
+          "kind": "variable",
+          "name": "ROSETTE",
+          "type": {
+            "text": "FillMask"
+          },
+          "default": "[ { q: 0, r: 0 }, { q: 0, r: -1 }, { q: -1, r: 0 }, { q: 1, r: 0 }, { q: 0, r: 1 }, ]",
+          "description": "5-cell cross — `hp-cluster layout=\"rosette\"`."
+        },
+        {
+          "kind": "variable",
+          "name": "COMPONENTS_PAGE_WORKLOAD",
+          "type": {
+            "text": "FillMask[]"
+          },
+          "default": "[ honeycombMask(7), // Primitives honeycombMask(10), // Forms honeycombMask(3), // Status honeycombMask(3), // Loading honeycombMask(10), // Layout honeycombMask(4), // Images honeycombMask(5), // Navigation honeycombMask(8), // Overlays honeycombMask(3), // Messaging honeycombMask(2), // Tether honeycombMask(5), // Unfold honeycombMask(3), // Deprecated ]",
+          "description": "The 12-cluster components-page workload (centre + ring-1 / partial\nring-2 honeycombs). Mirrors the sitemap-derived categories."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "place",
+          "declaration": {
+            "name": "place",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hexDist",
+          "declaration": {
+            "name": "hexDist",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HONEYCOMB_FILL_ORDER",
+          "declaration": {
+            "name": "HONEYCOMB_FILL_ORDER",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "honeycombMask",
+          "declaration": {
+            "name": "honeycombMask",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SINGLE",
+          "declaration": {
+            "name": "SINGLE",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RING1",
+          "declaration": {
+            "name": "RING1",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "TEN_HONEYCOMB",
+          "declaration": {
+            "name": "TEN_HONEYCOMB",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ROSETTE",
+          "declaration": {
+            "name": "ROSETTE",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "COMPONENTS_PAGE_WORKLOAD",
+          "declaration": {
+            "name": "COMPONENTS_PAGE_WORKLOAD",
+            "module": "src/elements/layout/hp-grid/layouts/test-fixtures.ts"
           }
         }
       ]

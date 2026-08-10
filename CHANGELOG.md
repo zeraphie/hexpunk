@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1-alpha] - 2026-08-10
+
+### Added
+
+- **`<hp-background>` `page` mode** — fixed full-viewport backdrop behind page content (`<hp-background page>`). The canvas is browser-pinned and exactly viewport-sized; the pattern slides beneath it via the shared page-aligned offset, so it can never be scrolled into a blank region. Adopted by the showcase layout.
+- **`<hp-background>` energy-field wake** — pointer movement stirs a persistent low-res field (ping-pong sim at 1/8 viewport resolution: 5-tap diffusion + dt-normalized decay) instead of the old instantaneous halo. Splats are segments from the previous to current pointer position with speed-scaled strength, so fast sweeps carve bright continuous wakes and slow hovers glow gently. The render loop runs only while the field holds visible energy — sleep is computed analytically from the decay rate, and at idle zero frames are drawn. Tuning attributes `decay` / `splat-strength` / `splat-radius`, each overridable via `--hp-bg-decay` / `--hp-bg-splat-strength` / `--hp-bg-splat-radius`.
+- **`<hp-background>` click-ignition runners** — pressing a non-interactive target (composed-path check + proximity gate) spawns pixel runners that crawl outward along the actual rendered hex lattice, turning at random and branching only away from the press point. Holding the press sustains new waves from the live pointer position; release lets live runners finish. Runner heads carry a draw-time-only hot glow (`--hp-bg-stroke-hot` / `--hp-bg-hot-opacity`, defaulting to the bright colour at doubled opacity) while their trails are capped at the bright tier — the hot tier belongs exclusively to ignition. Suppressed under reduced motion.
+- **`<hp-background>` scroll stirring** — scroll velocity feeds the field so the effect exists during the most common interaction on every device. Placement via the `scroll-stir` attribute: `edge` (default — a band along the viewport edge new content arrives from), `pointer`, `band`, or `off`. Capped at the bright tier.
+- **`<hp-background>` three-tier degradation** — hardware GL renders the full effect; software-rendered GL (SwiftShader / llvmpipe / WARP detected via the renderer string, plus an adaptive frame-interval backstop) routes to the CSS tile; no-GL gets the same tile. The tile is applied as a CSS **mask** over `background-color` (theme-reactive with zero JS) across two pseudo-element layers, restoring the v1-style radial pointer reveal on the fallback path. A `console.debug` render-path log (Verbose level) states which tier each instance chose and why.
+- **`<hp-pixel>` `type` attribute** — built-in morphing icon sets resolved by name, no JS wiring: `menu` (dotted square → plus on hover → cross toggled), `expandable` (square → down-chevron → up-chevron), `dropside` (square → right-chevron → left-chevron). Faithful to the CodePen reference, including the parked corner pixels that fly outward and fade during arrow morphs (icons can now bundle a palette). Precedence: explicit `states` > `type` > `art`.
+- `.ai/` contract layer — `CLAUDE.md` workflow contract (root `CLAUDE.md` imports it) and `.ai/STYLE.md` code-style guide, including a performance-consideration convention: every component gets an isolated size + init-cost measurement before merging, and heavy components state their numbers in their showcase Performance section.
+- Showcase: hp-background component page rewritten for v2 — energy wake, ignition, scroll stirring, tiers, and a measured performance readout (43 KB min / 14 KB gzip, ~20 ms init, ~0.1 ms/frame animating, zero at idle) behind a "show stats" disclosure composing `hp-collapsible` + a native-button trigger with `hp-pixel type="expandable"`.
+- Showcase: hp-pixel component page rebuilt around the built-in types with persistence demos (`aria-pressed` toggling) and guidance on driving morphs from an enclosing control via the published `--hp-pixel-*` custom properties.
+
+### Changed
+
+- **`<hp-background>` rewritten as a by-concern module folder** (`src/elements/layout/hp-background/` — geometry, gl, bake, render, field, runners, input, fallback, styles), replacing the 1,100-line monolith and the two-layer-SVG render path with a single WebGL2 canvas (baked hex-tile texture + runtime sample-and-blend). Public API preserved; `pointer-radius` now governs the fallback path's reveal radius (the GL wake is governed by the splat/decay knobs).
+- **`<hp-cell>` `xs` / `xxs` label typography** — the inline-control tiers now use the label-sm scale with tight padding; label-md overflowed a 20–32 px hex. Longer text belongs beside these sizes, not inside.
+- CSS colour parsing moved to `src/lib/css-color.ts` (shared with future consumers; parser context declares `willReadFrequently`).
+
+### Fixed
+
+- **`<hp-background>` full-height rendering with hardware acceleration off** — the canvas is never larger than the viewport, never JS-repositioned on scroll, and self-corrects its backing store on every draw, eliminating the software-compositor cutoff bug class. Where the compositor still can't display a WebGL canvas reliably (software-rendered GL), the element routes to the CSS tile instead of fighting it.
+- **`<hp-background>` fallback tile theming** — the tile was an SVG `background-image` stroked with `currentColor`, which a data-URL SVG always resolves to black; as a mask over `background-color` it now follows light/dark tokens live.
+- **`<hp-background>` loop hardening** — reconnect after a DOM move re-initializes GL (was: permanently frozen canvas); a zero-sized host stops its loop instead of spinning rAF; the sleep window counts accumulated sim time rather than wall clock (was: a tab-hide mid-wake could strand a bright streak on screen); splat coordinates resync on geometry/DPR changes (was: phantom full-strength streak); pointer activity outside an instance's reach no longer wakes its loop; the adaptive demotion backstop samples one contiguous wake against a 60 ms median with outlier discard (was: 30 ms — falsely demoted healthy 30 Hz displays).
+- Showcase: removed the redundant light-DOM `z-index` rule that silently defeated `--hp-bg-z`.
+
 ## [0.1.0-beta] - 2026-05-24
 
 ### Added

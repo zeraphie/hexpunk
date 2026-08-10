@@ -636,13 +636,6 @@ pre code {
   min-width: 0;
 }
 
-/* Push the hp-background backdrop behind whatever's slotted into main
- * so foreground content always reads cleanly. The element itself stays
- * position: absolute; inset: 0 — this rule just sets the stacking. */
-.page > main > hp-background {
-  z-index: -1;
-}
-
 /* Stack sidebar above main on phone-sized viewports only. A proper
    hamburger / drawer pattern can land later; for now, ≥640px keeps
    the side-by-side layout. hp-sidebar swaps its own border-right →

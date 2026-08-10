@@ -6,13 +6,65 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 <Layout title="hp-background">
   <ComponentDocs title="hp-background">
     <p slot="description">
-      Faint hex-grid backdrop that brightens softly around the pointer. Lives as an absolutely-
-      positioned child inside any container, sitting beneath the foreground content. Strokes are
-      <code>--hp-outline-faint</code> at rest; a radial mask reveals a brighter copy
-      (<code>--hp-outline</code>) only within a configurable pixel radius of the cursor.
+      Hex-grid backdrop rendered by WebGL2. Every instance reveals a window onto one shared,
+      page-aligned grid; pointer movement stirs a soft <em>energy wake</em> that brightens the
+      strokes it passes through, then drifts and fades. Pressing on empty space ignites glowing
+      runners that crawl outward along the lattice edges. Falls back to a static CSS tile (with
+      a radial pointer reveal) where WebGL is unavailable or software-rendered.
     </p>
 
-    <p>Move the cursor across the canvas to see the brightening trail.</p>
+    <Fragment slot="notice">
+      <hp-collapsible class="perf-collapsible">
+        <button slot="trigger" class="stats-trigger" type="button">
+          <hp-cell variant="action" size="xxs" aria-hidden="true">
+            <hp-pixel class="stats-pixel" type="expandable" pixel-size="2"></hp-pixel>
+          </hp-cell>
+          <span class="stats-label">
+            <span class="when-closed">show stats</span>
+            <span class="when-open">hide stats</span>
+          </span>
+        </button>
+        <hp-separator></hp-separator>
+        <table class="perf-status">
+        <thead>
+          <tr>
+            <th scope="col">Cost</th>
+            <th scope="col">Measured</th>
+            <th scope="col">Context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Script</td>
+            <td>43&nbsp;KB min · 14&nbsp;KB gzip</td>
+            <td>≈2.5× a typical hexpunk atom (5.6&nbsp;KB gzip)</td>
+          </tr>
+          <tr>
+            <td>Init (once, at connect)</td>
+            <td>~20&nbsp;ms</td>
+            <td>WebGL context + shader compile + tile bake; slower on weak GPUs</td>
+          </tr>
+          <tr>
+            <td>Animating</td>
+            <td>~0.1&nbsp;ms CPU / frame</td>
+            <td>p90 0.7&nbsp;ms; field sim at 1/8 viewport resolution</td>
+          </tr>
+          <tr>
+            <td>Idle</td>
+            <td>0 frames</td>
+            <td>render loop sleeps; wakes on pointer / scroll / ignite</td>
+          </tr>
+        </tbody>
+        </table>
+        <hp-separator></hp-separator>
+      </hp-collapsible>
+    </Fragment>
+
+    <p>
+      Move the cursor across the canvas for the wake. Click — or click <em>and hold</em>, then
+      drag — on empty space to ignite runners; the leading pixels burn hotter than the trails
+      they leave.
+    </p>
     <hp-demo caption="Default — inside a demo canvas">
       <div style="position: relative; width: 100%; min-height: 240px">
         <hp-background></hp-background>
@@ -23,6 +75,21 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     <hp-background></hp-background>
     <!-- foreground content here -->
   </div>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <p>
+      <code>page</code> mode turns the instance into a fixed full-viewport backdrop behind the
+      page content — this site uses one. The canvas never scrolls (the pattern slides beneath it
+      via the shared page alignment), and scrolling itself stirs the field along the edge new
+      content arrives from (<code>scroll-stir</code>).
+    </p>
+    <hp-demo caption="Page mode (as used by this site)">
+      <hp-code slot="code" language="html">{`<body>
+  <main>
+    <hp-background page></hp-background>
+    <!-- page content -->
+  </main>
 </body>`}</hp-code>
     </hp-demo>
 
@@ -50,62 +117,164 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
-    <hp-demo caption="Denser pattern + tighter pointer radius">
+    <hp-demo caption="Tuning the pattern and the wake">
       <div style="position: relative; width: 100%; min-height: 240px">
-        <hp-background hex-size="9" pointer-radius="120"></hp-background>
+        <hp-background hex-size="9" decay="0.985" splat-radius="50"></hp-background>
       </div>
 
       <hp-code slot="code" language="html">{`<body>
-  <!-- Smaller hexes, smaller cursor halo -->
-  <hp-background hex-size="9" pointer-radius="120"></hp-background>
+  <!-- Denser hexes, longer-lived narrower wake -->
+  <hp-background hex-size="9" decay="0.985" splat-radius="50"></hp-background>
 
-  <!-- Larger hexes, wider halo -->
-  <hp-background hex-size="22" pointer-radius="320"></hp-background>
+  <!-- Scroll stirring at the cursor instead of the leading edge -->
+  <hp-background page scroll-stir="pointer"></hp-background>
+
+  <!-- No scroll response at all -->
+  <hp-background page scroll-stir="off"></hp-background>
 </body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
       <h2>When to use</h2>
-              <hp-banner tone="do">
-          Use as the backdrop for any surface that benefits from ambient hex texture — demo
-          canvases, dashboards, the document body. The pointer-aware brightening reads as
-          "this surface notices you" without competing with the foreground.
-        </hp-banner>
-        <hp-banner tone="do">
-          Tune <code>hex-size</code> to the surface scale. ~10-14 for small canvases, 18-24 for
-          full-viewport / hero areas.
-        </hp-banner>
-        <hp-banner tone="do">
-          Set the parent container <code>position: relative</code> so the backdrop's
-          <code>inset: 0</code> stretches to fill it.
-        </hp-banner>
-        <hp-banner tone="dont">
-          Stack multiple <code>hp-background</code>s in the same stacking context — the
-          interference patterns get noisy and the pointer-following overlays compound visually.
-        </hp-banner>
-        <hp-banner tone="dont">
-          Use as foreground content. The element is <code>aria-hidden</code> and
-          <code>pointer-events: none</code> — it's never the thing the user is meant to interact
-          with.
-        </hp-banner>
-      
+      <hp-banner tone="do">
+        Use as the backdrop for any surface that benefits from ambient hex texture — demo
+        canvases, dashboards, or (via <code>page</code>) the whole document. The pointer-stirred
+        wake reads as "this surface notices you" without competing with the foreground.
+      </hp-banner>
+      <hp-banner tone="do">
+        Tune <code>hex-size</code> to the surface scale. ~10-14 for small canvases, 18-24 for
+        full-viewport / hero areas.
+      </hp-banner>
+      <hp-banner tone="do">
+        Set the parent container <code>position: relative</code> in contained mode so the
+        backdrop's <code>inset: 0</code> stretches to fill it. In <code>page</code> mode, mount
+        it directly under a body-level container — an ancestor with a transform, filter, or
+        <code>contain</code> would re-anchor the fixed host.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Stack multiple <code>hp-background</code>s in the same stacking context — they render
+        one continuous aligned grid, so overlapping instances double-expose the same strokes.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Use as foreground content. The element is <code>aria-hidden</code> and
+        <code>pointer-events: none</code> — it's never the thing the user is meant to interact
+        with.
+      </hp-banner>
+
+      <h2>Interaction model</h2>
+      <p>
+        Three inputs stir the energy field, and each has a strict brightness ceiling. Pointer
+        movement splats energy proportional to speed — capped at the bright tier. Scrolling
+        stirs along the placement chosen by <code>scroll-stir</code> (<code>edge</code> default,
+        <code>pointer</code>, <code>band</code>, <code>off</code>) — also capped at bright.
+        Pressing on a non-interactive target ignites lattice runners, and holding sustains new
+        waves from the live pointer position until release — only the runners' leading pixels
+        reach the hot tier (<code>--hp-bg-stroke-hot</code>). Presses on links, buttons, form
+        controls, or anything focusable never ignite.
+      </p>
 
       <h2>Performance</h2>
       <p>
-        Polygons are rendered once on mount (and re-rendered on resize). Pointer tracking is a
-        single window-level <code>pointermove</code> listener that writes two CSS variables —
-        no per-frame DOM updates beyond the style set. The radial-gradient mask is GPU-
-        compositied. Several hundred hexes is comfortable; thousands start to show in paint
-        cost on lower-end hardware (increase <code>hex-size</code> to reduce density).
+        This is one of hexpunk's heavier components — budget for it deliberately. Measured
+        (2026-08-10, lit external): <strong>~43 KB minified / ~14 KB gzip</strong> of script
+        (≈2.5× a typical hexpunk atom), <strong>~20 ms one-time init</strong> at connect
+        (WebGL context + shader compiles + tile bake; slower on weak hardware), and
+        <strong>~0.1 ms of CPU per frame while animating</strong>. It never blocks page paint
+        (it renders nothing until ready, with no layout shift), and at idle it draws
+        <em>zero</em> frames — the render loop runs only while the field holds visible energy.
+      </p>
+      <p>
+        The hex pattern is baked once into a small tile texture and sampled with wrap — per-frame
+        cost is a texture sample, not per-hex geometry, so density is effectively free. The
+        energy field simulates at 1/8 viewport resolution. A renderer that cannot sustain the
+        sim demotes itself to the static tile. Where WebGL is software-rendered (hardware
+        acceleration off), the element skips the canvas entirely and renders the CSS tile with a
+        radial pointer reveal — set the DevTools console to Verbose to see which path an
+        instance chose (<code>hp-background: rendering via …</code>).
       </p>
 
       <h2>Accessibility</h2>
       <p>
-        Auto <code>aria-hidden="true"</code> on the host — the element is purely decorative
-        and never announces. Respects <code>prefers-reduced-motion</code>: the bright cursor-
-        following layer is suppressed (faint base still renders), so the surface stays calm
-        for users who've opted out.
+        Auto <code>aria-hidden="true"</code> on the host — the element is purely decorative and
+        never announces. Respects <code>prefers-reduced-motion</code> live: the wake, ignition,
+        and scroll stirring are all suppressed and the field clears, leaving the calm static
+        pattern (on the CSS fallback path, the pointer reveal hides the same way).
       </p>
     </Fragment>
   </ComponentDocs>
 </Layout>
+
+<style>
+  /* Muted status readout — informational, not a focal element,
+   * tucked behind a small "show stats" disclosure. */
+  .perf-status {
+    font-size: 0.85rem;
+    color: var(--hp-on-surface-variant);
+  }
+
+  .perf-collapsible hp-separator:first-of-type {
+    margin-bottom: 32px;
+  }
+
+  .perf-collapsible hp-separator:last-of-type {
+    margin-block: 32px;
+  }
+
+  /* One native button is the whole trigger — hex, pixel morph, and
+   * label share a single hitbox, hover surface, and focus stop. The
+   * hex is presentational (hp-cell, not hp-button — no nested
+   * buttons); the label lives beside it, never inside, per the
+   * inline-control-tier pattern. */
+  .stats-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--hp-xs, 8px);
+    padding: var(--hp-xxs, 4px);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--hp-on-surface-variant);
+  }
+
+  .stats-trigger:hover,
+  .stats-trigger:focus-visible {
+    color: var(--hp-on-surface);
+  }
+
+  .stats-trigger:focus-visible {
+    outline: 2px solid var(--hp-primary);
+    outline-offset: 2px;
+  }
+
+  .stats-label {
+    white-space: nowrap;
+    font-family: var(--hp-typo-label-sm-font-family);
+    font-size: var(--hp-typo-label-sm-font-size);
+    font-weight: var(--hp-typo-label-sm-font-weight);
+    letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+    text-transform: uppercase;
+  }
+
+  .stats-label .when-open,
+  .stats-trigger[aria-expanded="true"] .when-closed {
+    display: none;
+  }
+
+  .stats-trigger[aria-expanded="true"] .when-open {
+    display: inline;
+  }
+
+  /* Pixel morph rides the BUTTON's state, not its own: rest is the
+   * square (idle), row-hover fans to the plus, press-and-hold or
+   * expanded rotates to the cross. The state vars are published by
+   * hp-pixel; the page just picks which one the shadow shows. */
+  .stats-trigger:hover .stats-pixel,
+  .stats-trigger:focus-visible .stats-pixel {
+    --hp-pixel-shadow: var(--hp-pixel-hover);
+  }
+
+  .stats-trigger:active .stats-pixel,
+  .stats-trigger[aria-expanded="true"] .stats-pixel {
+    --hp-pixel-shadow: var(--hp-pixel-active);
+  }
+</style>

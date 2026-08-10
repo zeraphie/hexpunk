@@ -108,6 +108,14 @@ function loadAll(): ChangelogEntry[] {
   return cached;
 }
 
+/** Every parsed CHANGELOG entry, newest first — the Releases page
+ *  renders from this so it can never drift from CHANGELOG.md. Entries
+ *  with no sections (an empty `[Unreleased]`) are the caller's to
+ *  skip. */
+export function getChangelog(): ChangelogEntry[] {
+  return loadAll();
+}
+
 /** Filter the parsed CHANGELOG to entries whose bullets mention `<tag>`
  *  (with a word boundary so `<hp-grid>` won't match a hypothetical
  *  `<hp-grid-cell>`). An entry is kept iff at least one of its
