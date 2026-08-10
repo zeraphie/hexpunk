@@ -128,14 +128,22 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
       <h2>Performance</h2>
       <p>
+        This is one of hexpunk's heavier components — budget for it deliberately. Measured
+        (2026-08-10, lit external): <strong>~43 KB minified / ~14 KB gzip</strong> of script
+        (≈2.5× a typical hexpunk atom), <strong>~20 ms one-time init</strong> at connect
+        (WebGL context + shader compiles + tile bake; slower on weak hardware), and
+        <strong>~0.1 ms of CPU per frame while animating</strong>. It never blocks page paint
+        (it renders nothing until ready, with no layout shift), and at idle it draws
+        <em>zero</em> frames — the render loop runs only while the field holds visible energy.
+      </p>
+      <p>
         The hex pattern is baked once into a small tile texture and sampled with wrap — per-frame
         cost is a texture sample, not per-hex geometry, so density is effectively free. The
-        energy field simulates at 1/8 viewport resolution, and the render loop runs
-        <em>only while the field holds visible energy</em>: at idle, zero frames are drawn. A
-        renderer that cannot sustain the sim demotes itself to the static tile. Where WebGL is
-        software-rendered (hardware acceleration off), the element skips the canvas entirely and
-        renders the CSS tile with a radial pointer reveal — set the DevTools console to Verbose
-        to see which path an instance chose (<code>hp-background: rendering via …</code>).
+        energy field simulates at 1/8 viewport resolution. A renderer that cannot sustain the
+        sim demotes itself to the static tile. Where WebGL is software-rendered (hardware
+        acceleration off), the element skips the canvas entirely and renders the CSS tile with a
+        radial pointer reveal — set the DevTools console to Verbose to see which path an
+        instance chose (<code>hp-background: rendering via …</code>).
       </p>
 
       <h2>Accessibility</h2>

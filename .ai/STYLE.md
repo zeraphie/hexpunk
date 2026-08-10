@@ -127,6 +127,33 @@ The TypeScript + Lit adaptation of the shared style guide (root
   the ADR, not the log.
 - No trailers (no Co-Authored-By)
 
+## Performance consideration
+
+Every component gets a loading-cost check before it merges — page
+speed is a first-class review item, not an afterthought.
+
+- Measure the isolated cost:
+  `bun build src/elements/<path>/<element>.ts --external lit
+--minify` then gzip — report min + gzip KB. Measure one-time
+  init cost (time from connect to first usable render) and any
+  steady-state per-frame cost in the showcase.
+- A component is **heavy** when it materially exceeds the atom
+  baseline (~5-6 KB gzip) or does meaningful work at connect
+  (GL init, large parses, render loops). Heavy is allowed —
+  hexpunk's spatial primitives earn their weight — but it must
+  be _known_:
+  - the component's showcase **Performance** section states the
+    measured numbers and the idle behaviour;
+  - deferred mitigations (lazy init, subpath import, dynamic
+    import of optional machinery) are listed in the driving ADR
+    even when not implemented yet.
+- Components with animation loops must be able to prove the
+  loop is idle-silent (no rAF when nothing animates) — that is
+  part of the measurement, not optional.
+- Reference points (2026-08-10): typical atom ≈ 5.6 KB gzip;
+  hp-background (WebGL field sim) ≈ 14 KB gzip, ~20 ms init,
+  ~0.1 ms/frame while animating, zero at idle.
+
 ## Error handling
 
 - Components degrade visibly and name the state (the
