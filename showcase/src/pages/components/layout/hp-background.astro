@@ -15,7 +15,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <Fragment slot="notice">
       <hp-collapsible class="perf-collapsible">
-        <hp-button slot="trigger" size="xs">show stats</hp-button>
+        <hp-button slot="trigger" size="xs" class="stats-trigger">
+          <span class="stats-glyph" aria-hidden="true">+</span>
+        </hp-button>
         <hp-separator></hp-separator>
         <table class="perf-status">
         <thead>
@@ -210,5 +212,47 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
   .perf-collapsible hp-separator:last-of-type {
     margin-block: 32px;
+  }
+
+  /* "show stats" lives BESIDE the xs hex — text never fits inside
+   * the inline-control tiers (the hp-checkbox + hp-label pattern).
+   * The ::after is part of the button: clickable, keyboard-native,
+   * and it provides the accessible name. */
+  .stats-trigger {
+    position: relative;
+  }
+
+  .stats-trigger::after {
+    content: "show stats";
+    position: absolute;
+    left: calc(100% + var(--hp-xs, 8px));
+    top: 50%;
+    translate: 0 -50%;
+    white-space: nowrap;
+    font-family: var(--hp-typo-label-sm-font-family);
+    font-size: var(--hp-typo-label-sm-font-size);
+    font-weight: var(--hp-typo-label-sm-font-weight);
+    letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+    text-transform: uppercase;
+    color: var(--hp-on-surface-variant);
+  }
+
+  .stats-trigger[aria-expanded="true"]::after {
+    content: "hide stats";
+  }
+
+  .stats-glyph {
+    display: inline-block;
+    transition: rotate var(--hp-duration-medium) var(--hp-ease-default);
+  }
+
+  .stats-trigger[aria-expanded="true"] .stats-glyph {
+    rotate: 45deg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stats-glyph {
+      transition: none;
+    }
   }
 </style>
