@@ -1,9 +1,10 @@
-// expandable.ts — Pixel-art square / plus / cross morph.
+// expandable.ts — Pixel-art plus / cross morph.
 //
-// Three-state morph of nine pixels for expand/collapse triggers: at
-// rest they pack into a solid 3×3 square block; on hover they fan
-// out into a plus (something can open); pressed / expanded they
-// rotate into a cross (activating closes it). Registered as
+// Two-glyph morph of nine pixels for expand/collapse triggers: a
+// plus at rest (something can open); pressed / expanded the arms
+// rotate 45° into a cross (activating closes it). `hover` repeats
+// the plus so the standard state chain stays intact — the glyph
+// only ever shows + or ×. Registered as
 // `<hp-pixel type="expandable">`.
 //
 // Same nine logical pixels in every state so the browser smoothly
@@ -15,41 +16,41 @@ import type { HpPixelPosition } from "../elements/images/hp-pixel.js";
 
 // oxfmt-ignore
 export const idle: HpPixelPosition[] = [
- [-1, -1], // top-left
- [ 0, -1], // top
- [ 1, -1], // top-right
- [-1,  0], // left
+ [ 0, -2], // arm top-far
+ [ 0, -1], // arm top-near
+ [ 2,  0], // arm right-far
+ [ 1,  0], // arm right-near
  [ 0,  0], // centre
- [ 1,  0], // right
- [-1,  1], // bottom-left
- [ 0,  1], // bottom
- [ 1,  1], // bottom-right
+ [-1,  0], // arm left-near
+ [-2,  0], // arm left-far
+ [ 0,  1], // arm bottom-near
+ [ 0,  2], // arm bottom-far
 ];
 
 // oxfmt-ignore
 export const hover: HpPixelPosition[] = [
- [ 0, -2], // top-left → arm top-far
- [ 0, -1], // top → arm top-near
- [ 2,  0], // top-right → arm right-far
- [-1,  0], // left → arm left-near
+ [ 0, -2], // arm top-far (unchanged — hover keeps the plus)
+ [ 0, -1], // arm top-near
+ [ 2,  0], // arm right-far
+ [ 1,  0], // arm right-near
  [ 0,  0], // centre
- [ 1,  0], // right → arm right-near
- [-2,  0], // bottom-left → arm left-far
- [ 0,  1], // bottom → arm bottom-near
- [ 0,  2], // bottom-right→ arm bottom-far
+ [-1,  0], // arm left-near
+ [-2,  0], // arm left-far
+ [ 0,  1], // arm bottom-near
+ [ 0,  2], // arm bottom-far
 ];
 
 // oxfmt-ignore
 export const active: HpPixelPosition[] = [
- [-2, -2], // top-left → diag ↖ far
- [-1, -1], // top → diag ↖ near
- [ 2, -2], // top-right → diag ↗ far
- [ 1, -1], // left → diag ↗ near
+ [-2, -2], // top-far → diag ↖ far
+ [-1, -1], // top-near → diag ↖ near
+ [ 2, -2], // right-far → diag ↗ far
+ [ 1, -1], // right-near → diag ↗ near
  [ 0,  0], // centre
- [ 1,  1], // right → diag ↘ near
- [-2,  2], // bottom-left → diag ↙ far
- [-1,  1], // bottom → diag ↙ near
- [ 2,  2], // bottom-right→ diag ↘ far
+ [-1,  1], // left-near → diag ↙ near
+ [-2,  2], // left-far → diag ↙ far
+ [ 1,  1], // bottom-near → diag ↘ near
+ [ 2,  2], // bottom-far → diag ↘ far
 ];
 
 export const expandable = { idle, hover, active };
