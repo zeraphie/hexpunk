@@ -27,88 +27,6 @@
       ]
     },
     {
-      "name": "hp-avatar",
-      "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
-      "attributes": [
-        {
-          "name": "src",
-          "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead."
-        },
-        {
-          "name": "alt",
-          "description": "Alt text for the image. Required for non-decorative avatars."
-        },
-        {
-          "name": "size",
-          "description": "Avatar size — matches hp-hex sizes.",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-icon",
-      "description": "SVG icon wrapper — sized via `size` (sm / md / lg), strokes inherit\n`currentColor`.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-pixel",
-      "description": "Pixel-art renderer. Draws a sequence of states (each a list of\n[x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;\nconfigurable palette and per-state delay drive a sprite-like\nanimation loop.",
-      "attributes": [
-        {
-          "name": "art",
-          "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "state",
-          "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "pixel-size",
-          "description": "Pixel size in CSS px. Default `3`."
-        },
-        {
-          "name": "interactive",
-          "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required."
-        }
-      ]
-    },
-    {
       "name": "hp-button",
       "description": "Button primitive — composes hp-cell variant=\"action\" with the\nsemantics consumers expect from a button: role=\"button\",\nauto-tabindex, Enter / Space activate, disabled blocks clicks,\ntype=\"submit\" drives form.requestSubmit() inside a form.",
       "attributes": [
@@ -480,6 +398,88 @@
       ]
     },
     {
+      "name": "hp-avatar",
+      "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
+      "attributes": [
+        {
+          "name": "src",
+          "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead."
+        },
+        {
+          "name": "alt",
+          "description": "Alt text for the image. Required for non-decorative avatars."
+        },
+        {
+          "name": "size",
+          "description": "Avatar size — matches hp-hex sizes.",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-icon",
+      "description": "SVG icon wrapper — sized via `size` (sm / md / lg), strokes inherit\n`currentColor`.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-pixel",
+      "description": "Pixel-art renderer. Draws a sequence of states (each a list of\n[x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;\nconfigurable palette and per-state delay drive a sprite-like\nanimation loop.",
+      "attributes": [
+        {
+          "name": "art",
+          "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "state",
+          "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "pixel-size",
+          "description": "Pixel size in CSS px. Default `3`."
+        },
+        {
+          "name": "interactive",
+          "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required."
+        }
+      ]
+    },
+    {
       "name": "hp-cluster",
       "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
       "attributes": [
@@ -715,6 +715,53 @@
       ]
     },
     {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
+        }
+      ]
+    },
+    {
       "name": "hp-link",
       "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
       "attributes": [
@@ -846,53 +893,6 @@
         {
           "name": "value",
           "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
         }
       ]
     },
@@ -1359,6 +1359,24 @@
         {
           "name": "splat-radius",
           "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80."
+        },
+        {
+          "name": "scroll-stir",
+          "description": "Where scroll velocity stirs the field: \"edge\" (a band along\nthe viewport edge new content arrives from), \"pointer\" (at the\ncursor/touch position), \"band\" (a soft full-width band at the\nviewport centre), or \"off\". Scroll stirring is capped at the\nbright tier and disabled under reduced motion.",
+          "values": [
+            {
+              "name": "edge"
+            },
+            {
+              "name": "pointer"
+            },
+            {
+              "name": "band"
+            },
+            {
+              "name": "off"
+            }
+          ]
         }
       ]
     },

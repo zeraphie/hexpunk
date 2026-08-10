@@ -59,6 +59,18 @@ const HEAD_BOOST = 0.8;
  * ignition continues until release, then winds down naturally. */
 const WAVE_MS = 200;
 
+/** Scroll stirring: per-frame scroll distance (CSS px) that maps to
+ * a full-strength stir, the splat geometry per placement mode, and
+ * the strength ceiling. Scroll splats share the runner channel, so
+ * they are capped at bright — scrolling can never reach the hot
+ * tier. */
+const SCROLL_SPEED_NORM = 120;
+const SCROLL_STRENGTH = 0.9;
+const SCROLL_EDGE_RADIUS = 60;
+const SCROLL_POINTER_RADIUS = 110;
+const SCROLL_BAND_RADIUS = 220;
+const SCROLL_BAND_STRENGTH = 0.35;
+
 /** Proximity gate: pointer activity farther than this from the host
  * rect (beyond splat radius) cannot affect the field, so it never
  * wakes the loop — N distant instances stay asleep during normal
@@ -119,6 +131,14 @@ export class HpBackground extends LitElement {
   @property({ type: Number, attribute: "splat-radius" })
   splatRadius = 80;
 
+  /** Where scroll velocity stirs the field: "edge" (a band along
+   * the viewport edge new content arrives from), "pointer" (at the
+   * cursor/touch position), "band" (a soft full-width band at the
+   * viewport centre), or "off". Scroll stirring is capped at the
+   * bright tier and disabled under reduced motion. */
+  @property({ attribute: "scroll-stir" })
+  scrollStir: "edge" | "pointer" | "band" | "off" = "edge";
+
   // Page-backdrop mode is a pure CSS-driven attribute (`page`), handled
   // entirely by the `:host([page])` style rule — NOT a reactive
   // property. Deliberately not a `@property`:
@@ -171,6 +191,12 @@ export class HpBackground extends LitElement {
    * release. */
   private igniteHeld = false;
   private lastWaveAt = 0;
+
+  /** Scroll distance (CSS px, signed) accumulated since the last
+   * consumed loop frame, and the scroll position it's measured
+   * against. */
+  private pendingScrollDelta = 0;
+  private lastScrollY = 0;
 
   private resizeObserver?: ResizeObserver;
 
@@ -227,6 +253,7 @@ export class HpBackground extends LitElement {
     // scrolling changes what this viewport-bounded canvas should
     // show. Passive + rAF-coalesced keeps it off the scroll critical
     // path.
+    this.lastScrollY = window.scrollY;
     window.addEventListener("scroll", this.handleScroll, { passive: true });
     // Final-settling triggers for late layout: 'load' fires once all
     // resources are in; fonts.ready resolves after webfont swapping.
@@ -412,6 +439,24 @@ export class HpBackground extends LitElement {
   // ── Re-draw triggers ────────────────────────────────────────────────
 
   private readonly handleScroll = (): void => {
+    const y = window.scrollY;
+    const dy = y - this.lastScrollY;
+    this.lastScrollY = y;
+    // Scroll stirring: on the GL tier, scroll velocity feeds the
+    // field (the loop consumes the accumulated delta and redraws
+    // every frame, which also covers the uOffset update). All other
+    // paths keep the plain single-frame redraw.
+    if (
+      dy !== 0 &&
+      this.scrollStir !== "off" &&
+      !this.fallback &&
+      this.gl &&
+      !this.pointer.reducedMotion
+    ) {
+      this.pendingScrollDelta += dy;
+      this.wakeLoop();
+      return;
+    }
     this.scheduleRedraw();
   };
 
@@ -666,6 +711,51 @@ export class HpBackground extends LitElement {
         radius,
         strength: TRAIL_STRENGTH,
       }));
+      this.simTimeSinceSplat = 0;
+    }
+
+    // Scroll stirring: consume the accumulated scroll delta into a
+    // mode-shaped splat. Prepended so the shader's fixed splat-slot
+    // clamp can never drop it in favour of runner segments.
+    const scrollDelta = this.pendingScrollDelta;
+    this.pendingScrollDelta = 0;
+    if (scrollDelta !== 0 && this.scrollStir !== "off" && !this.pointer.reducedMotion) {
+      const speed = Math.min(1, Math.abs(scrollDelta) / SCROLL_SPEED_NORM);
+      const w = canvas.width / FIELD_SCALE;
+      const h = canvas.height / FIELD_SCALE;
+      let stir = null;
+      if (this.scrollStir === "edge") {
+        // The edge new content arrives from: scrolling down reveals
+        // content at the screen bottom = canvas y-up 0.
+        const y = scrollDelta > 0 ? 0 : h;
+        stir = {
+          ax: 0,
+          ay: y,
+          bx: w,
+          by: y,
+          radius: Math.max(1.25, (SCROLL_EDGE_RADIUS * dpr) / FIELD_SCALE),
+          strength: SCROLL_STRENGTH * speed,
+        };
+      } else if (this.scrollStir === "pointer") {
+        stir = {
+          ax: curX / FIELD_SCALE,
+          ay: curY / FIELD_SCALE,
+          bx: curX / FIELD_SCALE,
+          by: curY / FIELD_SCALE,
+          radius: Math.max(1.25, (SCROLL_POINTER_RADIUS * dpr) / FIELD_SCALE),
+          strength: SCROLL_STRENGTH * speed,
+        };
+      } else {
+        stir = {
+          ax: 0,
+          ay: h / 2,
+          bx: w,
+          by: h / 2,
+          radius: Math.max(1.25, (SCROLL_BAND_RADIUS * dpr) / FIELD_SCALE),
+          strength: SCROLL_BAND_STRENGTH * speed,
+        };
+      }
+      runnerSplats.unshift(stir);
       this.simTimeSinceSplat = 0;
     }
 
