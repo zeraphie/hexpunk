@@ -28,8 +28,9 @@ export const FIELD_EPSILON = 0.004;
 export const FIELD_MAX = 1.5;
 
 /** Maximum concurrent ignition-runner splats per step — matches the
- * shader's fixed uniform array. */
-export const MAX_RUNNER_SPLATS = 8;
+ * shader's fixed uniform array (keep the GLSL array sizes and loop
+ * bound in sync when changing this). */
+export const MAX_RUNNER_SPLATS = 12;
 
 /** Sim fragment shader: one step of decay × diffusion plus a
  * segment-shaped splat from the previous to the current pointer
@@ -45,8 +46,8 @@ uniform vec2 uSplatA;          // pointer segment start, field px
 uniform vec2 uSplatB;          // pointer segment end, field px
 uniform float uSplatRadius;    // gaussian radius, field px
 uniform float uSplatStrength;  // 0 disables the splat term
-uniform vec4 uRunnerSeg[8];    // ignition runner segments: a.xy, b.xy (field px)
-uniform vec2 uRunnerParams[8]; // x = radius, y = strength (0 = inactive)
+uniform vec4 uRunnerSeg[12];    // ignition runner segments: a.xy, b.xy (field px)
+uniform vec2 uRunnerParams[12]; // x = radius, y = strength (0 = inactive)
 
 out vec4 fragColor;
 
@@ -81,15 +82,20 @@ void main() {
   energy = max(energy, min(energy + pointerTerm, 1.0));
 
   // Ignition runners: short glowing segments crawling along lattice
-  // edges (paths computed on the CPU). Only they may push energy
-  // into the hot tier.
-  for (int i = 0; i < 8; i++) {
+  // edges (paths computed on the CPU). Their trail deposit is capped
+  // at 1.0 like the pointer wake — repeated frames near a slow head
+  // would otherwise accumulate into the hot tier and wash out the
+  // leading pixel. Hot is reserved for the DRAW-TIME head highlight
+  // in the runtime pass, which is never stored here.
+  float runnerSum = 0.0;
+  for (int i = 0; i < 12; i++) {
     float rd = sdSegment(gl_FragCoord.xy, uRunnerSeg[i].xy, uRunnerSeg[i].zw);
-    energy += uRunnerParams[i].y * exp(-(rd * rd) / max(uRunnerParams[i].x * uRunnerParams[i].x, 1e-4));
+    runnerSum += uRunnerParams[i].y * exp(-(rd * rd) / max(uRunnerParams[i].x * uRunnerParams[i].x, 1e-4));
   }
+  energy = max(energy, min(energy + runnerSum, 1.0));
 
-  // Headroom above 1.0 feeds the runtime's hot tier; the cap keeps
-  // half-float precision comfortable.
+  // Cap keeps half-float precision comfortable (the stored field
+  // never exceeds 1.0 now; the ceiling guards future sources).
   fragColor = vec4(min(energy, 1.5), 0.0, 0.0, 1.0);
 }
 `;

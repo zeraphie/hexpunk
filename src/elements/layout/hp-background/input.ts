@@ -84,13 +84,17 @@ export class PointerTracker {
    *   or preference flip). The owner decides what a repaint means —
    *   scheduling a GL redraw on the canvas path, or repositioning
    *   the CSS reveal mask on the fallback path.
-   * @param onIgnite - Called with viewport CSS coords when the user
-   *   presses on something that is NOT an interaction target — the
-   *   ignition-ripple trigger. Owner applies mode/motion gating.
+   * @param onIgniteStart - Called with viewport CSS coords when the
+   *   user presses on something that is NOT an interaction target —
+   *   ignition begins and continues while held. Owner applies
+   *   mode/motion gating.
+   * @param onIgniteEnd - Called on any pointer release/cancel —
+   *   ignition winds down (cheap no-op when nothing was held).
    */
   constructor(
     private readonly onActivity: () => void,
-    private readonly onIgnite: (clientX: number, clientY: number) => void
+    private readonly onIgniteStart: (clientX: number, clientY: number) => void,
+    private readonly onIgniteEnd: () => void
   ) {}
 
   /** Attach window/media listeners. Call from connectedCallback. */
@@ -99,6 +103,10 @@ export class PointerTracker {
     // critical path.
     window.addEventListener("pointermove", this.handlePointerMove, { passive: true });
     window.addEventListener("pointerdown", this.handlePointerDown, { passive: true });
+    // Release anywhere ends the hold — including over interactive
+    // elements and off-target cancels.
+    window.addEventListener("pointerup", this.handlePointerUp, { passive: true });
+    window.addEventListener("pointercancel", this.handlePointerUp, { passive: true });
     if (typeof window.matchMedia === "function") {
       this.reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       this.reducedMotion = this.reducedMotionQuery.matches;
@@ -110,6 +118,8 @@ export class PointerTracker {
   disconnect(): void {
     window.removeEventListener("pointermove", this.handlePointerMove);
     window.removeEventListener("pointerdown", this.handlePointerDown);
+    window.removeEventListener("pointerup", this.handlePointerUp);
+    window.removeEventListener("pointercancel", this.handlePointerUp);
     if (this.reducedMotionQuery) {
       this.reducedMotionQuery.removeEventListener("change", this.handleReducedMotionChange);
       this.reducedMotionQuery = null;
@@ -126,7 +136,11 @@ export class PointerTracker {
     if (isInteractionTarget(event)) {
       return;
     }
-    this.onIgnite(event.clientX, event.clientY);
+    this.onIgniteStart(event.clientX, event.clientY);
+  };
+
+  private readonly handlePointerUp = (): void => {
+    this.onIgniteEnd();
   };
 
   private readonly handleReducedMotionChange = (e: MediaQueryListEvent): void => {

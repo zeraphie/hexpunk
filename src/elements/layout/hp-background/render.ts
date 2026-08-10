@@ -32,7 +32,8 @@ uniform vec2 uOffset;            // page-coord offset in device px (see note)
 uniform vec2 uCanvasSize;        // drawing buffer size in device px
 uniform vec4 uFaintColor;        // premultiplied
 uniform vec4 uBrightColor;       // premultiplied
-uniform vec4 uHotColor;          // premultiplied — ignition wavefront tier
+uniform vec4 uHotColor;          // premultiplied — ignition hot tier
+uniform vec4 uHeads[12];         // leading pixels: xy device px, z radius, w boost (0 = off)
 
 out vec4 fragColor;
 
@@ -50,6 +51,15 @@ void main() {
   // divide — no flip. Bilinear filtering on the low-res field gives
   // the wake its soft edge for free.
   float energy = texture(uFieldTex, gl_FragCoord.xy / uCanvasSize).r;
+
+  // Leading-pixel highlight: runner heads glow at DRAW time only —
+  // the boost is never written into the field, so the trail behind
+  // keeps its own dimmer level while the head visibly leads the way.
+  for (int i = 0; i < 12; i++) {
+    float hd = distance(gl_FragCoord.xy, uHeads[i].xy);
+    energy += uHeads[i].w * exp(-(hd * hd) / max(uHeads[i].z * uHeads[i].z, 1e-4));
+  }
+
   vec4 col = mix(uFaintColor, uBrightColor, smoothstep(0.0, 1.0, energy));
   // Hot tier: energy above 1.0 (ignition rings overshoot there)
   // pushes past bright toward the hot colour, so the travelling
@@ -59,6 +69,18 @@ void main() {
 }
 `;
 
+/** One leading-pixel highlight, in canvas-local device px. */
+export interface HeadGlow {
+  x: number;
+  y: number;
+  radius: number;
+  strength: number;
+}
+
+/** Maximum head highlights per draw — matches the shader's fixed
+ * uniform array (keep the GLSL array size and loop bound in sync). */
+export const MAX_HEADS = 12;
+
 /** Per-draw inputs the element assembles for {@link RenderPass.draw}. */
 export interface DrawInput {
   /** This frame's reconciled geometry (must be `visible: true`). */
@@ -67,6 +89,8 @@ export interface DrawInput {
   tile: TilePipeline;
   /** The energy field whose current state brightens the strokes. */
   field: EnergyField;
+  /** Live runner heads to highlight; empty when none. */
+  heads: HeadGlow[];
 }
 
 /**
@@ -85,6 +109,9 @@ export class RenderPass {
   private uFaintColorLoc: WebGLUniformLocation | null = null;
   private uBrightColorLoc: WebGLUniformLocation | null = null;
   private uHotColorLoc: WebGLUniformLocation | null = null;
+  private uHeadsLoc: WebGLUniformLocation | null = null;
+  /** Scratch buffer for the head uniform array. */
+  private readonly headData = new Float32Array(MAX_HEADS * 4);
 
   /**
    * Create the runtime program and the (attribute-less) VAO WebGL2
@@ -103,6 +130,7 @@ export class RenderPass {
     this.uFaintColorLoc = gl.getUniformLocation(this.program, "uFaintColor");
     this.uBrightColorLoc = gl.getUniformLocation(this.program, "uBrightColor");
     this.uHotColorLoc = gl.getUniformLocation(this.program, "uHotColor");
+    this.uHeadsLoc = gl.getUniformLocation(this.program, "uHeads");
 
     this.vao = gl.createVertexArray();
     if (!this.vao) {
@@ -145,6 +173,16 @@ export class RenderPass {
     gl.uniform2f(this.uTileSizeLoc, input.tile.tileSize[0], input.tile.tileSize[1]);
     gl.uniform2f(this.uOffsetLoc, geo.offLeft, geo.offBottom);
     gl.uniform2f(this.uCanvasSizeLoc, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+    this.headData.fill(0);
+    for (let i = 0; i < Math.min(input.heads.length, MAX_HEADS); i++) {
+      const head = input.heads[i]!;
+      this.headData[i * 4] = head.x;
+      this.headData[i * 4 + 1] = head.y;
+      this.headData[i * 4 + 2] = head.radius;
+      this.headData[i * 4 + 3] = head.strength;
+    }
+    gl.uniform4fv(this.uHeadsLoc, this.headData);
 
     const cs = getComputedStyle(host);
     const faintOpacity = parseFloat(cs.getPropertyValue("--hp-bg-faint-opacity")) || 0;
@@ -204,5 +242,6 @@ export class RenderPass {
     this.uFaintColorLoc = null;
     this.uBrightColorLoc = null;
     this.uHotColorLoc = null;
+    this.uHeadsLoc = null;
   }
 }

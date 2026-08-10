@@ -20,7 +20,7 @@ import { EnergyField, FIELD_EPSILON, FIELD_MAX, FIELD_SCALE, type RunnerSplat } 
 import { reconcileCanvasGeometry } from "./geometry.js";
 import { acquireContext, describeRenderer, isSoftwareRenderer } from "./gl.js";
 import { PointerTracker } from "./input.js";
-import { RenderPass } from "./render.js";
+import { type HeadGlow, RenderPass } from "./render.js";
 import { LatticeRunners } from "./runners.js";
 import { backgroundStyles } from "./styles.js";
 
@@ -46,12 +46,18 @@ const ADAPTIVE_SAMPLE_FRAMES = 32;
 const ADAPTIVE_DEMOTE_MS = 60;
 const ADAPTIVE_OUTLIER_MS = 200;
 
-/** Ignition-runner splat tuning: head radius in CSS px (tight —
- * edge-scale, so lit lines read as individual strokes) and head
- * strength above 1.0 so runner heads land in the hot tier the
- * pointer wake is capped out of. */
+/** Ignition-runner splat tuning. The TRAIL deposited into the field
+ * stays at bright level (≤ 1.0) — only the draw-time head highlight
+ * reaches the hot tier, so the leading pixel visibly outshines the
+ * path behind it. Head radius is device-independent CSS px. */
 const RUNNER_RADIUS = 6;
-const RUNNER_STRENGTH = 1.3;
+const TRAIL_STRENGTH = 0.9;
+const HEAD_RADIUS = 7;
+const HEAD_BOOST = 0.8;
+
+/** New runner waves launch this often while the press is held —
+ * ignition continues until release, then winds down naturally. */
+const WAVE_MS = 200;
 
 /** Proximity gate: pointer activity farther than this from the host
  * rect (beyond splat radius) cannot affect the field, so it never
@@ -150,13 +156,20 @@ export class HpBackground extends LitElement {
   private readonly field = new EnergyField();
   private readonly pointer = new PointerTracker(
     () => this.handlePointerActivity(),
-    (x, y) => this.handleIgnite(x, y)
+    (x, y) => this.handleIgnite(x, y),
+    () => this.handleIgniteEnd()
   );
 
   /** Ignition runners — path logic lives in runners.ts; the element
    * converts their page-space head segments to field space per
    * frame, which keeps trails glued to the pattern across scroll. */
   private readonly runners = new LatticeRunners();
+
+  /** Press point (page CSS px) while the pointer is held on empty
+   * space — new runner waves keep launching from it every WAVE_MS
+   * until release. Null when nothing is held. */
+  private igniteHeld: { pageX: number; pageY: number } | null = null;
+  private lastWaveAt = 0;
 
   private resizeObserver?: ResizeObserver;
 
@@ -479,9 +492,10 @@ export class HpBackground extends LitElement {
   }
 
   /** Ignition: a press on a non-interactive target launches lattice
-   * runners from the press point. GL tier only — the CSS fallback
-   * has no sim to carry it — and suppressed under reduced motion
-   * (it is pure motion flourish). */
+   * runners from the press point, and keeps launching waves while
+   * the press is held (see the loop). GL tier only — the CSS
+   * fallback has no sim to carry it — and suppressed under reduced
+   * motion (it is pure motion flourish). */
   private handleIgnite(clientX: number, clientY: number): void {
     if (this.fallback || !this.gl || this.pointer.reducedMotion) {
       return;
@@ -489,8 +503,18 @@ export class HpBackground extends LitElement {
     if (!this.pointerWithinReach(clientX, clientY)) {
       return;
     }
-    this.runners.spawn(clientX + window.scrollX, clientY + window.scrollY, this.hexSize);
+    const pageX = clientX + window.scrollX;
+    const pageY = clientY + window.scrollY;
+    this.igniteHeld = { pageX, pageY };
+    this.lastWaveAt = performance.now();
+    this.runners.spawn(pageX, pageY, this.hexSize);
     this.wakeLoop();
+  }
+
+  /** Release ends the hold; live runners finish their own lives, so
+   * the effect winds down rather than cutting off. */
+  private handleIgniteEnd(): void {
+    this.igniteHeld = null;
   }
 
   // ── Sim loop ────────────────────────────────────────────────────────
@@ -525,6 +549,7 @@ export class HpBackground extends LitElement {
     this.prevSplatX = Number.NaN;
     this.prevSplatY = Number.NaN;
     this.runners.clear();
+    this.igniteHeld = null;
   }
 
   /** Read a tuning knob: the CSS custom property wins when set and
@@ -615,6 +640,13 @@ export class HpBackground extends LitElement {
       this.simTimeSinceSplat = 0;
     }
 
+    // Held ignition: keep launching waves from the press point
+    // until release.
+    if (this.igniteHeld && now - this.lastWaveAt >= WAVE_MS) {
+      this.lastWaveAt = now;
+      this.runners.spawn(this.igniteHeld.pageX, this.igniteHeld.pageY, this.hexSize);
+    }
+
     // Ignition runners: advance heads along the lattice and convert
     // their page-space movement segments into field space. Active
     // runners keep the sleep accumulator pinned at zero.
@@ -627,7 +659,7 @@ export class HpBackground extends LitElement {
         bx: ((seg.bx - window.scrollX - visLeft) * dpr) / FIELD_SCALE,
         by: ((visBottom - (seg.by - window.scrollY)) * dpr) / FIELD_SCALE,
         radius,
-        strength: RUNNER_STRENGTH,
+        strength: TRAIL_STRENGTH,
       }));
       this.simTimeSinceSplat = 0;
     }
@@ -713,10 +745,25 @@ export class HpBackground extends LitElement {
     // Single-frame draws (scroll, resize, settle) sample whatever
     // state the field holds — usually zeros while the loop sleeps.
     this.field.ensureSize(gl, canvas.width, canvas.height);
+    // Leading-pixel highlights for live runner heads (page → canvas
+    // device px, y-up). Empty while no ignition is playing.
+    let heads: HeadGlow[] = [];
+    if (this.runners.active) {
+      const dpr = window.devicePixelRatio || 1;
+      const visLeft = geometry.offLeft / dpr - window.scrollX;
+      const visBottom = geometry.offBottom / dpr - window.scrollY;
+      heads = this.runners.heads().map((h) => ({
+        x: (h.x - window.scrollX - visLeft) * dpr,
+        y: (visBottom - (h.y - window.scrollY)) * dpr,
+        radius: HEAD_RADIUS * dpr,
+        strength: HEAD_BOOST,
+      }));
+    }
     this.renderPass.draw(gl, this, {
       geometry,
       tile: this.tile,
       field: this.field,
+      heads,
     });
   }
 

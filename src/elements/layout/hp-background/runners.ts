@@ -14,19 +14,19 @@ const EDGE_MS = 60;
 
 /** Edges a runner lives for (inclusive random range). Keeps the
  * effect localised — a handful of hexes around the press point. */
-const EDGES_MIN = 4;
-const EDGES_MAX = 7;
+const EDGES_MIN = 6;
+const EDGES_MAX = 11;
 
 /** Chance to branch at a vertex (spawning a sibling down the road
  * not taken), while under the concurrency cap. */
 const BRANCH_CHANCE = 0.3;
 
 /** Heads spawned per ignition press. */
-const SPAWN_COUNT = 3;
+const SPAWN_COUNT = 4;
 
 /** Concurrency cap across all presses — matches the field shader's
  * splat array. */
-const MAX_ACTIVE = 8;
+const MAX_ACTIVE = 12;
 
 /** One crawling head. Positions are page CSS px so paths stay glued
  * to the page-attached pattern. `typeY` tracks which of the two
@@ -44,6 +44,10 @@ interface Runner {
   edgesLeft: number;
   headX: number;
   headY: number;
+  /** Press-point vertex this runner's ignition started from —
+   * branches only take edges that lead away from it. */
+  ox: number;
+  oy: number;
 }
 
 /** A head's movement this frame, in page CSS px. */
@@ -136,8 +140,9 @@ export class LatticeRunners {
   spawn(pageX: number, pageY: number, hexSize: number): void {
     const v = snapToVertex(pageX, pageY, hexSize);
     const dirs = directionsFor(v.typeY, hexSize);
-    // Start each head down a distinct edge; SPAWN_COUNT ≤ 3 = the
-    // vertex degree, so no duplicates.
+    // Start each head down a distinct edge — a vertex has degree 3,
+    // so one wave spawns at most 3 heads regardless of SPAWN_COUNT;
+    // held-ignition waves provide the rest.
     const order = [...dirs].sort(() => Math.random() - 0.5);
     for (let i = 0; i < Math.min(SPAWN_COUNT, order.length); i++) {
       if (this.runners.length >= MAX_ACTIVE) {
@@ -157,6 +162,8 @@ export class LatticeRunners {
         edgesLeft: EDGES_MIN + Math.floor(Math.random() * (EDGES_MAX - EDGES_MIN + 1)),
         headX: v.x,
         headY: v.y,
+        ox: v.x,
+        oy: v.y,
       });
     }
   }
@@ -194,14 +201,18 @@ export class LatticeRunners {
           r.edgesLeft = 0;
           break;
         }
-        // Occasionally branch down the road not taken.
+        // Occasionally branch down the road not taken — but only
+        // when that road leads AWAY from the press point (dot of
+        // the branch direction against the origin→vertex vector);
+        // inward branches read as the effect collapsing on itself.
         if (
           options.length > 1 &&
           Math.random() < BRANCH_CHANCE &&
           this.runners.length + spawned.length + next.length < MAX_ACTIVE
         ) {
           const other = options.find((o) => o !== pick);
-          if (other) {
+          const outward = other ? other[0] * (r.x - r.ox) + other[1] * (r.y - r.oy) >= 0 : false;
+          if (other && outward) {
             spawned.push({
               x: r.x,
               y: r.y,
@@ -214,6 +225,8 @@ export class LatticeRunners {
               edgesLeft: Math.max(1, r.edgesLeft - 1),
               headX: r.x,
               headY: r.y,
+              ox: r.ox,
+              oy: r.oy,
             });
           }
         }
@@ -234,6 +247,12 @@ export class LatticeRunners {
     }
     this.runners = [...next, ...spawned];
     return segments;
+  }
+
+  /** Live head positions in page CSS px — the "leading pixels" the
+   * runtime pass highlights above the trail they leave. */
+  heads(): Array<{ x: number; y: number }> {
+    return this.runners.map((r) => ({ x: r.headX, y: r.headY }));
   }
 
   /** Drop every head (loop teardown). */
