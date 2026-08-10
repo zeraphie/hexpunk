@@ -14,8 +14,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <Fragment slot="notice">
-      <hp-separator></hp-separator>
-      <table class="perf-status">
+      <hp-collapsible class="perf-collapsible">
+        <hp-button slot="trigger" size="xs">show stats</hp-button>
+        <hp-separator></hp-separator>
+        <table class="perf-status">
         <thead>
           <tr>
             <th scope="col">Cost</th>
@@ -45,8 +47,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
             <td>render loop sleeps; wakes on pointer / scroll / ignite</td>
           </tr>
         </tbody>
-      </table>
-      <hp-separator></hp-separator>
+        </table>
+        <hp-separator></hp-separator>
+      </hp-collapsible>
     </Fragment>
 
     <p>
@@ -194,9 +197,18 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </Layout>
 
 <style>
-  /* Muted status readout — informational, not a focal element. */
+  /* Muted status readout — informational, not a focal element,
+   * tucked behind a small "show stats" disclosure. */
   .perf-status {
     font-size: 0.85rem;
     color: var(--hp-on-surface-variant);
+  }
+
+  .perf-collapsible hp-separator:first-of-type {
+    margin-bottom: 32px;
+  }
+
+  .perf-collapsible hp-separator:last-of-type {
+    margin-block: 32px;
   }
 </style>
