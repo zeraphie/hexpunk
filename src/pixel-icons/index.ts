@@ -1,17 +1,25 @@
 // pixel-icons — Built-in pixel-art state sets.
 //
-// Each icon is a named record of same-length HpPixelPosition arrays.
-// The registry keys are the values `<hp-pixel type="…">` accepts;
-// explicit `.states` still wins over `type` for consumer-supplied
-// art.
+// Each icon is a named record of same-length HpPixelPosition arrays,
+// optionally with a bundled palette (the arrow morphs fade their
+// parked corner pixels to transparent). The registry keys are the
+// values `<hp-pixel type="…">` accepts; explicit `.states` /
+// `.palette` still win over `type` for consumer-supplied art.
 
 import type { HpPixelStates } from "../elements/images/hp-pixel.js";
-import { expandable } from "./expandable.js";
+import { dropside, palette as dropsidePalette } from "./dropside.js";
+import { expandable, palette as expandablePalette } from "./expandable.js";
 import { menu } from "./menu.js";
 
-export { expandable, menu };
+export { dropside, expandable, menu };
 
-export const pixelIcons: Record<string, HpPixelStates> = {
-  menu,
-  expandable,
+export interface PixelIcon {
+  states: HpPixelStates;
+  palette?: string[];
+}
+
+export const pixelIcons: Record<string, PixelIcon> = {
+  menu: { states: menu },
+  expandable: { states: expandable, palette: expandablePalette },
+  dropside: { states: dropside, palette: dropsidePalette },
 };

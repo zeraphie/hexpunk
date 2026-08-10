@@ -462,13 +462,16 @@
         },
         {
           "name": "type",
-          "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` wins when both are set.",
+          "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` / `.palette` win when both are set.",
           "values": [
             {
               "name": "menu"
             },
             {
               "name": "expandable"
+            },
+            {
+              "name": "dropside"
             },
             {
               "name": "undefined"

@@ -13,8 +13,9 @@
 // (e.g. `{ idle: [[x,y]…], hover: [[x,y]…] }`). The shadow string
 // is computed per state and smoothly interpolated between them via
 // CSS `transition: box-shadow`. The `type` attribute resolves a
-// built-in set from src/pixel-icons/ (`menu`, `expandable`) with
-// no JS wiring.
+// built-in set from src/pixel-icons/ (`menu`, `expandable`,
+// `dropside`), optionally with a bundled palette, with no JS
+// wiring.
 // 3. **Sprite-sheet frames** — `.frames` array, `steps()` animation.
 // *Not yet implemented* — coming when the first real consumer needs
 // a loader animation.
@@ -132,8 +133,8 @@ export class HpPixel extends LitElement {
   @property() art?: string;
 
   /** Built-in icon set by name — no JS wiring needed. Explicit
-   * `.states` wins when both are set. */
-  @property({ reflect: true }) type?: "menu" | "expandable";
+   * `.states` / `.palette` win when both are set. */
+  @property({ reflect: true }) type?: "menu" | "expandable" | "dropside";
 
   /** Named position-set states. All states must have the same length. */
   @property({ attribute: false }) states?: HpPixelStates;
@@ -217,9 +218,10 @@ export class HpPixel extends LitElement {
     const pixelSize = this.pixelSize;
     this.style.setProperty("--hp-pixel-size", `${pixelSize}px`);
 
-    const states = this.states ?? (this.type ? pixelIcons[this.type] : undefined);
+    const icon = this.type ? pixelIcons[this.type] : undefined;
+    const states = this.states ?? icon?.states;
     if (states) {
-      this.applyStates(states, pixelSize);
+      this.applyStates(states, pixelSize, this.palette ?? icon?.palette);
     } else if (this.art) {
       this.applyStaticArt(this.art, pixelSize);
     } else {
@@ -227,14 +229,14 @@ export class HpPixel extends LitElement {
     }
   }
 
-  private applyStates(states: HpPixelStates, pixelSize: number): void {
+  private applyStates(states: HpPixelStates, pixelSize: number, palette?: string[]): void {
     const lengths = new Set(Object.values(states).map((s) => s.length));
     if (lengths.size > 1) {
       console.warn("hp-pixel: all states must have the same length for smooth morphing");
     }
 
     for (const [name, positions] of Object.entries(states)) {
-      this.style.setProperty(`--hp-pixel-${name}`, shadowFor(positions, pixelSize, this.palette));
+      this.style.setProperty(`--hp-pixel-${name}`, shadowFor(positions, pixelSize, palette));
     }
 
     // When `state` is set explicitly AND we're not in interactive mode,
