@@ -15,9 +15,15 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <Fragment slot="notice">
       <hp-collapsible class="perf-collapsible">
-        <hp-button slot="trigger" size="xxs" class="stats-trigger">
-          <span class="stats-glyph" aria-hidden="true">+</span>
-        </hp-button>
+        <button slot="trigger" class="stats-trigger" type="button">
+          <hp-cell variant="action" size="xxs" aria-hidden="true">
+            <hp-pixel class="stats-pixel" type="expandable" pixel-size="2"></hp-pixel>
+          </hp-cell>
+          <span class="stats-label">
+            <span class="when-closed">show stats</span>
+            <span class="when-open">hide stats</span>
+          </span>
+        </button>
         <hp-separator></hp-separator>
         <table class="perf-status">
         <thead>
@@ -214,45 +220,61 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     margin-block: 32px;
   }
 
-  /* "show stats" lives BESIDE the xs hex — text never fits inside
-   * the inline-control tiers (the hp-checkbox + hp-label pattern).
-   * The ::after is part of the button: clickable, keyboard-native,
-   * and it provides the accessible name. */
+  /* One native button is the whole trigger — hex, pixel morph, and
+   * label share a single hitbox, hover surface, and focus stop. The
+   * hex is presentational (hp-cell, not hp-button — no nested
+   * buttons); the label lives beside it, never inside, per the
+   * inline-control-tier pattern. */
   .stats-trigger {
-    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--hp-xs, 8px);
+    padding: var(--hp-xxs, 4px);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--hp-on-surface-variant);
   }
 
-  .stats-trigger::after {
-    content: "show stats";
-    position: absolute;
-    left: calc(100% + var(--hp-xs, 8px));
-    top: 50%;
-    translate: 0 -50%;
+  .stats-trigger:hover,
+  .stats-trigger:focus-visible {
+    color: var(--hp-on-surface);
+  }
+
+  .stats-trigger:focus-visible {
+    outline: 2px solid var(--hp-primary);
+    outline-offset: 2px;
+  }
+
+  .stats-label {
     white-space: nowrap;
     font-family: var(--hp-typo-label-sm-font-family);
     font-size: var(--hp-typo-label-sm-font-size);
     font-weight: var(--hp-typo-label-sm-font-weight);
     letter-spacing: var(--hp-typo-label-sm-letter-spacing);
     text-transform: uppercase;
-    color: var(--hp-on-surface-variant);
   }
 
-  .stats-trigger[aria-expanded="true"]::after {
-    content: "hide stats";
+  .stats-label .when-open,
+  .stats-trigger[aria-expanded="true"] .when-closed {
+    display: none;
   }
 
-  .stats-glyph {
-    display: inline-block;
-    transition: rotate var(--hp-duration-medium) var(--hp-ease-default);
+  .stats-trigger[aria-expanded="true"] .when-open {
+    display: inline;
   }
 
-  .stats-trigger[aria-expanded="true"] .stats-glyph {
-    rotate: 45deg;
+  /* Pixel morph rides the BUTTON's state, not its own: rest is the
+   * square (idle), row-hover fans to the plus, press-and-hold or
+   * expanded rotates to the cross. The state vars are published by
+   * hp-pixel; the page just picks which one the shadow shows. */
+  .stats-trigger:hover .stats-pixel,
+  .stats-trigger:focus-visible .stats-pixel {
+    --hp-pixel-shadow: var(--hp-pixel-hover);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .stats-glyph {
-      transition: none;
-    }
+  .stats-trigger:active .stats-pixel,
+  .stats-trigger[aria-expanded="true"] .stats-pixel {
+    --hp-pixel-shadow: var(--hp-pixel-active);
   }
 </style>
