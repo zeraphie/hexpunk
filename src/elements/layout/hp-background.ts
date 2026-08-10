@@ -313,6 +313,29 @@ export class HpBackground extends LitElement {
   @property({ type: Number, attribute: "pointer-radius" })
   pointerRadius = 200;
 
+  // Page-backdrop mode is a pure CSS-driven attribute (`page`), handled
+  // entirely by the `:host([page])` style rule — NOT a reactive
+  // property. It deliberately is not a `@property`:
+  //  1. The JS render path doesn't need it. `updateCanvasGeometry`
+  //     reads `getBoundingClientRect()`, which already reflects whatever
+  //     position the CSS applies, so the geometry math is identical in
+  //     both modes without branching on a flag.
+  //  2. A reflecting boolean property defaulting to `false` is a known
+  //     Lit + esbuild footgun: when the bundler emits class fields with
+  //     `useDefineForClassFields: true` (esbuild's default, independent
+  //     of our tsconfig), the `= false` field initializer shadows the
+  //     decorator accessor and discards an author-set `page` attribute
+  //     on upgrade, then reflect *removes* the attribute. Keeping it a
+  //     plain attribute sidesteps the whole class. Aligns with the
+  //     "state-driven contextual styling via attribute selectors"
+  //     convention.
+  //
+  // Authoring: `<hp-background page>` for a full-page fixed backdrop;
+  // omit for contained mode (absolute, fills a bounded parent). See the
+  // `:host([page])` rule in `styles` for the behaviour + the
+  // containing-block caveat (a `fixed` host anchors to the nearest
+  // ancestor with a transform/filter/contain, not the viewport).
+
   /** Cached grid dimensions; recomputed by the ResizeObserver.
    *
    * @deprecated Unused in the WebGL2 path — kept in Step 1 to keep the
@@ -367,6 +390,23 @@ export class HpBackground extends LitElement {
    * each time the DPR changes (the query string includes a fixed value
    * so a different DPR causes it to no longer match). */
   private dprMediaQuery: MediaQueryList | null = null;
+  /** Pending rAF handle for a coalesced redraw, or null when none is
+   * scheduled. See {@link scheduleRedraw}. */
+  private pendingFrame: number | null = null;
+  /** Last pointer position in *viewport* CSS coords (clientX/clientY).
+   * Converted to canvas-local device px at draw time, where the current
+   * canvas geometry is known. Initialised off-screen so the halo reads
+   * as fully faded until the first real pointer move. */
+  private mouseClientX = OFFSCREEN_MOUSE;
+  private mouseClientY = OFFSCREEN_MOUSE;
+  /** True when the user has requested reduced motion. While set, the
+   * cursor halo is suppressed (mouse forced off-screen) so only the
+   * faint base pattern renders — matches the prior SVG behaviour where
+   * `.bright { display: none }` under the reduce query. */
+  private reducedMotion = false;
+  /** Active `prefers-reduced-motion` query; listened to so the halo
+   * toggles live without a reload. */
+  private reducedMotionQuery: MediaQueryList | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -388,6 +428,11 @@ export class HpBackground extends LitElement {
     window.addEventListener("pointermove", this.handleWindowPointerMove, {
       passive: true,
     });
+    // The canvas covers only the visible slice of the host (see
+    // updateCanvasGeometry), so scrolling moves that slice — the canvas
+    // must reposition + repaint to follow the viewport. Passive +
+    // rAF-coalesced keeps this off the scroll critical path.
+    window.addEventListener("scroll", this.handleScroll, { passive: true });
     // Final-settling triggers for late layout: window 'load' fires
     // once every resource (images, stylesheets, deferred scripts) has
     // loaded; document.fonts.ready resolves after webfont swapping.
@@ -400,7 +445,24 @@ export class HpBackground extends LitElement {
     if (typeof document !== "undefined" && document.fonts?.ready) {
       document.fonts.ready.then(this.handleFontsReady);
     }
+    // Reduced-motion: suppress the cursor halo (faint base still
+    // renders). Cached + listened so toggling the OS setting takes
+    // effect without a reload.
+    if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+      this.reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      this.reducedMotion = this.reducedMotionQuery.matches;
+      this.reducedMotionQuery.addEventListener("change", this.handleReducedMotionChange);
+    }
   }
+
+  private readonly handleReducedMotionChange = (e: MediaQueryListEvent): void => {
+    this.reducedMotion = e.matches;
+    this.scheduleRedraw();
+  };
+
+  private readonly handleScroll = (): void => {
+    this.scheduleRedraw();
+  };
 
   private readonly handleLoadSettled = (): void => {
     this.handleResize();
@@ -412,9 +474,14 @@ export class HpBackground extends LitElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    if (this.pendingFrame !== null) {
+      cancelAnimationFrame(this.pendingFrame);
+      this.pendingFrame = null;
+    }
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     window.removeEventListener("pointermove", this.handleWindowPointerMove);
+    window.removeEventListener("scroll", this.handleScroll);
     window.removeEventListener("load", this.handleLoadSettled);
     if (this.canvas) {
       this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
@@ -424,6 +491,10 @@ export class HpBackground extends LitElement {
       this.dprMediaQuery.removeEventListener("change", this.handleDprChange);
       this.dprMediaQuery = null;
     }
+    if (this.reducedMotionQuery) {
+      this.reducedMotionQuery.removeEventListener("change", this.handleReducedMotionChange);
+      this.reducedMotionQuery = null;
+    }
     this.releaseGLResources();
     this.gl = null;
     this.canvas = null;
@@ -432,13 +503,13 @@ export class HpBackground extends LitElement {
   override firstUpdated(): void {
     this.canvas = this.shadowRoot?.querySelector("canvas") ?? null;
     this.initGL();
-    // Belt-and-braces: re-check sizing after one animation frame so
+    // Belt-and-braces: re-check sizing on the next animation frame so
     // any post-firstUpdated layout settling (Astro async hydration,
     // shiki highlighting, font loading) is picked up. ResizeObserver
     // *should* catch this too, but ancestor-driven sizing (`inset: 0`
     // against a growing parent) doesn't always trip the observer's
     // content-rect-changed condition reliably.
-    requestAnimationFrame(() => this.handleResize());
+    this.scheduleRedraw();
   }
 
   override updated(changed: Map<string, unknown>): void {
@@ -449,7 +520,7 @@ export class HpBackground extends LitElement {
         // Tile geometry changed — re-bake at the new size, then
         // redraw to pick up the new uTileSize uniform.
         this.bake();
-        this.draw();
+        this.scheduleRedraw();
       }
     }
   }
@@ -501,8 +572,9 @@ export class HpBackground extends LitElement {
       return;
     }
     this.watchDpr();
-    this.handleResize();
     this.bake();
+    // draw() reconciles canvas geometry at its top, so no separate size
+    // pass is needed here.
     this.draw();
   }
 
@@ -714,34 +786,98 @@ export class HpBackground extends LitElement {
     this.style.setProperty("--hp-bg-tile-height", `${tileH.toFixed(2)}px`);
   }
 
-  /** Reconcile the canvas backing-store size with the host's current
-   * bbox. Idempotent — does nothing if the size is already correct.
-   * Called both from `handleResize` (ResizeObserver-driven) and from
-   * the top of every `draw()` so any size mismatch self-corrects on
-   * the next draw call. Cheap (~0.01ms of getBoundingClientRect)
-   * compared to the cost of getting it wrong and clipping the
-   * pattern to a stale dimension. */
-  private syncCanvasSize(): void {
+  /** Reconcile the canvas backing-store size and compute the
+   * page-coordinate `uOffset` for the current frame. Never an oversized
+   * canvas, and — critically — never JS-repositioned on scroll.
+   *
+   * **Two modes, both viewport-bounded.**
+   *
+   * - `page` mode: the host is `position: fixed` filling the viewport
+   *   (see {@link page}). The canvas fills the host at 100% via CSS and
+   *   stays put on scroll — the *browser* keeps a fixed element pinned
+   *   with zero JS, so the software compositor has nothing to chase. The
+   *   pattern scrolls purely through `uOffset` (which includes
+   *   `scrollY`). Backing store = viewport × dpr.
+   *
+   * - contained mode (default): the host is `position: absolute;
+   *   inset: 0` inside a bounded parent that fits the viewport (demo
+   *   boxes, cards). The canvas fills the host at 100%; backing store =
+   *   host size × dpr.
+   *
+   * Why this shape: a canvas larger than the viewport has its off-screen
+   * region dropped by the software compositor (HW accel off — VMs, RDP,
+   * locked-down browsers), leaving blank bands. And JS-repositioning a
+   * canvas to chase native scroll lags a frame on that same software
+   * path, flashing a blank strip at the leading edge. Both are avoided
+   * by never exceeding the viewport and never moving the canvas from JS.
+   *
+   * Global alignment is preserved by `uOffset`: `offLeft` / `offBottom`
+   * are the canvas's bottom-left *page-coordinate* origin in device px,
+   * so every instance samples the tiled texture in shared page space and
+   * reads as one continuous grid — across instances and across scroll
+   * positions — with no seam.
+   *
+   * Returns `{ visible: false }` only when the host has no painted area
+   * (zero-sized / detached), signalling `draw()` to skip the GL pass. */
+  private updateCanvasGeometry(): {
+    visible: boolean;
+    offLeft: number;
+    offBottom: number;
+  } {
     const canvas = this.canvas;
+    const hidden = { visible: false, offLeft: 0, offBottom: 0 };
     if (!canvas) {
-      return;
+      return hidden;
     }
-    const rect = canvas.getBoundingClientRect();
+    const rect = this.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    const w = Math.max(1, Math.round(rect.width * dpr));
-    const h = Math.max(1, Math.round(rect.height * dpr));
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w;
-      canvas.height = h;
+    // The canvas fills the host (CSS `inset: 0; width/height: 100%`), so
+    // its on-screen box equals the host's bbox. In `page` mode that bbox
+    // is the fixed viewport; in contained mode it's the bounded parent.
+    const cssW = rect.width;
+    const cssH = rect.height;
+    if (cssW <= 0 || cssH <= 0) {
+      return hidden;
+    }
+    const bw = Math.max(1, Math.round(cssW * dpr));
+    const bh = Math.max(1, Math.round(cssH * dpr));
+    if (canvas.width !== bw || canvas.height !== bh) {
+      canvas.width = bw;
+      canvas.height = bh;
       if (this.gl) {
-        this.gl.viewport(0, 0, w, h);
+        this.gl.viewport(0, 0, bw, bh);
       }
     }
+    return {
+      visible: true,
+      // Bottom-left page-coord origin of the canvas in device px.
+      // offBottom uses rect.bottom because the shader flips
+      // gl_FragCoord.y (WebGL is y-up; gl_FragCoord.y === 0 is the
+      // canvas's bottom edge, whose page-Y is rect.bottom + scrollY).
+      offLeft: (rect.left + window.scrollX) * dpr,
+      offBottom: (rect.bottom + window.scrollY) * dpr,
+    };
+  }
+
+  /** Coalesce redraws onto the next animation frame. Multiple triggers
+   * in one frame (a ResizeObserver callback plus a scroll/load/fonts
+   * event, say) collapse to a single draw, and — critically — the draw
+   * runs *after* layout settles rather than synchronously inside the
+   * observer callback. `draw()` reconciles canvas geometry at its top,
+   * so the deferred frame repositions, resizes, and repaints together
+   * against the settled layout. */
+  private scheduleRedraw(): void {
+    if (this.pendingFrame !== null) {
+      return;
+    }
+    this.pendingFrame = requestAnimationFrame(() => {
+      this.pendingFrame = null;
+      this.draw();
+    });
   }
 
   private handleResize(): void {
-    this.syncCanvasSize();
-    this.draw();
+    this.scheduleRedraw();
   }
 
   /** Runtime pass: sample the baked tile texture, blend faint→bright
@@ -753,12 +889,13 @@ export class HpBackground extends LitElement {
     if (!gl || !this.runtimeProgram || !this.tileTexture) {
       return;
     }
-    // Reconcile canvas size before drawing — catches the case where
-    // the host grew after firstUpdated (Astro hydrating, async
-    // syntax highlighting, etc.) and ResizeObserver didn't fire on
-    // the host's content rect (which can happen when sizing is
-    // ancestor-driven via inset: 0 rather than intrinsic).
-    this.syncCanvasSize();
+    // Reconcile canvas geometry (size + scroll position of the visible
+    // slice) before drawing. Skip the GL pass entirely when the host is
+    // off-screen — nothing to paint and the canvas is collapsed to 0.
+    const geo = this.updateCanvasGeometry();
+    if (!geo.visible) {
+      return;
+    }
     const dpr = window.devicePixelRatio || 1;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -778,19 +915,31 @@ export class HpBackground extends LitElement {
     gl.uniform1i(this.uTileTexLoc, 0);
 
     gl.uniform2f(this.uTileSizeLoc, this.bakedTileSize[0], this.bakedTileSize[1]);
-    // Page-attached offset: every hp-background on the page samples
-    // the tile texture in shared page-coordinate space, so adjacent
-    // instances read as windows onto a single continuous grid. y is
-    // (rect.bottom + scrollY) because the shader flips gl_FragCoord.y
-    // (WebGL is y-up, page is y-down).
-    const rect = this.getBoundingClientRect();
-    gl.uniform2f(
-      this.uOffsetLoc,
-      (rect.left + window.scrollX) * dpr,
-      (rect.bottom + window.scrollY) * dpr
-    );
-    // Step 2 keeps the mouse off-screen; Step 3 wires real pointermove.
-    gl.uniform2f(this.uMouseLoc, OFFSCREEN_MOUSE, OFFSCREEN_MOUSE);
+    // Page-attached offset (computed in updateCanvasGeometry from the
+    // visible slice's page-coordinate origin): every hp-background on
+    // the page samples the tile texture in shared page-coordinate space,
+    // so adjacent instances — and the same instance across scroll
+    // positions — read as windows onto one continuous grid with no seam.
+    gl.uniform2f(this.uOffsetLoc, geo.offLeft, geo.offBottom);
+    // Cursor halo. The shader measures distance from gl_FragCoord (canvas
+    // device px, y-up from the canvas's bottom edge) to uMouse, so convert
+    // the stored viewport coords into that space. The visible slice's
+    // viewport origin is recoverable from the page-coord offset:
+    //   visLeft   = offLeft  / dpr - scrollX
+    //   visBottom = offBottom / dpr - scrollY
+    // Under reduced-motion we force the mouse off-screen so the halo
+    // collapses and only the faint base renders.
+    if (this.reducedMotion) {
+      gl.uniform2f(this.uMouseLoc, OFFSCREEN_MOUSE, OFFSCREEN_MOUSE);
+    } else {
+      const visLeft = geo.offLeft / dpr - window.scrollX;
+      const visBottom = geo.offBottom / dpr - window.scrollY;
+      gl.uniform2f(
+        this.uMouseLoc,
+        (this.mouseClientX - visLeft) * dpr,
+        (visBottom - this.mouseClientY) * dpr
+      );
+    }
     gl.uniform1f(this.uPointerRadiusLoc, this.pointerRadius * dpr);
 
     const cs = getComputedStyle(this);
@@ -822,9 +971,14 @@ export class HpBackground extends LitElement {
   }
 
   private handleWindowPointerMove = (event: PointerEvent): void => {
-    const rect = this.getBoundingClientRect();
-    this.style.setProperty("--hp-bg-x", `${event.clientX - rect.left}px`);
-    this.style.setProperty("--hp-bg-y", `${event.clientY - rect.top}px`);
+    // Store raw viewport coords; the conversion to canvas-local device
+    // px happens in draw(), which knows the current visible-slice
+    // geometry. A window-level listener (not host-level) keeps the halo
+    // tracking even while the cursor is over a sibling stacked above the
+    // pointer-events:none backdrop.
+    this.mouseClientX = event.clientX;
+    this.mouseClientY = event.clientY;
+    this.scheduleRedraw();
   };
 
   private computeGridSize(): void {
@@ -872,11 +1026,28 @@ export class HpBackground extends LitElement {
       }
 
       canvas {
+        /* Canvas fills the host. The host is viewport-bounded in both
+         * modes (fixed-viewport in page mode, bounded parent in
+         * contained mode), so this is never an oversized canvas. The
+         * backing-store resolution is set per frame by
+         * updateCanvasGeometry; these rules fix the on-screen box. */
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
         display: block;
+      }
+
+      /* Page-backdrop mode: host is fixed to the viewport, behind page
+       * content. It never moves on scroll (the browser pins fixed
+       * elements natively — no JS reposition for the software compositor
+       * to lag on); the pattern scrolls via the uOffset uniform instead.
+       * z-index keeps it behind foreground content in the same stacking
+       * context. Consumers can raise/lower via --hp-bg-z if needed. */
+      :host([page]) {
+        position: fixed;
+        inset: 0;
+        z-index: var(--hp-bg-z, -1);
       }
 
       /* Option-C fallback: WebGL2 unavailable or context lost. The
