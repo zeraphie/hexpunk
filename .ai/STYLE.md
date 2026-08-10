@@ -120,11 +120,12 @@ The TypeScript + Lit adaptation of the shared style guide (root
 
 - `type(scope): short description` — scope is the component or
   area (`fix(hp-background): …`); present tense, imperative
-- The body explains root cause and why-this-approach when the
-  change isn't self-evident — the git log doubles as the debugging
-  record (see the Step-2 fix commits for the house voice)
-- Reference the driving ADR section (`Refs PLAN.<topic>.md …`)
-  when a plan step or decision produced the change
+- Keep messages to the subject line — the log should read cleanly
+  as a list. A body is the exception, for genuinely non-obvious
+  changes, and stays to a few lines (root cause + a
+  `Refs PLAN.<topic>.md` pointer). Long explanations belong in
+  the ADR, not the log.
+- No trailers (no Co-Authored-By)
 
 ## Error handling
 
