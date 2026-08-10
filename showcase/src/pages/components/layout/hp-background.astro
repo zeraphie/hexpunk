@@ -14,6 +14,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <Fragment slot="notice">
+      <hp-separator></hp-separator>
       <table class="perf-status">
         <thead>
           <tr>
@@ -45,6 +46,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
           </tr>
         </tbody>
       </table>
+      <hp-separator></hp-separator>
     </Fragment>
 
     <p>
@@ -190,3 +192,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </Fragment>
   </ComponentDocs>
 </Layout>
+
+<style>
+  /* Muted status readout — informational, not a focal element. */
+  .perf-status {
+    font-size: 0.85rem;
+    color: var(--hp-on-surface-variant);
+  }
+</style>
