@@ -13,23 +13,34 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <p>
-      Built-in sets need no wiring — set <code>type</code> and, for pointer-driven morphs,
-      <code>interactive</code>. <code>menu</code> fans its grid into a plus on hover and collapses
-      on press; <code>expandable</code> holds a plus and rotates into a cross on press-and-hold
-      (or while an attached disclosure is open).
+      Built-in sets need no wiring beyond <code>type</code> + <code>interactive</code>. All three
+      idle as the dotted square; hover previews the action, and a click toggles the committed
+      state — <em>click them</em>: <code>menu</code> holds its cross, <code>expandable</code> and
+      <code>dropside</code> flip their chevrons, until clicked again. The committed state rides
+      <code>aria-pressed</code>, which <code>interactive</code> maps to the <code>active</code>
+      frame — the demo's only script is the toggle.
     </p>
-    <hp-demo caption="Built-in icon sets — type attribute, zero JS">
+    <hp-demo caption="Built-in icon sets — square → hover preview → toggled">
       <div style="display: flex; gap: var(--hp-xxl); align-items: center; color: var(--hp-primary)">
-        <hp-pixel type="menu" pixel-size="6" interactive tabindex="0"></hp-pixel>
-        <hp-pixel type="expandable" pixel-size="6" interactive tabindex="0"></hp-pixel>
+        <hp-pixel type="menu" pixel-size="6" interactive tabindex="0" role="button" aria-pressed="false" class="toggle-pixel" aria-label="menu"></hp-pixel>
+        <hp-pixel type="expandable" pixel-size="6" interactive tabindex="0" role="button" aria-pressed="false" class="toggle-pixel" aria-label="expand"></hp-pixel>
+        <hp-pixel type="dropside" pixel-size="6" interactive tabindex="0" role="button" aria-pressed="false" class="toggle-pixel" aria-label="open side panel"></hp-pixel>
       </div>
 
       <hp-code slot="code" language="html">{`<body>
-  <!-- hover: grid → plus · press: tight cluster -->
-  <hp-pixel type="menu" pixel-size="6" interactive tabindex="0"></hp-pixel>
+  <!-- square · hover: plus · toggled: cross (persists) -->
+  <hp-pixel type="menu" interactive tabindex="0" role="button" aria-pressed="false"></hp-pixel>
 
-  <!-- press-and-hold (or aria-pressed): plus → cross -->
-  <hp-pixel type="expandable" pixel-size="6" interactive tabindex="0"></hp-pixel>
+  <!-- square · hover: chevron down · toggled: chevron up -->
+  <hp-pixel type="expandable" interactive tabindex="0" role="button" aria-pressed="false"></hp-pixel>
+
+  <!-- square · hover: chevron right · toggled: chevron left -->
+  <hp-pixel type="dropside" interactive tabindex="0" role="button" aria-pressed="false"></hp-pixel>
+
+  <!-- interactive maps aria-pressed="true" to the active frame;
+       your trigger owns the toggling: -->
+  el.addEventListener("click", () =>
+    el.setAttribute("aria-pressed", el.getAttribute("aria-pressed") === "true" ? "false" : "true"));
 </body>`}</hp-code>
     </hp-demo>
 
@@ -82,6 +93,23 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         if (customEl) {
           customEl.states = menu;
           customEl.interactive = true;
+        }
+        // The committed state is the consumer's to own — here, a
+        // plain aria-pressed toggle (Enter/Space included for the
+        // keyboard path).
+        for (const el of document.querySelectorAll<HTMLElement>(".toggle-pixel")) {
+          const flip = () =>
+            el.setAttribute(
+              "aria-pressed",
+              el.getAttribute("aria-pressed") === "true" ? "false" : "true"
+            );
+          el.addEventListener("click", flip);
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              flip();
+            }
+          });
         }
       }
       if (document.readyState === "loading") {
