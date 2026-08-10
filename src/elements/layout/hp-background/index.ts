@@ -16,11 +16,12 @@ import { customElement, property, state } from "lit/decorators.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import { TilePipeline } from "./bake.js";
 import { applyFallbackTile } from "./fallback.js";
-import { EnergyField, FIELD_EPSILON, FIELD_MAX, FIELD_SCALE, MAX_RINGS } from "./field.js";
+import { EnergyField, FIELD_EPSILON, FIELD_MAX, FIELD_SCALE, type RunnerSplat } from "./field.js";
 import { reconcileCanvasGeometry } from "./geometry.js";
 import { acquireContext, describeRenderer, isSoftwareRenderer } from "./gl.js";
 import { PointerTracker } from "./input.js";
 import { RenderPass } from "./render.js";
+import { LatticeRunners } from "./runners.js";
 import { backgroundStyles } from "./styles.js";
 
 /** Reference frame duration the `decay` knob is expressed against —
@@ -33,30 +34,38 @@ const REFERENCE_FRAME_MS = 1000 / 60;
  * saturate it (bright wake). */
 const SPLAT_SPEED_NORM = 40;
 
-/** Adaptive backstop: sim frames sampled on the first wake, and the
- * median frame interval (ms) above which the instance demotes to the
- * CSS tile — the renderer claimed hardware but can't sustain even a
- * low-res sim, so treat it as tier 2. */
+/** Adaptive backstop: frame intervals sampled over one contiguous
+ * wake, and the median (ms) above which the instance demotes to the
+ * CSS tile. The samples measure rAF cadence, not sim cost, so the
+ * threshold sits well above every legitimate presentation rate —
+ * 30 Hz displays and battery-saver caps present at ~33 ms and must
+ * NOT demote; a renderer genuinely dying on the sim runs slower
+ * than 60 ms (< 17 fps). Samples above the outlier bound (tab
+ * switches, one-off stalls) are discarded rather than counted. */
 const ADAPTIVE_SAMPLE_FRAMES = 32;
-const ADAPTIVE_DEMOTE_MS = 30;
+const ADAPTIVE_DEMOTE_MS = 60;
+const ADAPTIVE_OUTLIER_MS = 200;
 
-/** Ignition-ring tuning. Speed is CSS px/s of wavefront travel; life
- * caps how far a ring reaches (speed × life ≈ 620 CSS px radius —
- * most of a viewport, matching the "ripple across the page" intent
- * without lingering); thickness is the gaussian half-width of the
- * band; strength starts above 1.0 so the wavefront lands in the
- * runtime's hot tier and fades linearly over the ring's life. */
-const RING_SPEED = 700;
-const RING_LIFE_MS = 900;
-const RING_THICKNESS = 26;
-const RING_STRENGTH = 1.35;
+/** Ignition-runner splat tuning: head radius in CSS px (tight —
+ * edge-scale, so lit lines read as individual strokes) and head
+ * strength above 1.0 so runner heads land in the hot tier the
+ * pointer wake is capped out of. */
+const RUNNER_RADIUS = 6;
+const RUNNER_STRENGTH = 1.3;
+
+/** Proximity gate: pointer activity farther than this from the host
+ * rect (beyond splat radius) cannot affect the field, so it never
+ * wakes the loop — N distant instances stay asleep during normal
+ * mouse use. Margin covers diffusion spread. */
+const PROXIMITY_MARGIN = 120;
 
 /**
  * Pointer-aware hex grid backdrop. A faint hex pattern fills the
  * host; pointer movement stirs a soft energy wake that brightens
  * the strokes it passes through, then drifts and fades. Pressing on
- * empty (non-interactive) space ignites an expanding ripple that
- * travels along the lattice lines. Two layout modes: contained
+ * empty (non-interactive) space ignites a few glowing runners that
+ * crawl outward along the lattice edges, branching at random. Two
+ * layout modes: contained
  * (default — absolute, fills a positioned parent) and `page` (fixed
  * full-viewport backdrop behind page content).
  *
@@ -144,34 +153,37 @@ export class HpBackground extends LitElement {
     (x, y) => this.handleIgnite(x, y)
   );
 
-  /** Active ignition rings. Client coords are converted to canvas-
-   * local device px on the first loop frame that sees the ring
-   * (geometry is fresh there), then frozen — the ripple is viewport-
-   * attached like the rest of the field. */
-  private rings: Array<{
-    clientX: number;
-    clientY: number;
-    startAt: number;
-    x: number;
-    y: number;
-    placed: boolean;
-  }> = [];
+  /** Ignition runners — path logic lives in runners.ts; the element
+   * converts their page-space head segments to field space per
+   * frame, which keeps trails glued to the pattern across scroll. */
+  private readonly runners = new LatticeRunners();
 
   private resizeObserver?: ResizeObserver;
 
   // ── Sim-loop state ──────────────────────────────────────────────────
   /** rAF handle of the running sim loop; null while asleep. */
   private loopHandle: number | null = null;
-  /** performance.now() of the last splat — drives loop self-stop. */
-  private lastSplatAt = 0;
+  /** Accumulated *sim* time (sum of clamped dt) since the field
+   * last received energy. Drives the sleep check — sim time, not
+   * wall clock, so a tab-hide mid-wake can't strand a bright field
+   * (rAF pauses freeze both the field AND this accumulator). */
+  private simTimeSinceSplat = 0;
   /** performance.now() of the previous loop frame, for dt. */
   private lastFrameAt = 0;
   /** Canvas-local device-px position of the last splatted point;
    * NaN when the loop was asleep (prevents a stale segment). */
   private prevSplatX = Number.NaN;
   private prevSplatY = Number.NaN;
-  /** Frame intervals collected on the first wake for the adaptive
-   * demotion backstop; null once evaluated. */
+  /** Geometry snapshot from the previous loop frame — a change means
+   * splat coordinates jumped spaces, so prevSplat must resync
+   * (otherwise a resize / monitor-DPR move paints a phantom
+   * full-strength streak between unrelated points). */
+  private lastLoopCanvasW = 0;
+  private lastLoopCanvasH = 0;
+  private lastLoopDpr = 0;
+  /** Frame intervals collected over one contiguous wake for the
+   * adaptive demotion backstop; null once evaluated. Reset on every
+   * wake so cross-wake stalls can't poison the median. */
   private adaptiveSamples: number[] | null = [];
   /** True after adaptive demotion — a context restore must not
    * resurrect the GL path just to demote again. */
@@ -210,6 +222,17 @@ export class HpBackground extends LitElement {
       window.addEventListener("load", this.handleSettled, { once: true });
     }
     document.fonts?.ready.then(this.handleSettled);
+    // Reconnect after a DOM move: firstUpdated never re-fires for
+    // the same instance, so without this the disconnect teardown
+    // would leave a frozen canvas forever. Mirror the context-
+    // restore path (initGL re-routes to fallback on its own when
+    // demoted / software / GL-unavailable).
+    if (this.hasUpdated && !this.canvas) {
+      this.fallback = false;
+      this.removeAttribute("data-hp-fallback");
+      this.canvas = this.shadowRoot?.querySelector("canvas") ?? null;
+      this.initGL();
+    }
   }
 
   override disconnectedCallback(): void {
@@ -422,7 +445,13 @@ export class HpBackground extends LitElement {
         this.scheduleRedraw();
         return;
       }
-      this.lastSplatAt = performance.now();
+      // Proximity gate: a pointer that can't reach this instance's
+      // field must not wake its loop (page-wide pointermove would
+      // otherwise run sim+draw on every instance). A running loop is
+      // left to its own sim-time sleep.
+      if (this.loopHandle === null && !this.pointerWithinReach()) {
+        return;
+      }
       this.wakeLoop();
       return;
     }
@@ -434,26 +463,33 @@ export class HpBackground extends LitElement {
     this.style.setProperty("--hp-bg-y", `${this.pointer.mouseClientY - rect.top}px`);
   }
 
-  /** Ignition: a press on a non-interactive target launches an
-   * expanding energy ring from the press point. GL tier only — the
-   * CSS fallback has no sim to carry it — and suppressed under
-   * reduced motion (it is pure motion flourish). */
+  /** True when the given (or current) pointer position is close
+   * enough to the host rect to affect its field. */
+  private pointerWithinReach(clientX?: number, clientY?: number): boolean {
+    const px = clientX ?? this.pointer.mouseClientX;
+    const py = clientY ?? this.pointer.mouseClientY;
+    const rect = this.getBoundingClientRect();
+    const reach = this.splatRadius + PROXIMITY_MARGIN;
+    return (
+      px >= rect.left - reach &&
+      px <= rect.right + reach &&
+      py >= rect.top - reach &&
+      py <= rect.bottom + reach
+    );
+  }
+
+  /** Ignition: a press on a non-interactive target launches lattice
+   * runners from the press point. GL tier only — the CSS fallback
+   * has no sim to carry it — and suppressed under reduced motion
+   * (it is pure motion flourish). */
   private handleIgnite(clientX: number, clientY: number): void {
     if (this.fallback || !this.gl || this.pointer.reducedMotion) {
       return;
     }
-    if (this.rings.length >= MAX_RINGS) {
-      this.rings.shift();
+    if (!this.pointerWithinReach(clientX, clientY)) {
+      return;
     }
-    this.rings.push({
-      clientX,
-      clientY,
-      startAt: performance.now(),
-      x: 0,
-      y: 0,
-      placed: false,
-    });
-    this.lastSplatAt = performance.now();
+    this.runners.spawn(clientX + window.scrollX, clientY + window.scrollY, this.hexSize);
     this.wakeLoop();
   }
 
@@ -470,8 +506,14 @@ export class HpBackground extends LitElement {
       this.pendingFrame = null;
     }
     this.lastFrameAt = performance.now();
+    this.simTimeSinceSplat = 0;
     this.prevSplatX = Number.NaN;
     this.prevSplatY = Number.NaN;
+    // Adaptive sampling must come from one contiguous wake — a
+    // stall between wakes is not evidence about the renderer.
+    if (this.adaptiveSamples) {
+      this.adaptiveSamples = [];
+    }
     this.loopHandle = requestAnimationFrame(this.runLoopFrame);
   }
 
@@ -482,7 +524,7 @@ export class HpBackground extends LitElement {
     }
     this.prevSplatX = Number.NaN;
     this.prevSplatY = Number.NaN;
-    this.rings = [];
+    this.runners.clear();
   }
 
   /** Read a tuning knob: the CSS custom property wins when set and
@@ -506,15 +548,16 @@ export class HpBackground extends LitElement {
     }
     const geometry = reconcileCanvasGeometry(this, canvas, gl);
     if (!geometry.visible) {
-      // Nothing to paint (zero-sized host). Try again next frame
-      // while the field is nominally alive rather than dying mid-
-      // interaction.
-      this.loopHandle = requestAnimationFrame(this.runLoopFrame);
+      // Zero-sized host: nothing to paint and nothing visibly
+      // decaying — stop outright rather than spin rAF; activity
+      // re-wakes the loop the moment the host has area again.
+      this.stopLoop();
       return;
     }
-    // Clamp dt so a background-tab stall doesn't decay the field to
-    // nothing in one giant step (rAF pauses while hidden anyway).
-    const dt = Math.min(50, Math.max(1, now - this.lastFrameAt));
+    const rawDt = Math.max(1, now - this.lastFrameAt);
+    // Clamp the sim step so a stall doesn't decay the field to
+    // nothing in one giant leap.
+    const dt = Math.min(50, rawDt);
     this.lastFrameAt = now;
 
     const cs = getComputedStyle(this);
@@ -532,6 +575,21 @@ export class HpBackground extends LitElement {
     const visBottom = geometry.offBottom / dpr - window.scrollY;
     const curX = (this.pointer.mouseClientX - visLeft) * dpr;
     const curY = (visBottom - this.pointer.mouseClientY) * dpr;
+
+    // A geometry or DPR change moves the coordinate space under the
+    // stored prevSplat — resync instead of painting a phantom
+    // full-strength streak between unrelated points.
+    if (
+      canvas.width !== this.lastLoopCanvasW ||
+      canvas.height !== this.lastLoopCanvasH ||
+      dpr !== this.lastLoopDpr
+    ) {
+      this.lastLoopCanvasW = canvas.width;
+      this.lastLoopCanvasH = canvas.height;
+      this.lastLoopDpr = dpr;
+      this.prevSplatX = Number.NaN;
+      this.prevSplatY = Number.NaN;
+    }
 
     let splat = null;
     if (Number.isNaN(this.prevSplatX)) {
@@ -554,47 +612,37 @@ export class HpBackground extends LitElement {
       };
       this.prevSplatX = curX;
       this.prevSplatY = curY;
+      this.simTimeSinceSplat = 0;
     }
 
-    // Ignition rings: place on first sighting (geometry is fresh
-    // here), advance the wavefront, cull the expired. Active rings
-    // count as splats for the sleep window.
-    const activeRings = [];
-    if (this.rings.length > 0) {
-      const keep = [];
-      for (const ring of this.rings) {
-        const age = now - ring.startAt;
-        if (age > RING_LIFE_MS) {
-          continue;
-        }
-        if (!ring.placed) {
-          ring.x = (ring.clientX - visLeft) * dpr;
-          ring.y = (visBottom - ring.clientY) * dpr;
-          ring.placed = true;
-        }
-        keep.push(ring);
-        activeRings.push({
-          x: ring.x / FIELD_SCALE,
-          y: ring.y / FIELD_SCALE,
-          radius: ((age / 1000) * RING_SPEED * dpr) / FIELD_SCALE,
-          strength: RING_STRENGTH * (1 - age / RING_LIFE_MS),
-        });
-      }
-      this.rings = keep;
-      if (keep.length > 0) {
-        this.lastSplatAt = now;
-      }
+    // Ignition runners: advance heads along the lattice and convert
+    // their page-space movement segments into field space. Active
+    // runners keep the sleep accumulator pinned at zero.
+    let runnerSplats: RunnerSplat[] = [];
+    if (this.runners.active) {
+      const radius = Math.max(1.25, (RUNNER_RADIUS * dpr) / FIELD_SCALE);
+      runnerSplats = this.runners.update(dt, this.hexSize).map((seg) => ({
+        ax: ((seg.ax - window.scrollX - visLeft) * dpr) / FIELD_SCALE,
+        ay: ((visBottom - (seg.ay - window.scrollY)) * dpr) / FIELD_SCALE,
+        bx: ((seg.bx - window.scrollX - visLeft) * dpr) / FIELD_SCALE,
+        by: ((visBottom - (seg.by - window.scrollY)) * dpr) / FIELD_SCALE,
+        radius,
+        strength: RUNNER_STRENGTH,
+      }));
+      this.simTimeSinceSplat = 0;
     }
 
     this.field.ensureSize(gl, canvas.width, canvas.height);
-    this.field.step(gl, effDecay, splat, activeRings, (RING_THICKNESS * dpr) / FIELD_SCALE);
+    this.field.step(gl, effDecay, splat, runnerSplats);
     this.draw();
 
     // Adaptive backstop: a "hardware" renderer that can't sustain
-    // even this low-res sim gets treated as tier 2. Median over the
-    // first wake's samples, skipping the first two warm-up frames.
-    if (this.adaptiveSamples) {
-      this.adaptiveSamples.push(dt);
+    // even this low-res sim gets treated as tier 2. Median over one
+    // contiguous wake, warm-up frames skipped, outlier stalls
+    // discarded. Raw (unclamped) intervals — the clamp is a sim
+    // concern, not a measurement.
+    if (this.adaptiveSamples && rawDt <= ADAPTIVE_OUTLIER_MS) {
+      this.adaptiveSamples.push(rawDt);
       if (this.adaptiveSamples.length >= ADAPTIVE_SAMPLE_FRAMES) {
         const sorted = this.adaptiveSamples.slice(2).sort((a, b) => a - b);
         const median = sorted[Math.floor(sorted.length / 2)] ?? 0;
@@ -607,12 +655,14 @@ export class HpBackground extends LitElement {
     }
 
     // Sleep once every texel must be below the visible epsilon —
-    // computed analytically from the decay rate (starting from the
-    // sim's energy cap, which ignition rings can reach), no GPU
-    // readback.
+    // analytic from the decay rate starting at the sim's energy cap,
+    // measured in ACCUMULATED SIM TIME rather than wall clock so an
+    // rAF pause that freezes the field also freezes the countdown
+    // (a tab-hide can't strand a bright wake on screen).
+    this.simTimeSinceSplat += dt;
     const aliveMs =
       (Math.log(FIELD_EPSILON / FIELD_MAX) / Math.log(decayPerFrame)) * REFERENCE_FRAME_MS;
-    if (now - this.lastSplatAt < aliveMs) {
+    if (this.simTimeSinceSplat < aliveMs) {
       this.loopHandle = requestAnimationFrame(this.runLoopFrame);
     } else {
       this.stopLoop();
@@ -623,7 +673,9 @@ export class HpBackground extends LitElement {
    * string (see the three-tier decision). Sticky via `demoted`. */
   private demote(medianMs: number): void {
     this.demoted = true;
-    this.logRenderPath(`CSS tile (adaptive demotion: ${medianMs.toFixed(1)}ms median sim frame)`);
+    this.logRenderPath(
+      `CSS tile (adaptive demotion: ${medianMs.toFixed(1)}ms median frame interval)`
+    );
     if (this.canvas) {
       this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
       this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);

@@ -699,126 +699,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -1018,6 +898,126 @@
           "declaration": {
             "name": "sun",
             "module": "src/icons/sun.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
           }
         }
       ]
@@ -1265,6 +1265,415 @@
           "declaration": {
             "name": "hpBase",
             "module": "src/styles/hp-base.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/images/hp-avatar.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
+          "name": "HpAvatar",
+          "cssParts": [
+            {
+              "description": "The avatar wrapper",
+              "name": "avatar"
+            },
+            {
+              "description": "The fallback container holding the slotted initials",
+              "name": "fallback"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Fallback content shown when no src or on image load error",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead.",
+              "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "alt",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Alt text for the image. Required for non-decorative avatars.",
+              "attribute": "alt"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Avatar size — matches hp-hex sizes.",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "status",
+              "type": {
+                "text": "\"idle\" | \"loaded\" | \"error\""
+              },
+              "privacy": "private",
+              "default": "\"idle\"",
+              "description": "Internal: tracks image load lifecycle. `loaded` shows the image;\n`error` falls through to the slot fallback."
+            },
+            {
+              "kind": "field",
+              "name": "handleImageLoad",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleImageError",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead.",
+              "fieldName": "src"
+            },
+            {
+              "name": "alt",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Alt text for the image. Required for non-decorative avatars.",
+              "fieldName": "alt"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Avatar size — matches hp-hex sizes.",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-avatar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpAvatar",
+          "declaration": {
+            "name": "HpAvatar",
+            "module": "src/elements/images/hp-avatar.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-avatar",
+          "declaration": {
+            "name": "HpAvatar",
+            "module": "src/elements/images/hp-avatar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/images/hp-icon.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "SVG icon wrapper — sized via `size` (sm / md / lg), strokes inherit\n`currentColor`.",
+          "name": "HpIcon",
+          "slots": [
+            {
+              "description": "SVG content (stroke-based icon)",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
+              "attribute": "size",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-icon",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpIcon",
+          "declaration": {
+            "name": "HpIcon",
+            "module": "src/elements/images/hp-icon.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-icon",
+          "declaration": {
+            "name": "HpIcon",
+            "module": "src/elements/images/hp-icon.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/images/hp-pixel.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Pixel-art renderer. Draws a sequence of states (each a list of\n[x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;\nconfigurable palette and per-state delay drive a sprite-like\nanimation loop.",
+          "name": "HpPixel",
+          "members": [
+            {
+              "kind": "field",
+              "name": "art",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
+              "attribute": "art"
+            },
+            {
+              "kind": "field",
+              "name": "states",
+              "type": {
+                "text": "HpPixelStates | undefined"
+              },
+              "description": "Named position-set states. All states must have the same length."
+            },
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
+              "attribute": "state",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "palette",
+              "type": {
+                "text": "string[] | undefined"
+              },
+              "description": "Optional palette for multi-colour pixels. Indices come from\ndigits in ASCII art or the third element of a position tuple."
+            },
+            {
+              "kind": "field",
+              "name": "pixelSize",
+              "type": {
+                "text": "number"
+              },
+              "default": "3",
+              "description": "Pixel size in CSS px. Default `3`.",
+              "attribute": "pixel-size"
+            },
+            {
+              "kind": "field",
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required.",
+              "attribute": "interactive",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "recompute",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "applyStates",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "states",
+                  "type": {
+                    "text": "HpPixelStates"
+                  }
+                },
+                {
+                  "name": "pixelSize",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "applyStaticArt",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "art",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "pixelSize",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "applyHostSize",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "groups",
+                  "type": {
+                    "text": "HpPixelPosition[][]"
+                  }
+                },
+                {
+                  "name": "pixelSize",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "art",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
+              "fieldName": "art"
+            },
+            {
+              "name": "state",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
+              "fieldName": "state"
+            },
+            {
+              "name": "pixel-size",
+              "type": {
+                "text": "number"
+              },
+              "default": "3",
+              "description": "Pixel size in CSS px. Default `3`.",
+              "fieldName": "pixelSize"
+            },
+            {
+              "name": "interactive",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required.",
+              "fieldName": "interactive"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-pixel",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpPixel",
+          "declaration": {
+            "name": "HpPixel",
+            "module": "src/elements/images/hp-pixel.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-pixel",
+          "declaration": {
+            "name": "HpPixel",
+            "module": "src/elements/images/hp-pixel.ts"
           }
         }
       ]
@@ -3254,415 +3663,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/images/hp-avatar.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
-          "name": "HpAvatar",
-          "cssParts": [
-            {
-              "description": "The avatar wrapper",
-              "name": "avatar"
-            },
-            {
-              "description": "The fallback container holding the slotted initials",
-              "name": "fallback"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Fallback content shown when no src or on image load error",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "src",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead.",
-              "attribute": "src"
-            },
-            {
-              "kind": "field",
-              "name": "alt",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Alt text for the image. Required for non-decorative avatars.",
-              "attribute": "alt"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Avatar size — matches hp-hex sizes.",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "status",
-              "type": {
-                "text": "\"idle\" | \"loaded\" | \"error\""
-              },
-              "privacy": "private",
-              "default": "\"idle\"",
-              "description": "Internal: tracks image load lifecycle. `loaded` shows the image;\n`error` falls through to the slot fallback."
-            },
-            {
-              "kind": "field",
-              "name": "handleImageLoad",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleImageError",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "src",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead.",
-              "fieldName": "src"
-            },
-            {
-              "name": "alt",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Alt text for the image. Required for non-decorative avatars.",
-              "fieldName": "alt"
-            },
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Avatar size — matches hp-hex sizes.",
-              "fieldName": "size"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-avatar",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpAvatar",
-          "declaration": {
-            "name": "HpAvatar",
-            "module": "src/elements/images/hp-avatar.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-avatar",
-          "declaration": {
-            "name": "HpAvatar",
-            "module": "src/elements/images/hp-avatar.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/images/hp-icon.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "SVG icon wrapper — sized via `size` (sm / md / lg), strokes inherit\n`currentColor`.",
-          "name": "HpIcon",
-          "slots": [
-            {
-              "description": "SVG content (stroke-based icon)",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
-              "attribute": "size",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
-              "fieldName": "size"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-icon",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpIcon",
-          "declaration": {
-            "name": "HpIcon",
-            "module": "src/elements/images/hp-icon.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-icon",
-          "declaration": {
-            "name": "HpIcon",
-            "module": "src/elements/images/hp-icon.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/images/hp-pixel.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Pixel-art renderer. Draws a sequence of states (each a list of\n[x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;\nconfigurable palette and per-state delay drive a sprite-like\nanimation loop.",
-          "name": "HpPixel",
-          "members": [
-            {
-              "kind": "field",
-              "name": "art",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
-              "attribute": "art"
-            },
-            {
-              "kind": "field",
-              "name": "states",
-              "type": {
-                "text": "HpPixelStates | undefined"
-              },
-              "description": "Named position-set states. All states must have the same length."
-            },
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
-              "attribute": "state",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "palette",
-              "type": {
-                "text": "string[] | undefined"
-              },
-              "description": "Optional palette for multi-colour pixels. Indices come from\ndigits in ASCII art or the third element of a position tuple."
-            },
-            {
-              "kind": "field",
-              "name": "pixelSize",
-              "type": {
-                "text": "number"
-              },
-              "default": "3",
-              "description": "Pixel size in CSS px. Default `3`.",
-              "attribute": "pixel-size"
-            },
-            {
-              "kind": "field",
-              "name": "interactive",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required.",
-              "attribute": "interactive",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "recompute",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "applyStates",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "states",
-                  "type": {
-                    "text": "HpPixelStates"
-                  }
-                },
-                {
-                  "name": "pixelSize",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "applyStaticArt",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "art",
-                  "type": {
-                    "text": "string"
-                  }
-                },
-                {
-                  "name": "pixelSize",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "applyHostSize",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "groups",
-                  "type": {
-                    "text": "HpPixelPosition[][]"
-                  }
-                },
-                {
-                  "name": "pixelSize",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            }
-          ],
-          "attributes": [
-            {
-              "name": "art",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
-              "fieldName": "art"
-            },
-            {
-              "name": "state",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
-              "fieldName": "state"
-            },
-            {
-              "name": "pixel-size",
-              "type": {
-                "text": "number"
-              },
-              "default": "3",
-              "description": "Pixel size in CSS px. Default `3`.",
-              "fieldName": "pixelSize"
-            },
-            {
-              "name": "interactive",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required.",
-              "fieldName": "interactive"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-pixel",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpPixel",
-          "declaration": {
-            "name": "HpPixel",
-            "module": "src/elements/images/hp-pixel.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-pixel",
-          "declaration": {
-            "name": "HpPixel",
-            "module": "src/elements/images/hp-pixel.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/layout/hp-cluster.ts",
       "declarations": [
         {
@@ -5011,298 +5011,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/navigation/hp-link.ts",
       "declarations": [
         {
@@ -6171,6 +5879,298 @@
           "declaration": {
             "name": "HpTabPanel",
             "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
           }
         }
       ]
@@ -8639,6 +8639,218 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/status/hp-badge.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+          "name": "HpBadge",
+          "slots": [
+            {
+              "description": "Badge label or count",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "attribute": "active",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "fieldName": "tone"
+            },
+            {
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "fieldName": "active"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-badge",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBadge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-badge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/status/hp-tag.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
+          "name": "HpTag",
+          "cssParts": [
+            {
+              "description": "The dismiss button (when removable)",
+              "name": "remove"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Tag label",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "attribute": "removable",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "handleRemove",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleRemoveKey",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "description": "When the dismiss × is activated (click / Enter / Space)",
+              "name": "hp-tag-remove"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "fieldName": "removable"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tag",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpTag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/tether/hp-tether.ts",
       "declarations": [
         {
@@ -9250,218 +9462,6 @@
           "declaration": {
             "name": "HpTether",
             "module": "src/elements/tether/hp-tether.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/status/hp-badge.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-          "name": "HpBadge",
-          "slots": [
-            {
-              "description": "Badge label or count",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "attribute": "active",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "fieldName": "tone"
-            },
-            {
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "fieldName": "active"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-badge",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBadge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-badge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/status/hp-tag.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-          "name": "HpTag",
-          "cssParts": [
-            {
-              "description": "The dismiss button (when removable)",
-              "name": "remove"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Tag label",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "attribute": "removable",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "handleRemove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleRemoveKey",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When the dismiss × is activated (click / Enter / Space)",
-              "name": "hp-tag-remove"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "fieldName": "removable"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tag",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpTag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-tag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
           }
         }
       ]
@@ -10369,12 +10369,12 @@
         },
         {
           "kind": "variable",
-          "name": "MAX_RINGS",
+          "name": "MAX_RUNNER_SPLATS",
           "type": {
             "text": "number"
           },
-          "default": "4",
-          "description": "Maximum concurrent ignition rings — matches the shader's fixed\nuniform array. Older rings are dropped first."
+          "default": "8",
+          "description": "Maximum concurrent ignition-runner splats per step — matches the\nshader's fixed uniform array."
         },
         {
           "kind": "class",
@@ -10493,7 +10493,7 @@
             },
             {
               "kind": "field",
-              "name": "uRingsLoc",
+              "name": "uRunnerSegLoc",
               "type": {
                 "text": "WebGLUniformLocation | null"
               },
@@ -10502,7 +10502,7 @@
             },
             {
               "kind": "field",
-              "name": "uRingThicknessLoc",
+              "name": "uRunnerParamsLoc",
               "type": {
                 "text": "WebGLUniformLocation | null"
               },
@@ -10511,11 +10511,18 @@
             },
             {
               "kind": "field",
-              "name": "ringData",
+              "name": "runnerSegData",
               "privacy": "private",
               "readonly": true,
-              "default": "new Float32Array(MAX_RINGS * 4)",
-              "description": "Scratch buffer for the ring uniform array (4 × vec4)."
+              "default": "new Float32Array(MAX_RUNNER_SPLATS * 4)",
+              "description": "Scratch buffers for the runner uniform arrays."
+            },
+            {
+              "kind": "field",
+              "name": "runnerParamData",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new Float32Array(MAX_RUNNER_SPLATS * 2)"
             },
             {
               "kind": "field",
@@ -10626,17 +10633,12 @@
                   "description": "This frame's pointer splat, or null for none."
                 },
                 {
-                  "name": "rings",
+                  "name": "runners",
                   "default": "[]",
                   "type": {
-                    "text": "FieldRing[]"
+                    "text": "RunnerSplat[]"
                   },
-                  "description": "Active ignition rings (at most {@link MAX_RINGS});\n   *   pass an empty array for none.\n   * "
-                },
-                {
-                  "name": "ringThickness",
-                  "default": "1",
-                  "description": "Ring band gaussian half-width in field px."
+                  "description": "Ignition-runner head segments (at most\n   *   {@link MAX_RUNNER_SPLATS}); pass an empty array for none.\n   "
                 }
               ],
               "description": "Advance the simulation one step: read the current field, write\ndecay × diffusion + splat into the other texture, swap."
@@ -10709,9 +10711,9 @@
         },
         {
           "kind": "js",
-          "name": "MAX_RINGS",
+          "name": "MAX_RUNNER_SPLATS",
           "declaration": {
-            "name": "MAX_RINGS",
+            "name": "MAX_RUNNER_SPLATS",
             "module": "src/elements/layout/hp-background/field.ts"
           }
         },
@@ -10924,7 +10926,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites an expanding ripple that\ntravels along the lattice lines. Two layout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
+          "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
           "name": "HpBackground",
           "cssProperties": [
             {
@@ -11093,13 +11095,11 @@
             },
             {
               "kind": "field",
-              "name": "rings",
-              "type": {
-                "text": "Array<{\n    clientX: number;\n    clientY: number;\n    startAt: number;\n    x: number;\n    y: number;\n    placed: boolean;\n  }>"
-              },
+              "name": "runners",
               "privacy": "private",
-              "default": "[]",
-              "description": "Active ignition rings. Client coords are converted to canvas-\nlocal device px on the first loop frame that sees the ring\n(geometry is fresh there), then frozen — the ripple is viewport-\nattached like the rest of the field."
+              "readonly": true,
+              "default": "new LatticeRunners()",
+              "description": "Ignition runners — path logic lives in runners.ts; the element\nconverts their page-space head segments to field space per\nframe, which keeps trails glued to the pattern across scroll."
             },
             {
               "kind": "field",
@@ -11121,13 +11121,13 @@
             },
             {
               "kind": "field",
-              "name": "lastSplatAt",
+              "name": "simTimeSinceSplat",
               "type": {
                 "text": "number"
               },
               "privacy": "private",
               "default": "0",
-              "description": "performance.now() of the last splat — drives loop self-stop."
+              "description": "Accumulated *sim* time (sum of clamped dt) since the field\nlast received energy. Drives the sleep check — sim time, not\nwall clock, so a tab-hide mid-wake can't strand a bright field\n(rAF pauses freeze both the field AND this accumulator)."
             },
             {
               "kind": "field",
@@ -11152,13 +11152,41 @@
             },
             {
               "kind": "field",
+              "name": "lastLoopCanvasW",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0",
+              "description": "Geometry snapshot from the previous loop frame — a change means\nsplat coordinates jumped spaces, so prevSplat must resync\n(otherwise a resize / monitor-DPR move paints a phantom\nfull-strength streak between unrelated points)."
+            },
+            {
+              "kind": "field",
+              "name": "lastLoopCanvasH",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "lastLoopDpr",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
               "name": "adaptiveSamples",
               "type": {
                 "text": "number[] | null"
               },
               "privacy": "private",
               "default": "[]",
-              "description": "Frame intervals collected on the first wake for the adaptive\ndemotion backstop; null once evaluated."
+              "description": "Frame intervals collected over one contiguous wake for the\nadaptive demotion backstop; null once evaluated. Reset on every\nwake so cross-wake stalls can't poison the median."
             },
             {
               "kind": "field",
@@ -11304,6 +11332,33 @@
             },
             {
               "kind": "method",
+              "name": "pointerWithinReach",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "clientY",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "True when the given (or current) pointer position is close\nenough to the host rect to affect its field."
+            },
+            {
+              "kind": "method",
               "name": "handleIgnite",
               "privacy": "private",
               "return": {
@@ -11325,7 +11380,7 @@
                   }
                 }
               ],
-              "description": "Ignition: a press on a non-interactive target launches an\nexpanding energy ring from the press point. GL tier only — the\nCSS fallback has no sim to carry it — and suppressed under\nreduced motion (it is pure motion flourish)."
+              "description": "Ignition: a press on a non-interactive target launches lattice\nrunners from the press point. GL tier only — the CSS fallback\nhas no sim to carry it — and suppressed under reduced motion\n(it is pure motion flourish)."
             },
             {
               "kind": "method",
@@ -11825,6 +11880,90 @@
           "declaration": {
             "name": "RenderPass",
             "module": "src/elements/layout/hp-background/render.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/layout/hp-background/runners.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Owns every active runner across presses. Pure CPU-side path\nlogic — the element converts the emitted page-space segments to\nfield space and feeds them to the sim.",
+          "name": "LatticeRunners",
+          "members": [
+            {
+              "kind": "field",
+              "name": "runners",
+              "type": {
+                "text": "Runner[]"
+              },
+              "privacy": "private",
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "True while any head is still crawling.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "spawn",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pageX",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Press X in page CSS px."
+                },
+                {
+                  "name": "pageY",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Press Y in page CSS px."
+                },
+                {
+                  "name": "hexSize",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Lattice side length in CSS px."
+                }
+              ],
+              "description": "Launch runners from a press point."
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Drop every head (loop teardown)."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LatticeRunners",
+          "declaration": {
+            "name": "LatticeRunners",
+            "module": "src/elements/layout/hp-background/runners.ts"
           }
         }
       ]

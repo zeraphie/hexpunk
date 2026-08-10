@@ -27,9 +27,9 @@ export const FIELD_EPSILON = 0.004;
  * the starting energy. */
 export const FIELD_MAX = 1.5;
 
-/** Maximum concurrent ignition rings — matches the shader's fixed
- * uniform array. Older rings are dropped first. */
-export const MAX_RINGS = 4;
+/** Maximum concurrent ignition-runner splats per step — matches the
+ * shader's fixed uniform array. */
+export const MAX_RUNNER_SPLATS = 8;
 
 /** Sim fragment shader: one step of decay × diffusion plus a
  * segment-shaped splat from the previous to the current pointer
@@ -41,12 +41,12 @@ precision highp float;
 uniform sampler2D uField;
 uniform vec2 uFieldSize;
 uniform float uDecay;          // effective per-step decay (dt-normalized)
-uniform vec2 uSplatA;          // segment start, field px
-uniform vec2 uSplatB;          // segment end, field px
+uniform vec2 uSplatA;          // pointer segment start, field px
+uniform vec2 uSplatB;          // pointer segment end, field px
 uniform float uSplatRadius;    // gaussian radius, field px
 uniform float uSplatStrength;  // 0 disables the splat term
-uniform vec4 uRings[4];        // ignition rings: xy centre, z radius, w strength (field px)
-uniform float uRingThickness;  // gaussian half-width of the ring band, field px
+uniform vec4 uRunnerSeg[8];    // ignition runner segments: a.xy, b.xy (field px)
+uniform vec2 uRunnerParams[8]; // x = radius, y = strength (0 = inactive)
 
 out vec4 fragColor;
 
@@ -71,20 +71,24 @@ void main() {
   float w = texture(uField, uv - vec2(px.x, 0.0)).r;
   float energy = (c * 0.5 + (n + s + e + w) * 0.125) * uDecay;
 
+  // Pointer wake is CAPPED at 1.0: the hot tier (energy above 1.0)
+  // belongs exclusively to the ignition runners, so sustained cursor
+  // movement can saturate to bright but never reads hot. The max()
+  // keeps the cap from ever reducing energy already above it (a
+  // runner trail under the cursor).
   float d = sdSegment(gl_FragCoord.xy, uSplatA, uSplatB);
-  energy += uSplatStrength * exp(-(d * d) / max(uSplatRadius * uSplatRadius, 1e-4));
+  float pointerTerm = uSplatStrength * exp(-(d * d) / max(uSplatRadius * uSplatRadius, 1e-4));
+  energy = max(energy, min(energy + pointerTerm, 1.0));
 
-  // Ignition rings: an expanding annulus per active ring. The
-  // runtime pass only brightens where hex strokes exist, so the
-  // wavefront reads as light travelling along the lattice lines.
-  float th2 = max(uRingThickness * uRingThickness, 1e-4);
-  for (int i = 0; i < 4; i++) {
-    float rd = abs(distance(gl_FragCoord.xy, uRings[i].xy) - uRings[i].z);
-    energy += uRings[i].w * exp(-(rd * rd) / th2);
+  // Ignition runners: short glowing segments crawling along lattice
+  // edges (paths computed on the CPU). Only they may push energy
+  // into the hot tier.
+  for (int i = 0; i < 8; i++) {
+    float rd = sdSegment(gl_FragCoord.xy, uRunnerSeg[i].xy, uRunnerSeg[i].zw);
+    energy += uRunnerParams[i].y * exp(-(rd * rd) / max(uRunnerParams[i].x * uRunnerParams[i].x, 1e-4));
   }
 
-  // Headroom above 1.0 feeds the runtime's hot tier (ignition
-  // wavefront brighter than the pointer wake); the cap keeps
+  // Headroom above 1.0 feeds the runtime's hot tier; the cap keeps
   // half-float precision comfortable.
   fragColor = vec4(min(energy, 1.5), 0.0, 0.0, 1.0);
 }
@@ -100,10 +104,13 @@ export interface FieldSplat {
   strength: number;
 }
 
-/** One ignition ring for this step, all values in field pixels. */
-export interface FieldRing {
-  x: number;
-  y: number;
+/** One ignition-runner head segment for this step, all values in
+ * field pixels. */
+export interface RunnerSplat {
+  ax: number;
+  ay: number;
+  bx: number;
+  by: number;
   radius: number;
   strength: number;
 }
@@ -130,10 +137,11 @@ export class EnergyField {
   private uSplatBLoc: WebGLUniformLocation | null = null;
   private uSplatRadiusLoc: WebGLUniformLocation | null = null;
   private uSplatStrengthLoc: WebGLUniformLocation | null = null;
-  private uRingsLoc: WebGLUniformLocation | null = null;
-  private uRingThicknessLoc: WebGLUniformLocation | null = null;
-  /** Scratch buffer for the ring uniform array (4 × vec4). */
-  private readonly ringData = new Float32Array(MAX_RINGS * 4);
+  private uRunnerSegLoc: WebGLUniformLocation | null = null;
+  private uRunnerParamsLoc: WebGLUniformLocation | null = null;
+  /** Scratch buffers for the runner uniform arrays. */
+  private readonly runnerSegData = new Float32Array(MAX_RUNNER_SPLATS * 4);
+  private readonly runnerParamData = new Float32Array(MAX_RUNNER_SPLATS * 2);
 
   /** Field texture dimensions (device px / FIELD_SCALE). */
   width = 0;
@@ -161,8 +169,8 @@ export class EnergyField {
     this.uSplatBLoc = gl.getUniformLocation(this.program, "uSplatB");
     this.uSplatRadiusLoc = gl.getUniformLocation(this.program, "uSplatRadius");
     this.uSplatStrengthLoc = gl.getUniformLocation(this.program, "uSplatStrength");
-    this.uRingsLoc = gl.getUniformLocation(this.program, "uRings");
-    this.uRingThicknessLoc = gl.getUniformLocation(this.program, "uRingThickness");
+    this.uRunnerSegLoc = gl.getUniformLocation(this.program, "uRunnerSeg");
+    this.uRunnerParamsLoc = gl.getUniformLocation(this.program, "uRunnerParams");
     // R16F is only renderable with this extension; half-float LINEAR
     // filtering is core WebGL2.
     this.halfFloat = gl.getExtension("EXT_color_buffer_float") !== null;
@@ -220,16 +228,14 @@ export class EnergyField {
    * @param gl - A live WebGL2 context.
    * @param decay - Effective per-step decay (already dt-normalized).
    * @param splat - This frame's pointer splat, or null for none.
-   * @param rings - Active ignition rings (at most {@link MAX_RINGS});
-   *   pass an empty array for none.
-   * @param ringThickness - Ring band gaussian half-width in field px.
+   * @param runners - Ignition-runner head segments (at most
+   *   {@link MAX_RUNNER_SPLATS}); pass an empty array for none.
    */
   step(
     gl: WebGL2RenderingContext,
     decay: number,
     splat: FieldSplat | null,
-    rings: FieldRing[] = [],
-    ringThickness = 1
+    runners: RunnerSplat[] = []
   ): void {
     if (!this.program || !this.textures[0]) {
       return;
@@ -255,16 +261,19 @@ export class EnergyField {
       gl.uniform2f(this.uSplatBLoc, 0, 0);
       gl.uniform1f(this.uSplatRadiusLoc, 1);
     }
-    this.ringData.fill(0);
-    for (let i = 0; i < Math.min(rings.length, MAX_RINGS); i++) {
-      const ring = rings[i]!;
-      this.ringData[i * 4] = ring.x;
-      this.ringData[i * 4 + 1] = ring.y;
-      this.ringData[i * 4 + 2] = ring.radius;
-      this.ringData[i * 4 + 3] = ring.strength;
+    this.runnerSegData.fill(0);
+    this.runnerParamData.fill(0);
+    for (let i = 0; i < Math.min(runners.length, MAX_RUNNER_SPLATS); i++) {
+      const r = runners[i]!;
+      this.runnerSegData[i * 4] = r.ax;
+      this.runnerSegData[i * 4 + 1] = r.ay;
+      this.runnerSegData[i * 4 + 2] = r.bx;
+      this.runnerSegData[i * 4 + 3] = r.by;
+      this.runnerParamData[i * 2] = r.radius;
+      this.runnerParamData[i * 2 + 1] = r.strength;
     }
-    gl.uniform4fv(this.uRingsLoc, this.ringData);
-    gl.uniform1f(this.uRingThicknessLoc, ringThickness);
+    gl.uniform4fv(this.uRunnerSegLoc, this.runnerSegData);
+    gl.uniform2fv(this.uRunnerParamsLoc, this.runnerParamData);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     this.readIndex = write;
@@ -316,8 +325,8 @@ export class EnergyField {
     this.uSplatBLoc = null;
     this.uSplatRadiusLoc = null;
     this.uSplatStrengthLoc = null;
-    this.uRingsLoc = null;
-    this.uRingThicknessLoc = null;
+    this.uRunnerSegLoc = null;
+    this.uRunnerParamsLoc = null;
     this.width = 0;
     this.height = 0;
     this.readIndex = 0;
