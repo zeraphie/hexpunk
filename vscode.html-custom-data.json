@@ -480,20 +480,6 @@
       ]
     },
     {
-      "name": "hp-background",
-      "description": "Pointer-aware hex grid backdrop. Faint SVG hex tiles that brighten\nsoftly around the cursor. Positioned absolutely; drop inside any\npositioned container.",
-      "attributes": [
-        {
-          "name": "hex-size",
-          "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement."
-        },
-        {
-          "name": "pointer-radius",
-          "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200."
-        }
-      ]
-    },
-    {
       "name": "hp-cluster",
       "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
       "attributes": [
@@ -560,35 +546,6 @@
         {
           "name": "no-theme-toggle",
           "description": "Suppress the per-demo theme toggle."
-        }
-      ]
-    },
-    {
-      "name": "hp-grid",
-      "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tetherable",
-          "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on."
-        },
-        {
-          "name": "draggable",
-          "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put)."
         }
       ]
     },
@@ -1250,48 +1207,6 @@
       "attributes": []
     },
     {
-      "name": "hp-badge",
-      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-          "values": [
-            {
-              "name": "HpBadgeTone"
-            }
-          ]
-        },
-        {
-          "name": "active",
-          "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
-        }
-      ]
-    },
-    {
-      "name": "hp-tag",
-      "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone — same set as hp-cell.",
-          "values": [
-            {
-              "name": "HpTagTone"
-            }
-          ]
-        },
-        {
-          "name": "removable",
-          "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks dismiss action and dims the visual."
-        }
-      ]
-    },
-    {
       "name": "hp-tether",
       "description": "Arc-tether between two distant molecules — curved SVG bezier\nconnecting two hexes referenced by CSS selector (`from` / `to`).\nReroutes around obstacles, re-settles after drags.",
       "attributes": [
@@ -1376,6 +1291,106 @@
         {
           "name": "preview",
           "description": "When set, clicking the source plays the expand-and-shrink\nanimation in place without navigating. The overlay scales up\nto viewport coverage, holds, then scales back down. Use for\nshowcase demos and visual previews."
+        }
+      ]
+    },
+    {
+      "name": "hp-badge",
+      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+          "values": [
+            {
+              "name": "HpBadgeTone"
+            }
+          ]
+        },
+        {
+          "name": "active",
+          "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
+        }
+      ]
+    },
+    {
+      "name": "hp-tag",
+      "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone — same set as hp-cell.",
+          "values": [
+            {
+              "name": "HpTagTone"
+            }
+          ]
+        },
+        {
+          "name": "removable",
+          "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks dismiss action and dims the visual."
+        }
+      ]
+    },
+    {
+      "name": "hp-background",
+      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; strokes brighten softly around the cursor. Two layout modes:\ncontained (default — absolute, fills a positioned parent) and\n`page` (fixed full-viewport backdrop behind page content).",
+      "attributes": [
+        {
+          "name": "hex-size",
+          "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement."
+        },
+        {
+          "name": "pointer-radius",
+          "description": "Radius in pixels where the brighter strokes are fully visible\naround the cursor. Falls to transparent at the edge. Default 200."
+        }
+      ]
+    },
+    {
+      "name": "hp-grid",
+      "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "tetherable",
+          "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on."
+        },
+        {
+          "name": "draggable",
+          "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put)."
+        },
+        {
+          "name": "layout",
+          "description": "Layout mode.\n\n- `free` (default) respects each child's authored `q` / `r`\n attributes.\n- `spiral` runs an FFD bin-pack with a spiral-from-origin scan:\n children are sorted by mask size descending, then each is\n placed at the first free position picked from a scan ordered\n by axial distance from `(0, 0)` (ring 0, then ring 1's 6\n positions, ring 2's 12, …). Produces a tight roughly-square\n honeycomb — largest cluster anchors the centre, smaller ones\n nest around it with a ≥1-hex gap.\n- `rows` runs the same FFD pack but with a row-major scan capped\n at `WIDE_HALF_COLS` axial cells wide, so the layout grows as\n left-to-right rows that wrap downward — roughly-rectangular\n wide arrangement, ideal for full-page-width surfaces (component\n index pages) where the spiral's square shape leaves too much\n horizontal space unused.\n\nChildren publish their actual filled hexes via `data-fill-cells`\n(composite elements like `<hp-cluster>` set this on slotchange);\nchildren without it are treated as single-hex. The gap check\nuses hex-adjacency (the 6 axial neighbours) — not rectangular\nbbox padding — so non-symmetric clusters' empty corners stay\navailable for neighbours to tuck into.\n\nTriggered automatically on first render when set to `spiral` or\n`rows`, and re-runs when the attribute changes. Manual repack\nvia `.pack()`. Drag interactions stay live; calling `.pack()`\nagain re-runs the FFD pack from scratch (dragged positions are\nignored).",
+          "values": [
+            {
+              "name": "free"
+            },
+            {
+              "name": "spiral"
+            },
+            {
+              "name": "rows"
+            }
+          ]
         }
       ]
     }

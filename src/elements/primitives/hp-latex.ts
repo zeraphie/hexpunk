@@ -40,7 +40,7 @@ import { unsafeHTML } from "lit/directives/unsafe-html.js";
 // Side-effect imports — hp-background renders as a backdrop when
 // `block background` is set, and hp-copy renders as the source-copy
 // button when `block copyable` is set.
-import "../layout/hp-background.js";
+import "../layout/hp-background/index.js";
 import "./hp-copy.js";
 
 /** Signature for a consumer-registered renderer. Return an HTML

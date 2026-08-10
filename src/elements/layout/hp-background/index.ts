@@ -1,0 +1,322 @@
+/*
+  ─ hp-background ─
+
+  Pointer-aware hex backdrop rendered by WebGL2: a baked tile
+  sampled in shared page coordinates (one global grid, revealed
+  wherever an instance sits) with a cursor halo blended per
+  draw. This file is only lifecycle + wiring; each concern
+  lives in its sibling module.
+  (PLAN.hp-grid-smoothness.md § Steps › Step 3)
+*/
+
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+
+import { hpBase } from "../../../styles/hp-base.js";
+import { TilePipeline } from "./bake.js";
+import { applyFallbackTile } from "./fallback.js";
+import { reconcileCanvasGeometry } from "./geometry.js";
+import { acquireContext, isSoftwareRenderer } from "./gl.js";
+import { PointerTracker } from "./input.js";
+import { OFFSCREEN_MOUSE, RenderPass } from "./render.js";
+import { backgroundStyles } from "./styles.js";
+
+/**
+ * Pointer-aware hex grid backdrop. A faint hex pattern fills the
+ * host; strokes brighten softly around the cursor. Two layout modes:
+ * contained (default — absolute, fills a positioned parent) and
+ * `page` (fixed full-viewport backdrop behind page content).
+ *
+ * @cssproperty --hp-bg-stroke - Base stroke colour
+ * @cssproperty --hp-bg-stroke-bright - Cursor-halo stroke colour
+ * @cssproperty --hp-bg-faint-opacity - Base layer opacity (default 0.25)
+ * @cssproperty --hp-bg-bright-opacity - Halo layer opacity (default 0.3)
+ * @cssproperty --hp-bg-z - Stacking position in page mode (default -1)
+ */
+@customElement("hp-background")
+export class HpBackground extends LitElement {
+  /** Hex side length in pixels (centre-to-vertex). Smaller = denser
+   * pattern. Default 14 — reads as ambient texture, not a focal
+   * element. */
+  @property({ type: Number, attribute: "hex-size" })
+  hexSize = 14;
+
+  /** Radius in pixels where the brighter strokes are fully visible
+   * around the cursor. Falls to transparent at the edge. Default 200. */
+  @property({ type: Number, attribute: "pointer-radius" })
+  pointerRadius = 200;
+
+  // Page-backdrop mode is a pure CSS-driven attribute (`page`), handled
+  // entirely by the `:host([page])` style rule — NOT a reactive
+  // property. Deliberately not a `@property`:
+  //  1. The JS render path doesn't need it — reconcileCanvasGeometry
+  //     reads getBoundingClientRect(), which already reflects whatever
+  //     position the CSS applies, so the geometry math is identical in
+  //     both modes without branching on a flag.
+  //  2. A reflecting boolean property defaulting to `false` is a known
+  //     Lit + esbuild footgun: with `useDefineForClassFields: true`
+  //     (esbuild's default, independent of our tsconfig) the `= false`
+  //     field initializer shadows the decorator accessor and discards
+  //     an author-set `page` attribute on upgrade, then reflect
+  //     *removes* the attribute. A plain attribute sidesteps the whole
+  //     class, and aligns with the state-driven-styling convention.
+
+  /** True when WebGL2 init failed or the context was lost — the host
+   * renders the static SVG-data-URL fallback (Option C), reflected as
+   * a `data-hp-fallback` attribute for the CSS. */
+  @state() private fallback = false;
+
+  /** Cached canvas element handle, grabbed in `firstUpdated`. */
+  private canvas: HTMLCanvasElement | null = null;
+
+  /** Active WebGL2 context, null while in the fallback state. */
+  private gl: WebGL2RenderingContext | null = null;
+
+  /** Tier-2 flag: WebGL alive but software-rasterized (HW accel
+   * off). The halo is suppressed — pattern-only, same rendering as
+   * reduced motion — because per-pointermove fullscreen redraws crawl
+   * on software rasterizers. See the three-tier decision in the ADR. */
+  private softwareRenderer = false;
+
+  private readonly tile = new TilePipeline();
+  private readonly renderPass = new RenderPass();
+  private readonly pointer = new PointerTracker(() => this.scheduleRedraw());
+
+  private resizeObserver?: ResizeObserver;
+
+  /** Active matchMedia query watching for DPR changes. Re-created on
+   * each change (the query string embeds the current value, so any
+   * different DPR stops it matching). */
+  private dprMediaQuery: MediaQueryList | null = null;
+
+  /** Pending rAF handle for a coalesced redraw; null when none. */
+  private pendingFrame: number | null = null;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.setAttribute("aria-hidden", "true");
+    this.resizeObserver = new ResizeObserver(() => this.scheduleRedraw());
+    // Observe `this` (intrinsic size changes) plus the parent
+    // (ancestor-driven inset:0 growth doesn't always trip the
+    // observer on `this` alone).
+    this.resizeObserver.observe(this);
+    if (this.parentElement) {
+      this.resizeObserver.observe(this.parentElement);
+    }
+    this.pointer.connect();
+    // The pattern is page-attached (uOffset includes scroll), so
+    // scrolling changes what this viewport-bounded canvas should
+    // show. Passive + rAF-coalesced keeps it off the scroll critical
+    // path.
+    window.addEventListener("scroll", this.handleScroll, { passive: true });
+    // Final-settling triggers for late layout: 'load' fires once all
+    // resources are in; fonts.ready resolves after webfont swapping.
+    // Both can shift layout in ways ResizeObserver misses when the
+    // host's own bbox doesn't change immediately.
+    if (document.readyState !== "complete") {
+      window.addEventListener("load", this.handleSettled, { once: true });
+    }
+    document.fonts?.ready.then(this.handleSettled);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this.pendingFrame !== null) {
+      cancelAnimationFrame(this.pendingFrame);
+      this.pendingFrame = null;
+    }
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+    this.pointer.disconnect();
+    window.removeEventListener("scroll", this.handleScroll);
+    window.removeEventListener("load", this.handleSettled);
+    if (this.canvas) {
+      this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+      this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
+    }
+    if (this.dprMediaQuery) {
+      this.dprMediaQuery.removeEventListener("change", this.handleDprChange);
+      this.dprMediaQuery = null;
+    }
+    this.releaseGL();
+    this.canvas = null;
+  }
+
+  override firstUpdated(): void {
+    this.canvas = this.shadowRoot?.querySelector("canvas") ?? null;
+    this.initGL();
+    // Belt-and-braces: re-check on the next frame so post-firstUpdated
+    // layout settling (Astro hydration, shiki highlighting, fonts) is
+    // picked up even if no observer fires.
+    this.scheduleRedraw();
+  }
+
+  override updated(changed: Map<string, unknown>): void {
+    if (changed.has("hexSize")) {
+      if (this.fallback) {
+        applyFallbackTile(this, this.hexSize);
+      } else if (this.gl) {
+        this.rebake();
+      }
+    }
+  }
+
+  // ── GL lifecycle ────────────────────────────────────────────────────
+
+  private initGL(): void {
+    if (!this.canvas) {
+      return;
+    }
+    const gl = acquireContext(this.canvas);
+    if (!gl) {
+      this.enterFallback();
+      return;
+    }
+    this.gl = gl;
+    this.softwareRenderer = isSoftwareRenderer(gl);
+    this.pointer.suppressPointerScheduling = this.softwareRenderer;
+    // Remove + re-add so context-restore cycles don't accumulate
+    // duplicate listeners (the handlers are stable arrow refs).
+    this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
+    this.canvas.addEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.addEventListener("webglcontextrestored", this.handleContextRestored);
+    try {
+      this.tile.init(gl);
+      this.renderPass.init(gl);
+    } catch {
+      // Compile/link/allocation failure — rare on a healthy WebGL2
+      // context; degrade to the static tile.
+      this.releaseGL();
+      this.enterFallback();
+      return;
+    }
+    this.watchDpr();
+    this.rebake();
+    this.draw();
+  }
+
+  /** Bake (or re-bake) the tile; routes to the fallback if the FBO
+   * turns out incomplete (misbehaving driver). */
+  private rebake(): void {
+    if (!this.gl) {
+      return;
+    }
+    if (!this.tile.bake(this.gl, this.hexSize)) {
+      this.releaseGL();
+      this.enterFallback();
+      return;
+    }
+    this.scheduleRedraw();
+  }
+
+  /** Delete GL resources across both pipelines and drop the context
+   * ref. Safe after context loss (pipelines skip deletes when passed
+   * null). */
+  private releaseGL(): void {
+    this.tile.release(this.gl);
+    this.renderPass.release(this.gl);
+    this.gl = null;
+  }
+
+  private enterFallback(): void {
+    this.fallback = true;
+    this.setAttribute("data-hp-fallback", "");
+    applyFallbackTile(this, this.hexSize);
+  }
+
+  private readonly handleContextLost = (event: Event): void => {
+    // Default behaviour is a permanent loss; preventDefault asks for
+    // restoration. Show the fallback meanwhile so the host doesn't go
+    // blank. Pre-null `gl` so release skips (illegal) deletes against
+    // the lost context.
+    event.preventDefault();
+    this.gl = null;
+    this.releaseGL();
+    this.enterFallback();
+  };
+
+  private readonly handleContextRestored = (): void => {
+    // The original context object is gone; re-acquire and re-init.
+    this.fallback = false;
+    this.removeAttribute("data-hp-fallback");
+    this.initGL();
+  };
+
+  // ── Re-draw triggers ────────────────────────────────────────────────
+
+  private readonly handleScroll = (): void => {
+    this.scheduleRedraw();
+  };
+
+  private readonly handleSettled = (): void => {
+    this.scheduleRedraw();
+  };
+
+  private watchDpr(): void {
+    if (typeof window.matchMedia !== "function") {
+      return;
+    }
+    if (this.dprMediaQuery) {
+      this.dprMediaQuery.removeEventListener("change", this.handleDprChange);
+    }
+    const dpr = window.devicePixelRatio || 1;
+    this.dprMediaQuery = window.matchMedia(`(resolution: ${dpr}dppx)`);
+    this.dprMediaQuery.addEventListener("change", this.handleDprChange);
+  }
+
+  private readonly handleDprChange = (): void => {
+    if (this.gl && !this.fallback) {
+      // Backing store and tile both scale with DPR; the deferred draw
+      // reconciles the former, rebake refreshes the latter.
+      this.rebake();
+    }
+    // In fallback the SVG tile is DPR-independent; just re-arm.
+    this.watchDpr();
+  };
+
+  /** Coalesce redraws onto the next animation frame. Multiple
+   * triggers in one frame (resize + scroll + settle, say) collapse to
+   * a single draw that runs *after* layout settles — never
+   * synchronously inside an observer callback. */
+  private scheduleRedraw(): void {
+    if (this.pendingFrame !== null) {
+      return;
+    }
+    this.pendingFrame = requestAnimationFrame(() => {
+      this.pendingFrame = null;
+      this.draw();
+    });
+  }
+
+  private draw(): void {
+    const gl = this.gl;
+    if (!gl) {
+      return;
+    }
+    const geometry = reconcileCanvasGeometry(this, this.canvas, gl);
+    if (!geometry.visible) {
+      return;
+    }
+    const suppressHalo = this.softwareRenderer;
+    this.renderPass.draw(gl, this, {
+      geometry,
+      tile: this.tile,
+      mouseClientX: suppressHalo ? OFFSCREEN_MOUSE : this.pointer.effectiveClientX,
+      mouseClientY: suppressHalo ? OFFSCREEN_MOUSE : this.pointer.effectiveClientY,
+      pointerRadius: this.pointerRadius,
+    });
+  }
+
+  static override styles = [hpBase, backgroundStyles];
+
+  override render() {
+    return html`<canvas></canvas>`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hp-background": HpBackground;
+  }
+}
