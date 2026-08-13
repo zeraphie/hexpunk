@@ -172,6 +172,13 @@ export class HexEngine {
     return this.commit.committed;
   }
 
+  /** True while a tween or inertia glide is driving the camera —
+   * consumers gate zoom-threshold triggers on this so a passing
+   * animation never counts as user intent. */
+  get animating(): boolean {
+    return this.camera.animating;
+  }
+
   get tier(): number {
     return tierFor(hexWidth(this.options.hexSide) * this.camera.z, this.options.tierThresholds);
   }

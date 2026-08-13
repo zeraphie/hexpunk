@@ -701,7 +701,10 @@ import Layout from "../layouts/Layout.astro";
   /** Zoom-as-navigation: zooming a category past committed scale
    * with the cell in view opens it — no click required. */
   function maybeAutoCommit(zoom: number): void {
-    if (engine.committed) {
+    // Only a live user zoom counts as intent — a tween flying back
+    // out of a page passes through committed scale and must not
+    // re-open the cell it just left.
+    if (engine.committed || engine.animating) {
       return;
     }
     if (performance.now() - lastExitAt < RECOMMIT_COOLDOWN_MS) {
