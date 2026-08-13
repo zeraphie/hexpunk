@@ -7,9 +7,9 @@ import Layout from "../layouts/Layout.astro";
   <p class="pg-intro">
     The hex canvas engine (<code>src/engine/</code>) running live: a PixiJS-rendered hex
     field with a hand-rolled camera, DOM overlay cells that reveal more content as they
-    grow — identity, summary, dossier — and category cells that <em>commit</em> into a full
+    grow — identity, summary, dossier — and category cells that <em>dive</em> into a full
     page when you zoom all the way in. Drag empty space to pan, wheel to pan,
-    <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a committed page.
+    <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a dived page.
     Dossier cells (RELAY-07, SENTRY-K, ARCHIVE-3) are draggable — the bright hex shows
     where they'll snap; the category cells are pinned. The panel in the corner exercises
     the grid props one by one, and everything the interaction does is mirrored in the
@@ -53,8 +53,8 @@ import Layout from "../layouts/Layout.astro";
           </span>
         </div>
         <div class="pg-prop">
-          <span class="pg-prop-label">commit at</span>
-          <span class="pg-prop-options" id="pg-commit">
+          <span class="pg-prop-label">dive at</span>
+          <span class="pg-prop-options" id="pg-dive">
             <hp-button size="xs" data-value="0.45">45%</hp-button>
             <hp-button size="xs" data-value="0.55" aria-pressed="true">55%</hp-button>
             <hp-button size="xs" data-value="0.7">70%</hp-button>
@@ -80,7 +80,7 @@ import Layout from "../layouts/Layout.astro";
   <h2>Event log</h2>
   <p>
     The engine surfaces the same interaction events hp-grid consumers rely on today —
-    move, drop, bond, unbond, pan — plus commit open/close and layout repacks. Newest
+    move, drop, bond, unbond, pan — plus dive/surface and layout repacks. Newest
     first, capped at nine; a continuing pan updates its entry instead of flooding the
     list.
   </p>
@@ -487,7 +487,7 @@ import Layout from "../layouts/Layout.astro";
     type WorldRect,
   } from "../../../src/engine/index.ts";
   const TIER_THRESHOLDS = [100, 240, 520];
-  const RECOMMIT_COOLDOWN_MS = 600;
+  const REDIVE_COOLDOWN_MS = 600;
   /** Hex side the cell typography is designed against; other sizes
    * counter-scale through --pg-k so apparent text size is stable. */
   const BASE_HEX_SIDE = 64;
@@ -534,7 +534,7 @@ import Layout from "../layouts/Layout.astro";
     size: "sm" as SizeName,
     layout: "free" as LayoutName,
     draggable: true,
-    commitFraction: 0.55,
+    diveFraction: 0.55,
     instant: prefersReduced,
   };
 
@@ -542,8 +542,8 @@ import Layout from "../layouts/Layout.astro";
   let nodes: PlaygroundNode[] = [];
   let nodeById = new Map<string, PlaygroundNode>();
   let side = BASE_HEX_SIDE;
-  let committedNode: PlaygroundNode | null = null;
-  let lastExitAt = 0;
+  let divedNode: PlaygroundNode | null = null;
+  let lastSurfaceAt = 0;
   let booting = false;
 
   function hexSideFor(size: SizeName): number {
@@ -786,7 +786,7 @@ import Layout from "../layouts/Layout.astro";
     let t4 = "";
     if (def.kind === "category") {
       t2 = `<h2>${def.name}</h2><div class="pg-role">category · ${def.count} items</div><div class="pg-preview">${def.preview!.join("<br/>")}</div>`;
-      t3 = `<div class="pg-cap"><h2>${def.name}</h2><div class="pg-role">category · ${def.count} items</div></div><div class="pg-band" style="display:grid;place-content:center;text-align:center"><div class="pg-preview-mid">${def.preview!.join("<br/>")}</div></div><div class="pg-base"><span class="pg-hint">keep zooming to open ▸</span></div>`;
+      t3 = `<div class="pg-cap"><h2>${def.name}</h2><div class="pg-role">category · ${def.count} items</div></div><div class="pg-band" style="display:grid;place-content:center;text-align:center"><div class="pg-preview-mid">${def.preview!.join("<br/>")}</div></div><div class="pg-base"><span class="pg-hint">keep zooming to dive ▸</span></div>`;
       t4 = `<div class="pg-cap"><h2>RELAY-07 / ${def.name}</h2><div class="pg-role">${def.role}</div></div><div class="pg-band"><div class="pg-skel"><div class="pg-bar"></div><div class="pg-bar"></div><div class="pg-bar"></div><div class="pg-bar"></div><div class="pg-bar"></div></div><div class="pg-content">${def.page!}</div></div><div class="pg-base">esc or zoom out to close</div>`;
     } else {
       t2 = `<h2>${def.name}</h2><div class="pg-role">${def.role}</div><div class="pg-stats">${def.stats![0]![0]} ${def.stats![0]![1]} · ${def.stats![1]![0]} ${def.stats![1]![1]}</div>`;
@@ -797,20 +797,20 @@ import Layout from "../layouts/Layout.astro";
     return { ...def, cell, rect, el };
   }
 
-  /** Zoom-as-navigation: zooming a category past committed scale
+  /** Zoom-as-navigation: zooming a category past dived scale
    * with the cell in view opens it. Only a live user zoom counts
    * as intent — a tween flying back out of a page passes through
-   * committed scale and must not re-open the cell it just left. */
-  function maybeAutoCommit(zoom: number): void {
-    if (!engine || engine.committed || engine.animating) {
+   * dived scale and must not re-open the cell it just left. */
+  function maybeAutoDive(zoom: number): void {
+    if (!engine || engine.dived || engine.animating) {
       return;
     }
-    if (performance.now() - lastExitAt < RECOMMIT_COOLDOWN_MS) {
+    if (performance.now() - lastSurfaceAt < REDIVE_COOLDOWN_MS) {
       return;
     }
     const width = stage.clientWidth;
     const height = stage.clientHeight;
-    if (hexWidth(side) * zoom < width * settings.commitFraction) {
+    if (hexWidth(side) * zoom < width * settings.diveFraction) {
       return;
     }
     const cam = engine.cameraState;
@@ -821,19 +821,19 @@ import Layout from "../layouts/Layout.astro";
       const sx = node.rect.cx * cam.z + cam.x;
       const sy = node.rect.cy * cam.z + cam.y;
       if (sx > width * 0.2 && sx < width * 0.8 && sy > height * 0.1 && sy < height * 0.9) {
-        commitTo(node);
+        diveInto(node);
         return;
       }
     }
   }
 
-  function commitTo(node: PlaygroundNode): void {
+  function diveInto(node: PlaygroundNode): void {
     if (!engine) {
       return;
     }
-    committedNode = node;
-    logEvent("commit", `${node.name} opened`);
-    engine.commitTo(node.rect);
+    divedNode = node;
+    logEvent("dive", `into ${node.name}`);
+    engine.diveInto(node.rect);
     // pjax stand-in: the cap renders instantly from tier-1 data,
     // the band arrives after a simulated fetch.
     node.el.classList.add("pg-loading");
@@ -853,7 +853,7 @@ import Layout from "../layouts/Layout.astro";
     try {
       engine?.destroy();
       engine = null;
-      committedNode = null;
+      divedNode = null;
       overlay.innerHTML = "";
       const fresh = document.createElement("canvas");
       fresh.id = "pg-canvas";
@@ -875,7 +875,7 @@ import Layout from "../layouts/Layout.astro";
         minZoom: 0.2,
         maxZoom: 14,
         tierThresholds: TIER_THRESHOLDS,
-        commitFraction: settings.commitFraction,
+        diveFraction: settings.diveFraction,
         draggable: settings.draggable,
         instant: settings.instant,
         onOccupantPosition(id, wx, wy) {
@@ -920,19 +920,19 @@ import Layout from "../layouts/Layout.astro";
           hud.z.textContent = state.z.toFixed(2);
           hud.px.textContent = `${Math.round(hexWidth(side) * state.z)}px`;
           hud.cells.textContent = String(visibleCells);
-          hud.tier.textContent = engine.committed ? "4 (page)" : String(engine.tier);
-          const tier = engine.committed ? 4 : engine.tier;
+          hud.tier.textContent = engine.dived ? "4 (page)" : String(engine.tier);
+          const tier = engine.dived ? 4 : engine.tier;
           for (const node of nodes) {
-            node.el.dataset.tier = node === committedNode ? "4" : String(tier);
+            node.el.dataset.tier = node === divedNode ? "4" : String(tier);
           }
-          maybeAutoCommit(state.z);
+          maybeAutoDive(state.z);
         },
-        onCommitChange(committed) {
-          if (!committed) {
-            logEvent("commit", `${committedNode?.name ?? "?"} closed`);
-            committedNode?.el.classList.remove("pg-loading");
-            committedNode = null;
-            lastExitAt = performance.now();
+        onDiveChange(dived) {
+          if (!dived) {
+            logEvent("surface", `from ${divedNode?.name ?? "?"}`);
+            divedNode?.el.classList.remove("pg-loading");
+            divedNode = null;
+            lastSurfaceAt = performance.now();
           }
         },
       });
@@ -1037,10 +1037,10 @@ import Layout from "../layouts/Layout.astro";
     }
     logEvent("draggable", settings.draggable ? "host flag on" : "host flag off");
   });
-  wireGroup("pg-commit", (value) => {
-    settings.commitFraction = Number(value);
-    engine?.setCommitFraction(settings.commitFraction);
-    logEvent("commit at", `${Math.round(settings.commitFraction * 100)}% of viewport`);
+  wireGroup("pg-dive", (value) => {
+    settings.diveFraction = Number(value);
+    engine?.setDiveFraction(settings.diveFraction);
+    logEvent("dive at", `${Math.round(settings.diveFraction * 100)}% of viewport`);
   });
   wireGroup("pg-motion", (value) => {
     settings.instant = value === "instant" || prefersReduced;
@@ -1059,19 +1059,19 @@ import Layout from "../layouts/Layout.astro";
   });
   document.getElementById("pg-zoom-out")!.addEventListener("click", () => {
     if (engine) {
-      engine.exitCommit();
+      engine.surface();
       const [wx, wy] = viewCentreWorld();
       engine.flyTo(Math.max(0.2, engine.cameraState.z / 1.4), wx, wy);
     }
   });
   document.getElementById("pg-reset")!.addEventListener("click", () => {
-    engine?.exitCommit();
+    engine?.surface();
     engine?.flyTo(1, 0, 0);
   });
   let tourStep = 0;
   document.getElementById("pg-tour")!.addEventListener("click", () => {
     if (engine) {
-      engine.exitCommit();
+      engine.surface();
       const apparent = TOUR_APPARENT[tourStep % TOUR_APPARENT.length]!;
       tourStep++;
       engine.flyTo(apparent / hexWidth(side), 0, 0);

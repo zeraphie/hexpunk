@@ -1,55 +1,55 @@
 /*
-  ─ Commit controller ─
+  ─ Dive controller ─
 
-  "Hex becomes the page": committing a cell tweens the camera
-  until the cell's full-width band exceeds the viewport, locks
-  horizontal pan, and clamps vertical pan to the cell — reading
-  is scrolling, leaving is zooming out. The camera itself is the
+  "Dive into a hex": the camera tweens until the cell's
+  full-width band exceeds the viewport, locks horizontal pan,
+  and clamps vertical pan to the cell — reading is scrolling,
+  surfacing is zooming back out. The camera itself is the
   navigation transition.
 */
 import type { Camera } from "./camera.js";
 import type { CameraState, WorldRect } from "./types.js";
 
-/** Committed page width as a fraction of the viewport. */
+/** Dived page width as a fraction of the viewport. */
 const FIT_FRACTION = 0.94;
 
 /** Screen-edge padding (px) the clamp keeps around the page. */
 const EDGE_PADDING = 24;
 
-/** Zooming out past this fraction of the entry threshold ends the
- * commit — slightly under 1 so the exit needs a deliberate pull,
- * a stand-in until real hysteresis is tuned. */
-const EXIT_FRACTION = 0.9;
+/** Zooming out past this fraction of the dive threshold surfaces —
+ * slightly under 1 so leaving needs a deliberate pull, a stand-in
+ * until real hysteresis is tuned. */
+const SURFACE_FRACTION = 0.9;
 
-export interface CommitOptions {
+export interface DiveOptions {
   camera: Camera;
   viewport: () => { width: number; height: number };
-  /** Apparent-width fraction of the viewport that counts as
-   * committed scale — exit fires below `EXIT_FRACTION ×` this. */
-  commitFraction: number;
-  onExit: () => void;
+  /** Apparent-width fraction of the viewport that counts as dived
+   * scale — surfacing fires below `SURFACE_FRACTION ×` this. */
+  diveFraction: number;
+  onSurface: () => void;
 }
 
-export class CommitController {
+export class DiveController {
   /** Live-tunable: apparent-width viewport fraction that reads as
-   * committed scale — the exit threshold derives from it. */
-  commitFraction: number;
+   * dived scale — the surface threshold derives from it. */
+  diveFraction: number;
 
-  private readonly options: CommitOptions;
+  private readonly options: DiveOptions;
   private target: WorldRect | null = null;
   private returnTo: CameraState | null = null;
 
-  constructor(options: CommitOptions) {
+  constructor(options: DiveOptions) {
     this.options = options;
-    this.commitFraction = options.commitFraction;
+    this.diveFraction = options.diveFraction;
   }
 
-  get committed(): boolean {
+  get dived(): boolean {
     return this.target !== null;
   }
 
   /** Tween the camera onto `rect` and remember where we came from. */
-  enter(rect: WorldRect): void {
+  dive(rect: WorldRect): void {
     const { camera, viewport } = this.options;
     if (!this.target) {
       this.returnTo = camera.state;
@@ -64,8 +64,8 @@ export class CommitController {
     });
   }
 
-  /** Leave the page, flying back to the pre-commit camera. */
-  exit(): void {
+  /** Leave the page, flying back to the pre-dive camera. */
+  surface(): void {
     if (!this.target) {
       return;
     }
@@ -75,11 +75,11 @@ export class CommitController {
     if (returnTo) {
       this.options.camera.tweenTo(returnTo);
     }
-    this.options.onExit();
+    this.options.onSurface();
   }
 
   /** Width-lock + vertical clamp; centres content shorter than the
-   * viewport. Call after any committed-state pan or zoom. */
+   * viewport. Call after any dived-state pan or zoom. */
   clampPan(): void {
     if (!this.target) {
       return;
@@ -94,16 +94,16 @@ export class CommitController {
       minY > maxY ? height / 2 - rect.cy * camera.z : Math.min(maxY, Math.max(minY, camera.y));
   }
 
-  /** After a zoom change while committed: exit once the cell drops
-   * clearly below committed scale, else re-clamp. */
+  /** After a zoom change while dived: surface once the cell drops
+   * clearly below dived scale, else re-clamp. */
   handleZoom(): void {
     if (!this.target) {
       return;
     }
     const { camera, viewport } = this.options;
     const apparent = this.target.w * camera.z;
-    if (apparent < viewport().width * this.commitFraction * EXIT_FRACTION) {
-      this.exit();
+    if (apparent < viewport().width * this.diveFraction * SURFACE_FRACTION) {
+      this.surface();
     } else {
       this.clampPan();
     }

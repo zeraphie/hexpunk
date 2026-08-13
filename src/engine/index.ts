@@ -3,7 +3,7 @@
 
   Aesthetic-neutral pan/zoom hex world: Pixi field + float64
   camera + DOM overlay + semantic tiers + drag-snap occupancy +
-  commit navigation. hp-grid and future consumers (VTT) skin
+  dive navigation. hp-grid and future consumers (VTT) skin
   this; the engine never names a hexpunk token.
 
   Deliberately NOT exported from src/index.ts — pixi.js enters
@@ -11,7 +11,7 @@
   consumers that never render a grid never pay for it.
 */
 import { Camera } from "./camera.js";
-import { CommitController } from "./commit.js";
+import { DiveController } from "./dive.js";
 import { DragController, type DragEventDetail } from "./drag.js";
 import { FieldRenderer } from "./field.js";
 import { hexWidth } from "./lattice.js";
@@ -22,7 +22,7 @@ import { tierFor } from "./tiers.js";
 import type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
 
 export { Camera } from "./camera.js";
-export { CommitController } from "./commit.js";
+export { DiveController } from "./dive.js";
 export { DragController, type DragEventDetail } from "./drag.js";
 export { FieldRenderer } from "./field.js";
 export * from "./lattice.js";
@@ -51,8 +51,8 @@ export interface HexEngineOptions {
   maxZoom: number;
   /** Ascending apparent-width thresholds for semantic tiers. */
   tierThresholds: readonly number[];
-  /** Apparent-width viewport fraction that reads as committed. */
-  commitFraction?: number;
+  /** Apparent-width viewport fraction that reads as dived. */
+  diveFraction?: number;
   /** Host-level drag opt-in; per-occupant `draggable` overrides. */
   draggable?: boolean;
   /** Reduced-motion: animations jump instead of tweening. */
@@ -60,7 +60,7 @@ export interface HexEngineOptions {
   onTierChange?: (tier: number) => void;
   onHoverCell?: (cell: AxialCoord | null) => void;
   onCameraChange?: (state: CameraState, visibleCells: number) => void;
-  onCommitChange?: (committed: boolean) => void;
+  onDiveChange?: (dived: boolean) => void;
   onPan?: () => void;
   /** Reposition an occupant's visual during drag + settle. */
   onOccupantPosition?: (id: string, wx: number, wy: number) => void;
@@ -79,7 +79,7 @@ export class HexEngine {
   private readonly options: HexEngineOptions;
   private readonly camera: Camera;
   private readonly field: FieldRenderer;
-  private readonly commit: CommitController;
+  private readonly dive: DiveController;
   private readonly drag: DragController;
   private readonly gestures: GestureController;
   private readonly resizeObserver: ResizeObserver;
@@ -99,11 +99,11 @@ export class HexEngine {
       instant: options.instant,
       onChange: () => this.invalidate(),
     });
-    this.commit = new CommitController({
+    this.dive = new DiveController({
       camera: this.camera,
       viewport: () => ({ width: options.host.clientWidth, height: options.host.clientHeight }),
-      commitFraction: options.commitFraction ?? 0.55,
-      onExit: () => options.onCommitChange?.(false),
+      diveFraction: options.diveFraction ?? 0.55,
+      onSurface: () => options.onDiveChange?.(false),
     });
     this.drag = new DragController({
       occupancy: this.occupancy,
@@ -124,7 +124,7 @@ export class HexEngine {
       host: options.host,
       canvas: options.canvas,
       camera: this.camera,
-      commit: this.commit,
+      dive: this.dive,
       drag: this.drag,
       occupancy: this.occupancy,
       hexSide: options.hexSide,
@@ -149,7 +149,7 @@ export class HexEngine {
       requestAnimationFrame(() => {
         this.resizeQueued = false;
         this.field.resize(options.host.clientWidth, options.host.clientHeight);
-        this.commit.clampPan();
+        this.dive.clampPan();
         this.invalidate();
       });
     });
@@ -173,8 +173,8 @@ export class HexEngine {
     return this.camera.state;
   }
 
-  get committed(): boolean {
-    return this.commit.committed;
+  get dived(): boolean {
+    return this.dive.dived;
   }
 
   /** True while a tween or inertia glide is driving the camera —
@@ -212,9 +212,9 @@ export class HexEngine {
     this.invalidate();
   }
 
-  /** Live-tune the committed-scale threshold. */
-  setCommitFraction(fraction: number): void {
-    this.commit.commitFraction = fraction;
+  /** Live-tune the dived-scale threshold. */
+  setDiveFraction(fraction: number): void {
+    this.dive.diveFraction = fraction;
   }
 
   /** Fly the camera so the world point sits centred at `zoom`. */
@@ -236,13 +236,13 @@ export class HexEngine {
     this.invalidate();
   }
 
-  commitTo(rect: WorldRect): void {
-    this.commit.enter(rect);
-    this.options.onCommitChange?.(true);
+  diveInto(rect: WorldRect): void {
+    this.dive.enter(rect);
+    this.options.onDiveChange?.(true);
   }
 
-  exitCommit(): void {
-    this.commit.exit();
+  surface(): void {
+    this.dive.exit();
   }
 
   destroy(): void {
@@ -268,8 +268,8 @@ export class HexEngine {
     this.frameHandle = 0;
     const cameraMoving = this.camera.step(now);
     const dragSettling = this.drag.step(now);
-    if (this.commit.committed && !this.camera.animating) {
-      this.commit.clampPan();
+    if (this.dive.dived && !this.camera.animating) {
+      this.dive.clampPan();
     }
     const state = this.camera.state;
     const visible = this.field.render(state);

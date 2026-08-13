@@ -6,12 +6,12 @@
   ticker and break the zero-wakeups-at-idle contract. A
   pointerdown on a draggable occupant starts a drag; empty
   space pans. Wheel is Figma-grained: plain wheel pans (or
-  scrolls a committed page), ctrl/⌘ + wheel — including
+  scrolls a dived page), ctrl/⌘ + wheel — including
   trackpad pinch, which browsers deliver as exactly that —
   zooms at the cursor.
 */
 import type { Camera } from "./camera.js";
-import type { CommitController } from "./commit.js";
+import type { DiveController } from "./dive.js";
 import type { DragController } from "./drag.js";
 import { worldToAxial } from "./lattice.js";
 import type { OccupancyMap } from "./occupancy.js";
@@ -35,7 +35,7 @@ export interface GestureOptions {
   /** Element that owns pointer capture (the canvas). */
   canvas: HTMLElement;
   camera: Camera;
-  commit: CommitController;
+  dive: DiveController;
   drag: DragController;
   occupancy: OccupancyMap;
   hexSide: number;
@@ -87,7 +87,7 @@ export class GestureController {
   }
 
   private readonly handlePointerDown = (event: PointerEvent): void => {
-    const { camera, canvas, commit, drag, occupancy, hexSide, isDraggable, requestRender } =
+    const { camera, canvas, dive, drag, occupancy, hexSide, isDraggable, requestRender } =
       this.options;
     camera.stopAnimations();
     this.samples = [[event.clientX, event.clientY, performance.now()]];
@@ -99,7 +99,7 @@ export class GestureController {
     } catch {
       // no capture — gesture continues uncaptured
     }
-    if (!commit.committed) {
+    if (!dive.dived) {
       const [wx, wy] = this.pointerWorld(event);
       const occupant = occupancy.occupantAt(worldToAxial(wx, wy, hexSide));
       if (occupant && isDraggable(occupant)) {
@@ -114,7 +114,7 @@ export class GestureController {
   };
 
   private readonly handlePointerMove = (event: PointerEvent): void => {
-    const { camera, commit, drag, hexSide, onHover, onPan, requestRender } = this.options;
+    const { camera, dive, drag, hexSide, onHover, onPan, requestRender } = this.options;
     if (this.mode === null) {
       const [wx, wy] = this.pointerWorld(event);
       onHover(worldToAxial(wx, wy, hexSide));
@@ -126,9 +126,9 @@ export class GestureController {
       return;
     }
     const previous = this.samples[this.samples.length - 1]!;
-    if (commit.committed) {
+    if (dive.dived) {
       camera.panBy(0, event.clientY - previous[1]);
-      commit.clampPan();
+      dive.clampPan();
     } else {
       camera.panBy(event.clientX - previous[0], event.clientY - previous[1]);
       onPan?.();
@@ -155,7 +155,7 @@ export class GestureController {
       this.options.requestRender();
       return;
     }
-    if (this.options.commit.committed) {
+    if (this.options.dive.dived) {
       return;
     }
     const now = performance.now();
@@ -181,17 +181,17 @@ export class GestureController {
   };
 
   private readonly handleWheel = (event: WheelEvent): void => {
-    const { camera, commit } = this.options;
+    const { camera, dive } = this.options;
     event.preventDefault();
     camera.stopAnimations();
     if (event.ctrlKey || event.metaKey) {
       const clamped = Math.max(-WHEEL_DELTA_CLAMP, Math.min(WHEEL_DELTA_CLAMP, event.deltaY));
       const [sx, sy] = this.local(event);
       camera.zoomAt(sx, sy, Math.exp(-clamped * WHEEL_ZOOM_RATE));
-      commit.handleZoom();
-    } else if (commit.committed) {
+      dive.handleZoom();
+    } else if (dive.dived) {
       camera.panBy(0, -event.deltaY);
-      commit.clampPan();
+      dive.clampPan();
     } else {
       camera.panBy(-event.deltaX, -event.deltaY);
       this.options.onPan?.();
@@ -200,7 +200,7 @@ export class GestureController {
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") {
-      this.options.commit.exit();
+      this.options.dive.surface();
     }
   };
 }
