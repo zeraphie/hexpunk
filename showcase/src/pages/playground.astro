@@ -990,19 +990,31 @@ import Layout from "../layouts/Layout.astro";
    * A proper fit-to-shape label belongs to the form-atom rework;
    * this keeps the dev panel legible meanwhile. */
   function fitPanelLabels(): void {
+    // hp-cell pins the xs label to the --hp-typo-label-sm-* tokens
+    // inside its shadow (uppercase + tracking), so the fit must
+    // measure that exact face and override the size TOKEN — custom
+    // properties pierce the shadow where host font-size cannot.
     const measurer = document.createElement("canvas").getContext("2d")!;
     for (const button of document.querySelectorAll<HTMLElement>(".pg-hud hp-button")) {
-      const label = button.textContent?.trim() ?? "";
+      const label = (button.textContent?.trim() ?? "").toUpperCase();
       if (!label) {
         continue;
       }
       const style = getComputedStyle(button);
-      const base = Number.parseFloat(style.fontSize) || 12;
+      const family = style.getPropertyValue("--hp-typo-label-sm-font-family").trim() || "monospace";
+      const weight = style.getPropertyValue("--hp-typo-label-sm-font-weight").trim() || "400";
+      const base = Number.parseFloat(style.getPropertyValue("--hp-typo-label-sm-font-size")) || 12;
+      const trackingRaw = style.getPropertyValue("--hp-typo-label-sm-letter-spacing").trim();
+      const tracking = trackingRaw.endsWith("em")
+        ? Number.parseFloat(trackingRaw) * base
+        : Number.parseFloat(trackingRaw) || 0;
       const safeWidth = (Number.parseFloat(style.width) || 32) * 0.8;
-      measurer.font = `${base}px ${style.fontFamily}`;
-      const textWidth = measurer.measureText(label).width;
+      measurer.font = `${weight} ${base}px ${family}`;
+      const textWidth = measurer.measureText(label).width + tracking * label.length;
       if (textWidth > safeWidth) {
-        button.style.fontSize = `${Math.max(6, Math.floor(base * (safeWidth / textWidth)))}px`;
+        // em tracking shrinks with the font, so one linear pass fits.
+        const fitted = Math.max(6, Math.floor(base * (safeWidth / textWidth)));
+        button.style.setProperty("--hp-typo-label-sm-font-size", `${fitted}px`);
       }
     }
   }
