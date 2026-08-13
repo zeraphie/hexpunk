@@ -26,13 +26,16 @@ The TypeScript + Lit adaptation of the shared style guide (root
      Anything else is deleted: narration of what the code already
      says, waffle, and references to anything outside the repo (chat
      artifacts, removed code). Explanations longer than a few lines
-     belong in DESIGN.md or the driving ADR — link the section.
+     belong in DESIGN.md — link the section. **Never reference plan
+     / ADR files or their phase/step/question labels from code or
+     other shipped text — plans are temporary; the comment must
+     carry the reasoning itself.**
      CEM-facing JSDoc (below) is API surface, not commentary — it
      follows its own rule.
 - Non-obvious modules open with an intent preamble: box-drawing
-  title rule, then tapered prose (each line slightly shorter),
-  ending on the DESIGN.md / ADR reference. Max ~6 prose lines;
-  trivial modules get nothing.
+  title rule, then tapered prose (each line slightly shorter). A
+  DESIGN.md section link may close it when one exists — never a
+  plan/ADR file. Max ~6 prose lines; trivial modules get nothing.
 
   ```
   /*
@@ -42,7 +45,6 @@ The TypeScript + Lit adaptation of the shared style guide (root
     coordinates, so adjacent instances read as windows onto
     one continuous global hex grid — no seam at element
     boundaries.
-    (PLAN.hp-grid-smoothness.md § Decisions)
   */
   ```
 

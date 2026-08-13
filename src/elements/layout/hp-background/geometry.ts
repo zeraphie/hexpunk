@@ -6,7 +6,6 @@
   JS-repositioned on scroll, and self-corrects its size on
   every draw. Break any one and software compositors (HW
   accel off) show blank bands or leading-edge flashes.
-  (PLAN.hp-grid-smoothness.md § Steps › Step 3)
 */
 
 /** Result of a geometry reconciliation pass. `offLeft` / `offBottom`

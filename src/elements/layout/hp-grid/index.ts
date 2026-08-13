@@ -11,8 +11,7 @@
 // axially-adjacent neighbours before vs. after the move and fires
 // `hp-grid-bond` for each newly-bonded pair, `hp-grid-unbond` for
 // each broken bond. Keyboard alternative, drag-overlay reveal, and
-// multi-cell footprints are still deferred to follow-up passes — see
-// PLAN.md's spatial-primitives stage.
+// multi-cell footprints are still deferred to follow-up passes.
 //
 // **`drag-handle` attribute** (on a [q][r] child): optional CSS
 // selector that restricts where a drag can be initiated within that
