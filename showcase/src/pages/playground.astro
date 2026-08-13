@@ -1,5 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { move, play, rows3, shell, zap } from "../../../src/icons/index.ts";
+
+const ICON_SVG_ATTRS = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  "aria-hidden": "true",
+};
 ---
 
 <Layout title="Playground">
@@ -40,9 +51,15 @@ import Layout from "../layouts/Layout.astro";
         <div class="pg-prop">
           <span class="pg-prop-label">layout</span>
           <span class="pg-prop-options" id="pg-layout">
-            <hp-button size="xs" data-value="free" aria-pressed="true">free</hp-button>
-            <hp-button size="xs" data-value="spiral">spiral</hp-button>
-            <hp-button size="xs" data-value="rows">rows</hp-button>
+            <hp-button size="xs" data-value="free" aria-pressed="true" aria-label="free" title="free">
+              <svg {...ICON_SVG_ATTRS} set:html={move} />
+            </hp-button>
+            <hp-button size="xs" data-value="spiral" aria-label="spiral" title="spiral">
+              <svg {...ICON_SVG_ATTRS} set:html={shell} />
+            </hp-button>
+            <hp-button size="xs" data-value="rows" aria-label="rows" title="rows">
+              <svg {...ICON_SVG_ATTRS} set:html={rows3} />
+            </hp-button>
           </span>
         </div>
         <div class="pg-prop">
@@ -63,8 +80,12 @@ import Layout from "../layouts/Layout.astro";
         <div class="pg-prop">
           <span class="pg-prop-label">motion</span>
           <span class="pg-prop-options" id="pg-motion">
-            <hp-button size="xs" data-value="animated" aria-pressed="true">animated</hp-button>
-            <hp-button size="xs" data-value="instant">instant</hp-button>
+            <hp-button size="xs" data-value="animated" aria-pressed="true" aria-label="animated" title="animated">
+              <svg {...ICON_SVG_ATTRS} set:html={play} />
+            </hp-button>
+            <hp-button size="xs" data-value="instant" aria-label="instant" title="instant">
+              <svg {...ICON_SVG_ATTRS} set:html={zap} />
+            </hp-button>
           </span>
         </div>
         <div class="pg-prop">
@@ -156,6 +177,11 @@ import Layout from "../layouts/Layout.astro";
   .pg-prop-options {
     display: flex;
     gap: 0.25rem;
+  }
+  .pg-prop-options hp-button svg {
+    display: block;
+    width: 14px;
+    height: 14px;
   }
 
   .pg-events {

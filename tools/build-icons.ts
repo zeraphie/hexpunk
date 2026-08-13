@@ -17,7 +17,18 @@ import { resolve } from "node:path";
 
 /** Lucide icon names to mirror, kebab-case as on lucide.dev.
  *  Each entry produces `src/icons/<name>.ts`. */
-const ICONS_TO_MIRROR = ["copy", "moon", "scan", "search", "sun"];
+const ICONS_TO_MIRROR = [
+  "copy",
+  "moon",
+  "move",
+  "play",
+  "rows-3",
+  "scan",
+  "search",
+  "shell",
+  "sun",
+  "zap",
+];
 
 /** Local icon names — sourced from `tools/icons/<name>.svg` instead of
  *  Lucide. Used for brand icons (e.g. GitHub) that Lucide dropped in
@@ -49,7 +60,9 @@ function extractInner(svg: string): string {
 }
 
 function toCamel(name: string): string {
-  return name.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  // Digits count: "rows-3" must emit `rows3`, not the invalid
+  // identifier `rows-3`.
+  return name.replace(/-([a-z0-9])/g, (_, c: string) => c.toUpperCase());
 }
 
 const ALL_ICONS = [...ICONS_TO_MIRROR, ...LOCAL_ICONS].sort();

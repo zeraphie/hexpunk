@@ -2,6 +2,11 @@
 export { copy } from "./copy.js";
 export { github } from "./github.js";
 export { moon } from "./moon.js";
+export { move } from "./move.js";
+export { play } from "./play.js";
+export { rows3 } from "./rows-3.js";
 export { scan } from "./scan.js";
 export { search } from "./search.js";
+export { shell } from "./shell.js";
 export { sun } from "./sun.js";
+export { zap } from "./zap.js";
