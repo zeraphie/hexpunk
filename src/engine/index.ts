@@ -72,6 +72,10 @@ export interface HexEngineOptions {
 }
 
 export class HexEngine {
+  /** Host-level drag opt-in, live-tunable; per-occupant
+   * `draggable` overrides keep winning either way. */
+  draggable: boolean;
+
   private readonly options: HexEngineOptions;
   private readonly camera: Camera;
   private readonly field: FieldRenderer;
@@ -88,6 +92,7 @@ export class HexEngine {
   private constructor(options: HexEngineOptions, field: FieldRenderer) {
     this.options = options;
     this.field = field;
+    this.draggable = options.draggable ?? false;
     this.camera = new Camera({
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
@@ -123,7 +128,7 @@ export class HexEngine {
       drag: this.drag,
       occupancy: this.occupancy,
       hexSide: options.hexSide,
-      isDraggable: (id) => this.draggableOverrides.get(id) ?? options.draggable ?? false,
+      isDraggable: (id) => this.draggableOverrides.get(id) ?? this.draggable,
       onHover: (cell) => {
         this.field.setHighlight(cell);
         this.options.onHoverCell?.(cell);
@@ -205,6 +210,11 @@ export class HexEngine {
   setSkin(skin: EngineSkin): void {
     this.field.setSkin(skin);
     this.invalidate();
+  }
+
+  /** Live-tune the committed-scale threshold. */
+  setCommitFraction(fraction: number): void {
+    this.commit.commitFraction = fraction;
   }
 
   /** Fly the camera so the world point sits centred at `zoom`. */

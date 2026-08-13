@@ -31,12 +31,17 @@ export interface CommitOptions {
 }
 
 export class CommitController {
+  /** Live-tunable: apparent-width viewport fraction that reads as
+   * committed scale — the exit threshold derives from it. */
+  commitFraction: number;
+
   private readonly options: CommitOptions;
   private target: WorldRect | null = null;
   private returnTo: CameraState | null = null;
 
   constructor(options: CommitOptions) {
     this.options = options;
+    this.commitFraction = options.commitFraction;
   }
 
   get committed(): boolean {
@@ -95,9 +100,9 @@ export class CommitController {
     if (!this.target) {
       return;
     }
-    const { camera, viewport, commitFraction } = this.options;
+    const { camera, viewport } = this.options;
     const apparent = this.target.w * camera.z;
-    if (apparent < viewport().width * commitFraction * EXIT_FRACTION) {
+    if (apparent < viewport().width * this.commitFraction * EXIT_FRACTION) {
       this.exit();
     } else {
       this.clampPan();

@@ -11,8 +11,9 @@ import Layout from "../layouts/Layout.astro";
     page when you zoom all the way in. Drag empty space to pan, wheel to pan,
     <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a committed page.
     Dossier cells (RELAY-07, SENTRY-K, ARCHIVE-3) are draggable — the bright hex shows
-    where they'll snap; the category cells are pinned. Everything the interaction does is
-    mirrored in the event log below.
+    where they'll snap; the category cells are pinned. The panel in the corner exercises
+    the grid props one by one, and everything the interaction does is mirrored in the
+    event log below.
   </p>
 
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
@@ -27,14 +28,61 @@ import Layout from "../layouts/Layout.astro";
         <hp-button size="xs" id="pg-reset">reset</hp-button>
         <hp-button size="xs" id="pg-tour">tour</hp-button>
       </div>
+      <div class="pg-props">
+        <div class="pg-prop">
+          <span class="pg-prop-label">size</span>
+          <span class="pg-prop-options" id="pg-size">
+            <hp-button size="xs" data-value="sm" aria-pressed="true">sm</hp-button>
+            <hp-button size="xs" data-value="md">md</hp-button>
+            <hp-button size="xs" data-value="lg">lg</hp-button>
+          </span>
+        </div>
+        <div class="pg-prop">
+          <span class="pg-prop-label">layout</span>
+          <span class="pg-prop-options" id="pg-layout">
+            <hp-button size="xs" data-value="free" aria-pressed="true">free</hp-button>
+            <hp-button size="xs" data-value="spiral">spiral</hp-button>
+            <hp-button size="xs" data-value="rows">rows</hp-button>
+          </span>
+        </div>
+        <div class="pg-prop">
+          <span class="pg-prop-label">draggable</span>
+          <span class="pg-prop-options" id="pg-draggable">
+            <hp-button size="xs" data-value="on" aria-pressed="true">on</hp-button>
+            <hp-button size="xs" data-value="off">off</hp-button>
+          </span>
+        </div>
+        <div class="pg-prop">
+          <span class="pg-prop-label">commit at</span>
+          <span class="pg-prop-options" id="pg-commit">
+            <hp-button size="xs" data-value="0.45">45%</hp-button>
+            <hp-button size="xs" data-value="0.55" aria-pressed="true">55%</hp-button>
+            <hp-button size="xs" data-value="0.7">70%</hp-button>
+          </span>
+        </div>
+        <div class="pg-prop">
+          <span class="pg-prop-label">motion</span>
+          <span class="pg-prop-options" id="pg-motion">
+            <hp-button size="xs" data-value="animated" aria-pressed="true">animated</hp-button>
+            <hp-button size="xs" data-value="instant">instant</hp-button>
+          </span>
+        </div>
+        <div class="pg-prop">
+          <span class="pg-prop-label">tetherable</span>
+          <span class="pg-prop-options">
+            <hp-button size="xs" disabled>soon</hp-button>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 
   <h2>Event log</h2>
   <p>
     The engine surfaces the same interaction events hp-grid consumers rely on today —
-    move, drop, bond, unbond, pan — plus commit open/close. Newest first, capped at nine;
-    a continuing pan updates its entry instead of flooding the list.
+    move, drop, bond, unbond, pan — plus commit open/close and layout repacks. Newest
+    first, capped at nine; a continuing pan updates its entry instead of flooding the
+    list.
   </p>
   <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
 </Layout>
@@ -73,7 +121,7 @@ import Layout from "../layouts/Layout.astro";
     top: 0.75rem;
     left: 0.75rem;
     z-index: 1;
-    padding: 0.5rem 0.9rem;
+    padding: 0.5rem 0.9rem 0.7rem;
     background: color-mix(in srgb, var(--hp-surface-container-lowest) 85%, transparent);
     border: 1px solid var(--hp-outline-variant);
     font-size: 0.85rem;
@@ -87,6 +135,27 @@ import Layout from "../layouts/Layout.astro";
     display: flex;
     gap: 0.3rem;
     margin-top: 0.35rem;
+  }
+  .pg-props {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 0.6rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--hp-outline-faint);
+  }
+  .pg-prop {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .pg-prop-label {
+    color: var(--hp-on-surface-variant);
+    font-size: 0.75rem;
+    min-width: 4.6rem;
+  }
+  .pg-prop-options {
+    display: flex;
+    gap: 0.25rem;
   }
 
   .pg-events {
@@ -116,7 +185,11 @@ import Layout from "../layouts/Layout.astro";
     color: var(--hp-on-surface-variant);
   }
 
-  /* ── overlay cells: world-unit layout, hex clip, tier reveal ── */
+  /* ── overlay cells: world-unit layout, hex clip, tier reveal ──
+     Cell boxes are sized in world units from the live hex side;
+     tier content is designed against the base side and counter-
+     scaled via --pg-k so its APPARENT size is identical at every
+     `size` setting. */
   .pg-cell {
     position: absolute;
     clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
@@ -142,7 +215,12 @@ import Layout from "../layouts/Layout.astro";
   }
   .pg-tier {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: calc(100% / var(--pg-k, 1));
+    height: calc(100% / var(--pg-k, 1));
+    transform: scale(var(--pg-k, 1));
+    transform-origin: 0 0;
     opacity: 0;
     transition: opacity 160ms ease;
   }
@@ -404,14 +482,33 @@ import Layout from "../layouts/Layout.astro";
     placeCell,
     readTokenColor,
     ThemeWatcher,
+    type AxialCoord,
     type EngineSkin,
     type WorldRect,
   } from "../../../src/engine/index.ts";
+  import {
+    markClaimed,
+    type FillMask,
+  } from "../../../src/elements/layout/hp-grid/layouts/index.ts";
+  import { findSpiralPosition } from "../../../src/elements/layout/hp-grid/layouts/spiral.ts";
+  import { findRowsPosition } from "../../../src/elements/layout/hp-grid/layouts/rows.ts";
 
-  const HEX_SIDE = 64;
   const TIER_THRESHOLDS = [100, 240, 520];
-  const COMMIT_FRACTION = 0.55;
   const RECOMMIT_COOLDOWN_MS = 600;
+  /** Hex side the cell typography is designed against; other sizes
+   * counter-scale through --pg-k so apparent text size is stable. */
+  const BASE_HEX_SIDE = 64;
+  /** Row-major pack width for the six demo cells — two rows. */
+  const ROWS_HALF_COLS = 4;
+  const SINGLE_MASK: FillMask = [{ q: 0, r: 0 }];
+  /** Fallback hex-cell widths when the tokens are unavailable. */
+  const FALLBACK_CELL_WIDTH = { sm: 100, md: 180, lg: 320 };
+  /** Tour stops as APPARENT hex widths, so the ride through the
+   * tiers feels identical at every `size` setting. */
+  const TOUR_APPARENT = [110, 180, 350, 900, 110];
+
+  type SizeName = "sm" | "md" | "lg";
+  type LayoutName = "free" | "spiral" | "rows";
 
   interface PlaygroundNode {
     kind: "dossier" | "category";
@@ -424,12 +521,12 @@ import Layout from "../layouts/Layout.astro";
     count?: number;
     preview?: string[];
     page?: string;
+    cell: AxialCoord;
     rect: WorldRect;
     el: HTMLElement;
   }
 
   const stage = document.getElementById("pg-stage")!;
-  const canvas = document.getElementById("pg-canvas") as HTMLCanvasElement;
   const overlay = document.getElementById("pg-overlay")!;
   const hud = {
     z: document.getElementById("pg-z")!,
@@ -437,6 +534,31 @@ import Layout from "../layouts/Layout.astro";
     tier: document.getElementById("pg-tier")!,
     cells: document.getElementById("pg-cells")!,
   };
+  const eventList = document.getElementById("pg-events")!;
+  let canvas = document.getElementById("pg-canvas") as HTMLCanvasElement;
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const settings = {
+    size: "sm" as SizeName,
+    layout: "free" as LayoutName,
+    draggable: true,
+    commitFraction: 0.55,
+    instant: prefersReduced,
+  };
+
+  let engine: HexEngine | null = null;
+  let nodes: PlaygroundNode[] = [];
+  let nodeById = new Map<string, PlaygroundNode>();
+  let side = BASE_HEX_SIDE;
+  let committedNode: PlaygroundNode | null = null;
+  let lastExitAt = 0;
+  let booting = false;
+
+  function hexSideFor(size: SizeName): number {
+    const raw = getComputedStyle(stage).getPropertyValue(`--hp-hex-cell-${size}`);
+    const width = Number.parseFloat(raw) || FALLBACK_CELL_WIDTH[size];
+    return width / Math.sqrt(3);
+  }
 
   function buildSkin(): EngineSkin {
     const stroke = readTokenColor(stage, "--hp-outline-variant", "#2a4955");
@@ -449,6 +571,22 @@ import Layout from "../layouts/Layout.astro";
       highlightWidth: 2.5,
     };
   }
+
+  function logEvent(type: string, detail: string, coalesce = false): void {
+    const last = eventList.firstElementChild as HTMLElement | null;
+    if (coalesce && last?.dataset.type === type) {
+      last.querySelector(".pg-event-detail")!.textContent = detail;
+      return;
+    }
+    const entry = document.createElement("li");
+    entry.dataset.type = type;
+    entry.innerHTML = `<span class="pg-event-type">${type}</span><span class="pg-event-detail">${detail}</span>`;
+    eventList.prepend(entry);
+    while (eventList.children.length > 9) {
+      eventList.lastElementChild!.remove();
+    }
+  }
+  const cellLabel = (cell: { q: number; r: number }) => `(${cell.q}, ${cell.r})`;
 
   const logRows: [string, string, string?][] = [
     ["04:12:07", "lattice sync ok — 14 peers"],
@@ -487,7 +625,7 @@ import Layout from "../layouts/Layout.astro";
     ["fw.channel", "beta"],
   ];
 
-  const nodeDefs: Omit<PlaygroundNode, "rect" | "el">[] = [
+  const nodeDefs: Omit<PlaygroundNode, "cell" | "rect" | "el">[] = [
     {
       kind: "dossier",
       q: 0,
@@ -577,9 +715,35 @@ import Layout from "../layouts/Layout.astro";
     },
   ];
 
-  function buildCell(def: Omit<PlaygroundNode, "rect" | "el">): PlaygroundNode {
-    const [cx, cy] = axialToWorld(def.q, def.r, HEX_SIDE);
-    const rect: WorldRect = { cx, cy, w: hexWidth(HEX_SIDE), h: hexHeight(HEX_SIDE) };
+  /** Cell assignment per layout mode. `free` honours the authored
+   * q/r; `spiral` / `rows` run the exact packers hp-grid ships,
+   * FFD order = definition order (all masks are single-hex here). */
+  function layoutCells(): Map<string, AxialCoord> {
+    const assigned = new Map<string, AxialCoord>();
+    if (settings.layout === "free") {
+      for (const def of nodeDefs) {
+        assigned.set(def.name, { q: def.q, r: def.r });
+      }
+      return assigned;
+    }
+    const claimed = new Set<string>();
+    for (const def of nodeDefs) {
+      const position =
+        settings.layout === "spiral"
+          ? findSpiralPosition(SINGLE_MASK, claimed)
+          : findRowsPosition(SINGLE_MASK, claimed, ROWS_HALF_COLS);
+      markClaimed(position.q, position.r, SINGLE_MASK, claimed);
+      assigned.set(def.name, position);
+    }
+    return assigned;
+  }
+
+  function buildCell(
+    def: Omit<PlaygroundNode, "cell" | "rect" | "el">,
+    cell: AxialCoord
+  ): PlaygroundNode {
+    const [cx, cy] = axialToWorld(cell.q, cell.r, side);
+    const rect: WorldRect = { cx, cy, w: hexWidth(side), h: hexHeight(side) };
     const el = document.createElement("div");
     el.className = "pg-cell";
     placeCell(el, rect);
@@ -599,112 +763,15 @@ import Layout from "../layouts/Layout.astro";
     }
     el.innerHTML = `<div class="pg-tier pg-t1"><div><div><span class="pg-dot"></span>${def.name}</div>${t1Extra}</div></div><div class="pg-tier pg-t2">${t2}</div><div class="pg-tier pg-t3">${t3}</div>${t4 ? `<div class="pg-tier pg-t4">${t4}</div>` : ""}`;
     overlay.appendChild(el);
-    return { ...def, rect, el };
-  }
-
-  const nodes = nodeDefs.map(buildCell);
-  const nodeById = new Map(nodes.map((node) => [node.name, node]));
-  const instant = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  let committedNode: PlaygroundNode | null = null;
-  let lastExitAt = 0;
-
-  const eventList = document.getElementById("pg-events")!;
-  function logEvent(type: string, detail: string, coalesce = false): void {
-    const last = eventList.firstElementChild as HTMLElement | null;
-    if (coalesce && last?.dataset.type === type) {
-      last.querySelector(".pg-event-detail")!.textContent = detail;
-      return;
-    }
-    const entry = document.createElement("li");
-    entry.dataset.type = type;
-    entry.innerHTML = `<span class="pg-event-type">${type}</span><span class="pg-event-detail">${detail}</span>`;
-    eventList.prepend(entry);
-    while (eventList.children.length > 9) {
-      eventList.lastElementChild!.remove();
-    }
-  }
-  const cellLabel = (cell: { q: number; r: number }) => `(${cell.q}, ${cell.r})`;
-
-  const engine = await HexEngine.create({
-    host: stage,
-    canvas,
-    overlay,
-    hexSide: HEX_SIDE,
-    skin: buildSkin(),
-    minZoom: 0.2,
-    maxZoom: 14,
-    tierThresholds: TIER_THRESHOLDS,
-    commitFraction: COMMIT_FRACTION,
-    draggable: true,
-    instant,
-    onOccupantPosition(id, wx, wy) {
-      const node = nodeById.get(id);
-      if (node) {
-        node.rect.cx = wx;
-        node.rect.cy = wy;
-        placeCell(node.el, node.rect);
-      }
-    },
-    onDragStart(id) {
-      nodeById.get(id)?.el.classList.add("pg-dragging");
-      logEvent("drag", `${id} picked up`);
-    },
-    onMove({ id, from, to }) {
-      logEvent("move", `${id} ${cellLabel(from)} → ${cellLabel(to)}`);
-    },
-    onDrop({ id, at }) {
-      nodeById.get(id)?.el.classList.remove("pg-dragging");
-      logEvent("drop", `${id} settled at ${cellLabel(at)}`);
-    },
-    onBond({ id, partner }) {
-      logEvent("bond", `${id} ↔ ${partner}`);
-    },
-    onUnbond({ id, partner }) {
-      logEvent("unbond", `${id} ↮ ${partner}`);
-    },
-    onPan() {
-      const cam = engine.cameraState;
-      logEvent("pan", `camera at (${Math.round(cam.x)}, ${Math.round(cam.y)})`, true);
-    },
-    onCameraChange(state, visibleCells) {
-      hud.z.textContent = state.z.toFixed(2);
-      hud.px.textContent = `${Math.round(hexWidth(HEX_SIDE) * state.z)}px`;
-      hud.cells.textContent = String(visibleCells);
-      hud.tier.textContent = engine.committed ? "4 (page)" : String(engine.tier);
-      const tier = engine.committed ? 4 : engine.tier;
-      for (const node of nodes) {
-        node.el.dataset.tier = node === committedNode ? "4" : String(tier);
-      }
-      maybeAutoCommit(state.z);
-    },
-    onCommitChange(committed) {
-      if (!committed) {
-        logEvent("commit", `${committedNode?.name ?? "?"} closed`);
-        committedNode?.el.classList.remove("pg-loading");
-        committedNode = null;
-        lastExitAt = performance.now();
-      }
-    },
-  });
-
-  // Dossiers drag; the hub's category satellites stay pinned —
-  // the per-occupant override the current hp-grid also supports.
-  for (const node of nodes) {
-    engine.addOccupant({
-      id: node.name,
-      cell: { q: node.q, r: node.r },
-      draggable: node.kind === "dossier",
-    });
+    return { ...def, cell, rect, el };
   }
 
   /** Zoom-as-navigation: zooming a category past committed scale
-   * with the cell in view opens it — no click required. */
+   * with the cell in view opens it. Only a live user zoom counts
+   * as intent — a tween flying back out of a page passes through
+   * committed scale and must not re-open the cell it just left. */
   function maybeAutoCommit(zoom: number): void {
-    // Only a live user zoom counts as intent — a tween flying back
-    // out of a page passes through committed scale and must not
-    // re-open the cell it just left.
-    if (engine.committed || engine.animating) {
+    if (!engine || engine.committed || engine.animating) {
       return;
     }
     if (performance.now() - lastExitAt < RECOMMIT_COOLDOWN_MS) {
@@ -712,7 +779,7 @@ import Layout from "../layouts/Layout.astro";
     }
     const width = stage.clientWidth;
     const height = stage.clientHeight;
-    if (hexWidth(HEX_SIDE) * zoom < width * COMMIT_FRACTION) {
+    if (hexWidth(side) * zoom < width * settings.commitFraction) {
       return;
     }
     const cam = engine.cameraState;
@@ -730,6 +797,9 @@ import Layout from "../layouts/Layout.astro";
   }
 
   function commitTo(node: PlaygroundNode): void {
+    if (!engine) {
+      return;
+    }
     committedNode = node;
     logEvent("commit", `${node.name} opened`);
     engine.commitTo(node.rect);
@@ -741,49 +811,223 @@ import Layout from "../layouts/Layout.astro";
     }, 600);
   }
 
+  /** Rebuild cells + engine from the current settings. Size and
+   * motion changes come through here — the canvas is replaced so
+   * the fresh renderer never inherits a dead GL context. */
+  async function boot(): Promise<void> {
+    if (booting) {
+      return;
+    }
+    booting = true;
+    try {
+      engine?.destroy();
+      engine = null;
+      committedNode = null;
+      overlay.innerHTML = "";
+      const fresh = document.createElement("canvas");
+      fresh.id = "pg-canvas";
+      canvas.replaceWith(fresh);
+      canvas = fresh;
+
+      side = hexSideFor(settings.size);
+      overlay.style.setProperty("--pg-k", String(side / BASE_HEX_SIDE));
+      const cells = layoutCells();
+      nodes = nodeDefs.map((def) => buildCell(def, cells.get(def.name)!));
+      nodeById = new Map(nodes.map((node) => [node.name, node]));
+
+      engine = await HexEngine.create({
+        host: stage,
+        canvas,
+        overlay,
+        hexSide: side,
+        skin: buildSkin(),
+        minZoom: 0.2,
+        maxZoom: 14,
+        tierThresholds: TIER_THRESHOLDS,
+        commitFraction: settings.commitFraction,
+        draggable: settings.draggable,
+        instant: settings.instant,
+        onOccupantPosition(id, wx, wy) {
+          const node = nodeById.get(id);
+          if (node) {
+            node.rect.cx = wx;
+            node.rect.cy = wy;
+            placeCell(node.el, node.rect);
+          }
+        },
+        onDragStart(id) {
+          nodeById.get(id)?.el.classList.add("pg-dragging");
+          logEvent("drag", `${id} picked up`);
+        },
+        onMove({ id, from, to }) {
+          const node = nodeById.get(id);
+          if (node) {
+            node.cell = to;
+          }
+          logEvent("move", `${id} ${cellLabel(from)} → ${cellLabel(to)}`);
+        },
+        onDrop({ id, at }) {
+          nodeById.get(id)?.el.classList.remove("pg-dragging");
+          logEvent("drop", `${id} settled at ${cellLabel(at)}`);
+        },
+        onBond({ id, partner }) {
+          logEvent("bond", `${id} ↔ ${partner}`);
+        },
+        onUnbond({ id, partner }) {
+          logEvent("unbond", `${id} ↮ ${partner}`);
+        },
+        onPan() {
+          if (engine) {
+            const cam = engine.cameraState;
+            logEvent("pan", `camera at (${Math.round(cam.x)}, ${Math.round(cam.y)})`, true);
+          }
+        },
+        onCameraChange(state, visibleCells) {
+          if (!engine) {
+            return;
+          }
+          hud.z.textContent = state.z.toFixed(2);
+          hud.px.textContent = `${Math.round(hexWidth(side) * state.z)}px`;
+          hud.cells.textContent = String(visibleCells);
+          hud.tier.textContent = engine.committed ? "4 (page)" : String(engine.tier);
+          const tier = engine.committed ? 4 : engine.tier;
+          for (const node of nodes) {
+            node.el.dataset.tier = node === committedNode ? "4" : String(tier);
+          }
+          maybeAutoCommit(state.z);
+        },
+        onCommitChange(committed) {
+          if (!committed) {
+            logEvent("commit", `${committedNode?.name ?? "?"} closed`);
+            committedNode?.el.classList.remove("pg-loading");
+            committedNode = null;
+            lastExitAt = performance.now();
+          }
+        },
+      });
+
+      // Dossiers follow the host `draggable` flag; the hub's
+      // category satellites are pinned — the per-cell override
+      // hp-grid expresses as draggable="false".
+      for (const node of nodes) {
+        engine.addOccupant({
+          id: node.name,
+          cell: node.cell,
+          draggable: node.kind === "category" ? false : undefined,
+        });
+      }
+      engine.jumpTo(1, 0, 0);
+      console.log("[playground] renderer:", engine.rendererString);
+    } finally {
+      booting = false;
+    }
+  }
+
+  /** Re-place occupants for a layout change without a full engine
+   * rebuild — mirrors hp-grid's pack() re-running on `layout`. */
+  function applyLayout(): void {
+    if (!engine) {
+      return;
+    }
+    const cells = layoutCells();
+    for (const node of nodes) {
+      engine.removeOccupant(node.name);
+    }
+    for (const node of nodes) {
+      const cell = cells.get(node.name)!;
+      node.cell = cell;
+      const [cx, cy] = axialToWorld(cell.q, cell.r, side);
+      node.rect.cx = cx;
+      node.rect.cy = cy;
+      placeCell(node.el, node.rect);
+      engine.addOccupant({
+        id: node.name,
+        cell,
+        draggable: node.kind === "category" ? false : undefined,
+      });
+    }
+    engine.flyTo(engine.cameraState.z, 0, 0);
+    logEvent("layout", `packed as ${settings.layout}`);
+  }
+
+  function wireGroup(id: string, apply: (value: string) => void): void {
+    const container = document.getElementById(id)!;
+    container.addEventListener("click", (event) => {
+      const button = (event.target as HTMLElement).closest("hp-button");
+      if (!button || button.hasAttribute("disabled") || !container.contains(button)) {
+        return;
+      }
+      for (const sibling of container.querySelectorAll("hp-button")) {
+        sibling.removeAttribute("aria-pressed");
+      }
+      button.setAttribute("aria-pressed", "true");
+      apply((button as HTMLElement).dataset.value!);
+    });
+  }
+
+  wireGroup("pg-size", (value) => {
+    settings.size = value as SizeName;
+    void boot();
+  });
+  wireGroup("pg-layout", (value) => {
+    settings.layout = value as LayoutName;
+    applyLayout();
+  });
+  wireGroup("pg-draggable", (value) => {
+    settings.draggable = value === "on";
+    if (engine) {
+      engine.draggable = settings.draggable;
+    }
+    logEvent("draggable", settings.draggable ? "host flag on" : "host flag off");
+  });
+  wireGroup("pg-commit", (value) => {
+    settings.commitFraction = Number(value);
+    engine?.setCommitFraction(settings.commitFraction);
+    logEvent("commit at", `${Math.round(settings.commitFraction * 100)}% of viewport`);
+  });
+  wireGroup("pg-motion", (value) => {
+    settings.instant = value === "instant" || prefersReduced;
+    void boot();
+  });
+
   function viewCentreWorld(): [number, number] {
-    const cam = engine.cameraState;
-    return [
-      (stage.clientWidth / 2 - cam.x) / cam.z,
-      (stage.clientHeight / 2 - cam.y) / cam.z,
-    ];
+    const cam = engine!.cameraState;
+    return [(stage.clientWidth / 2 - cam.x) / cam.z, (stage.clientHeight / 2 - cam.y) / cam.z];
   }
   document.getElementById("pg-zoom-in")!.addEventListener("click", () => {
-    const [wx, wy] = viewCentreWorld();
-    engine.flyTo(Math.min(14, engine.cameraState.z * 1.4), wx, wy);
+    if (engine) {
+      const [wx, wy] = viewCentreWorld();
+      engine.flyTo(Math.min(14, engine.cameraState.z * 1.4), wx, wy);
+    }
   });
   document.getElementById("pg-zoom-out")!.addEventListener("click", () => {
-    engine.exitCommit();
-    const [wx, wy] = viewCentreWorld();
-    engine.flyTo(Math.max(0.2, engine.cameraState.z / 1.4), wx, wy);
+    if (engine) {
+      engine.exitCommit();
+      const [wx, wy] = viewCentreWorld();
+      engine.flyTo(Math.max(0.2, engine.cameraState.z / 1.4), wx, wy);
+    }
   });
   document.getElementById("pg-reset")!.addEventListener("click", () => {
-    engine.exitCommit();
-    engine.flyTo(1, 0, 0);
+    engine?.exitCommit();
+    engine?.flyTo(1, 0, 0);
   });
-  const tourStops: [number, number, number][] = [
-    [1, 0, 0],
-    [1.6, 0, 0],
-    [3.2, 0, 0],
-    [8, 0, 0],
-    [1, 0, 0],
-  ];
   let tourStep = 0;
   document.getElementById("pg-tour")!.addEventListener("click", () => {
-    engine.exitCommit();
-    const [zoom, wx, wy] = tourStops[tourStep % tourStops.length]!;
-    tourStep++;
-    engine.flyTo(zoom, wx, wy);
+    if (engine) {
+      engine.exitCommit();
+      const apparent = TOUR_APPARENT[tourStep % TOUR_APPARENT.length]!;
+      tourStep++;
+      engine.flyTo(apparent / hexWidth(side), 0, 0);
+    }
   });
 
   const themeWatcher = new ThemeWatcher(() => {
-    engine.setSkin(buildSkin());
+    engine?.setSkin(buildSkin());
   });
   addEventListener("pagehide", () => {
     themeWatcher.dispose();
-    engine.destroy();
+    engine?.destroy();
   });
 
-  engine.jumpTo(1, 0, 0);
-  console.log("[playground] renderer:", engine.rendererString);
+  await boot();
 </script>
