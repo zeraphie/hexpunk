@@ -1,0 +1,683 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Playground">
+  <h1>Playground</h1>
+  <p class="pg-intro">
+    The Phase-2 hex engine spike (<code>src/engine/</code>) running live: a PixiJS-rendered
+    hex field with a hand-rolled camera, DOM overlay cells that reveal more content as they
+    grow — identity, summary, dossier — and category cells that <em>commit</em> into a full
+    page when you zoom all the way in. Drag to pan, wheel to pan, <kbd>ctrl</kbd>+wheel or
+    pinch to zoom, <kbd>esc</kbd> to leave a committed page.
+  </p>
+
+  <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
+    <canvas id="pg-canvas"></canvas>
+    <div id="pg-overlay"></div>
+    <div class="pg-hud">
+      <div>zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
+      <div>tier <b id="pg-tier">0</b> · cells <b id="pg-cells">0</b></div>
+      <div class="pg-hud-buttons">
+        <hp-button size="xs" id="pg-zoom-out">−</hp-button>
+        <hp-button size="xs" id="pg-zoom-in">+</hp-button>
+        <hp-button size="xs" id="pg-reset">reset</hp-button>
+        <hp-button size="xs" id="pg-tour">tour</hp-button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  .pg-intro {
+    max-width: 60rem;
+  }
+  .pg-stage {
+    position: relative;
+    height: 72vh;
+    min-height: 30rem;
+    overflow: hidden;
+    border: 1px solid var(--hp-outline-variant);
+    background: var(--hp-surface-container-lowest);
+    margin-block: 1.5rem;
+  }
+  .pg-stage:focus-visible {
+    outline: 2px solid var(--hp-outline);
+    outline-offset: 2px;
+  }
+  .pg-stage canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    touch-action: none;
+  }
+  #pg-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .pg-hud {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 1;
+    padding: 0.5rem 0.9rem;
+    background: color-mix(in srgb, var(--hp-surface-container-lowest) 85%, transparent);
+    border: 1px solid var(--hp-outline-variant);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .pg-hud b {
+    color: var(--hp-primary-bright);
+    font-weight: 400;
+  }
+  .pg-hud-buttons {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+  }
+
+  /* ── overlay cells: world-unit layout, hex clip, tier reveal ── */
+  .pg-cell {
+    position: absolute;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background: color-mix(in srgb, var(--hp-surface-container) 88%, transparent);
+    opacity: 0;
+    transition: opacity 160ms ease;
+    --pg-cap: 25%;
+    --pg-base: 25%;
+  }
+  .pg-cell[data-tier="1"],
+  .pg-cell[data-tier="2"],
+  .pg-cell[data-tier="3"],
+  .pg-cell[data-tier="4"] {
+    opacity: 1;
+  }
+  .pg-cell[data-tier="4"] {
+    background: color-mix(in srgb, var(--hp-surface-container-lowest) 96%, transparent);
+  }
+  .pg-tier {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+  .pg-cell[data-tier="1"] .pg-t1,
+  .pg-cell[data-tier="2"] .pg-t2,
+  .pg-cell[data-tier="3"] .pg-t3,
+  .pg-cell[data-tier="4"] .pg-t4 {
+    opacity: 1;
+  }
+
+  .pg-cap {
+    position: absolute;
+    top: 0;
+    height: var(--pg-cap);
+    left: 0;
+    right: 0;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 1px;
+  }
+  .pg-band {
+    position: absolute;
+    top: var(--pg-cap);
+    bottom: var(--pg-base);
+    left: 0;
+    right: 0;
+    padding: 2px 8px;
+  }
+  .pg-base {
+    position: absolute;
+    bottom: 0;
+    height: var(--pg-base);
+    left: 0;
+    right: 0;
+    display: grid;
+    place-content: center;
+    color: var(--hp-outline-variant);
+  }
+
+  .pg-t1 {
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+  .pg-t1 .pg-dot {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.45em;
+    background: var(--hp-secondary);
+    border-radius: 50%;
+  }
+  .pg-t1 .pg-count {
+    display: block;
+    text-align: center;
+    color: var(--hp-on-surface-variant);
+    font-size: 8px;
+  }
+
+  .pg-t2 {
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 2px;
+    font-size: 4.6px;
+  }
+  .pg-t2 h2 {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    margin: 0;
+  }
+  .pg-t2 .pg-role {
+    color: var(--hp-on-surface-variant);
+  }
+  .pg-t2 .pg-stats {
+    color: var(--hp-secondary);
+  }
+  .pg-t2 .pg-preview {
+    color: var(--hp-on-surface-variant);
+    text-align: left;
+    font-size: 3.4px;
+    line-height: 1.5;
+  }
+
+  .pg-t3 {
+    font-size: 1.9px;
+  }
+  .pg-t3 h2 {
+    font-size: 3.4px;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    margin: 0;
+  }
+  .pg-t3 .pg-role {
+    color: var(--hp-on-surface-variant);
+    font-size: 2.1px;
+  }
+  .pg-t3 .pg-band {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 5px;
+    align-content: center;
+  }
+  .pg-t3 p {
+    color: var(--hp-on-surface-variant);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .pg-t3 table {
+    border-collapse: collapse;
+    align-self: center;
+  }
+  .pg-t3 td {
+    padding: 0.5px 3px 0.5px 0;
+    border-bottom: 0.2px solid var(--hp-outline-faint);
+  }
+  .pg-t3 td:last-child {
+    color: var(--hp-secondary);
+    text-align: right;
+  }
+  .pg-t3 .pg-hint {
+    color: var(--hp-primary-bright);
+  }
+  .pg-t3 .pg-preview-mid {
+    font-size: 2.4px;
+    line-height: 1.6;
+    color: var(--hp-on-surface-variant);
+  }
+
+  .pg-t4 {
+    font-size: 1.5px;
+  }
+  .pg-t4 h2 {
+    font-size: 3px;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    margin: 0;
+  }
+  .pg-t4 .pg-role {
+    color: var(--hp-on-surface-variant);
+    font-size: 1.8px;
+  }
+  .pg-t4 .pg-band {
+    padding: 3px 14px;
+  }
+  .pg-t4 .pg-content {
+    line-height: 1.55;
+  }
+  .pg-t4 .pg-content p {
+    color: var(--hp-on-surface-variant);
+    max-width: 78px;
+    margin: 0 auto 1.6px;
+  }
+  .pg-t4 .pg-content h3 {
+    font-size: 2px;
+    color: var(--hp-primary-bright);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    max-width: 78px;
+    margin: 2.4px auto 1.2px;
+  }
+  .pg-t4 .pg-rows {
+    max-width: 78px;
+    margin: 0 auto;
+  }
+  .pg-t4 .pg-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 0.5px 0;
+    border-bottom: 0.2px solid var(--hp-outline-faint);
+  }
+  .pg-t4 .pg-row .pg-v {
+    color: var(--hp-secondary);
+  }
+  .pg-t4 .pg-log {
+    display: flex;
+    gap: 2px;
+    padding: 0.45px 0;
+    border-bottom: 0.2px solid var(--hp-outline-faint);
+    max-width: 78px;
+    margin: 0 auto;
+  }
+  .pg-t4 .pg-log .pg-ts {
+    color: var(--hp-outline-variant);
+    flex: none;
+  }
+  .pg-t4 .pg-log.pg-warn .pg-msg {
+    color: var(--hp-secondary);
+  }
+  .pg-t4 .pg-base {
+    font-size: 1.6px;
+  }
+
+  /* pjax loading: scanning-sweep skeleton while the band loads */
+  .pg-t4 .pg-skel {
+    display: none;
+    max-width: 78px;
+    margin: 0 auto;
+  }
+  .pg-cell.pg-loading .pg-t4 .pg-skel {
+    display: block;
+  }
+  .pg-cell.pg-loading .pg-t4 .pg-content {
+    display: none;
+  }
+  .pg-skel .pg-bar {
+    height: 1.7px;
+    margin: 1.5px 0;
+    background: linear-gradient(
+      100deg,
+      var(--hp-surface-container-high) 35%,
+      var(--hp-outline-variant) 50%,
+      var(--hp-surface-container-high) 65%
+    );
+    background-size: 220% 100%;
+    animation: pg-sweep 1.1s linear infinite;
+  }
+  .pg-skel .pg-bar:nth-child(2) {
+    width: 82%;
+  }
+  .pg-skel .pg-bar:nth-child(3) {
+    width: 91%;
+  }
+  .pg-skel .pg-bar:nth-child(4) {
+    width: 64%;
+  }
+  .pg-skel .pg-bar:nth-child(5) {
+    width: 88%;
+  }
+  @keyframes pg-sweep {
+    from {
+      background-position: 120% 0;
+    }
+    to {
+      background-position: -120% 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pg-skel .pg-bar {
+      animation: none;
+    }
+    .pg-cell,
+    .pg-tier {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import {
+    HexEngine,
+    axialToWorld,
+    hexHeight,
+    hexWidth,
+    placeCell,
+    readTokenColor,
+    ThemeWatcher,
+    type EngineSkin,
+    type WorldRect,
+  } from "../../../src/engine/index.ts";
+
+  const HEX_SIDE = 64;
+  const TIER_THRESHOLDS = [100, 240, 520];
+  const COMMIT_FRACTION = 0.55;
+  const RECOMMIT_COOLDOWN_MS = 600;
+
+  interface PlaygroundNode {
+    kind: "dossier" | "category";
+    q: number;
+    r: number;
+    name: string;
+    role: string;
+    stats?: [string, string][];
+    desc?: string;
+    count?: number;
+    preview?: string[];
+    page?: string;
+    rect: WorldRect;
+    el: HTMLElement;
+  }
+
+  const stage = document.getElementById("pg-stage")!;
+  const canvas = document.getElementById("pg-canvas") as HTMLCanvasElement;
+  const overlay = document.getElementById("pg-overlay")!;
+  const hud = {
+    z: document.getElementById("pg-z")!,
+    px: document.getElementById("pg-px")!,
+    tier: document.getElementById("pg-tier")!,
+    cells: document.getElementById("pg-cells")!,
+  };
+
+  function buildSkin(): EngineSkin {
+    const stroke = readTokenColor(stage, "--hp-outline-variant", "#2a4955");
+    const bright = readTokenColor(stage, "--hp-outline", "#0088cc");
+    return {
+      strokeColor: stroke.color,
+      strokeAlpha: stroke.alpha,
+      strokeWidth: 1.5,
+      highlightColor: bright.color,
+      highlightWidth: 2.5,
+    };
+  }
+
+  const logRows: [string, string, string?][] = [
+    ["04:12:07", "lattice sync ok — 14 peers"],
+    ["04:11:52", "shard 8841 sealed → ARCHIVE-3"],
+    ["04:11:31", "route table rebalanced (west spur)"],
+    ["04:10:58", "peer NODE-2F latency 12ms → 9ms"],
+    ["04:10:44", "token grant: SENTRY-K scan tick"],
+    ["04:09:12", "warn: peer NODE-71 jitter above band", "warn"],
+    ["04:08:55", "lattice sync ok — 14 peers"],
+    ["04:08:20", "shard 8840 sealed → ARCHIVE-3"],
+    ["04:07:44", "uplink window rotated (sector 9)"],
+    ["04:07:02", "peer NODE-4A rejoined after 38s"],
+    ["04:06:31", "warn: archive consent latency 402ms", "warn"],
+    ["04:05:58", "lattice sync ok — 13 peers"],
+  ];
+  const peerRows: [string, string, string][] = [
+    ["NODE-2F", "9 ms", "linked"],
+    ["NODE-4A", "14 ms", "linked"],
+    ["NODE-71", "31 ms", "jitter"],
+    ["NODE-0C", "11 ms", "linked"],
+    ["NODE-9B", "18 ms", "linked"],
+    ["NODE-D2", "24 ms", "linked"],
+    ["NODE-55", "—", "dormant"],
+    ["NODE-E8", "12 ms", "linked"],
+  ];
+  const configRows: [string, string][] = [
+    ["sync.interval", "3600 s"],
+    ["sync.window", "00:00–00:04"],
+    ["mesh.max_peers", "16"],
+    ["mesh.failover", "RELAY-04"],
+    ["archive.target", "ARCHIVE-3"],
+    ["archive.consent", "dual-key"],
+    ["watchdog", "SENTRY-K"],
+    ["watchdog.scan", "4 Hz"],
+    ["region.lock", "sector 9"],
+    ["fw.channel", "beta"],
+  ];
+
+  const nodeDefs: Omit<PlaygroundNode, "rect" | "el">[] = [
+    {
+      kind: "dossier",
+      q: 0,
+      r: 0,
+      name: "RELAY-07",
+      role: "mesh uplink",
+      stats: [
+        ["uptime", "312d 04h"],
+        ["peers", "14"],
+        ["throughput", "2.4 GB/s"],
+        ["region", "sector 9"],
+      ],
+      desc: "Primary uplink for the sector-9 mesh. Carries lattice sync for every node in the western spur; failover pair with RELAY-04. Neighbouring cells hold its live feeds.",
+    },
+    {
+      kind: "dossier",
+      q: -2,
+      r: 3,
+      name: "SENTRY-K",
+      role: "watchdog",
+      stats: [
+        ["uptime", "312d 04h"],
+        ["alerts", "0 active"],
+        ["scan rate", "4 Hz"],
+        ["region", "sector 9"],
+      ],
+      desc: "Perimeter watchdog. Samples edge traffic on the axial ring and revokes tokens on anomaly; consent partner for ARCHIVE-3.",
+    },
+    {
+      kind: "dossier",
+      q: 3,
+      r: -1,
+      name: "ARCHIVE-3",
+      role: "cold storage",
+      stats: [
+        ["uptime", "89d 11h"],
+        ["shards", "1,204"],
+        ["integrity", "99.97%"],
+        ["region", "sector 9"],
+      ],
+      desc: "Write-once shard vault. Accepts lattice snapshots on the hour; retrieval requires dual-key consent from SENTRY-K.",
+    },
+    {
+      kind: "category",
+      q: 1,
+      r: 0,
+      name: "LOGS",
+      role: "live feed",
+      count: 247,
+      preview: logRows.slice(0, 3).map(([at, msg]) => `${at} ${msg}`),
+      page: `<h3>relay-07 · event stream</h3>${logRows
+        .map(
+          ([at, msg, warn]) =>
+            `<div class="pg-log${warn ? " pg-warn" : ""}"><span class="pg-ts">${at}</span><span class="pg-msg">${msg}</span></div>`
+        )
+        .join("")}<h3>notes</h3><p>Stream is tail-first; older events page in as the feed scrolls. Warnings stay pinned to the anomaly digest until SENTRY-K acknowledges them.</p>`,
+    },
+    {
+      kind: "category",
+      q: -1,
+      r: 1,
+      name: "PEERS",
+      role: "mesh table",
+      count: 14,
+      preview: peerRows.slice(0, 3).map(([id, latency]) => `${id} · ${latency}`),
+      page: `<h3>relay-07 · peer table</h3><div class="pg-rows">${peerRows
+        .map(
+          ([id, latency, state]) =>
+            `<div class="pg-row"><span>${id}</span><span>${latency}</span><span class="pg-v">${state}</span></div>`
+        )
+        .join("")}</div><h3>topology</h3><p>Peers are ranked by axial distance on the lattice, not raw latency — the mesh prefers short lattice hops even when a longer hop is momentarily faster, because hop-local failure domains stay recoverable.</p>`,
+    },
+    {
+      kind: "category",
+      q: 0,
+      r: -1,
+      name: "CONFIG",
+      role: "node policy",
+      count: 10,
+      preview: configRows.slice(0, 3).map(([key, value]) => `${key} = ${value}`),
+      page: `<h3>relay-07 · active policy</h3><div class="pg-rows">${configRows
+        .map(
+          ([key, value]) =>
+            `<div class="pg-row"><span>${key}</span><span class="pg-v">${value}</span></div>`
+        )
+        .join("")}</div><h3>provenance</h3><p>Policy is written by the sector controller and countersigned by SENTRY-K. Local edits are staged as a shadow policy until the next sync window, then either promoted or discarded by quorum.</p>`,
+    },
+  ];
+
+  function buildCell(def: Omit<PlaygroundNode, "rect" | "el">): PlaygroundNode {
+    const [cx, cy] = axialToWorld(def.q, def.r, HEX_SIDE);
+    const rect: WorldRect = { cx, cy, w: hexWidth(HEX_SIDE), h: hexHeight(HEX_SIDE) };
+    const el = document.createElement("div");
+    el.className = "pg-cell";
+    placeCell(el, rect);
+
+    const t1Extra =
+      def.kind === "category" ? `<span class="pg-count">${def.count} items</span>` : "";
+    let t2 = "";
+    let t3 = "";
+    let t4 = "";
+    if (def.kind === "category") {
+      t2 = `<h2>${def.name}</h2><div class="pg-role">category · ${def.count} items</div><div class="pg-preview">${def.preview!.join("<br/>")}</div>`;
+      t3 = `<div class="pg-cap"><h2>${def.name}</h2><div class="pg-role">category · ${def.count} items</div></div><div class="pg-band" style="display:grid;place-content:center;text-align:center"><div class="pg-preview-mid">${def.preview!.join("<br/>")}</div></div><div class="pg-base"><span class="pg-hint">keep zooming to open ▸</span></div>`;
+      t4 = `<div class="pg-cap"><h2>RELAY-07 / ${def.name}</h2><div class="pg-role">${def.role}</div></div><div class="pg-band"><div class="pg-skel"><div class="pg-bar"></div><div class="pg-bar"></div><div class="pg-bar"></div><div class="pg-bar"></div><div class="pg-bar"></div></div><div class="pg-content">${def.page!}</div></div><div class="pg-base">esc or zoom out to close</div>`;
+    } else {
+      t2 = `<h2>${def.name}</h2><div class="pg-role">${def.role}</div><div class="pg-stats">${def.stats![0]![0]} ${def.stats![0]![1]} · ${def.stats![1]![0]} ${def.stats![1]![1]}</div>`;
+      t3 = `<div class="pg-cap"><h2>${def.name}</h2><div class="pg-role">${def.role} · sector 9</div></div><div class="pg-band"><p>${def.desc!}</p><table>${def.stats!.map(([key, value]) => `<tr><td>${key}</td><td>${value}</td></tr>`).join("")}</table></div><div class="pg-base">last sync 00:04:12 ago</div>`;
+    }
+    el.innerHTML = `<div class="pg-tier pg-t1"><div><div><span class="pg-dot"></span>${def.name}</div>${t1Extra}</div></div><div class="pg-tier pg-t2">${t2}</div><div class="pg-tier pg-t3">${t3}</div>${t4 ? `<div class="pg-tier pg-t4">${t4}</div>` : ""}`;
+    overlay.appendChild(el);
+    return { ...def, rect, el };
+  }
+
+  const nodes = nodeDefs.map(buildCell);
+  const instant = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let committedNode: PlaygroundNode | null = null;
+  let lastExitAt = 0;
+
+  const engine = await HexEngine.create({
+    host: stage,
+    canvas,
+    overlay,
+    hexSide: HEX_SIDE,
+    skin: buildSkin(),
+    minZoom: 0.2,
+    maxZoom: 14,
+    tierThresholds: TIER_THRESHOLDS,
+    commitFraction: COMMIT_FRACTION,
+    instant,
+    onCameraChange(state, visibleCells) {
+      hud.z.textContent = state.z.toFixed(2);
+      hud.px.textContent = `${Math.round(hexWidth(HEX_SIDE) * state.z)}px`;
+      hud.cells.textContent = String(visibleCells);
+      hud.tier.textContent = engine.committed ? "4 (page)" : String(engine.tier);
+      const tier = engine.committed ? 4 : engine.tier;
+      for (const node of nodes) {
+        node.el.dataset.tier = node === committedNode ? "4" : String(tier);
+      }
+      maybeAutoCommit(state.z);
+    },
+    onCommitChange(committed) {
+      if (!committed) {
+        committedNode?.el.classList.remove("pg-loading");
+        committedNode = null;
+        lastExitAt = performance.now();
+      }
+    },
+  });
+
+  /** Zoom-as-navigation: zooming a category past committed scale
+   * with the cell in view opens it — no click required. */
+  function maybeAutoCommit(zoom: number): void {
+    if (engine.committed) {
+      return;
+    }
+    if (performance.now() - lastExitAt < RECOMMIT_COOLDOWN_MS) {
+      return;
+    }
+    const width = stage.clientWidth;
+    const height = stage.clientHeight;
+    if (hexWidth(HEX_SIDE) * zoom < width * COMMIT_FRACTION) {
+      return;
+    }
+    const cam = engine.cameraState;
+    for (const node of nodes) {
+      if (node.kind !== "category") {
+        continue;
+      }
+      const sx = node.rect.cx * cam.z + cam.x;
+      const sy = node.rect.cy * cam.z + cam.y;
+      if (sx > width * 0.2 && sx < width * 0.8 && sy > height * 0.1 && sy < height * 0.9) {
+        commitTo(node);
+        return;
+      }
+    }
+  }
+
+  function commitTo(node: PlaygroundNode): void {
+    committedNode = node;
+    engine.commitTo(node.rect);
+    // pjax stand-in: the cap renders instantly from tier-1 data,
+    // the band arrives after a simulated fetch.
+    node.el.classList.add("pg-loading");
+    setTimeout(() => {
+      node.el.classList.remove("pg-loading");
+    }, 600);
+  }
+
+  function viewCentreWorld(): [number, number] {
+    const cam = engine.cameraState;
+    return [
+      (stage.clientWidth / 2 - cam.x) / cam.z,
+      (stage.clientHeight / 2 - cam.y) / cam.z,
+    ];
+  }
+  document.getElementById("pg-zoom-in")!.addEventListener("click", () => {
+    const [wx, wy] = viewCentreWorld();
+    engine.flyTo(Math.min(14, engine.cameraState.z * 1.4), wx, wy);
+  });
+  document.getElementById("pg-zoom-out")!.addEventListener("click", () => {
+    engine.exitCommit();
+    const [wx, wy] = viewCentreWorld();
+    engine.flyTo(Math.max(0.2, engine.cameraState.z / 1.4), wx, wy);
+  });
+  document.getElementById("pg-reset")!.addEventListener("click", () => {
+    engine.exitCommit();
+    engine.flyTo(1, 0, 0);
+  });
+  const tourStops: [number, number, number][] = [
+    [1, 0, 0],
+    [1.6, 0, 0],
+    [3.2, 0, 0],
+    [8, 0, 0],
+    [1, 0, 0],
+  ];
+  let tourStep = 0;
+  document.getElementById("pg-tour")!.addEventListener("click", () => {
+    engine.exitCommit();
+    const [zoom, wx, wy] = tourStops[tourStep % tourStops.length]!;
+    tourStep++;
+    engine.flyTo(zoom, wx, wy);
+  });
+
+  const themeWatcher = new ThemeWatcher(() => {
+    engine.setSkin(buildSkin());
+  });
+  addEventListener("pagehide", () => {
+    themeWatcher.dispose();
+    engine.destroy();
+  });
+
+  engine.jumpTo(1, 0, 0);
+  console.log("[playground] renderer:", engine.rendererString);
+</script>
