@@ -486,21 +486,13 @@ import Layout from "../layouts/Layout.astro";
     type EngineSkin,
     type WorldRect,
   } from "../../../src/engine/index.ts";
-  import {
-    markClaimed,
-    type FillMask,
-  } from "../../../src/elements/layout/hp-grid/layouts/index.ts";
-  import { findSpiralPosition } from "../../../src/elements/layout/hp-grid/layouts/spiral.ts";
-  import { findRowsPosition } from "../../../src/elements/layout/hp-grid/layouts/rows.ts";
-
   const TIER_THRESHOLDS = [100, 240, 520];
   const RECOMMIT_COOLDOWN_MS = 600;
   /** Hex side the cell typography is designed against; other sizes
    * counter-scale through --pg-k so apparent text size is stable. */
   const BASE_HEX_SIDE = 64;
-  /** Row-major pack width for the six demo cells — two rows. */
-  const ROWS_HALF_COLS = 4;
-  const SINGLE_MASK: FillMask = [{ q: 0, r: 0 }];
+  /** Tight row-major pack width for the six demo cells. */
+  const ROW_WIDTH = 4;
   /** Fallback hex-cell widths when the tokens are unavailable. */
   const FALLBACK_CELL_WIDTH = { sm: 100, md: 180, lg: 320 };
   /** Tour stops as APPARENT hex widths, so the ride through the
@@ -715,9 +707,52 @@ import Layout from "../layouts/Layout.astro";
     },
   ];
 
+  /** Axial ring-walk directions, matching the lattice's neighbour
+   * order. Used to grow the tight spiral outward. */
+  const RING_DIRS: [number, number][] = [
+    [1, 0],
+    [1, -1],
+    [0, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, 1],
+  ];
+
+  /** Tight spiral: centre, then adjacent rings outward — no gap.
+   * hp-grid's shipped packers keep a ≥1-hex gap because they place
+   * whole clusters; for single hexes that reads as scattered, so
+   * the demo packs adjacent (flagged for the rework: the gap
+   * should likely be mask-aware or a knob). */
+  function tightSpiral(count: number): AxialCoord[] {
+    const out: AxialCoord[] = [{ q: 0, r: 0 }];
+    for (let ring = 1; out.length < count; ring++) {
+      let q = -ring;
+      let r = ring;
+      for (let dir = 0; dir < 6 && out.length < count; dir++) {
+        for (let step = 0; step < ring && out.length < count; step++) {
+          out.push({ q, r });
+          q += RING_DIRS[dir]![0];
+          r += RING_DIRS[dir]![1];
+        }
+      }
+    }
+    return out;
+  }
+
+  /** Tight rows: reading order, `ROW_WIDTH` per row, centred on the
+   * origin (r/2 compensation keeps rows visually stacked). */
+  function tightRows(count: number): AxialCoord[] {
+    const out: AxialCoord[] = [];
+    for (let i = 0; i < count; i++) {
+      const r = Math.floor(i / ROW_WIDTH);
+      const q = (i % ROW_WIDTH) - Math.floor(ROW_WIDTH / 2) - Math.floor(r / 2);
+      out.push({ q, r });
+    }
+    return out;
+  }
+
   /** Cell assignment per layout mode. `free` honours the authored
-   * q/r; `spiral` / `rows` run the exact packers hp-grid ships,
-   * FFD order = definition order (all masks are single-hex here). */
+   * q/r; the packed modes assign in definition order. */
   function layoutCells(): Map<string, AxialCoord> {
     const assigned = new Map<string, AxialCoord>();
     if (settings.layout === "free") {
@@ -726,15 +761,11 @@ import Layout from "../layouts/Layout.astro";
       }
       return assigned;
     }
-    const claimed = new Set<string>();
-    for (const def of nodeDefs) {
-      const position =
-        settings.layout === "spiral"
-          ? findSpiralPosition(SINGLE_MASK, claimed)
-          : findRowsPosition(SINGLE_MASK, claimed, ROWS_HALF_COLS);
-      markClaimed(position.q, position.r, SINGLE_MASK, claimed);
-      assigned.set(def.name, position);
-    }
+    const packed =
+      settings.layout === "spiral" ? tightSpiral(nodeDefs.length) : tightRows(nodeDefs.length);
+    nodeDefs.forEach((def, index) => {
+      assigned.set(def.name, packed[index]!);
+    });
     return assigned;
   }
 
@@ -946,8 +977,34 @@ import Layout from "../layouts/Layout.astro";
         draggable: node.kind === "category" ? false : undefined,
       });
     }
-    engine.flyTo(engine.cameraState.z, 0, 0);
+    // Fit-to-content recentre, like hp-grid's pack() → recenter().
+    const cx = nodes.reduce((sum, node) => sum + node.rect.cx, 0) / nodes.length;
+    const cy = nodes.reduce((sum, node) => sum + node.rect.cy, 0) / nodes.length;
+    engine.flyTo(engine.cameraState.z, cx, cy);
     logEvent("layout", `packed as ${settings.layout}`);
+  }
+
+  /** Shrink each control label until it fits inside its hex —
+   * hp-button's fixed-size hex happily overflows long words
+   * ("animated" bleeds into the neighbour at the default size).
+   * A proper fit-to-shape label belongs to the form-atom rework;
+   * this keeps the dev panel legible meanwhile. */
+  function fitPanelLabels(): void {
+    const measurer = document.createElement("canvas").getContext("2d")!;
+    for (const button of document.querySelectorAll<HTMLElement>(".pg-hud hp-button")) {
+      const label = button.textContent?.trim() ?? "";
+      if (!label) {
+        continue;
+      }
+      const style = getComputedStyle(button);
+      const base = Number.parseFloat(style.fontSize) || 12;
+      const safeWidth = (Number.parseFloat(style.width) || 32) * 0.8;
+      measurer.font = `${base}px ${style.fontFamily}`;
+      const textWidth = measurer.measureText(label).width;
+      if (textWidth > safeWidth) {
+        button.style.fontSize = `${Math.max(6, Math.floor(base * (safeWidth / textWidth)))}px`;
+      }
+    }
   }
 
   function wireGroup(id: string, apply: (value: string) => void): void {
@@ -1030,4 +1087,6 @@ import Layout from "../layouts/Layout.astro";
   });
 
   await boot();
+  // Fit after fonts arrive — widths measured against the real face.
+  void document.fonts.ready.then(fitPanelLabels);
 </script>
