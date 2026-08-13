@@ -4,7 +4,6 @@
   Axial ⇄ world conversions in world units, parameterised by
   hex side length. Pure functions — the O(1) alternative to
   scene-graph hit-testing and per-child culling.
-  (PLAN.hp-grid-smoothness.md § Phase 2 research findings)
 */
 import type { AxialCoord } from "./types.js";
 
@@ -61,6 +60,19 @@ export function hexCorners(side: number, scale = 1): number[] {
     pts.push(side * scale * Math.cos(angle), side * scale * Math.sin(angle));
   }
   return pts;
+}
+
+/** The six axial neighbours of a cell, in ring order. */
+export function axialNeighbours(cell: AxialCoord): AxialCoord[] {
+  const { q, r } = cell;
+  return [
+    { q: q + 1, r },
+    { q: q + 1, r: r - 1 },
+    { q, r: r - 1 },
+    { q: q - 1, r },
+    { q: q - 1, r: r + 1 },
+    { q, r: r + 1 },
+  ];
 }
 
 /** Inclusive row range whose cells can intersect `[y0, y1]`. */

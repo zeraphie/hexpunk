@@ -4,7 +4,6 @@
   Shared types for the aesthetic-neutral hex canvas engine.
   The hexpunk look arrives as an EngineSkin built by the token
   bridge; nothing in the engine names a design-system token.
-  (PLAN.hp-grid-smoothness.md § Decisions › Engine layer)
 */
 
 /** Camera state in float64. screen = world × z + (x, y). */

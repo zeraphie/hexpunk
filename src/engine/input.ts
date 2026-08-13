@@ -3,15 +3,18 @@
 
   Plain DOM pointer + wheel events, math hit-testing — no Pixi
   event system, which would park a permanent rAF on its shared
-  ticker and break the zero-wakeups-at-idle contract. Wheel is
-  Figma-grained: plain wheel pans (or scrolls a committed page),
-  ctrl/⌘ + wheel — including trackpad pinch, which browsers
-  deliver as exactly that — zooms at the cursor.
-  (PLAN.hp-grid-smoothness.md § Phase 2 research findings)
+  ticker and break the zero-wakeups-at-idle contract. A
+  pointerdown on a draggable occupant starts a drag; empty
+  space pans. Wheel is Figma-grained: plain wheel pans (or
+  scrolls a committed page), ctrl/⌘ + wheel — including
+  trackpad pinch, which browsers deliver as exactly that —
+  zooms at the cursor.
 */
 import type { Camera } from "./camera.js";
 import type { CommitController } from "./commit.js";
+import type { DragController } from "./drag.js";
 import { worldToAxial } from "./lattice.js";
+import type { OccupancyMap } from "./occupancy.js";
 import type { AxialCoord } from "./types.js";
 
 /** Velocity window (ms): release speed comes from the oldest
@@ -33,13 +36,22 @@ export interface GestureOptions {
   canvas: HTMLElement;
   camera: Camera;
   commit: CommitController;
+  drag: DragController;
+  occupancy: OccupancyMap;
   hexSide: number;
+  /** Whether the occupant may be dragged right now — folds the
+   * host-level flag and per-occupant overrides together. */
+  isDraggable: (id: string) => boolean;
   onHover: (cell: AxialCoord | null) => void;
+  onPan?: () => void;
+  /** Schedule a frame — drag mutations don't touch the camera,
+   * so they can't ride its onChange invalidation. */
+  requestRender: () => void;
 }
 
 export class GestureController {
   private readonly options: GestureOptions;
-  private dragging = false;
+  private mode: "pan" | "drag" | null = null;
   private samples: [number, number, number][] = [];
 
   constructor(options: GestureOptions) {
@@ -59,6 +71,11 @@ export class GestureController {
     return [event.clientX - box.left, event.clientY - box.top];
   }
 
+  private pointerWorld(event: { clientX: number; clientY: number }): [number, number] {
+    const [sx, sy] = this.local(event);
+    return this.options.camera.screenToWorld(sx, sy);
+  }
+
   dispose(): void {
     const { canvas, host } = this.options;
     canvas.removeEventListener("pointerdown", this.handlePointerDown);
@@ -70,19 +87,42 @@ export class GestureController {
   }
 
   private readonly handlePointerDown = (event: PointerEvent): void => {
-    const { camera, canvas } = this.options;
-    this.dragging = true;
+    const { camera, canvas, commit, drag, occupancy, hexSide, isDraggable, requestRender } =
+      this.options;
     camera.stopAnimations();
     this.samples = [[event.clientX, event.clientY, performance.now()]];
-    canvas.setPointerCapture(event.pointerId);
+    // Capture is best-effort: it can throw when the pointer is
+    // already gone (pen lifted between events) and its loss only
+    // degrades edge-of-element tracking, never the gesture itself.
+    try {
+      canvas.setPointerCapture(event.pointerId);
+    } catch {
+      // no capture — gesture continues uncaptured
+    }
+    if (!commit.committed) {
+      const [wx, wy] = this.pointerWorld(event);
+      const occupant = occupancy.occupantAt(worldToAxial(wx, wy, hexSide));
+      if (occupant && isDraggable(occupant)) {
+        this.mode = "drag";
+        drag.begin(occupant, wx, wy);
+        this.options.onHover(null);
+        requestRender();
+        return;
+      }
+    }
+    this.mode = "pan";
   };
 
   private readonly handlePointerMove = (event: PointerEvent): void => {
-    const { camera, commit, hexSide, onHover } = this.options;
-    if (!this.dragging) {
-      const [sx, sy] = this.local(event);
-      const [wx, wy] = camera.screenToWorld(sx, sy);
+    const { camera, commit, drag, hexSide, onHover, onPan, requestRender } = this.options;
+    if (this.mode === null) {
+      const [wx, wy] = this.pointerWorld(event);
       onHover(worldToAxial(wx, wy, hexSide));
+      return;
+    }
+    if (this.mode === "drag") {
+      drag.update(...this.pointerWorld(event));
+      requestRender();
       return;
     }
     const previous = this.samples[this.samples.length - 1]!;
@@ -91,6 +131,7 @@ export class GestureController {
       commit.clampPan();
     } else {
       camera.panBy(event.clientX - previous[0], event.clientY - previous[1]);
+      onPan?.();
     }
     this.samples.push([event.clientX, event.clientY, performance.now()]);
     if (this.samples.length > 60) {
@@ -99,11 +140,21 @@ export class GestureController {
   };
 
   private readonly handlePointerUp = (event: PointerEvent): void => {
-    if (!this.dragging) {
+    if (this.mode === null) {
       return;
     }
-    this.dragging = false;
-    this.options.canvas.releasePointerCapture(event.pointerId);
+    const mode = this.mode;
+    this.mode = null;
+    try {
+      this.options.canvas.releasePointerCapture(event.pointerId);
+    } catch {
+      // was never captured — nothing to release
+    }
+    if (mode === "drag") {
+      this.options.drag.drop();
+      this.options.requestRender();
+      return;
+    }
     if (this.options.commit.committed) {
       return;
     }
@@ -124,7 +175,7 @@ export class GestureController {
   };
 
   private readonly handlePointerLeave = (): void => {
-    if (!this.dragging) {
+    if (this.mode === null) {
       this.options.onHover(null);
     }
   };
@@ -143,6 +194,7 @@ export class GestureController {
       commit.clampPan();
     } else {
       camera.panBy(-event.deltaX, -event.deltaY);
+      this.options.onPan?.();
     }
   };
 

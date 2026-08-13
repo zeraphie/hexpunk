@@ -5,7 +5,6 @@
   world transform and the DOM overlay are both projected from.
   Owns the motion models: cursor-anchored zoom, decelerating
   inertia, and log-space tweens for fly-to moves.
-  (PLAN.hp-grid-smoothness.md § Phase 2 research findings › Camera)
 */
 import type { CameraState } from "./types.js";
 

@@ -5,7 +5,6 @@
   above the canvas; the whole layer rides the camera through one
   transform write per frame, applied in the same rAF as the
   canvas render so the two surfaces can never swim apart.
-  (PLAN.hp-grid-smoothness.md § Decisions › Hybrid DOM overlay)
 */
 import type { CameraState, WorldRect } from "./types.js";
 

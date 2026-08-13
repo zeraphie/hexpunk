@@ -5,11 +5,14 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Playground">
   <h1>Playground</h1>
   <p class="pg-intro">
-    The Phase-2 hex engine spike (<code>src/engine/</code>) running live: a PixiJS-rendered
-    hex field with a hand-rolled camera, DOM overlay cells that reveal more content as they
+    The hex canvas engine (<code>src/engine/</code>) running live: a PixiJS-rendered hex
+    field with a hand-rolled camera, DOM overlay cells that reveal more content as they
     grow — identity, summary, dossier — and category cells that <em>commit</em> into a full
-    page when you zoom all the way in. Drag to pan, wheel to pan, <kbd>ctrl</kbd>+wheel or
-    pinch to zoom, <kbd>esc</kbd> to leave a committed page.
+    page when you zoom all the way in. Drag empty space to pan, wheel to pan,
+    <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a committed page.
+    Dossier cells (RELAY-07, SENTRY-K, ARCHIVE-3) are draggable — the bright hex shows
+    where they'll snap; the category cells are pinned. Everything the interaction does is
+    mirrored in the event log below.
   </p>
 
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
@@ -26,6 +29,14 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </div>
+
+  <h2>Event log</h2>
+  <p>
+    The engine surfaces the same interaction events hp-grid consumers rely on today —
+    move, drop, bond, unbond, pan — plus commit open/close. Newest first, capped at nine;
+    a continuing pan updates its entry instead of flooding the list.
+  </p>
+  <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
 </Layout>
 
 <style is:global>
@@ -78,6 +89,33 @@ import Layout from "../layouts/Layout.astro";
     margin-top: 0.35rem;
   }
 
+  .pg-events {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--hp-outline-variant);
+    background: var(--hp-surface-container-lowest);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    min-height: 3.5rem;
+    max-width: 60rem;
+  }
+  .pg-events li {
+    display: flex;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--hp-outline-faint);
+  }
+  .pg-events li:last-child {
+    border-bottom: none;
+  }
+  .pg-events .pg-event-type {
+    color: var(--hp-primary-bright);
+    min-width: 5.5rem;
+  }
+  .pg-events .pg-event-detail {
+    color: var(--hp-on-surface-variant);
+  }
+
   /* ── overlay cells: world-unit layout, hex clip, tier reveal ── */
   .pg-cell {
     position: absolute;
@@ -96,6 +134,11 @@ import Layout from "../layouts/Layout.astro";
   }
   .pg-cell[data-tier="4"] {
     background: color-mix(in srgb, var(--hp-surface-container-lowest) 96%, transparent);
+  }
+  .pg-cell.pg-dragging {
+    z-index: 1;
+    opacity: 0.85;
+    transition: none;
   }
   .pg-tier {
     position: absolute;
@@ -560,10 +603,28 @@ import Layout from "../layouts/Layout.astro";
   }
 
   const nodes = nodeDefs.map(buildCell);
+  const nodeById = new Map(nodes.map((node) => [node.name, node]));
   const instant = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let committedNode: PlaygroundNode | null = null;
   let lastExitAt = 0;
+
+  const eventList = document.getElementById("pg-events")!;
+  function logEvent(type: string, detail: string, coalesce = false): void {
+    const last = eventList.firstElementChild as HTMLElement | null;
+    if (coalesce && last?.dataset.type === type) {
+      last.querySelector(".pg-event-detail")!.textContent = detail;
+      return;
+    }
+    const entry = document.createElement("li");
+    entry.dataset.type = type;
+    entry.innerHTML = `<span class="pg-event-type">${type}</span><span class="pg-event-detail">${detail}</span>`;
+    eventList.prepend(entry);
+    while (eventList.children.length > 9) {
+      eventList.lastElementChild!.remove();
+    }
+  }
+  const cellLabel = (cell: { q: number; r: number }) => `(${cell.q}, ${cell.r})`;
 
   const engine = await HexEngine.create({
     host: stage,
@@ -575,7 +636,37 @@ import Layout from "../layouts/Layout.astro";
     maxZoom: 14,
     tierThresholds: TIER_THRESHOLDS,
     commitFraction: COMMIT_FRACTION,
+    draggable: true,
     instant,
+    onOccupantPosition(id, wx, wy) {
+      const node = nodeById.get(id);
+      if (node) {
+        node.rect.cx = wx;
+        node.rect.cy = wy;
+        placeCell(node.el, node.rect);
+      }
+    },
+    onDragStart(id) {
+      nodeById.get(id)?.el.classList.add("pg-dragging");
+      logEvent("drag", `${id} picked up`);
+    },
+    onMove({ id, from, to }) {
+      logEvent("move", `${id} ${cellLabel(from)} → ${cellLabel(to)}`);
+    },
+    onDrop({ id, at }) {
+      nodeById.get(id)?.el.classList.remove("pg-dragging");
+      logEvent("drop", `${id} settled at ${cellLabel(at)}`);
+    },
+    onBond({ id, partner }) {
+      logEvent("bond", `${id} ↔ ${partner}`);
+    },
+    onUnbond({ id, partner }) {
+      logEvent("unbond", `${id} ↮ ${partner}`);
+    },
+    onPan() {
+      const cam = engine.cameraState;
+      logEvent("pan", `camera at (${Math.round(cam.x)}, ${Math.round(cam.y)})`, true);
+    },
     onCameraChange(state, visibleCells) {
       hud.z.textContent = state.z.toFixed(2);
       hud.px.textContent = `${Math.round(hexWidth(HEX_SIDE) * state.z)}px`;
@@ -589,12 +680,23 @@ import Layout from "../layouts/Layout.astro";
     },
     onCommitChange(committed) {
       if (!committed) {
+        logEvent("commit", `${committedNode?.name ?? "?"} closed`);
         committedNode?.el.classList.remove("pg-loading");
         committedNode = null;
         lastExitAt = performance.now();
       }
     },
   });
+
+  // Dossiers drag; the hub's category satellites stay pinned —
+  // the per-occupant override the current hp-grid also supports.
+  for (const node of nodes) {
+    engine.addOccupant({
+      id: node.name,
+      cell: { q: node.q, r: node.r },
+      draggable: node.kind === "dossier",
+    });
+  }
 
   /** Zoom-as-navigation: zooming a category past committed scale
    * with the cell in view opens it — no click required. */
@@ -626,6 +728,7 @@ import Layout from "../layouts/Layout.astro";
 
   function commitTo(node: PlaygroundNode): void {
     committedNode = node;
+    logEvent("commit", `${node.name} opened`);
     engine.commitTo(node.rect);
     // pjax stand-in: the cap renders instantly from tier-1 data,
     // the band arrives after a simulated fetch.

@@ -5,7 +5,6 @@
   --hp-* tokens off a host element via getComputedStyle and
   re-reads when the theme flips — themes keep flowing through
   custom properties, never through JS-set visual state.
-  (PLAN.hp-grid-smoothness.md § Decisions › Token bridge)
 */
 import { parseCssColor } from "../lib/css-color.js";
 

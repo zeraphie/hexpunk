@@ -4,7 +4,6 @@
   Maps a cell's apparent (on-screen) size to a content tier —
   the semantic-zoom ladder: identity → summary → dossier → page.
   Pure math; consumers decide what each tier displays.
-  (PLAN.hp-grid-smoothness.md § Decisions › Semantic-zoom content model)
 */
 
 /**

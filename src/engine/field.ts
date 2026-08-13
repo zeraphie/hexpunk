@@ -6,15 +6,14 @@
   inside a render-group world container the camera transforms.
   Zoom bands re-stroke the one shared hex so apparent stroke
   width holds steady at any zoom.
-  (PLAN.hp-grid-smoothness.md § Phase 2 research findings › Field)
 */
 import { Container, Graphics, GraphicsContext, WebGLRenderer } from "pixi.js";
 import { axialToWorld, colRange, hexCorners, rowRange } from "./lattice.js";
 import type { AxialCoord, CameraState, EngineSkin } from "./types.js";
 
 /** Hard cap on pooled field cells — past this the visible range is
- * partially drawn rather than the pool growing unbounded. The
- * proper LOD floor for deep zoom-out is a P4 concern. */
+ * partially drawn rather than the pool growing unbounded. A real
+ * LOD floor for deep zoom-out is future work. */
 const POOL_MAX = 3500;
 
 /** Highlight ring inset so it reads inside the field stroke. */
@@ -69,7 +68,7 @@ export class FieldRenderer {
     return new FieldRenderer(renderer, options);
   }
 
-  /** The context's actual rasterizer — feeds tier detection (Q8). */
+  /** The context's actual rasterizer — feeds software detection. */
   get rendererString(): string {
     const gl = this.renderer.gl;
     return String(gl.getParameter(gl.RENDERER) ?? "unknown");

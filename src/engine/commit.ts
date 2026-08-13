@@ -6,7 +6,6 @@
   horizontal pan, and clamps vertical pan to the cell — reading
   is scrolling, leaving is zooming out. The camera itself is the
   navigation transition.
-  (PLAN.hp-grid-smoothness.md § Decisions › Semantic-zoom content model)
 */
 import type { Camera } from "./camera.js";
 import type { CameraState, WorldRect } from "./types.js";
@@ -19,7 +18,7 @@ const EDGE_PADDING = 24;
 
 /** Zooming out past this fraction of the entry threshold ends the
  * commit — slightly under 1 so the exit needs a deliberate pull,
- * a stand-in for real hysteresis until P4 tunes it. */
+ * a stand-in until real hysteresis is tuned. */
 const EXIT_FRACTION = 0.9;
 
 export interface CommitOptions {
