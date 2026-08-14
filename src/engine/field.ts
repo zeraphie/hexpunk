@@ -69,6 +69,12 @@ export class FieldRenderer {
       autoDensity: true,
       antialias: true,
       backgroundAlpha: 0,
+      // Required by the render-on-demand model: the default discards
+      // the buffer after each compositing pass, so a region that was
+      // off-screen at draw time re-composites as blank when scrolled
+      // into view. Apps that redraw every frame never notice; this
+      // one can go many seconds without drawing. Costs one GPU copy.
+      preserveDrawingBuffer: true,
     });
     return new FieldRenderer(renderer, options);
   }
