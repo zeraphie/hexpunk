@@ -126,8 +126,19 @@ const HUD_BUTTONS = [
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
     <canvas id="pg-canvas"></canvas>
     <div id="pg-overlay"></div>
-    <div class="pg-hud">
+    <div class="pg-hud" id="pg-hud">
+      <button
+        type="button"
+        id="pg-hud-toggle"
+        class="pg-hud-toggle"
+        aria-expanded="true"
+        aria-controls="pg-hud-body"
+      >
+        <span class="pg-hud-toggle-mark" aria-hidden="true"></span>
+        <hp-visually-hidden>Toggle the controls</hp-visually-hidden>
+      </button>
       <div>zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
+      <div id="pg-hud-body">
       <div>tier <b id="pg-tier">0</b> · cells <b id="pg-cells">0</b></div>
       <div class="pg-hud-buttons">
         {
@@ -169,6 +180,7 @@ const HUD_BUTTONS = [
           ))
         }
       </div>
+      </div>
     </div>
   </div>
 
@@ -203,6 +215,9 @@ const HUD_BUTTONS = [
   .pg-stage[data-pg-hover="draggable"] canvas {
     cursor: grab;
   }
+  .pg-stage[data-pg-hover="divable"] canvas {
+    cursor: pointer;
+  }
   .pg-stage[data-pg-drag="active"] canvas {
     cursor: grabbing;
   }
@@ -217,7 +232,7 @@ const HUD_BUTTONS = [
     top: 0.75rem;
     left: 0.75rem;
     z-index: 1;
-    padding: 0.5rem 0.9rem 0.7rem;
+    padding: 0.5rem 2rem 0.7rem 0.9rem;
     background: color-mix(in srgb, var(--hp-surface-container-lowest) 85%, transparent);
     border: 1px solid var(--hp-outline-variant);
     font-size: 0.85rem;
@@ -232,6 +247,46 @@ const HUD_BUTTONS = [
     gap: 0.3rem;
     margin-top: 0.35rem;
   }
+
+  /* Collapsed, the panel keeps only the live readout — enough to know
+     where the camera is without covering what it's looking at. */
+  .pg-hud-toggle {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background: none;
+    border: 1px solid var(--hp-outline-variant);
+    color: var(--hp-on-surface-variant);
+    cursor: pointer;
+  }
+  .pg-hud-toggle:hover {
+    border-color: var(--hp-outline);
+    color: var(--hp-primary-bright);
+  }
+  .pg-hud-toggle:focus-visible {
+    outline: 2px solid var(--hp-outline);
+    outline-offset: 2px;
+  }
+  .pg-hud-toggle-mark {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-left: 1px solid currentcolor;
+    border-bottom: 1px solid currentcolor;
+    transform: translateY(-15%) rotate(45deg);
+    transition: transform 120ms ease;
+  }
+  .pg-hud-toggle[aria-expanded="false"] .pg-hud-toggle-mark {
+    transform: translateY(15%) rotate(-135deg);
+  }
+  #pg-hud-body[hidden] {
+    display: none;
+  }
+
   .pg-props {
     display: grid;
     gap: 0.35rem;
@@ -1041,11 +1096,23 @@ const HUD_BUTTONS = [
             logEvent("pan", `camera at (${Math.round(cam.x)}, ${Math.round(cam.y)})`, true);
           }
         },
+        onActivate({ occupant }) {
+          if (!engine || engine.dived || !occupant) {
+            return;
+          }
+          const node = nodeById.get(occupant);
+          if (node?.kind === "category") {
+            diveInto(node);
+          }
+        },
         onHoverCell(cell) {
           // Grab cursor only where a drag would actually start.
           const occupant = cell ? engine?.occupancy.occupantAt(cell) : null;
+          const node = occupant ? nodeById.get(occupant) : undefined;
           if (occupant && engine?.canDrag(occupant)) {
             stage.dataset.pgHover = "draggable";
+          } else if (node?.kind === "category" && !engine?.dived) {
+            stage.dataset.pgHover = "divable";
           } else {
             delete stage.dataset.pgHover;
           }
@@ -1258,6 +1325,14 @@ const HUD_BUTTONS = [
       tourStep++;
       engine.flyTo(apparent / hexWidth(side), 0, 0);
     }
+  });
+
+  const hudToggle = document.getElementById("pg-hud-toggle")!;
+  const hudBody = document.getElementById("pg-hud-body")!;
+  hudToggle.addEventListener("click", () => {
+    const expanded = hudToggle.getAttribute("aria-expanded") === "true";
+    hudToggle.setAttribute("aria-expanded", String(!expanded));
+    hudBody.hidden = expanded;
   });
 
   const themeWatcher = new ThemeWatcher(() => {

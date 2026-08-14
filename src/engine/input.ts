@@ -24,6 +24,12 @@ const VELOCITY_WINDOW = 100;
 /** Flicks slower than this (px/ms) don't glide. */
 const MIN_FLING_SPEED = 0.05;
 
+/** Screen-pixel slop within which a press-and-release still counts as
+ * a click rather than a drag. Covers hand jitter without swallowing
+ * deliberate movement; duration is deliberately NOT part of the test,
+ * since holding still on a link and releasing is still a click. */
+const TAP_SLOP_PX = 5;
+
 /** Mouse-wheel deltas clamp here before the exponential zoom map
  * so one notch (±100) and a trackpad tick (±2) both feel right. */
 const WHEEL_DELTA_CLAMP = 20;
@@ -43,6 +49,9 @@ export interface GestureOptions {
    * host-level flag and per-occupant overrides together. */
   isDraggable: (id: string) => boolean;
   onHover: (cell: AxialCoord | null) => void;
+  /** A click — pressed and released without travelling. Consumers
+   * decide what activating a cell means. */
+  onActivate?: (detail: { cell: AxialCoord; occupant: string | null }) => void;
   onPan?: () => void;
   /** Schedule a frame — drag mutations don't touch the camera,
    * so they can't ride its onChange invalidation. */
@@ -53,6 +62,8 @@ export class GestureController {
   private readonly options: GestureOptions;
   private mode: "pan" | "drag" | null = null;
   private samples: [number, number, number][] = [];
+  /** Press origin in client px, for the click-vs-drag test. */
+  private pressedAt: [number, number] | null = null;
 
   constructor(options: GestureOptions) {
     this.options = options;
@@ -91,6 +102,7 @@ export class GestureController {
       this.options;
     camera.stopAnimations();
     this.samples = [[event.clientX, event.clientY, performance.now()]];
+    this.pressedAt = [event.clientX, event.clientY];
     // Capture is best-effort: it can throw when the pointer is
     // already gone (pen lifted between events) and its loss only
     // degrades edge-of-element tracking, never the gesture itself.
@@ -145,17 +157,27 @@ export class GestureController {
     }
     const mode = this.mode;
     this.mode = null;
+    const pressedAt = this.pressedAt;
+    this.pressedAt = null;
     try {
       this.options.canvas.releasePointerCapture(event.pointerId);
     } catch {
       // was never captured — nothing to release
+    }
+    const travelled = pressedAt
+      ? Math.hypot(event.clientX - pressedAt[0], event.clientY - pressedAt[1])
+      : Number.POSITIVE_INFINITY;
+    const clicked = travelled <= TAP_SLOP_PX;
+    if (clicked) {
+      this.emitActivate(event);
     }
     if (mode === "drag") {
       this.options.drag.drop();
       this.options.requestRender();
       return;
     }
-    if (this.options.dive.dived) {
+    // A click never flings, and a dived page has no camera to throw.
+    if (clicked || this.options.dive.dived) {
       return;
     }
     const now = performance.now();
@@ -173,6 +195,17 @@ export class GestureController {
       this.options.camera.startInertia(vx, vy, now);
     }
   };
+
+  private emitActivate(event: PointerEvent): void {
+    const { camera, hexSide, occupancy, onActivate } = this.options;
+    if (!onActivate) {
+      return;
+    }
+    const [sx, sy] = this.local(event);
+    const [wx, wy] = camera.screenToWorld(sx, sy);
+    const cell = worldToAxial(wx, wy, hexSide);
+    onActivate({ cell, occupant: occupancy.occupantAt(cell) });
+  }
 
   private readonly handlePointerLeave = (): void => {
     if (this.mode === null) {

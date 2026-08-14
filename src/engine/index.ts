@@ -75,6 +75,10 @@ export interface HexEngineOptions {
   instant?: boolean;
   onTierChange?: (tier: number) => void;
   onHoverCell?: (cell: AxialCoord | null) => void;
+  /** A cell was clicked — pressed and released without travelling, so
+   * a drag or pan never took over. The consumer decides what
+   * activation means (diving in, selecting, opening). */
+  onActivate?: (detail: { cell: AxialCoord; occupant: string | null }) => void;
   onCameraChange?: (state: CameraState, visibleCells: number) => void;
   onDiveChange?: (dived: boolean) => void;
   onPan?: () => void;
@@ -173,6 +177,7 @@ export class HexEngine {
         this.options.onHoverCell?.(cell);
         this.invalidate();
       },
+      onActivate: options.onActivate,
       onPan: options.onPan,
       requestRender: () => this.invalidate(),
     });
