@@ -134,7 +134,13 @@ const HUD_BUTTONS = [
         aria-expanded="true"
         aria-controls="pg-hud-body"
       >
-        <span class="pg-hud-toggle-mark" aria-hidden="true"></span>
+        <hp-pixel
+          type="dropside"
+          pixel-size="3"
+          interactive
+          aria-pressed="true"
+          aria-hidden="true"
+        ></hp-pixel>
         <hp-visually-hidden>Toggle the controls</hp-visually-hidden>
       </button>
       <div>zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
@@ -272,16 +278,14 @@ const HUD_BUTTONS = [
     outline: 2px solid var(--hp-outline);
     outline-offset: 2px;
   }
-  .pg-hud-toggle-mark {
-    width: 0.6rem;
-    height: 0.6rem;
-    border-left: 1px solid currentcolor;
-    border-bottom: 1px solid currentcolor;
-    transform: translateY(-15%) rotate(45deg);
-    transition: transform 120ms ease;
-  }
-  .pg-hud-toggle[aria-expanded="false"] .pg-hud-toggle-mark {
-    transform: translateY(15%) rotate(-135deg);
+  /* The pixel art carries the state itself: chevron-left while open
+     (click closes), dotted square when closed until hovered, where it
+     points right (click opens). aria-hidden because the button already
+     has a name — the aria-pressed attribute is only hp-pixel's CSS
+     hook for its toggled frame. */
+  .pg-hud-toggle hp-pixel {
+    display: block;
+    color: inherit;
   }
   #pg-hud-body[hidden] {
     display: none;
@@ -1329,9 +1333,11 @@ const HUD_BUTTONS = [
 
   const hudToggle = document.getElementById("pg-hud-toggle")!;
   const hudBody = document.getElementById("pg-hud-body")!;
+  const hudMark = hudToggle.querySelector("hp-pixel")!;
   hudToggle.addEventListener("click", () => {
     const expanded = hudToggle.getAttribute("aria-expanded") === "true";
     hudToggle.setAttribute("aria-expanded", String(!expanded));
+    hudMark.setAttribute("aria-pressed", String(!expanded));
     hudBody.hidden = expanded;
   });
 
