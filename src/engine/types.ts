@@ -38,4 +38,9 @@ export interface EngineSkin {
   strokeWidth: number;
   highlightColor: number;
   highlightWidth: number;
+  tetherColor: number;
+  tetherIdleColor: number;
+  tetherWidth: number;
+  /** Arrowhead length for directed tethers, in apparent pixels. */
+  tetherArrowSize: number;
 }

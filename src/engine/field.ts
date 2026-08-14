@@ -9,6 +9,7 @@
 */
 import { Container, Graphics, GraphicsContext, WebGLRenderer } from "pixi.js";
 import { axialToWorld, colRange, hexCorners, rowRange } from "./lattice.js";
+import type { TetherPath } from "./tether.js";
 import type { AxialCoord, CameraState, EngineSkin } from "./types.js";
 
 /** Hard cap on pooled field cells — past this the visible range is
@@ -31,6 +32,7 @@ export class FieldRenderer {
   private readonly renderer: WebGLRenderer;
   private readonly world: Container;
   private readonly cellLayer: Container;
+  private readonly tetherLayer: Graphics;
   private readonly highlight: Graphics;
   private readonly pool: Graphics[] = [];
   private readonly hexSide: number;
@@ -48,9 +50,12 @@ export class FieldRenderer {
     this.height = options.height;
     this.world = new Container({ isRenderGroup: true });
     this.cellLayer = new Container();
+    // Arcs sit above the field but below the hover ring, so a
+    // highlighted cell still reads as the topmost thing.
+    this.tetherLayer = new Graphics();
     this.highlight = new Graphics();
     this.highlight.visible = false;
-    this.world.addChild(this.cellLayer, this.highlight);
+    this.world.addChild(this.cellLayer, this.tetherLayer, this.highlight);
   }
 
   /** Async because Pixi v8 renderer init is async. */
@@ -94,6 +99,46 @@ export class FieldRenderer {
     const [x, y] = axialToWorld(cell.q, cell.r, this.hexSide);
     this.highlight.position.set(x, y);
     this.highlight.visible = true;
+  }
+
+  /**
+   * Redraw the tether layer. Widths divide by the live zoom so arcs
+   * hold their apparent weight; unlike the field's banded hexes this
+   * is exact, because a handful of arcs re-tessellate for free.
+   */
+  drawTethers(paths: readonly TetherPath[], zoom: number): void {
+    const layer = this.tetherLayer;
+    layer.clear();
+    if (paths.length === 0) {
+      return;
+    }
+    const width = this.skin.tetherWidth / zoom;
+    const arrow = this.skin.tetherArrowSize / zoom;
+    for (const path of paths) {
+      const color = path.state === "idle" ? this.skin.tetherIdleColor : this.skin.tetherColor;
+      layer
+        .moveTo(path.fromX, path.fromY)
+        .bezierCurveTo(path.c1x, path.c1y, path.c2x, path.c2y, path.toX, path.toY)
+        .stroke({ width, color, cap: "round" });
+      if (!path.directed) {
+        continue;
+      }
+      // The curve's tangent at t=1 runs from the last control point
+      // to the endpoint, so the head always sits flush to the face.
+      const angle = Math.atan2(path.toY - path.c2y, path.toX - path.c2x);
+      const spread = Math.PI / 7;
+      layer
+        .moveTo(path.toX, path.toY)
+        .lineTo(
+          path.toX - arrow * Math.cos(angle - spread),
+          path.toY - arrow * Math.sin(angle - spread)
+        )
+        .lineTo(
+          path.toX - arrow * Math.cos(angle + spread),
+          path.toY - arrow * Math.sin(angle + spread)
+        )
+        .fill({ color });
+    }
   }
 
   /** Cull to the camera's visible axial range, then draw. Returns

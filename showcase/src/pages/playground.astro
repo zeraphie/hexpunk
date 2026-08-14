@@ -22,9 +22,11 @@ const ICON_SVG_ATTRS = {
     page when you zoom all the way in. Drag empty space to pan, wheel to pan,
     <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a dived page.
     Dossier cells (RELAY-07, SENTRY-K, ARCHIVE-3) are draggable — the bright hex shows
-    where they'll snap; the category cells are pinned. The panel in the corner exercises
-    the grid props one by one, and everything the interaction does is mirrored in the
-    event log below.
+    where they'll snap; the category cells are pinned. Turn on <code>tetherable</code> and
+    a drag that lands on another cell toggles an arc between the pair instead of moving it;
+    arcs re-anchor around obstacles as cells move. The panel in the corner exercises the
+    grid props one by one, and everything the interaction does is mirrored in the event log
+    below.
   </p>
 
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
@@ -90,8 +92,16 @@ const ICON_SVG_ATTRS = {
         </div>
         <div class="pg-prop">
           <span class="pg-prop-label">tetherable</span>
-          <span class="pg-prop-options">
-            <hp-button size="xs" disabled>soon</hp-button>
+          <span class="pg-prop-options" id="pg-tetherable">
+            <hp-button size="xs" data-value="on">on</hp-button>
+            <hp-button size="xs" data-value="off" aria-pressed="true">off</hp-button>
+          </span>
+        </div>
+        <div class="pg-prop">
+          <span class="pg-prop-label">directed</span>
+          <span class="pg-prop-options" id="pg-directed">
+            <hp-button size="xs" data-value="on">on</hp-button>
+            <hp-button size="xs" data-value="off" aria-pressed="true">off</hp-button>
           </span>
         </div>
       </div>
@@ -101,9 +111,9 @@ const ICON_SVG_ATTRS = {
   <h2>Event log</h2>
   <p>
     The engine surfaces the same interaction events hp-grid consumers rely on today —
-    move, drop, bond, unbond, pan — plus dive/surface and layout repacks. Newest
-    first, capped at nine; a continuing pan updates its entry instead of flooding the
-    list.
+    move, drop, bond, unbond, tether, untether, pan — plus dive/surface and layout
+    repacks. Newest first, capped at nine; a continuing pan updates its entry instead of
+    flooding the list.
   </p>
   <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
 </Layout>
@@ -560,9 +570,17 @@ const ICON_SVG_ATTRS = {
     size: "sm" as SizeName,
     layout: "free" as LayoutName,
     draggable: true,
+    tetherable: false,
+    directed: false,
     diveFraction: 0.55,
     instant: prefersReduced,
   };
+
+  /** Arcs the demo starts with — the hub wired to its feeds. */
+  const SEED_TETHERS: [string, string][] = [
+    ["RELAY-07", "ARCHIVE-3"],
+    ["SENTRY-K", "ARCHIVE-3"],
+  ];
 
   let engine: HexEngine | null = null;
   let nodes: PlaygroundNode[] = [];
@@ -581,12 +599,19 @@ const ICON_SVG_ATTRS = {
   function buildSkin(): EngineSkin {
     const stroke = readTokenColor(stage, "--hp-outline-variant", "#2a4955");
     const bright = readTokenColor(stage, "--hp-outline", "#0088cc");
+    // Arcs take the secondary hue, matching hp-tether's own palette.
+    const arc = readTokenColor(stage, "--hp-secondary", "#00cc88");
+    const arcIdle = readTokenColor(stage, "--hp-secondary-container", "#005b3d");
     return {
       strokeColor: stroke.color,
       strokeAlpha: stroke.alpha,
       strokeWidth: 1.5,
       highlightColor: bright.color,
       highlightWidth: 2.5,
+      tetherColor: arc.color,
+      tetherIdleColor: arcIdle.color,
+      tetherWidth: 2,
+      tetherArrowSize: 11,
     };
   }
 
@@ -903,6 +928,7 @@ const ICON_SVG_ATTRS = {
         tierThresholds: TIER_THRESHOLDS,
         diveFraction: settings.diveFraction,
         draggable: settings.draggable,
+        tetherable: settings.tetherable,
         instant: settings.instant,
         onOccupantPosition(id, wx, wy) {
           const node = nodeById.get(id);
@@ -932,6 +958,12 @@ const ICON_SVG_ATTRS = {
         },
         onUnbond({ id, partner }) {
           logEvent("unbond", `${id} ↮ ${partner}`);
+        },
+        onTether({ tether }) {
+          logEvent("tether", `${tether.from} → ${tether.to}`);
+        },
+        onUntether({ tether }) {
+          logEvent("untether", `${tether.from} ⇥ ${tether.to}`);
         },
         onPan() {
           if (engine) {
@@ -972,6 +1004,9 @@ const ICON_SVG_ATTRS = {
           cell: node.cell,
           draggable: node.kind === "category" ? false : undefined,
         });
+      }
+      for (const [from, to] of SEED_TETHERS) {
+        engine.addTether(from, to, { directed: settings.directed });
       }
       engine.jumpTo(1, 0, 0);
       console.log("[playground] renderer:", engine.rendererString);
@@ -1082,6 +1117,21 @@ const ICON_SVG_ATTRS = {
   });
   wireGroup("pg-motion", (value) => {
     settings.instant = value === "instant" || prefersReduced;
+    void boot();
+  });
+  wireGroup("pg-tetherable", (value) => {
+    settings.tetherable = value === "on";
+    if (engine) {
+      engine.tetherable = settings.tetherable;
+    }
+    logEvent(
+      "tetherable",
+      settings.tetherable ? "drops toggle arcs" : "drops move cells"
+    );
+  });
+  wireGroup("pg-directed", (value) => {
+    settings.directed = value === "on";
+    // Arrowheads are per-arc, so re-seed to show the change.
     void boot();
   });
 

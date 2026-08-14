@@ -27,6 +27,12 @@ export interface DragOptions {
   hexSide: number;
   /** Reduced-motion: drops land instantly, no settle animation. */
   instant?: boolean;
+  /** Graph-editor mode: a drop onto another occupant toggles a
+   * tether between the pair and the source returns home, instead
+   * of the source claiming a cell. */
+  tetherMode?: () => boolean;
+  /** Fires when a tether-mode drop lands on another occupant. */
+  onTetherDrop?: (detail: { source: string; target: string }) => void;
   /** Position the occupant's visual at a world point. */
   onPosition: (id: string, wx: number, wy: number) => void;
   /** Live snap target while dragging (null = out of range). */
@@ -107,11 +113,19 @@ export class DragController {
     drag.wy = pointerWy + drag.grabDy;
     this.options.onPosition(drag.id, drag.wx, drag.wy);
     const under = worldToAxial(drag.wx, drag.wy, this.options.hexSide);
-    const target = this.options.occupancy.findNearestFree(under, drag.id);
+    // Tether mode highlights whatever cell the pointer is over —
+    // including occupied ones, since those are the tether targets.
+    const target = this.tethering()
+      ? under
+      : this.options.occupancy.findNearestFree(under, drag.id);
     if (!coordsEqual(target, drag.target)) {
       drag.target = target;
       this.options.onTargetChange(target);
     }
+  }
+
+  private tethering(): boolean {
+    return this.options.tetherMode?.() ?? false;
   }
 
   /** Release: claim the target (origin when out of range), fire
@@ -120,10 +134,22 @@ export class DragController {
     if (!this.active) {
       return;
     }
-    const { occupancy, hexSide, onMove, onBond, onUnbond } = this.options;
+    const { occupancy, onMove, onBond, onUnbond } = this.options;
     const drag = this.active;
     this.active = null;
     this.options.onTargetChange(null);
+
+    // Tether mode: landing on another occupant toggles an arc and
+    // sends the source home; empty cells still move normally.
+    if (this.tethering() && drag.target) {
+      const landedOn = occupancy.occupantAt(drag.target);
+      if (landedOn && landedOn !== drag.id) {
+        this.options.onTetherDrop?.({ source: drag.id, target: landedOn });
+        this.settle(drag, drag.from);
+        return;
+      }
+    }
+
     const to = drag.target ?? drag.from;
     const moved = !coordsEqual(to, drag.from);
     if (moved) {
@@ -142,7 +168,13 @@ export class DragController {
         }
       }
     }
-    const [toX, toY] = axialToWorld(to.q, to.r, hexSide);
+    this.settle(drag, to);
+  }
+
+  /** Animate the released occupant into `to` (or land it instantly
+   * under reduced motion), then report the drop. */
+  private settle(drag: ActiveDrag, to: AxialCoord): void {
+    const [toX, toY] = axialToWorld(to.q, to.r, this.options.hexSide);
     if (this.options.instant) {
       this.options.onPosition(drag.id, toX, toY);
       this.options.onDrop?.({ id: drag.id, at: to });

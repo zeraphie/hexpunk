@@ -14,10 +14,11 @@ import { Camera } from "./camera.js";
 import { DiveController } from "./dive.js";
 import { DragController, type DragEventDetail } from "./drag.js";
 import { FieldRenderer } from "./field.js";
-import { hexWidth } from "./lattice.js";
+import { axialToWorld, hexWidth } from "./lattice.js";
 import { OccupancyMap } from "./occupancy.js";
 import { prepareOverlayLayer, syncOverlay } from "./overlay.js";
 import { GestureController } from "./input.js";
+import { TetherController, type TetherDef } from "./tether.js";
 import { tierFor } from "./tiers.js";
 import type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
 
@@ -28,6 +29,7 @@ export { FieldRenderer } from "./field.js";
 export * from "./lattice.js";
 export { OccupancyMap } from "./occupancy.js";
 export { placeCell, prepareOverlayLayer, syncOverlay } from "./overlay.js";
+export { TetherController, type TetherDef, type TetherPath } from "./tether.js";
 export { tierFor } from "./tiers.js";
 export { readTokenColor, ThemeWatcher, type PackedColor } from "./tokens.js";
 export type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
@@ -55,6 +57,9 @@ export interface HexEngineOptions {
   diveFraction?: number;
   /** Host-level drag opt-in; per-occupant `draggable` overrides. */
   draggable?: boolean;
+  /** Graph-editor mode: dropping an occupant onto another toggles
+   * a tether between them instead of moving it. */
+  tetherable?: boolean;
   /** Reduced-motion: animations jump instead of tweening. */
   instant?: boolean;
   onTierChange?: (tier: number) => void;
@@ -69,12 +74,19 @@ export interface HexEngineOptions {
   onDrop?: (detail: { id: string; at: AxialCoord }) => void;
   onBond?: (detail: { id: string; partner: string }) => void;
   onUnbond?: (detail: { id: string; partner: string }) => void;
+  onTether?: (detail: { tether: TetherDef }) => void;
+  onUntether?: (detail: { tether: TetherDef }) => void;
+  /** An arc finished choosing (or re-choosing) its vertex pair. */
+  onTetherSettle?: (detail: { id: string; fromVertex: number; toVertex: number }) => void;
 }
 
 export class HexEngine {
   /** Host-level drag opt-in, live-tunable; per-occupant
    * `draggable` overrides keep winning either way. */
   draggable: boolean;
+
+  /** Graph-editor mode, live-tunable. */
+  tetherable: boolean;
 
   private readonly options: HexEngineOptions;
   private readonly camera: Camera;
@@ -84,15 +96,28 @@ export class HexEngine {
   private readonly gestures: GestureController;
   private readonly resizeObserver: ResizeObserver;
   readonly occupancy = new OccupancyMap();
+  readonly tethers: TetherController;
   private readonly draggableOverrides = new Map<string, boolean>();
+  /** Live world centre of a dragged occupant — arcs follow it while
+   * the drag runs, and fall back to the axial centre otherwise. */
+  private readonly livePositions = new Map<string, [number, number]>();
   private frameHandle = 0;
   private resizeQueued = false;
   private lastTier = -1;
+  private tetherSeq = 0;
 
   private constructor(options: HexEngineOptions, field: FieldRenderer) {
     this.options = options;
     this.field = field;
     this.draggable = options.draggable ?? false;
+    this.tetherable = options.tetherable ?? false;
+    this.tethers = new TetherController({
+      occupancy: this.occupancy,
+      hexSide: options.hexSide,
+      instant: options.instant,
+      positionOf: (id) => this.positionOf(id),
+      onSettle: (detail) => options.onTetherSettle?.(detail),
+    });
     this.camera = new Camera({
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
@@ -109,14 +134,22 @@ export class HexEngine {
       occupancy: this.occupancy,
       hexSide: options.hexSide,
       instant: options.instant,
-      onPosition: (id, wx, wy) => options.onOccupantPosition?.(id, wx, wy),
+      tetherMode: () => this.tetherable,
+      onTetherDrop: ({ source, target }) => this.toggleTether(source, target),
+      onPosition: (id, wx, wy) => {
+        this.livePositions.set(id, [wx, wy]);
+        options.onOccupantPosition?.(id, wx, wy);
+      },
       onTargetChange: (target) => {
         this.field.setHighlight(target);
         this.invalidate();
       },
       onDragStart: options.onDragStart,
       onMove: options.onMove,
-      onDrop: options.onDrop,
+      onDrop: (detail) => {
+        this.livePositions.delete(detail.id);
+        options.onDrop?.(detail);
+      },
       onBond: options.onBond,
       onUnbond: options.onUnbond,
     });
@@ -205,6 +238,64 @@ export class HexEngine {
   removeOccupant(id: string): void {
     this.occupancy.remove(id);
     this.draggableOverrides.delete(id);
+    this.livePositions.delete(id);
+    // An arc with no endpoint has nothing to anchor to.
+    this.tethers.removeFor(id);
+  }
+
+  /** World centre of an occupant — its live drag position while one
+   * is in flight, else the centre of the cell it holds. */
+  private positionOf(id: string): [number, number] | null {
+    const live = this.livePositions.get(id);
+    if (live) {
+      return live;
+    }
+    const cell = this.occupancy.cellOf(id);
+    return cell ? axialToWorld(cell.q, cell.r, this.options.hexSide) : null;
+  }
+
+  /** Create an arc between two occupants. Ignored when one already
+   * exists between the pair in either direction. */
+  addTether(
+    from: string,
+    to: string,
+    options: { directed?: boolean; state?: "idle" | "active" } = {}
+  ): TetherDef | null {
+    if (from === to || this.tethers.find(from, to)) {
+      return null;
+    }
+    const tether: TetherDef = {
+      id: `tether-${++this.tetherSeq}`,
+      from,
+      to,
+      state: options.state ?? "active",
+      directed: options.directed ?? false,
+    };
+    this.tethers.add(tether);
+    this.options.onTether?.({ tether });
+    this.invalidate();
+    return tether;
+  }
+
+  removeTether(id: string): void {
+    const tether = this.tethers.list().find((candidate) => candidate.id === id);
+    if (!tether) {
+      return;
+    }
+    this.tethers.remove(id);
+    this.options.onUntether?.({ tether });
+    this.invalidate();
+  }
+
+  /** Create the arc between a pair, or remove the existing one —
+   * the drop-on-occupant behaviour in graph-editor mode. */
+  toggleTether(from: string, to: string): void {
+    const existing = this.tethers.find(from, to);
+    if (existing) {
+      this.removeTether(existing.id);
+      return;
+    }
+    this.addTether(from, to);
   }
 
   setSkin(skin: EngineSkin): void {
@@ -272,6 +363,7 @@ export class HexEngine {
       this.dive.clampPan();
     }
     const state = this.camera.state;
+    this.field.drawTethers(this.tethers.paths(now), state.z);
     const visible = this.field.render(state);
     syncOverlay(this.options.overlay, state);
     const tier = this.tier;
@@ -280,7 +372,7 @@ export class HexEngine {
       this.options.onTierChange?.(tier);
     }
     this.options.onCameraChange?.(state, visible);
-    if (cameraMoving || dragSettling) {
+    if (cameraMoving || dragSettling || this.tethers.animating) {
       this.frameHandle = requestAnimationFrame(this.frame);
     }
   };

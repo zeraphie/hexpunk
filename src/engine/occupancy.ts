@@ -29,6 +29,11 @@ export class OccupancyMap {
     return this.byId.get(id) ?? null;
   }
 
+  /** Every placed occupant id. */
+  ids(): Iterable<string> {
+    return this.byId.keys();
+  }
+
   /** Claim a cell. Refuses (returns false) if another occupant
    * holds it — callers resolve a free cell first. */
   place(id: string, cell: AxialCoord): boolean {
