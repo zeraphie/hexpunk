@@ -127,24 +127,27 @@ const HUD_BUTTONS = [
     <canvas id="pg-canvas"></canvas>
     <div id="pg-overlay"></div>
     <div class="pg-hud" id="pg-hud">
-      <button
-        type="button"
-        id="pg-hud-toggle"
-        class="pg-hud-toggle"
-        aria-expanded="true"
-        aria-controls="pg-hud-body"
-      >
-        <hp-pixel
-          type="dropside"
-          pixel-size="3"
-          interactive
-          aria-pressed="true"
-          aria-hidden="true"
-        ></hp-pixel>
-        <hp-visually-hidden>Toggle the controls</hp-visually-hidden>
-      </button>
-      <div>zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
-      <div id="pg-hud-body">
+      <div class="pg-hud-head">
+        <div class="pg-hud-readout">zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
+        <button
+          type="button"
+          id="pg-hud-toggle"
+          class="pg-hud-toggle"
+          aria-expanded="true"
+          aria-controls="pg-hud-body"
+        >
+          <hp-pixel
+            type="dropside"
+            pixel-size="3"
+            interactive
+            aria-pressed="true"
+            aria-hidden="true"
+          ></hp-pixel>
+          <hp-visually-hidden>Toggle the controls</hp-visually-hidden>
+        </button>
+      </div>
+      <div class="pg-hud-collapse" id="pg-hud-body">
+      <div class="pg-hud-inner">
       <div>tier <b id="pg-tier">0</b> · cells <b id="pg-cells">0</b></div>
       <div class="pg-hud-buttons">
         {
@@ -185,6 +188,7 @@ const HUD_BUTTONS = [
             </div>
           ))
         }
+      </div>
       </div>
       </div>
     </div>
@@ -238,7 +242,7 @@ const HUD_BUTTONS = [
     top: 0.75rem;
     left: 0.75rem;
     z-index: 1;
-    padding: 0.5rem 2rem 0.7rem 0.9rem;
+    padding: 0.5rem 0.75rem;
     background: color-mix(in srgb, var(--hp-surface-container-lowest) 85%, transparent);
     border: 1px solid var(--hp-outline-variant);
     font-size: 0.85rem;
@@ -248,35 +252,29 @@ const HUD_BUTTONS = [
     color: var(--hp-primary-bright);
     font-weight: 400;
   }
-  .pg-hud-buttons {
+  /* The readout and the toggle share one row, so collapsed the panel
+     is exactly that row — no reserved space for an absolute button. */
+  .pg-hud-head {
     display: flex;
-    gap: 0.3rem;
-    margin-top: 0.35rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
-
-  /* Collapsed, the panel keeps only the live readout — enough to know
-     where the camera is without covering what it's looking at. */
   .pg-hud-toggle {
-    position: absolute;
-    top: 0.3rem;
-    right: 0.3rem;
     display: grid;
     place-items: center;
-    width: 1.5rem;
-    height: 1.5rem;
     padding: 0;
     background: none;
-    border: 1px solid var(--hp-outline-variant);
+    border: none;
     color: var(--hp-on-surface-variant);
     cursor: pointer;
   }
   .pg-hud-toggle:hover {
-    border-color: var(--hp-outline);
     color: var(--hp-primary-bright);
   }
   .pg-hud-toggle:focus-visible {
     outline: 2px solid var(--hp-outline);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
   /* The pixel art carries the state itself: chevron-left while open
      (click closes), dotted square when closed until hovered, where it
@@ -287,8 +285,24 @@ const HUD_BUTTONS = [
     display: block;
     color: inherit;
   }
-  #pg-hud-body[hidden] {
-    display: none;
+  /* Animating to height:auto needs a size the browser can interpolate,
+     so the region is a single grid row collapsing 1fr → 0fr. `hidden`
+     would be display:none and kill the transition, so the collapsed
+     state is inert instead. */
+  .pg-hud-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+    transition:
+      grid-template-rows 220ms var(--hp-ease-default, ease),
+      opacity 160ms ease;
+  }
+  .pg-hud-collapse[inert] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  .pg-hud-inner {
+    min-height: 0;
   }
 
   .pg-props {
@@ -627,7 +641,8 @@ const HUD_BUTTONS = [
     animation: none;
   }
   .pg-stage[data-pg-motion="instant"] .pg-cell,
-  .pg-stage[data-pg-motion="instant"] .pg-tier {
+  .pg-stage[data-pg-motion="instant"] .pg-tier,
+  .pg-stage[data-pg-motion="instant"] .pg-hud-collapse {
     transition: none;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -635,7 +650,8 @@ const HUD_BUTTONS = [
       animation: none;
     }
     .pg-cell,
-    .pg-tier {
+    .pg-tier,
+    .pg-hud-collapse {
       transition: none;
     }
   }
@@ -1338,7 +1354,7 @@ const HUD_BUTTONS = [
     const expanded = hudToggle.getAttribute("aria-expanded") === "true";
     hudToggle.setAttribute("aria-expanded", String(!expanded));
     hudMark.setAttribute("aria-pressed", String(!expanded));
-    hudBody.hidden = expanded;
+    hudBody.inert = expanded;
   });
 
   const themeWatcher = new ThemeWatcher(() => {
