@@ -105,11 +105,12 @@ export class FieldRenderer {
    * Redraw the tether layer. Widths divide by the live zoom so arcs
    * hold their apparent weight; unlike the field's banded hexes this
    * is exact, because a handful of arcs re-tessellate for free.
+   * `alpha` lets the caller fade the whole layer as it retires.
    */
-  drawTethers(paths: readonly TetherPath[], zoom: number): void {
+  drawTethers(paths: readonly TetherPath[], zoom: number, alpha = 1): void {
     const layer = this.tetherLayer;
     layer.clear();
-    if (paths.length === 0) {
+    if (paths.length === 0 || alpha <= 0) {
       return;
     }
     const width = this.skin.tetherWidth / zoom;
@@ -119,7 +120,7 @@ export class FieldRenderer {
       layer
         .moveTo(path.fromX, path.fromY)
         .bezierCurveTo(path.c1x, path.c1y, path.c2x, path.c2y, path.toX, path.toY)
-        .stroke({ width, color, cap: "round" });
+        .stroke({ width, color, alpha, cap: "round" });
       if (!path.directed) {
         continue;
       }
@@ -137,7 +138,7 @@ export class FieldRenderer {
           path.toX - arrow * Math.cos(angle + spread),
           path.toY - arrow * Math.sin(angle + spread)
         )
-        .fill({ color });
+        .fill({ color, alpha });
     }
   }
 

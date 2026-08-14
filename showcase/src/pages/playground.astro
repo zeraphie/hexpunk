@@ -26,8 +26,10 @@ const ICON_SVG_ATTRS = {
     arcs are drawn and a drag that lands on another cell toggles the arc between that pair
     instead of moving it — arcs re-anchor around obstacles as cells move. Switching it off
     hides the graph layer entirely and hands drops back to plain movement; the arcs are kept,
-    so switching back restores them. The panel exercises the grid props one by one, and
-    everything the interaction does is mirrored in the event log below.
+    so switching back restores them. Zoom far enough out and the labels and arcs retire, but
+    the cell fills stay — presence survives every zoom level so you can always see where
+    content lives. The panel exercises the grid props one by one, and everything the
+    interaction does is mirrored in the event log below.
   </p>
 
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
@@ -227,20 +229,22 @@ const ICON_SVG_ATTRS = {
      tier content is designed against the base side and counter-
      scaled via --pg-k so its APPARENT size is identical at every
      `size` setting. */
+  /* The fill is a presence marker and never retires: zoomed out past
+     every content tier you still see WHERE the occupied cells are,
+     which is what makes zooming back in navigable rather than a
+     hunt. Only the content layers are tier-gated. */
   .pg-cell {
     position: absolute;
     clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
     background: color-mix(in srgb, var(--hp-surface-container) 88%, transparent);
-    opacity: 0;
-    transition: opacity 160ms ease;
+    transition: background-color 160ms ease;
     --pg-cap: 25%;
     --pg-base: 25%;
   }
-  .pg-cell[data-tier="1"],
-  .pg-cell[data-tier="2"],
-  .pg-cell[data-tier="3"],
-  .pg-cell[data-tier="4"] {
-    opacity: 1;
+  /* Far out, lean on the accent so a marker a few pixels wide still
+     separates from the lattice behind it. */
+  .pg-cell[data-tier="0"] {
+    background: color-mix(in srgb, var(--hp-primary) 42%, var(--hp-surface-container));
   }
   .pg-cell[data-tier="4"] {
     background: color-mix(in srgb, var(--hp-surface-container-lowest) 96%, transparent);

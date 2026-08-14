@@ -19,7 +19,7 @@ import { OccupancyMap } from "./occupancy.js";
 import { prepareOverlayLayer, syncOverlay } from "./overlay.js";
 import { GestureController } from "./input.js";
 import { TetherController, type TetherDef } from "./tether.js";
-import { tierFor } from "./tiers.js";
+import { fadeAlpha, tierFor } from "./tiers.js";
 import type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
 
 export { Camera } from "./camera.js";
@@ -30,9 +30,13 @@ export * from "./lattice.js";
 export { OccupancyMap } from "./occupancy.js";
 export { placeCell, prepareOverlayLayer, syncOverlay } from "./overlay.js";
 export { TetherController, type TetherDef, type TetherPath } from "./tether.js";
-export { tierFor } from "./tiers.js";
+export { fadeAlpha, tierFor } from "./tiers.js";
 export { readTokenColor, ThemeWatcher, type PackedColor } from "./tokens.js";
 export type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
+
+/** Fraction of the gating threshold at which arcs begin to fade in —
+ * a short ramp reads as the graph resolving, not as a hard switch. */
+const TETHER_FADE_START = 0.6;
 
 export interface OccupantOptions {
   id: string;
@@ -60,6 +64,13 @@ export interface HexEngineOptions {
   /** Graph-editor mode: dropping an occupant onto another toggles
    * a tether between them instead of moving it. */
   tetherable?: boolean;
+  /**
+   * Content tier from which arcs are drawn, fading in across the
+   * threshold below it. Arcs between cells too small to label carry
+   * no readable information, so by default they retire with the
+   * first content tier. `0` keeps them at every zoom.
+   */
+  tetherMinTier?: number;
   /** Reduced-motion: animations jump instead of tweening. */
   instant?: boolean;
   onTierChange?: (tier: number) => void;
@@ -296,6 +307,23 @@ export class HexEngine {
     this.invalidate();
   }
 
+  /**
+   * Arc opacity for the current zoom: full once the gating content
+   * tier is reached, ramping to nothing below it.
+   */
+  private tetherAlpha(): number {
+    const minTier = this.options.tetherMinTier ?? 1;
+    if (minTier <= 0) {
+      return 1;
+    }
+    const gate = this.options.tierThresholds[minTier - 1];
+    if (gate === undefined) {
+      return 1;
+    }
+    const apparent = hexWidth(this.options.hexSide) * this.camera.z;
+    return fadeAlpha(apparent, gate, TETHER_FADE_START);
+  }
+
   /** World centre of an occupant — its live drag position while one
    * is in flight, else the centre of the cell it holds. */
   private positionOf(id: string): [number, number] | null {
@@ -430,9 +458,12 @@ export class HexEngine {
       this.diveNav.clampPan();
     }
     const state = this.camera.state;
-    // Arcs only exist while the graph layer is on; a frozen morph
-    // resolves on its own the next time paths are resolved.
-    this.field.drawTethers(this.tetherableFlag ? this.tethers.paths(now) : [], state.z);
+    // Arcs only exist while the graph layer is on and the zoom is
+    // close enough to read them; a frozen morph resolves on its own
+    // the next time paths are resolved.
+    const arcAlpha = this.tetherAlpha();
+    const drawArcs = this.tetherableFlag && arcAlpha > 0;
+    this.field.drawTethers(drawArcs ? this.tethers.paths(now) : [], state.z, arcAlpha);
     const visible = this.field.render(state);
     syncOverlay(this.options.overlay, state);
     const tier = this.tier;
