@@ -90,7 +90,7 @@ export class HexEngine {
   private readonly options: HexEngineOptions;
   private readonly camera: Camera;
   private readonly field: FieldRenderer;
-  private readonly dive: DiveController;
+  private readonly diveNav: DiveController;
   private readonly drag: DragController;
   private readonly gestures: GestureController;
   private readonly resizeObserver: ResizeObserver;
@@ -123,7 +123,7 @@ export class HexEngine {
       instant: options.instant,
       onChange: () => this.invalidate(),
     });
-    this.dive = new DiveController({
+    this.diveNav = new DiveController({
       camera: this.camera,
       viewport: () => ({ width: options.host.clientWidth, height: options.host.clientHeight }),
       diveFraction: options.diveFraction ?? 0.55,
@@ -156,7 +156,7 @@ export class HexEngine {
       host: options.host,
       canvas: options.canvas,
       camera: this.camera,
-      dive: this.dive,
+      dive: this.diveNav,
       drag: this.drag,
       occupancy: this.occupancy,
       hexSide: options.hexSide,
@@ -181,7 +181,7 @@ export class HexEngine {
       requestAnimationFrame(() => {
         this.resizeQueued = false;
         this.field.resize(options.host.clientWidth, options.host.clientHeight);
-        this.dive.clampPan();
+        this.diveNav.clampPan();
         this.invalidate();
       });
     });
@@ -206,7 +206,7 @@ export class HexEngine {
   }
 
   get dived(): boolean {
-    return this.dive.dived;
+    return this.diveNav.dived;
   }
 
   /**
@@ -331,7 +331,7 @@ export class HexEngine {
 
   /** Live-tune the dived-scale threshold. */
   setDiveFraction(fraction: number): void {
-    this.dive.diveFraction = fraction;
+    this.diveNav.diveFraction = fraction;
   }
 
   /** Fly the camera so the world point sits centred at `zoom`. */
@@ -354,12 +354,12 @@ export class HexEngine {
   }
 
   diveInto(rect: WorldRect): void {
-    this.dive.enter(rect);
+    this.diveNav.dive(rect);
     this.options.onDiveChange?.(true);
   }
 
   surface(): void {
-    this.dive.exit();
+    this.diveNav.surface();
   }
 
   destroy(): void {
@@ -385,8 +385,8 @@ export class HexEngine {
     this.frameHandle = 0;
     const cameraMoving = this.camera.step(now);
     const dragSettling = this.drag.step(now);
-    if (this.dive.dived && !this.camera.animating) {
-      this.dive.clampPan();
+    if (this.diveNav.dived && !this.camera.animating) {
+      this.diveNav.clampPan();
     }
     const state = this.camera.state;
     // Arcs only exist while the graph layer is on; a frozen morph
