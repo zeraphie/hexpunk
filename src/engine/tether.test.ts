@@ -117,15 +117,15 @@ describe("tether", () => {
     tracked.paths(0);
     expect(settled).toHaveLength(1);
     // Let the draw-in sweep finish so only the morph is in play.
-    tracked.paths(50);
+    tracked.paths(200);
     expect(tracked.animating).toBe(false);
 
     // Move the target far north — the old anchor is no longer best.
     occupancy.place("b", { q: 0, r: -6 });
-    tracked.paths(100);
+    tracked.paths(300);
     expect(tracked.animating).toBe(true);
     // Morph completes within its window and settles once more.
-    tracked.paths(400);
+    tracked.paths(600);
     expect(tracked.animating).toBe(false);
     expect(settled).toHaveLength(2);
     expect(controller.size).toBe(0);

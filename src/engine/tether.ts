@@ -27,8 +27,9 @@ const PULL_FRACTION = 0.25;
 const PULL_MAX = 40;
 
 /** Draw-in duration: an arc sweeps from source to target when it
- * appears, rather than popping in whole. */
-const DRAW_IN_MS = 30;
+ * appears, rather than popping in whole. Long enough to read as a
+ * stroke being drawn (~6 frames) without delaying the reveal. */
+const DRAW_IN_MS = 100;
 
 /** Unit outward vectors per vertex, radial from the hex centre.
  * Bezier control points ride these so the curve leaves and enters

@@ -4,7 +4,8 @@ import { OccupancyMap } from "./occupancy.js";
 import { TetherController } from "./tether.js";
 
 const SIDE = 64;
-const DRAW_IN_MS = 30;
+/** Mirrors the draw-in duration in tether.ts. */
+const DRAW_IN_MS = 100;
 
 function makeController(options: { instant?: boolean } = {}): TetherController {
   const occupancy = new OccupancyMap();
@@ -46,7 +47,7 @@ describe("tether draw-in", () => {
   test("the drawn tip advances monotonically toward the target", () => {
     const controller = makeController();
     controller.add({ id: "t1", from: "a", to: "b" });
-    const lengths = [0, 10, 20, DRAW_IN_MS].map((at) => {
+    const lengths = [0, DRAW_IN_MS * 0.3, DRAW_IN_MS * 0.7, DRAW_IN_MS].map((at) => {
       const path = controller.paths(at)[0]!;
       return Math.hypot(path.toX - path.fromX, path.toY - path.fromY);
     });
