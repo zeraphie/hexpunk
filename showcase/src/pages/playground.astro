@@ -11,27 +11,118 @@ const ICON_SVG_ATTRS = {
   "stroke-linejoin": "round",
   "aria-hidden": "true",
 };
+
+interface PropOption {
+  value: string;
+  /** Visible text, or omit when `icon` carries the meaning. */
+  text?: string;
+  icon?: string;
+  pressed?: boolean;
+  /** Tooltip body — what picking this option actually does. */
+  help: string;
+}
+
+interface PropGroup {
+  id: string;
+  label: string;
+  options: PropOption[];
+}
+
+const PROP_GROUPS: PropGroup[] = [
+  {
+    id: "pg-size",
+    label: "size",
+    options: [
+      { value: "sm", text: "sm", pressed: true, help: "100px cells, from --hp-hex-cell-sm." },
+      { value: "md", text: "md", help: "180px cells. Rebuilds the world at the new scale." },
+      {
+        value: "lg",
+        text: "lg",
+        help: "320px cells. Zoom out to match sm and the view is identical — camera zoom already covers this, which is why the real grid may not need a size prop at all.",
+      },
+    ],
+  },
+  {
+    id: "pg-layout",
+    label: "layout",
+    options: [
+      { value: "free", icon: move, pressed: true, help: "Cells sit at their authored q/r coordinates." },
+      { value: "spiral", icon: shell, help: "Packs cells outward from the centre in rings — a tight honeycomb." },
+      { value: "rows", icon: rows3, help: "Packs cells in reading order, four to a row." },
+    ],
+  },
+  {
+    id: "pg-draggable",
+    label: "draggable",
+    options: [
+      {
+        value: "on",
+        text: "on",
+        pressed: true,
+        help: "Dossier cells can be dragged; the bright hex shows where they'll land. Category cells override this and stay pinned.",
+      },
+      { value: "off", text: "off", help: "Every cell is fixed, so a drag anywhere pans the camera." },
+    ],
+  },
+  {
+    id: "pg-dive",
+    label: "dive at",
+    options: [
+      { value: "0.45", text: "45%", help: "A cell becomes a page once it fills 45% of the view — dives sooner." },
+      { value: "0.55", text: "55%", pressed: true, help: "Default. Dives at 55% of the view width." },
+      { value: "0.7", text: "70%", help: "Needs a deeper zoom before a cell takes over the view." },
+    ],
+  },
+  {
+    id: "pg-motion",
+    label: "motion",
+    options: [
+      {
+        value: "animated",
+        icon: play,
+        pressed: true,
+        help: "Everything animates: camera tweens, pan inertia, drag snap, arc draw-in, and the tier crossfades.",
+      },
+      {
+        value: "instant",
+        icon: zap,
+        help: "Nothing animates — every change jumps to its end state. The same path prefers-reduced-motion takes.",
+      },
+    ],
+  },
+  {
+    id: "pg-tetherable",
+    label: "tetherable",
+    options: [
+      {
+        value: "on",
+        text: "on",
+        pressed: true,
+        help: "Arcs are drawn, and dropping a cell onto another toggles the arc between that pair.",
+      },
+      { value: "off", text: "off", help: "Arcs are hidden but kept, and drops move cells again." },
+    ],
+  },
+  {
+    id: "pg-directed",
+    label: "directed",
+    options: [
+      { value: "on", text: "on", help: "Arcs gain an arrowhead at the target end." },
+      { value: "off", text: "off", pressed: true, help: "Arcs are plain curves with no direction." },
+    ],
+  },
+];
+
+const HUD_BUTTONS = [
+  { id: "pg-zoom-out", text: "−", help: "Zoom out a step from the middle of the view." },
+  { id: "pg-zoom-in", text: "+", help: "Zoom in a step on the middle of the view." },
+  { id: "pg-reset", text: "reset", help: "Back to 1x at the origin, leaving any dived page." },
+  { id: "pg-tour", text: "tour", help: "Fly to the next content tier. Click repeatedly to ride the whole ladder." },
+];
 ---
 
 <Layout title="Playground">
   <h1>Playground</h1>
-  <p class="pg-intro">
-    The hex canvas engine (<code>src/engine/</code>) running live: a PixiJS-rendered hex
-    field with a hand-rolled camera, DOM overlay cells that reveal more content as they
-    grow — identity, summary, dossier — and category cells that <em>dive</em> into a full
-    page when you zoom all the way in. Drag empty space to pan, wheel to pan,
-    <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a dived page.
-    Dossier cells (RELAY-07, SENTRY-K, ARCHIVE-3) are draggable — the bright hex shows
-    where they'll snap; the category cells are pinned. While <code>tetherable</code> is on,
-    arcs are drawn and a drag that lands on another cell toggles the arc between that pair
-    instead of moving it — arcs re-anchor around obstacles as cells move. Switching it off
-    hides the graph layer entirely and hands drops back to plain movement; the arcs are kept,
-    so switching back restores them. Zoom far enough out and the labels and arcs retire, but
-    the cell fills stay exactly as they are — presence survives every zoom level so you can
-    always see where content lives. The panel exercises the grid props one by one, and
-    everything the interaction does is mirrored in the event log below.
-  </p>
-
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
     <canvas id="pg-canvas"></canvas>
     <div id="pg-overlay"></div>
@@ -39,92 +130,54 @@ const ICON_SVG_ATTRS = {
       <div>zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
       <div>tier <b id="pg-tier">0</b> · cells <b id="pg-cells">0</b></div>
       <div class="pg-hud-buttons">
-        <hp-button size="xs" id="pg-zoom-out">−</hp-button>
-        <hp-button size="xs" id="pg-zoom-in">+</hp-button>
-        <hp-button size="xs" id="pg-reset">reset</hp-button>
-        <hp-button size="xs" id="pg-tour">tour</hp-button>
+        {
+          HUD_BUTTONS.map((button) => (
+            <hp-tooltip side="right">
+              <hp-button size="xs" id={button.id}>
+                {button.text}
+              </hp-button>
+              <span slot="content">{button.help}</span>
+            </hp-tooltip>
+          ))
+        }
       </div>
       <div class="pg-props">
-        <div class="pg-prop">
-          <span class="pg-prop-label">size</span>
-          <span class="pg-prop-options" id="pg-size">
-            <hp-button size="xs" data-value="sm" aria-pressed="true">sm</hp-button>
-            <hp-button size="xs" data-value="md">md</hp-button>
-            <hp-button size="xs" data-value="lg">lg</hp-button>
-          </span>
-        </div>
-        <div class="pg-prop">
-          <span class="pg-prop-label">layout</span>
-          <span class="pg-prop-options" id="pg-layout">
-            <hp-button size="xs" data-value="free" aria-pressed="true" aria-label="free" title="free">
-              <svg {...ICON_SVG_ATTRS} set:html={move} />
-            </hp-button>
-            <hp-button size="xs" data-value="spiral" aria-label="spiral" title="spiral">
-              <svg {...ICON_SVG_ATTRS} set:html={shell} />
-            </hp-button>
-            <hp-button size="xs" data-value="rows" aria-label="rows" title="rows">
-              <svg {...ICON_SVG_ATTRS} set:html={rows3} />
-            </hp-button>
-          </span>
-        </div>
-        <div class="pg-prop">
-          <span class="pg-prop-label">draggable</span>
-          <span class="pg-prop-options" id="pg-draggable">
-            <hp-button size="xs" data-value="on" aria-pressed="true">on</hp-button>
-            <hp-button size="xs" data-value="off">off</hp-button>
-          </span>
-        </div>
-        <div class="pg-prop">
-          <span class="pg-prop-label">dive at</span>
-          <span class="pg-prop-options" id="pg-dive">
-            <hp-button size="xs" data-value="0.45">45%</hp-button>
-            <hp-button size="xs" data-value="0.55" aria-pressed="true">55%</hp-button>
-            <hp-button size="xs" data-value="0.7">70%</hp-button>
-          </span>
-        </div>
-        <div class="pg-prop">
-          <span class="pg-prop-label">motion</span>
-          <span class="pg-prop-options" id="pg-motion">
-            <hp-button size="xs" data-value="animated" aria-pressed="true" aria-label="animated" title="animated">
-              <svg {...ICON_SVG_ATTRS} set:html={play} />
-            </hp-button>
-            <hp-button size="xs" data-value="instant" aria-label="instant" title="instant">
-              <svg {...ICON_SVG_ATTRS} set:html={zap} />
-            </hp-button>
-          </span>
-        </div>
-        <div class="pg-prop">
-          <span class="pg-prop-label">tetherable</span>
-          <span class="pg-prop-options" id="pg-tetherable">
-            <hp-button size="xs" data-value="on" aria-pressed="true">on</hp-button>
-            <hp-button size="xs" data-value="off">off</hp-button>
-          </span>
-        </div>
-        <div class="pg-prop">
-          <span class="pg-prop-label">directed</span>
-          <span class="pg-prop-options" id="pg-directed">
-            <hp-button size="xs" data-value="on">on</hp-button>
-            <hp-button size="xs" data-value="off" aria-pressed="true">off</hp-button>
-          </span>
-        </div>
+        {
+          PROP_GROUPS.map((group) => (
+            <div class="pg-prop">
+              <span class="pg-prop-label">{group.label}</span>
+              <span class="pg-prop-options" id={group.id}>
+                {group.options.map((option) => (
+                  <hp-tooltip side="right">
+                    <hp-button
+                      size="xs"
+                      data-value={option.value}
+                      aria-pressed={option.pressed ? "true" : undefined}
+                      aria-label={option.icon ? option.value : undefined}
+                    >
+                      {option.icon ? (
+                        <svg {...ICON_SVG_ATTRS} set:html={option.icon} />
+                      ) : (
+                        option.text
+                      )}
+                    </hp-button>
+                    <span slot="content">{option.help}</span>
+                  </hp-tooltip>
+                ))}
+              </span>
+            </div>
+          ))
+        }
       </div>
     </div>
   </div>
 
   <h2>Event log</h2>
-  <p>
-    The engine surfaces the same interaction events hp-grid consumers rely on today —
-    move, drop, bond, unbond, tether, untether, pan — plus dive/surface and layout
-    repacks. Newest first, capped at nine; a continuing pan updates its entry instead of
-    flooding the list.
-  </p>
+  <p>Newest first; a continuing pan updates its entry rather than flooding the list.</p>
   <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
 </Layout>
 
 <style is:global>
-  .pg-intro {
-    max-width: 60rem;
-  }
   .pg-stage {
     position: relative;
     height: 72vh;
@@ -143,6 +196,15 @@ const ICON_SVG_ATTRS = {
     inset: 0;
     display: block;
     touch-action: none;
+  }
+  /* The overlay never takes pointer events, so a cell can't set its
+     own cursor — the canvas wears it, driven by what the engine says
+     is under the pointer. */
+  .pg-stage[data-pg-hover="draggable"] canvas {
+    cursor: grab;
+  }
+  .pg-stage[data-pg-drag="active"] canvas {
+    cursor: grabbing;
   }
   #pg-overlay {
     position: absolute;
@@ -500,6 +562,14 @@ const ICON_SVG_ATTRS = {
     to {
       background-position: -120% 0;
     }
+  }
+  /* Reduced motion, whether the OS asks for it or the panel does. */
+  .pg-stage[data-pg-motion="instant"] .pg-skel .pg-bar {
+    animation: none;
+  }
+  .pg-stage[data-pg-motion="instant"] .pg-cell,
+  .pg-stage[data-pg-motion="instant"] .pg-tier {
+    transition: none;
   }
   @media (prefers-reduced-motion: reduce) {
     .pg-skel .pg-bar {
@@ -908,7 +978,8 @@ const ICON_SVG_ATTRS = {
       canvas.replaceWith(fresh);
       canvas = fresh;
 
-      side = hexSideFor(settings.size);
+      stage.dataset.pgMotion = settings.instant ? "instant" : "animated";
+    side = hexSideFor(settings.size);
       overlay.style.setProperty("--pg-k", String(side / BASE_HEX_SIDE));
       const cells = layoutCells();
       nodes = nodeDefs.map((def) => buildCell(def, cells.get(def.name)!));
@@ -937,6 +1008,7 @@ const ICON_SVG_ATTRS = {
         },
         onDragStart(id) {
           nodeById.get(id)?.el.classList.add("pg-dragging");
+          stage.dataset.pgDrag = "active";
           logEvent("drag", `${id} picked up`);
         },
         onMove({ id, from, to }) {
@@ -948,6 +1020,7 @@ const ICON_SVG_ATTRS = {
         },
         onDrop({ id, at }) {
           nodeById.get(id)?.el.classList.remove("pg-dragging");
+          delete stage.dataset.pgDrag;
           logEvent("drop", `${id} settled at ${cellLabel(at)}`);
         },
         onBond({ id, partner }) {
@@ -966,6 +1039,15 @@ const ICON_SVG_ATTRS = {
           if (engine) {
             const cam = engine.cameraState;
             logEvent("pan", `camera at (${Math.round(cam.x)}, ${Math.round(cam.y)})`, true);
+          }
+        },
+        onHoverCell(cell) {
+          // Grab cursor only where a drag would actually start.
+          const occupant = cell ? engine?.occupancy.occupantAt(cell) : null;
+          if (occupant && engine?.canDrag(occupant)) {
+            stage.dataset.pgHover = "draggable";
+          } else {
+            delete stage.dataset.pgHover;
           }
         },
         onCameraChange(state, visibleCells) {
@@ -1105,6 +1187,9 @@ const ICON_SVG_ATTRS = {
     if (engine) {
       engine.draggable = settings.draggable;
     }
+    // The cursor is refreshed on hover; clear it so a stale grab
+    // doesn't linger over a cell that just became fixed.
+    delete stage.dataset.pgHover;
     logEvent("draggable", settings.draggable ? "host flag on" : "host flag off");
   });
   wireGroup("pg-dive", (value) => {
@@ -1114,6 +1199,7 @@ const ICON_SVG_ATTRS = {
   });
   wireGroup("pg-motion", (value) => {
     settings.instant = value === "instant" || prefersReduced;
+    stage.dataset.pgMotion = settings.instant ? "instant" : "animated";
     scheduleBoot();
   });
   wireGroup("pg-tetherable", (value) => {

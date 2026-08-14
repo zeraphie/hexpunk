@@ -167,7 +167,7 @@ export class HexEngine {
       drag: this.drag,
       occupancy: this.occupancy,
       hexSide: options.hexSide,
-      isDraggable: (id) => this.draggableOverrides.get(id) ?? this.draggable,
+      isDraggable: (id) => this.canDrag(id),
       onHover: (cell) => {
         this.field.setHighlight(cell);
         this.options.onHoverCell?.(cell);
@@ -280,6 +280,14 @@ export class HexEngine {
    * endpoint has nothing to hold onto. The removals are reported, so
    * a consumer tracking the graph never silently loses edges.
    */
+  /** Whether this occupant can currently be dragged — the host flag
+   * folded with any per-occupant override. Consumers use it to show
+   * the matching affordance (cursor, handle) without duplicating the
+   * rule. */
+  canDrag(id: string): boolean {
+    return this.draggableOverrides.get(id) ?? this.draggable;
+  }
+
   removeOccupant(id: string): void {
     for (const tether of this.tethers.list()) {
       if (tether.from === id || tether.to === id) {
