@@ -25,6 +25,9 @@ interface PropOption {
 interface PropGroup {
   id: string;
   label: string;
+  /** Which way the help opens. The lowest rows point up, because a
+   * downward tooltip there runs past the stage's clip. */
+  side?: "top" | "bottom";
   options: PropOption[];
 }
 
@@ -76,6 +79,7 @@ const PROP_GROUPS: PropGroup[] = [
   {
     id: "pg-motion",
     label: "motion",
+    side: "top",
     options: [
       {
         value: "animated",
@@ -93,6 +97,7 @@ const PROP_GROUPS: PropGroup[] = [
   {
     id: "pg-tetherable",
     label: "tetherable",
+    side: "top",
     options: [
       {
         value: "on",
@@ -106,6 +111,7 @@ const PROP_GROUPS: PropGroup[] = [
   {
     id: "pg-directed",
     label: "directed",
+    side: "top",
     options: [
       { value: "on", text: "on", help: "Arcs gain an arrowhead at the target end." },
       { value: "off", text: "off", pressed: true, help: "Arcs are plain curves with no direction." },
@@ -152,7 +158,7 @@ const HUD_BUTTONS = [
       <div class="pg-hud-buttons">
         {
           HUD_BUTTONS.map((button) => (
-            <hp-tooltip side="right">
+            <hp-tooltip side="bottom">
               <hp-button size="xs" id={button.id}>
                 {button.text}
               </hp-button>
@@ -168,7 +174,7 @@ const HUD_BUTTONS = [
               <span class="pg-prop-label">{group.label}</span>
               <span class="pg-prop-options" id={group.id}>
                 {group.options.map((option) => (
-                  <hp-tooltip side="right">
+                  <hp-tooltip side={group.side ?? "bottom"}>
                     <hp-button
                       size="xs"
                       data-value={option.value}
@@ -301,8 +307,34 @@ const HUD_BUTTONS = [
     grid-template-rows: 0fr;
     opacity: 0;
   }
+  .pg-hud-collapse[data-open] {
+    overflow: visible;
+  }
   .pg-hud-inner {
     min-height: 0;
+  }
+
+  /* hp-tooltip anchors its body to itself, which is only as wide as
+     one button — so long help text ran off the panel and was cut by
+     the collapse clip. Neutralising the host's containing block
+     re-anchors the body to the row, letting it span the panel's
+     content width, centre there, and wrap. */
+  .pg-hud hp-tooltip {
+    position: static;
+  }
+  .pg-hud-buttons,
+  .pg-prop {
+    position: relative;
+  }
+  .pg-hud hp-tooltip::part(tooltip) {
+    left: 0;
+    right: 0;
+    transform: none;
+    white-space: normal;
+    text-align: center;
+    /* Sentences, not labels — uppercase is unreadable at length. */
+    text-transform: none;
+    line-height: 1.45;
   }
 
   .pg-props {
@@ -1350,11 +1382,29 @@ const HUD_BUTTONS = [
   const hudToggle = document.getElementById("pg-hud-toggle")!;
   const hudBody = document.getElementById("pg-hud-body")!;
   const hudMark = hudToggle.querySelector("hp-pixel")!;
+  /** Un-clip only once the panel has finished opening: tooltips on the
+   * lower rows need to escape the box, but the collapse animation
+   * needs the clip to read as a collapse. Timed rather than driven by
+   * transitionend, which never fires when motion is instant. */
+  const HUD_COLLAPSE_MS = 240;
+  let hudSettle: number | undefined;
+  function setHudOpen(open: boolean): void {
+    window.clearTimeout(hudSettle);
+    hudBody.inert = !open;
+    if (!open) {
+      delete hudBody.dataset.open;
+      return;
+    }
+    hudSettle = window.setTimeout(() => {
+      hudBody.dataset.open = "";
+    }, HUD_COLLAPSE_MS);
+  }
+  setHudOpen(true);
   hudToggle.addEventListener("click", () => {
     const expanded = hudToggle.getAttribute("aria-expanded") === "true";
     hudToggle.setAttribute("aria-expanded", String(!expanded));
     hudMark.setAttribute("aria-pressed", String(!expanded));
-    hudBody.inert = expanded;
+    setHudOpen(expanded === true ? false : true);
   });
 
   const themeWatcher = new ThemeWatcher(() => {
