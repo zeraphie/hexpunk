@@ -589,7 +589,6 @@ const ICON_SVG_ATTRS = {
   let side = BASE_HEX_SIDE;
   let divedNode: PlaygroundNode | null = null;
   let lastSurfaceAt = 0;
-  let booting = false;
 
   function hexSideFor(size: SizeName): number {
     const raw = getComputedStyle(stage).getPropertyValue(`--hp-hex-cell-${size}`);
@@ -898,11 +897,6 @@ const ICON_SVG_ATTRS = {
    * motion changes come through here — the canvas is replaced so
    * the fresh renderer never inherits a dead GL context. */
   async function boot(): Promise<void> {
-    if (booting) {
-      return;
-    }
-    booting = true;
-    try {
       engine?.destroy();
       engine = null;
       divedNode = null;
@@ -1006,14 +1000,21 @@ const ICON_SVG_ATTRS = {
           draggable: node.kind === "category" ? false : undefined,
         });
       }
+      engine.defaultDirected = settings.directed;
       for (const [from, to] of SEED_TETHERS) {
-        engine.addTether(from, to, { directed: settings.directed });
+        engine.addTether(from, to);
       }
-      engine.jumpTo(1, 0, 0);
-      console.log("[playground] renderer:", engine.rendererString);
-    } finally {
-      booting = false;
-    }
+    engine.jumpTo(1, 0, 0);
+    console.log("[playground] renderer:", engine.rendererString);
+  }
+
+  /** Boots run one after another: every click lands, and the last
+   * one wins because each boot reads the current settings. */
+  let bootChain: Promise<void> = Promise.resolve();
+  function scheduleBoot(): void {
+    bootChain = bootChain.then(() => boot()).catch((error) => {
+      console.error("[playground] boot failed", error);
+    });
   }
 
   /** Re-place occupants for a layout change without a full engine
@@ -1024,21 +1025,14 @@ const ICON_SVG_ATTRS = {
     }
     const cells = layoutCells();
     for (const node of nodes) {
-      engine.removeOccupant(node.name);
-    }
-    for (const node of nodes) {
       const cell = cells.get(node.name)!;
       node.cell = cell;
       const [cx, cy] = axialToWorld(cell.q, cell.r, side);
       node.rect.cx = cx;
       node.rect.cy = cy;
       placeCell(node.el, node.rect);
-      engine.addOccupant({
-        id: node.name,
-        cell,
-        draggable: node.kind === "category" ? false : undefined,
-      });
     }
+    engine.placeOccupants(nodes.map((node) => [node.name, node.cell] as const));
     // Fit-to-content recentre, like hp-grid's pack() → recenter().
     const cx = nodes.reduce((sum, node) => sum + node.rect.cx, 0) / nodes.length;
     const cy = nodes.reduce((sum, node) => sum + node.rect.cy, 0) / nodes.length;
@@ -1098,7 +1092,7 @@ const ICON_SVG_ATTRS = {
 
   wireGroup("pg-size", (value) => {
     settings.size = value as SizeName;
-    void boot();
+    scheduleBoot();
   });
   wireGroup("pg-layout", (value) => {
     settings.layout = value as LayoutName;
@@ -1118,7 +1112,7 @@ const ICON_SVG_ATTRS = {
   });
   wireGroup("pg-motion", (value) => {
     settings.instant = value === "instant" || prefersReduced;
-    void boot();
+    scheduleBoot();
   });
   wireGroup("pg-tetherable", (value) => {
     settings.tetherable = value === "on";
@@ -1139,6 +1133,7 @@ const ICON_SVG_ATTRS = {
     }
     // Arrowheads are a per-arc flag, so patch the live defs rather
     // than rebuilding the world around them.
+    engine.defaultDirected = settings.directed;
     for (const tether of engine.tethers.list()) {
       tether.directed = settings.directed;
     }
@@ -1185,7 +1180,8 @@ const ICON_SVG_ATTRS = {
     engine?.destroy();
   });
 
-  await boot();
+  scheduleBoot();
+  await bootChain;
   // Fit after fonts arrive — widths measured against the real face.
   void document.fonts.ready.then(fitPanelLabels);
 </script>

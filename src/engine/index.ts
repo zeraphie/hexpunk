@@ -85,6 +85,10 @@ export class HexEngine {
    * `draggable` overrides keep winning either way. */
   draggable: boolean;
 
+  /** Applied to arcs the engine authors itself (a drop-toggle), so
+   * they match arcs the consumer created explicitly. */
+  defaultDirected = false;
+
   private tetherableFlag: boolean;
 
   private readonly options: HexEngineOptions;
@@ -97,13 +101,11 @@ export class HexEngine {
   readonly occupancy = new OccupancyMap();
   readonly tethers: TetherController;
   private readonly draggableOverrides = new Map<string, boolean>();
-  /** Live world centre of a dragged occupant — arcs follow it while
-   * the drag runs, and fall back to the axial centre otherwise. */
-  private readonly livePositions = new Map<string, [number, number]>();
   private frameHandle = 0;
-  private resizeQueued = false;
+  private resizeHandle = 0;
   private lastTier = -1;
   private tetherSeq = 0;
+  private destroyed = false;
 
   private constructor(options: HexEngineOptions, field: FieldRenderer) {
     this.options = options;
@@ -135,20 +137,14 @@ export class HexEngine {
       instant: options.instant,
       tetherMode: () => this.tetherableFlag,
       onTetherDrop: ({ source, target }) => this.toggleTether(source, target),
-      onPosition: (id, wx, wy) => {
-        this.livePositions.set(id, [wx, wy]);
-        options.onOccupantPosition?.(id, wx, wy);
-      },
+      onPosition: (id, wx, wy) => options.onOccupantPosition?.(id, wx, wy),
       onTargetChange: (target) => {
         this.field.setHighlight(target);
         this.invalidate();
       },
       onDragStart: options.onDragStart,
       onMove: options.onMove,
-      onDrop: (detail) => {
-        this.livePositions.delete(detail.id);
-        options.onDrop?.(detail);
-      },
+      onDrop: options.onDrop,
       onBond: options.onBond,
       onUnbond: options.onUnbond,
     });
@@ -174,12 +170,14 @@ export class HexEngine {
     // from inside a ResizeObserver callback is a known way to
     // misrender on software compositors.
     this.resizeObserver = new ResizeObserver(() => {
-      if (this.resizeQueued) {
+      if (this.resizeHandle || this.destroyed) {
         return;
       }
-      this.resizeQueued = true;
-      requestAnimationFrame(() => {
-        this.resizeQueued = false;
+      this.resizeHandle = requestAnimationFrame(() => {
+        this.resizeHandle = 0;
+        if (this.destroyed) {
+          return;
+        }
         this.field.resize(options.host.clientWidth, options.host.clientHeight);
         this.diveNav.clampPan();
         this.invalidate();
@@ -258,21 +256,50 @@ export class HexEngine {
     if (options.draggable !== undefined) {
       this.draggableOverrides.set(options.id, options.draggable);
     }
-    return this.occupancy.place(options.id, options.cell);
+    const placed = this.occupancy.place(options.id, options.cell);
+    if (placed) {
+      // A new occupant is also a new obstacle, so arcs may re-anchor.
+      this.invalidate();
+    }
+    return placed;
   }
 
+  /**
+   * Remove an occupant and every arc anchored to it — an arc with no
+   * endpoint has nothing to hold onto. The removals are reported, so
+   * a consumer tracking the graph never silently loses edges.
+   */
   removeOccupant(id: string): void {
+    for (const tether of this.tethers.list()) {
+      if (tether.from === id || tether.to === id) {
+        this.removeTether(tether.id);
+      }
+    }
     this.occupancy.remove(id);
     this.draggableOverrides.delete(id);
-    this.livePositions.delete(id);
-    // An arc with no endpoint has nothing to anchor to.
-    this.tethers.removeFor(id);
+    this.invalidate();
+  }
+
+  /**
+   * Re-place many occupants at once — a layout pass. Cells are
+   * cleared before any is claimed so occupants can swap positions,
+   * and arcs are left intact: relocating an endpoint is a move, not
+   * a disconnection.
+   */
+  placeOccupants(assignments: readonly (readonly [string, AxialCoord])[]): void {
+    for (const [id] of assignments) {
+      this.occupancy.remove(id);
+    }
+    for (const [id, cell] of assignments) {
+      this.occupancy.place(id, cell);
+    }
+    this.invalidate();
   }
 
   /** World centre of an occupant — its live drag position while one
    * is in flight, else the centre of the cell it holds. */
   private positionOf(id: string): [number, number] | null {
-    const live = this.livePositions.get(id);
+    const live = this.drag.livePositionOf(id);
     if (live) {
       return live;
     }
@@ -295,7 +322,7 @@ export class HexEngine {
       from,
       to,
       state: options.state ?? "active",
-      directed: options.directed ?? false,
+      directed: options.directed ?? this.defaultDirected,
     };
     this.tethers.add(tether);
     this.options.onTether?.({ tether });
@@ -363,19 +390,30 @@ export class HexEngine {
   }
 
   destroy(): void {
+    // Set first: cancel() and dispose() can both trigger callbacks
+    // that would otherwise schedule a frame onto a dead renderer.
+    this.destroyed = true;
     if (this.frameHandle) {
       cancelAnimationFrame(this.frameHandle);
       this.frameHandle = 0;
     }
+    if (this.resizeHandle) {
+      cancelAnimationFrame(this.resizeHandle);
+      this.resizeHandle = 0;
+    }
     this.resizeObserver.disconnect();
     this.gestures.dispose();
     this.drag.cancel();
+    this.tethers.clear();
     this.field.destroy();
   }
 
   /** Render-on-demand: one rAF per invalidation, self-sustaining
    * only while animations are live — zero rAF at idle. */
   private invalidate(): void {
+    if (this.destroyed) {
+      return;
+    }
     if (!this.frameHandle) {
       this.frameHandle = requestAnimationFrame(this.frame);
     }
@@ -383,6 +421,9 @@ export class HexEngine {
 
   private readonly frame = (now: number): void => {
     this.frameHandle = 0;
+    if (this.destroyed) {
+      return;
+    }
     const cameraMoving = this.camera.step(now);
     const dragSettling = this.drag.step(now);
     if (this.diveNav.dived && !this.camera.animating) {

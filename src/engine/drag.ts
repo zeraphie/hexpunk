@@ -63,6 +63,10 @@ interface SnapAnimation {
   fromY: number;
   toX: number;
   toY: number;
+  /** Current interpolated centre, so live position stays derivable
+   * mid-settle rather than being mirrored into outside state. */
+  x: number;
+  y: number;
   at: AxialCoord;
   startedAt: number | null;
 }
@@ -84,13 +88,31 @@ export class DragController {
     return this.snap !== null;
   }
 
+  /**
+   * Live world centre of an occupant while it is being dragged or
+   * settling, else null. Derived from the active gesture rather than
+   * mirrored into a cache, so it cannot outlive the drag.
+   */
+  livePositionOf(id: string): [number, number] | null {
+    if (this.active?.id === id) {
+      return [this.active.wx, this.active.wy];
+    }
+    if (this.snap?.id === id) {
+      return [this.snap.x, this.snap.y];
+    }
+    return null;
+  }
+
   /** Begin dragging the occupant of `cell` from a world point. */
   begin(id: string, pointerWx: number, pointerWy: number): void {
     const from = this.options.occupancy.cellOf(id);
     if (!from || this.active) {
       return;
     }
-    this.snap = null;
+    // A settle still in flight is completed, not abandoned — dropping
+    // it would strand that occupant mid-tween and leave consumers
+    // waiting on a drop that never comes.
+    this.finishSnap();
     const [cx, cy] = axialToWorld(from.q, from.r, this.options.hexSide);
     this.active = {
       id,
@@ -180,10 +202,34 @@ export class DragController {
       this.options.onDrop?.({ id: drag.id, at: to });
       return;
     }
-    this.snap = { id: drag.id, fromX: drag.wx, fromY: drag.wy, toX, toY, at: to, startedAt: null };
+    this.snap = {
+      id: drag.id,
+      fromX: drag.wx,
+      fromY: drag.wy,
+      toX,
+      toY,
+      x: drag.wx,
+      y: drag.wy,
+      at: to,
+      startedAt: null,
+    };
   }
 
+  /** Land an in-flight settle immediately and report it. */
+  private finishSnap(): void {
+    const snap = this.snap;
+    if (!snap) {
+      return;
+    }
+    this.snap = null;
+    this.options.onPosition(snap.id, snap.toX, snap.toY);
+    this.options.onDrop?.({ id: snap.id, at: snap.at });
+  }
+
+  /** Abandon the gesture, returning the occupant to where it began.
+   * Reports a drop so consumers can clear drag-scoped state. */
   cancel(): void {
+    this.snap = null;
     if (!this.active) {
       return;
     }
@@ -192,6 +238,7 @@ export class DragController {
     this.options.onTargetChange(null);
     const [x, y] = axialToWorld(drag.from.q, drag.from.r, this.options.hexSide);
     this.options.onPosition(drag.id, x, y);
+    this.options.onDrop?.({ id: drag.id, at: drag.from });
   }
 
   /** Advance the settle animation. True while still moving. */
@@ -204,18 +251,15 @@ export class DragController {
       snap.startedAt = now;
     }
     const progress = Math.min(1, (now - snap.startedAt) / SNAP_DURATION_MS);
-    // Ease-out cubic: fast leave, soft landing.
-    const eased = 1 - Math.pow(1 - progress, 3);
-    this.options.onPosition(
-      snap.id,
-      snap.fromX + (snap.toX - snap.fromX) * eased,
-      snap.fromY + (snap.toY - snap.fromY) * eased
-    );
     if (progress >= 1) {
-      this.snap = null;
-      this.options.onDrop?.({ id: snap.id, at: snap.at });
+      this.finishSnap();
       return false;
     }
+    // Ease-out cubic: fast leave, soft landing.
+    const eased = 1 - Math.pow(1 - progress, 3);
+    snap.x = snap.fromX + (snap.toX - snap.fromX) * eased;
+    snap.y = snap.fromY + (snap.toY - snap.fromY) * eased;
+    this.options.onPosition(snap.id, snap.x, snap.y);
     return true;
   }
 }
