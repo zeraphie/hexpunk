@@ -26,6 +26,10 @@ const RELINK_HYSTERESIS = 24;
 const PULL_FRACTION = 0.25;
 const PULL_MAX = 40;
 
+/** Draw-in duration: an arc sweeps from source to target when it
+ * appears, rather than popping in whole. */
+const DRAW_IN_MS = 30;
+
 /** Unit outward vectors per vertex, radial from the hex centre.
  * Bezier control points ride these so the curve leaves and enters
  * each hex face-on. Index order: 0=top, 1=top-right, 2=bottom-right,
@@ -97,6 +101,11 @@ interface Anchoring {
   prevFromIdx: number;
   prevToIdx: number;
   transitionStart: number;
+  /** Draw-in requested but not yet stamped — the first resolve after
+   * this claims the start time, so callers needn't know the clock. */
+  pendingDraw: boolean;
+  /** Draw-in start, or null once the arc is fully drawn. */
+  drawStart: number | null;
 }
 
 interface Rect {
@@ -228,7 +237,21 @@ export class TetherController {
       prevFromIdx: -1,
       prevToIdx: -1,
       transitionStart: 0,
+      pendingDraw: !this.options.instant,
+      drawStart: null,
     });
+  }
+
+  /** Replay the draw-in sweep on every arc — used when the graph
+   * layer becomes visible, so the arcs draw themselves in. */
+  drawInAll(): void {
+    if (this.options.instant) {
+      return;
+    }
+    for (const state of this.anchoring.values()) {
+      state.pendingDraw = true;
+      state.drawStart = null;
+    }
   }
 
   remove(id: string): void {
@@ -250,10 +273,11 @@ export class TetherController {
     this.anchoring.clear();
   }
 
-  /** True while any arc is mid-morph — keeps the loop scheduling. */
+  /** True while any arc is mid-morph or mid-draw-in — keeps the loop
+   * scheduling frames until every arc has settled. */
   get animating(): boolean {
     for (const state of this.anchoring.values()) {
-      if (state.transitionStart > 0) {
+      if (state.transitionStart > 0 || state.pendingDraw || state.drawStart !== null) {
         return true;
       }
     }
@@ -410,18 +434,39 @@ export class TetherController {
         continue;
       }
       const pull = Math.min(length * PULL_FRACTION, PULL_MAX);
+      let c1: Point = { x: from.x + outFrom.x * pull, y: from.y + outFrom.y * pull };
+      let c2: Point = { x: to.x + outTo.x * pull, y: to.y + outTo.y * pull };
+      let end: Point = to;
+
+      // Draw-in sweep: show only the leading fraction of the curve.
+      if (state.pendingDraw) {
+        state.drawStart = now;
+        state.pendingDraw = false;
+      }
+      if (state.drawStart !== null) {
+        const progress = Math.min((now - state.drawStart) / DRAW_IN_MS, 1);
+        if (progress >= 1) {
+          state.drawStart = null;
+        } else {
+          const trimmed = truncateCubic(from, c1, c2, to, Math.max(progress, 0.001));
+          c1 = trimmed.c1;
+          c2 = trimmed.c2;
+          end = trimmed.end;
+        }
+      }
+
       out.push({
         id: tether.id,
         state: tether.state ?? "active",
         directed: tether.directed ?? false,
         fromX: from.x,
         fromY: from.y,
-        c1x: from.x + outFrom.x * pull,
-        c1y: from.y + outFrom.y * pull,
-        c2x: to.x + outTo.x * pull,
-        c2y: to.y + outTo.y * pull,
-        toX: to.x,
-        toY: to.y,
+        c1x: c1.x,
+        c1y: c1.y,
+        c2x: c2.x,
+        c2y: c2.y,
+        toX: end.x,
+        toY: end.y,
       });
     }
     return out;
@@ -430,4 +475,25 @@ export class TetherController {
 
 function lerpPoint(a: Point, b: Point, t: number): Point {
   return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+}
+
+/**
+ * The leading `t` fraction of a cubic bezier, as its own cubic —
+ * de Casteljau subdivision. Exact, so a partially-drawn arc traces
+ * the identical path the finished one will, and its endpoint and
+ * final control point stay valid (a directed head rides the tip).
+ */
+function truncateCubic(
+  p0: Point,
+  p1: Point,
+  p2: Point,
+  p3: Point,
+  t: number
+): { c1: Point; c2: Point; end: Point } {
+  const q0 = lerpPoint(p0, p1, t);
+  const q1 = lerpPoint(p1, p2, t);
+  const q2 = lerpPoint(p2, p3, t);
+  const r0 = lerpPoint(q0, q1, t);
+  const r1 = lerpPoint(q1, q2, t);
+  return { c1: q0, c2: r0, end: lerpPoint(r0, r1, t) };
 }

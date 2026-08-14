@@ -85,8 +85,7 @@ export class HexEngine {
    * `draggable` overrides keep winning either way. */
   draggable: boolean;
 
-  /** Graph-editor mode, live-tunable. */
-  tetherable: boolean;
+  private tetherableFlag: boolean;
 
   private readonly options: HexEngineOptions;
   private readonly camera: Camera;
@@ -110,7 +109,7 @@ export class HexEngine {
     this.options = options;
     this.field = field;
     this.draggable = options.draggable ?? false;
-    this.tetherable = options.tetherable ?? false;
+    this.tetherableFlag = options.tetherable ?? false;
     this.tethers = new TetherController({
       occupancy: this.occupancy,
       hexSide: options.hexSide,
@@ -134,7 +133,7 @@ export class HexEngine {
       occupancy: this.occupancy,
       hexSide: options.hexSide,
       instant: options.instant,
-      tetherMode: () => this.tetherable,
+      tetherMode: () => this.tetherableFlag,
       onTetherDrop: ({ source, target }) => this.toggleTether(source, target),
       onPosition: (id, wx, wy) => {
         this.livePositions.set(id, [wx, wy]);
@@ -208,6 +207,33 @@ export class HexEngine {
 
   get dived(): boolean {
     return this.dive.dived;
+  }
+
+  /**
+   * Graph-editor mode. Gates both authoring (drops toggle arcs) and
+   * display — turning it off hides the arc layer without discarding
+   * the arcs, so flipping back restores the graph as it was.
+   */
+  get tetherable(): boolean {
+    return this.tetherableFlag;
+  }
+
+  set tetherable(value: boolean) {
+    if (value === this.tetherableFlag) {
+      return;
+    }
+    this.tetherableFlag = value;
+    if (value) {
+      // Reveal by drawing: each arc sweeps out from its source.
+      this.tethers.drawInAll();
+    }
+    this.invalidate();
+  }
+
+  /** Schedule a frame. Consumers that mutate tether defs in place
+   * (state, directed) call this to have the change drawn. */
+  requestRender(): void {
+    this.invalidate();
   }
 
   /** True while a tween or inertia glide is driving the camera —
@@ -363,7 +389,9 @@ export class HexEngine {
       this.dive.clampPan();
     }
     const state = this.camera.state;
-    this.field.drawTethers(this.tethers.paths(now), state.z);
+    // Arcs only exist while the graph layer is on; a frozen morph
+    // resolves on its own the next time paths are resolved.
+    this.field.drawTethers(this.tetherableFlag ? this.tethers.paths(now) : [], state.z);
     const visible = this.field.render(state);
     syncOverlay(this.options.overlay, state);
     const tier = this.tier;
@@ -372,7 +400,7 @@ export class HexEngine {
       this.options.onTierChange?.(tier);
     }
     this.options.onCameraChange?.(state, visible);
-    if (cameraMoving || dragSettling || this.tethers.animating) {
+    if (cameraMoving || dragSettling || (this.tetherableFlag && this.tethers.animating)) {
       this.frameHandle = requestAnimationFrame(this.frame);
     }
   };

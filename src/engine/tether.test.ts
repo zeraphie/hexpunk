@@ -116,6 +116,8 @@ describe("tether", () => {
     tracked.add({ id: "t1", from: "a", to: "b" });
     tracked.paths(0);
     expect(settled).toHaveLength(1);
+    // Let the draw-in sweep finish so only the morph is in play.
+    tracked.paths(50);
     expect(tracked.animating).toBe(false);
 
     // Move the target far north — the old anchor is no longer best.

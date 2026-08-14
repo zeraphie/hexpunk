@@ -22,11 +22,12 @@ const ICON_SVG_ATTRS = {
     page when you zoom all the way in. Drag empty space to pan, wheel to pan,
     <kbd>ctrl</kbd>+wheel or pinch to zoom, <kbd>esc</kbd> to leave a dived page.
     Dossier cells (RELAY-07, SENTRY-K, ARCHIVE-3) are draggable — the bright hex shows
-    where they'll snap; the category cells are pinned. Turn on <code>tetherable</code> and
-    a drag that lands on another cell toggles an arc between the pair instead of moving it;
-    arcs re-anchor around obstacles as cells move. The panel in the corner exercises the
-    grid props one by one, and everything the interaction does is mirrored in the event log
-    below.
+    where they'll snap; the category cells are pinned. While <code>tetherable</code> is on,
+    arcs are drawn and a drag that lands on another cell toggles the arc between that pair
+    instead of moving it — arcs re-anchor around obstacles as cells move. Switching it off
+    hides the graph layer entirely and hands drops back to plain movement; the arcs are kept,
+    so switching back restores them. The panel exercises the grid props one by one, and
+    everything the interaction does is mirrored in the event log below.
   </p>
 
   <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
@@ -93,8 +94,8 @@ const ICON_SVG_ATTRS = {
         <div class="pg-prop">
           <span class="pg-prop-label">tetherable</span>
           <span class="pg-prop-options" id="pg-tetherable">
-            <hp-button size="xs" data-value="on">on</hp-button>
-            <hp-button size="xs" data-value="off" aria-pressed="true">off</hp-button>
+            <hp-button size="xs" data-value="on" aria-pressed="true">on</hp-button>
+            <hp-button size="xs" data-value="off">off</hp-button>
           </span>
         </div>
         <div class="pg-prop">
@@ -570,7 +571,7 @@ const ICON_SVG_ATTRS = {
     size: "sm" as SizeName,
     layout: "free" as LayoutName,
     draggable: true,
-    tetherable: false,
+    tetherable: true,
     directed: false,
     diveFraction: 0.55,
     instant: prefersReduced,
@@ -1126,13 +1127,23 @@ const ICON_SVG_ATTRS = {
     }
     logEvent(
       "tetherable",
-      settings.tetherable ? "drops toggle arcs" : "drops move cells"
+      settings.tetherable
+        ? `graph layer on — ${engine?.tethers.size ?? 0} arc(s) shown, drops toggle arcs`
+        : "graph layer off — arcs hidden, drops move cells"
     );
   });
   wireGroup("pg-directed", (value) => {
     settings.directed = value === "on";
-    // Arrowheads are per-arc, so re-seed to show the change.
-    void boot();
+    if (!engine) {
+      return;
+    }
+    // Arrowheads are a per-arc flag, so patch the live defs rather
+    // than rebuilding the world around them.
+    for (const tether of engine.tethers.list()) {
+      tether.directed = settings.directed;
+    }
+    engine.requestRender();
+    logEvent("directed", settings.directed ? "arrowheads on" : "arrowheads off");
   });
 
   function viewCentreWorld(): [number, number] {
