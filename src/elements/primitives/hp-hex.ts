@@ -152,6 +152,23 @@ export class HpHex extends LitElement {
    * attribute), the outer paints the entire hex, and the cell reads
    * as fully filled — which is exactly the bug that surfaced for
    * xs / xxs after the inline-form-input tier was added. */
+  /**
+   * Half-width of the visible ring as a fraction of the cell, i.e.
+   * `1 - scale` from the table above. Published as `--hp-hex-inset`
+   * so a layout can overlap neighbours by exactly the ring and merge
+   * two outlines into one shared edge. It is deliberately *not*
+   * `--hp-hex-stroke`: the ring comes from a uniform polygon scale,
+   * and for sm that is 2.5px where the stroke token says 2px — a
+   * half-pixel of daylight, which reads as a doubled line.
+   */
+  static readonly RING_INSET: Record<"xxs" | "xs" | "sm" | "md" | "lg", number> = {
+    xxs: 0.1,
+    xs: 0.094,
+    sm: 0.05,
+    md: 0.077,
+    lg: 0.075,
+  };
+
   private static readonly INNER_POINTS: Record<"xxs" | "xs" | "sm" | "md" | "lg", string> = {
     xxs: "50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76",
     xs: "50,5.43 95.3,31.58 95.3,83.89 50,110.04 4.7,83.89 4.7,31.58",

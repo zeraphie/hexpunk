@@ -1870,126 +1870,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -2360,6 +2240,126 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/lib/css-color.ts",
       "declarations": [
         {
@@ -2500,6 +2500,27 @@
           "declaration": {
             "name": "onEscape",
             "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/styles/hp-base.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "hpBase",
+          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "hpBase",
+          "declaration": {
+            "name": "hpBase",
+            "module": "src/styles/hp-base.ts"
           }
         }
       ]
@@ -2822,27 +2843,6 @@
           "declaration": {
             "name": "menu",
             "module": "src/pixel-icons/menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/styles/hp-base.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "hpBase",
-          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "hpBase",
-          "declaration": {
-            "name": "hpBase",
-            "module": "src/styles/hp-base.ts"
           }
         }
       ]
@@ -5266,242 +5266,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/loading/hp-progress.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-          "name": "HpProgress",
-          "cssParts": [
-            {
-              "description": "The track that the fill sits inside",
-              "name": "track"
-            },
-            {
-              "description": "The filled portion (or sliding ribbon when indeterminate)",
-              "name": "fill"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "attribute": "min"
-            },
-            {
-              "kind": "field",
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "attribute": "max"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "attribute": "indeterminate",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "syncAria",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "fieldName": "min"
-            },
-            {
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "fieldName": "max"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "fieldName": "value"
-            },
-            {
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "fieldName": "indeterminate"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-progress",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpProgress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-progress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/loading/hp-spinner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-          "name": "HpSpinner",
-          "members": [
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "attribute": "tone",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "fieldName": "size"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-spinner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpSpinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-spinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/layout/hp-cluster.ts",
       "declarations": [
         {
@@ -7482,6 +7246,242 @@
           "declaration": {
             "name": "HpTabPanel",
             "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/loading/hp-progress.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+          "name": "HpProgress",
+          "cssParts": [
+            {
+              "description": "The track that the fill sits inside",
+              "name": "track"
+            },
+            {
+              "description": "The filled portion (or sliding ribbon when indeterminate)",
+              "name": "fill"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "attribute": "indeterminate",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "syncAria",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "fieldName": "min"
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "fieldName": "max"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "fieldName": "value"
+            },
+            {
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "fieldName": "indeterminate"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-progress",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpProgress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-progress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/loading/hp-spinner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+          "name": "HpSpinner",
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "attribute": "tone",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "fieldName": "size"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-spinner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpSpinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-spinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
           }
         }
       ]
@@ -9981,6 +9981,17 @@
             },
             {
               "kind": "field",
+              "name": "RING_INSET",
+              "type": {
+                "text": "Record<\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\", number>"
+              },
+              "static": true,
+              "readonly": true,
+              "default": "{ xxs: 0.1, xs: 0.094, sm: 0.05, md: 0.077, lg: 0.075, }",
+              "description": "Half-width of the visible ring as a fraction of the cell, i.e.\n`1 - scale` from the table above. Published as `--hp-hex-inset`\nso a layout can overlap neighbours by exactly the ring and merge\ntwo outlines into one shared edge. It is deliberately *not*\n`--hp-hex-stroke`: the ring comes from a uniform polygon scale,\nand for sm that is 2.5px where the stroke token says 2px — a\nhalf-pixel of daylight, which reads as a doubled line."
+            },
+            {
+              "kind": "field",
               "name": "INNER_POINTS",
               "type": {
                 "text": "Record<\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\", string>"
@@ -9988,8 +9999,7 @@
               "privacy": "private",
               "static": true,
               "readonly": true,
-              "default": "{ xxs: \"50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76\", xs: \"50,5.43 95.3,31.58 95.3,83.89 50,110.04 4.7,83.89 4.7,31.58\", sm: \"50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31\", md: \"96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33\", lg: \"50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04\", }",
-              "description": "Inner-polygon points per size — uniform scale of the outer hex\naround its centre (pointy-top: centre 50,57.735; flat-top: 50,43.3).\nEach entry was computed as `outer * scale + (1 - scale) * centre`\nto keep the stroke ring proportional to the cell. Scale factors:\n\nxxs (cell 20px, stroke 1px display ≈ 5 viewBox units) → 0.90\nxs (cell 32px, stroke 1.5px ≈ 4.6875 viewBox units) → 0.906\nsm (cell 100px, stroke 2px) → 0.95\nmd (cell 180px flat-top, stroke 4px scaled) → 0.923\nlg (cell 320px, stroke 6px scaled) → 0.925\n\nWithout per-size points the polygon renders empty (no points\nattribute), the outer paints the entire hex, and the cell reads\nas fully filled — which is exactly the bug that surfaced for\nxs / xxs after the inline-form-input tier was added."
+              "default": "{ xxs: \"50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76\", xs: \"50,5.43 95.3,31.58 95.3,83.89 50,110.04 4.7,83.89 4.7,31.58\", sm: \"50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31\", md: \"96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33\", lg: \"50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04\", }"
             },
             {
               "kind": "field",

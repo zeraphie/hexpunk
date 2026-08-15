@@ -20,6 +20,7 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { hpBase } from "../../../styles/hp-base.js";
+import { HpHex } from "../../primitives/hp-hex.js";
 import { Camera } from "../../../lib/spatial/camera.js";
 import { DragController } from "../../../lib/spatial/drag.js";
 import { GestureController } from "../../../lib/spatial/input.js";
@@ -317,7 +318,6 @@ export class HpLayout extends LitElement {
    */
   private measureSide(): number {
     const style = getComputedStyle(this);
-    const stroke = Number.parseFloat(style.getPropertyValue("--hp-hex-stroke")) || 0;
     const child = this.placeableChildren()[0];
     const rendered = child?.getBoundingClientRect().width ?? 0;
     const cell =
@@ -325,7 +325,16 @@ export class HpLayout extends LitElement {
       Number.parseFloat(style.getPropertyValue("--hp-cell")) ||
       Number.parseFloat(style.getPropertyValue("--hp-hex-cell-sm")) ||
       100;
-    return Math.max(1, cell - stroke) / SQRT3;
+    // Overlap by the ring's own half-width, so the two outlines land
+    // on each other exactly. Falling back to the stroke token is only
+    // for children that aren't hex atoms.
+    const size = (child?.getAttribute("size") ?? "sm") as keyof typeof HpHex.RING_INSET;
+    const inset = HpHex.RING_INSET[size];
+    const ring =
+      inset === undefined
+        ? Number.parseFloat(style.getPropertyValue("--hp-hex-stroke")) || 0
+        : (inset * cell) / 2;
+    return Math.max(1, cell - ring) / SQRT3;
   }
 
   private get prefersReducedMotion(): boolean {
