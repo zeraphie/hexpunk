@@ -19,7 +19,7 @@
  * bugs during the split.
  */
 
-import { axialNeighbours, slotKey } from "./axial.js";
+import { axialNeighbours, slotKey } from "../../../lib/spatial/lattice.js";
 import { dispatchBondEvents, findOccupiedNeighbours } from "./bonds.js";
 import type { PanController } from "./pan.js";
 import { TetherTargetTracker, toggleTether } from "./tether.js";

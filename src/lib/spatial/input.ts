@@ -41,7 +41,10 @@ export interface GestureOptions {
   /** Element that owns pointer capture (the canvas). */
   canvas: HTMLElement;
   camera: Camera;
-  dive: DiveController;
+  /** Omitted by consumers with no page-dive mode (hp-layout) — the
+   * gesture grammar is otherwise identical, so it is shared rather
+   * than reimplemented. */
+  dive?: DiveController;
   drag: DragController;
   occupancy: OccupancyMap;
   hexSide: number;
@@ -111,7 +114,7 @@ export class GestureController {
     } catch {
       // no capture — gesture continues uncaptured
     }
-    if (!dive.dived) {
+    if (!dive?.dived) {
       const [wx, wy] = this.pointerWorld(event);
       const occupant = occupancy.occupantAt(worldToAxial(wx, wy, hexSide));
       if (occupant && isDraggable(occupant)) {
@@ -138,7 +141,7 @@ export class GestureController {
       return;
     }
     const previous = this.samples[this.samples.length - 1]!;
-    if (dive.dived) {
+    if (dive?.dived) {
       camera.panBy(0, event.clientY - previous[1]);
       dive.clampPan();
     } else {
@@ -177,7 +180,7 @@ export class GestureController {
       return;
     }
     // A click never flings, and a dived page has no camera to throw.
-    if (clicked || this.options.dive.dived) {
+    if (clicked || this.options.dive?.dived) {
       return;
     }
     const now = performance.now();
@@ -221,8 +224,8 @@ export class GestureController {
       const clamped = Math.max(-WHEEL_DELTA_CLAMP, Math.min(WHEEL_DELTA_CLAMP, event.deltaY));
       const [sx, sy] = this.local(event);
       camera.zoomAt(sx, sy, Math.exp(-clamped * WHEEL_ZOOM_RATE));
-      dive.handleZoom();
-    } else if (dive.dived) {
+      dive?.handleZoom();
+    } else if (dive?.dived) {
       camera.panBy(0, -event.deltaY);
       dive.clampPan();
     } else {
@@ -233,7 +236,7 @@ export class GestureController {
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") {
-      this.options.dive.surface();
+      this.options.dive?.surface();
     }
   };
 }

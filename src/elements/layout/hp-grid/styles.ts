@@ -8,7 +8,7 @@
 
 import { css } from "lit";
 
-import { ROW_STEP_FACTOR } from "./axial.js";
+import { ROW_STEP_FACTOR } from "../../../lib/spatial/lattice.js";
 
 /**
  * Static `css` template assembled with the resolved `ROW_STEP_FACTOR`

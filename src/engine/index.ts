@@ -10,29 +10,29 @@
   a consumer's module graph only through this entrypoint, so
   consumers that never render a grid never pay for it.
 */
-import { Camera } from "./camera.js";
-import { DiveController } from "./dive.js";
-import { DragController, type DragEventDetail } from "./drag.js";
+import { Camera } from "../lib/spatial/camera.js";
+import { DiveController } from "../lib/spatial/dive.js";
+import { DragController, type DragEventDetail } from "../lib/spatial/drag.js";
 import { FieldRenderer } from "./field.js";
-import { axialToWorld, hexWidth } from "./lattice.js";
-import { OccupancyMap } from "./occupancy.js";
-import { prepareOverlayLayer, syncOverlay } from "./overlay.js";
-import { GestureController } from "./input.js";
-import { TetherController, type TetherDef } from "./tether.js";
-import { fadeAlpha, tierFor } from "./tiers.js";
-import type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
+import { axialToWorld, hexWidth } from "../lib/spatial/lattice.js";
+import { OccupancyMap } from "../lib/spatial/occupancy.js";
+import { prepareOverlayLayer, syncOverlay } from "../lib/spatial/overlay.js";
+import { GestureController } from "../lib/spatial/input.js";
+import { TetherController, type TetherDef } from "../lib/spatial/tether.js";
+import { fadeAlpha, tierFor } from "../lib/spatial/tiers.js";
+import type { AxialCoord, CameraState, EngineSkin, WorldRect } from "../lib/spatial/types.js";
 
-export { Camera } from "./camera.js";
-export { DiveController } from "./dive.js";
-export { DragController, type DragEventDetail } from "./drag.js";
+export { Camera } from "../lib/spatial/camera.js";
+export { DiveController } from "../lib/spatial/dive.js";
+export { DragController, type DragEventDetail } from "../lib/spatial/drag.js";
 export { FieldRenderer } from "./field.js";
-export * from "./lattice.js";
-export { OccupancyMap } from "./occupancy.js";
-export { placeCell, prepareOverlayLayer, syncOverlay } from "./overlay.js";
-export { TetherController, type TetherDef, type TetherPath } from "./tether.js";
-export { fadeAlpha, tierFor } from "./tiers.js";
+export * from "../lib/spatial/lattice.js";
+export { OccupancyMap } from "../lib/spatial/occupancy.js";
+export { placeCell, prepareOverlayLayer, syncOverlay } from "../lib/spatial/overlay.js";
+export { TetherController, type TetherDef, type TetherPath } from "../lib/spatial/tether.js";
+export { fadeAlpha, tierFor } from "../lib/spatial/tiers.js";
 export { readTokenColor, ThemeWatcher, type PackedColor } from "./tokens.js";
-export type { AxialCoord, CameraState, EngineSkin, WorldRect } from "./types.js";
+export type { AxialCoord, CameraState, EngineSkin, WorldRect } from "../lib/spatial/types.js";
 
 /** Fraction of the gating threshold at which arcs begin to fade in —
  * a short ramp reads as the graph resolving, not as a hard switch. */

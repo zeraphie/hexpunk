@@ -14,7 +14,7 @@
  * host element passed in.
  */
 
-import { axialNeighbours, slotKey } from "./axial.js";
+import { axialNeighbours, slotKey } from "../../../lib/spatial/lattice.js";
 import type { AxialCoord, HpGridBondEventDetail } from "./types.js";
 
 /**

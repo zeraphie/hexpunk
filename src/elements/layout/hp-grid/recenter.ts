@@ -17,7 +17,11 @@
  * everything" after any pan/zoom interaction.
  */
 
-import { HEX_HALF_HEIGHT_FACTOR, SINGLE_CELL_MASK, parseFillCellsForBbox } from "./axial.js";
+import {
+  HEX_HALF_HEIGHT_FACTOR,
+  SINGLE_CELL_MASK,
+  parseFillCellsForBbox,
+} from "../../../lib/spatial/lattice.js";
 import type { HpGridPanEventDetail } from "./types.js";
 import { ZOOM_MIN } from "./zoom.js";
 

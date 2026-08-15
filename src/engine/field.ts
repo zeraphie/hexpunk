@@ -8,9 +8,9 @@
   width holds steady at any zoom.
 */
 import { Container, Graphics, GraphicsContext, WebGLRenderer } from "pixi.js";
-import { axialToWorld, colRange, hexCorners, rowRange } from "./lattice.js";
-import type { TetherPath } from "./tether.js";
-import type { AxialCoord, CameraState, EngineSkin } from "./types.js";
+import { axialToWorld, colRange, hexCorners, rowRange } from "../lib/spatial/lattice.js";
+import type { TetherPath } from "../lib/spatial/tether.js";
+import type { AxialCoord, CameraState, EngineSkin } from "../lib/spatial/types.js";
 
 /** Hard cap on pooled field cells — past this the visible range is
  * partially drawn rather than the pool growing unbounded. A real
