@@ -498,114 +498,6 @@
       ]
     },
     {
-      "name": "hp-progress",
-      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-      "attributes": [
-        {
-          "name": "min",
-          "description": "Lower bound. Default 0."
-        },
-        {
-          "name": "max",
-          "description": "Upper bound. Default 100."
-        },
-        {
-          "name": "value",
-          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
-        },
-        {
-          "name": "indeterminate",
-          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-          "values": [
-            {
-              "name": "HpProgressTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-spinner",
-      "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-          "values": [
-            {
-              "name": "HpSpinnerTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
-        }
-      ]
-    },
-    {
       "name": "hp-cluster",
       "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
       "attributes": [
@@ -780,6 +672,249 @@
       ]
     },
     {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
+        }
+      ]
+    },
+    {
+      "name": "hp-progress",
+      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+      "attributes": [
+        {
+          "name": "min",
+          "description": "Lower bound. Default 0."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound. Default 100."
+        },
+        {
+          "name": "value",
+          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
+        },
+        {
+          "name": "indeterminate",
+          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+          "values": [
+            {
+              "name": "HpProgressTone"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-spinner",
+      "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+          "values": [
+            {
+              "name": "HpSpinnerTone"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-link",
+      "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
+      "attributes": [
+        {
+          "name": "href",
+          "description": "Destination URL."
+        },
+        {
+          "name": "target",
+          "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "rel",
+          "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-menubar",
+      "description": "Menu bar — managed keyboard navigation across a row of dropdown\ntriggers. role=\"menubar\"; arrow keys move focus between triggers;\nHome / End jump.",
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Layout direction — controls arrow-key axis.",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-navigation-menu",
+      "description": "Top-nav menu with optional hover-revealed submenus.",
+      "attributes": []
+    },
+    {
+      "name": "hp-nav-item",
+      "description": "Single item inside hp-navigation-menu. Plain link when no `content`\nslot, dropdown trigger when there is one.",
+      "attributes": [
+        {
+          "name": "href",
+          "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-tabs",
+      "description": "Tabbed content container. Slotted hp-tab children render the tab\nlist; hp-tab-panel children render the panels. Arrow keys cycle\ntabs; Home / End jump; roving tabindex. `route=\"hash\"` syncs value\nto URL hash.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Selected tab value. Setting this activates the matching tab\nand shows the matching panel. Default = first tab's value."
+        },
+        {
+          "name": "orientation",
+          "description": "Tab list orientation. Horizontal arrows = Left / Right;\nvertical = Up / Down.",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        },
+        {
+          "name": "route",
+          "description": "Sync value with the URL.\n\n- `\"hash\"`: reads / writes `location.hash`. Simple but collides\nwith any other consumer of the hash (e.g. heading anchors in\npanel content, in-page TOC links). Best for standalone pages\nwhere the hash is yours alone.\n- `\"query\"`: reads / writes a search param (default `tab`, set\nvia `query-param` attribute). Leaves the hash free for in-page\nanchors. Best for docs pages where panels contain headings\nwith their own slug anchors.",
+          "values": [
+            {
+              "name": "hash"
+            },
+            {
+              "name": "query"
+            },
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "query-param",
+          "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`."
+        }
+      ]
+    },
+    {
+      "name": "hp-tab",
+      "description": "Single tab inside hp-tabs. role=\"tab\"; auto-slotted into the\ntablist via slot=\"tab\" in connectedCallback.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": ""
+        },
+        {
+          "name": "active",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "hp-tab-panel",
+      "description": "Panel body inside hp-tabs. role=\"tabpanel\"; visibility driven by\nthe parent hp-tabs via the `hidden` attribute.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": ""
+        }
+      ]
+    },
+    {
       "name": "hp-alert-dialog",
       "description": "Alert dialog — role=\"alertdialog\" variant of hp-dialog. Requires\nan explicit action; backdrop clicks don't dismiss. Use for\ndestructive confirmations and blocking errors.",
       "attributes": [
@@ -947,141 +1082,6 @@
         {
           "name": "close-delay",
           "description": "Delay before hiding on mouseleave (ms). Default 100."
-        }
-      ]
-    },
-    {
-      "name": "hp-link",
-      "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
-      "attributes": [
-        {
-          "name": "href",
-          "description": "Destination URL."
-        },
-        {
-          "name": "target",
-          "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "rel",
-          "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-menubar",
-      "description": "Menu bar — managed keyboard navigation across a row of dropdown\ntriggers. role=\"menubar\"; arrow keys move focus between triggers;\nHome / End jump.",
-      "attributes": [
-        {
-          "name": "orientation",
-          "description": "Layout direction — controls arrow-key axis.",
-          "values": [
-            {
-              "name": "horizontal"
-            },
-            {
-              "name": "vertical"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-navigation-menu",
-      "description": "Top-nav menu with optional hover-revealed submenus.",
-      "attributes": []
-    },
-    {
-      "name": "hp-nav-item",
-      "description": "Single item inside hp-navigation-menu. Plain link when no `content`\nslot, dropdown trigger when there is one.",
-      "attributes": [
-        {
-          "name": "href",
-          "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-tabs",
-      "description": "Tabbed content container. Slotted hp-tab children render the tab\nlist; hp-tab-panel children render the panels. Arrow keys cycle\ntabs; Home / End jump; roving tabindex. `route=\"hash\"` syncs value\nto URL hash.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Selected tab value. Setting this activates the matching tab\nand shows the matching panel. Default = first tab's value."
-        },
-        {
-          "name": "orientation",
-          "description": "Tab list orientation. Horizontal arrows = Left / Right;\nvertical = Up / Down.",
-          "values": [
-            {
-              "name": "horizontal"
-            },
-            {
-              "name": "vertical"
-            }
-          ]
-        },
-        {
-          "name": "route",
-          "description": "Sync value with the URL.\n\n- `\"hash\"`: reads / writes `location.hash`. Simple but collides\nwith any other consumer of the hash (e.g. heading anchors in\npanel content, in-page TOC links). Best for standalone pages\nwhere the hash is yours alone.\n- `\"query\"`: reads / writes a search param (default `tab`, set\nvia `query-param` attribute). Leaves the hash free for in-page\nanchors. Best for docs pages where panels contain headings\nwith their own slug anchors.",
-          "values": [
-            {
-              "name": "hash"
-            },
-            {
-              "name": "query"
-            },
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "query-param",
-          "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`."
-        }
-      ]
-    },
-    {
-      "name": "hp-tab",
-      "description": "Single tab inside hp-tabs. role=\"tab\"; auto-slotted into the\ntablist via slot=\"tab\" in connectedCallback.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": ""
-        },
-        {
-          "name": "active",
-          "description": ""
-        },
-        {
-          "name": "disabled",
-          "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-tab-panel",
-      "description": "Panel body inside hp-tabs. role=\"tabpanel\"; visibility driven by\nthe parent hp-tabs via the `hidden` attribute.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": ""
         }
       ]
     },
@@ -1444,7 +1444,7 @@
     },
     {
       "name": "hp-layout",
-      "description": "Hex coordinate surface — slotted children with `q` / `r`\nattributes are placed on the axial lattice. `draggable` opts into\ndrag-to-move with snap, plus pan and zoom. Pure CSS: no canvas and\nno rendering dependency.",
+      "description": "Hex layout primitive — slotted children with `q` / `r` attributes\nare placed on the axial lattice, and the element sizes to the\ncontent it placed. No camera: the page scrolls it, the way it would\nany other block. `draggable` opts into drag-to-move with snap.\nPure CSS, no rendering dependency.\n\nUse `<hp-grid>` instead for a viewport-like surface with camera\npan/zoom, semantic zoom, dive navigation or tethers.",
       "attributes": [
         {
           "name": "layout",

@@ -1,11 +1,11 @@
 /*
   ─ Layout surface styles ─
 
-  One transformed world container carries the camera; each child
-  carries only its own world position. That split is deliberate —
-  it is the same model the canvas grid uses, so pan, zoom and
-  drag resolve identically in both and the CSS never re-derives
-  axial maths.
+  A hex analogue of a flex container: it sizes to its content and
+  sits in document flow, so the page scrolls it rather than the
+  element panning itself. Children are placed absolutely because
+  the lattice interleaves rows, but the host reports the content
+  box so surrounding layout still works.
 */
 import { css } from "lit";
 
@@ -13,27 +13,18 @@ export const hpLayoutStyles = css`
   :host {
     position: relative;
     display: block;
-    overflow: hidden;
     /* Cell width drives the whole lattice; consumers override it
      * per instance. Falls back to the small cell tier. */
     --hp-effective-cell: var(--hp-cell, var(--hp-hex-cell-sm));
+    /* Measured from the placed content so the element occupies real
+     * space in flow. Falls back to nothing until first placement. */
+    inline-size: var(--hp-layout-width, auto);
+    block-size: var(--hp-layout-height, auto);
   }
 
-  :host([draggable]) {
-    touch-action: none;
-  }
-
-  /* The camera lives here: one transform write per frame instead of
-   * one per child, so a hundred cells cost the same as one. */
-  .world {
-    position: absolute;
-    inset: 0;
-    transform-origin: 0 0;
-    will-change: transform;
-  }
-
-  /* Children are placed in world units and centred on their point.
-   * The transition animates the settle when a drag releases. */
+  /* Children are placed in CSS pixels from the content's top-left and
+   * centred on their point. The transition animates the settle when a
+   * drag releases. */
   ::slotted([q][r]) {
     position: absolute;
     left: 0;
@@ -47,6 +38,7 @@ export const hpLayoutStyles = css`
     /* Custom properties cross the shadow boundary, so each atom
      * reads cursor: var(--hp-cursor) on its own :host. */
     --hp-cursor: grab;
+    touch-action: none;
   }
 
   ::slotted([q][r][data-hp-dragging]) {

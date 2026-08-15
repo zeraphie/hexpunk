@@ -143,7 +143,7 @@ const HUD_BUTTONS = [
           aria-controls="pg-hud-body"
         >
           <hp-pixel
-            type="dropside"
+            type="expandable"
             pixel-size="3"
             interactive
             aria-pressed="true"
@@ -282,10 +282,11 @@ const HUD_BUTTONS = [
     outline: 2px solid var(--hp-outline);
     outline-offset: 3px;
   }
-  /* The pixel art carries the state itself: chevron-left while open
-     (click closes), dotted square when closed until hovered, where it
-     points right (click opens). aria-hidden because the button already
-     has a name — the aria-pressed attribute is only hp-pixel's CSS
+  /* The pixel art carries the state itself: the panel only moves
+     vertically, so the up/down sibling reads correctly — chevron up
+     while open (click collapses), dotted square when closed until
+     hovered, where it points down (click expands). aria-hidden because
+     the button already has a name; aria-pressed is only hp-pixel's CSS
      hook for its toggled frame. */
   .pg-hud-toggle hp-pixel {
     display: block;

@@ -1,16 +1,20 @@
 /*
-  ─ Lightweight hex layout surface ─
+  ─ Hex layout primitive ─
 
-  Positions slotted children on an axial lattice with CSS, and
-  borrows every behavioural decision from src/lib/spatial — the
-  same occupancy, drag-snap, bond diffing, camera and gesture
-  grammar the canvas grid uses. Nothing about where a drop lands
-  or which bonds form is decided here, so the two surfaces
-  cannot disagree.
+  What flex is for rows and grid is for tracks, this is for the
+  hex lattice: it places children and sizes to them, then gets
+  out of the way. It has no camera — no pan, no zoom, no inertia
+  — because a layout box belongs in document flow, where the
+  page does the scrolling.
 
-  Reach for <hp-grid> instead when the surface needs a rendered
-  hex field, semantic zoom, dive navigation or tethers; those
-  need a canvas, and a canvas needs Pixi.
+  Placement decisions still come from src/lib/spatial, so the
+  occupancy rules, drag-snap outcomes and bond diffing are the
+  same code the canvas grid runs and the two cannot disagree.
+
+  Reach for <hp-grid> when the surface should behave like a
+  viewport instead — a rendered hex field, camera pan/zoom,
+  semantic zoom, dive navigation, tethers. That needs a canvas,
+  and a canvas needs Pixi.
 */
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
@@ -33,11 +37,9 @@ import { hpLayoutStyles } from "./styles.js";
  * the side. */
 const ROWS_HALF_COLS = 10;
 
-/** Zoom bounds for the CSS surface. Deliberately narrower than the
- * canvas grid's: CSS-scaled text stops being crisp well before the
- * camera runs out of range. */
-const ZOOM_MIN = 0.25;
-const ZOOM_MAX = 4;
+/** Breathing room in px around the placed content, so hexes on the
+ * outer edge aren't clipped by the element's own box. */
+const CONTENT_PADDING = 2;
 
 export interface HpLayoutMoveEventDetail {
   element: HTMLElement;
@@ -51,20 +53,25 @@ export interface HpLayoutBondEventDetail {
 }
 
 /**
- * Hex coordinate surface — slotted children with `q` / `r`
- * attributes are placed on the axial lattice. `draggable` opts into
- * drag-to-move with snap, plus pan and zoom. Pure CSS: no canvas and
- * no rendering dependency.
+ * Hex layout primitive — slotted children with `q` / `r` attributes
+ * are placed on the axial lattice, and the element sizes to the
+ * content it placed. No camera: the page scrolls it, the way it would
+ * any other block. `draggable` opts into drag-to-move with snap.
+ * Pure CSS, no rendering dependency.
+ *
+ * Use `<hp-grid>` instead for a viewport-like surface with camera
+ * pan/zoom, semantic zoom, dive navigation or tethers.
  *
  * @fires hp-layout-move - On release, before the settle animation. detail: { element, from, to }
  * @fires hp-layout-drop - After the settle animation completes. detail: { element, at }
  * @fires hp-layout-bond - Two cells became axially adjacent. detail: { moved, partner }
  * @fires hp-layout-unbond - Previously-adjacent cells separated
- * @fires hp-layout-pan - While the surface is being panned
  *
  * @slot - Cells carrying `q` / `r` attributes
  *
  * @cssproperty --hp-cell - Cell width; defaults to `--hp-hex-cell-sm`
+ * @cssproperty --hp-layout-width - Measured content width (read-only)
+ * @cssproperty --hp-layout-height - Measured content height (read-only)
  */
 @customElement("hp-layout")
 export class HpLayout extends LitElement {
@@ -98,11 +105,15 @@ export class HpLayout extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    // A fixed identity camera: the shared controllers all speak world
+    // coordinates, and holding it at 1× with no offset makes world
+    // units and CSS pixels the same thing. It is never moved, which is
+    // what makes this a layout box rather than a viewport.
     this.camera = new Camera({
-      minZoom: ZOOM_MIN,
-      maxZoom: ZOOM_MAX,
-      instant: this.prefersReducedMotion,
-      onChange: () => this.invalidate(),
+      minZoom: 1,
+      maxZoom: 1,
+      instant: true,
+      onChange: () => {},
     });
     // The drag controller waits for firstUpdated: it needs the
     // resolved cell width, which isn't readable until styles apply.
@@ -157,10 +168,6 @@ export class HpLayout extends LitElement {
     this.hexSide = this.measureSide();
     this.buildDrag();
     this.syncOccupancy();
-    // Origin sits at the surface's centre, matching the canvas grid's
-    // initial camera so both start from the same view.
-    this.camera.x = this.clientWidth / 2;
-    this.camera.y = this.clientHeight / 2;
     this.gestures = new GestureController({
       host: this,
       canvas: this,
@@ -168,12 +175,14 @@ export class HpLayout extends LitElement {
       drag: this.drag!,
       occupancy: this.occupancy,
       hexSide: this.hexSide,
+      // No camera to drive, so empty-space presses and the wheel stay
+      // with the page. Drag-to-move and click still behave identically
+      // to the canvas grid, because that is the same code.
+      pannable: false,
       isDraggable: (id, event) => this.canDrag(id, event),
       onHover: () => {},
-      onPan: () => this.emit("hp-layout-pan", { x: this.camera.x, y: this.camera.y }),
       requestRender: () => this.invalidate(),
     });
-    this.invalidate();
   }
 
   override render() {
@@ -212,42 +221,51 @@ export class HpLayout extends LitElement {
       element.setAttribute("r", String(position.r));
     }
     this.syncOccupancy();
-    this.recenter();
   }
 
-  /** Fit the content into view, centred, never magnifying past 1×. */
-  recenter(): void {
+  /**
+   * Measure the placed content and make the element that size, with
+   * the content's top-left at the element's top-left. The offset is
+   * carried on the identity camera rather than baked into each
+   * child's coordinates, so the shared controllers keep working in
+   * plain world space and only the container shifts.
+   */
+  private updateContentBox(): void {
     const children = this.placeableChildren();
-    if (children.length === 0) {
+    if (children.length === 0 || !this.hexSide) {
       return;
     }
+    const side = this.hexSide;
+    const halfWidth = (SQRT3 * side) / 2;
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
-    const side = this.hexSide;
     for (const child of children) {
       const q = Number.parseFloat(child.getAttribute("q") ?? "0") || 0;
       const r = Number.parseFloat(child.getAttribute("r") ?? "0") || 0;
       for (const offset of parseFillCellsForBbox(child.dataset.fillCells)) {
         const [x, y] = axialToWorld(q + offset.q, r + offset.r, side);
-        minX = Math.min(minX, x - side);
-        maxX = Math.max(maxX, x + side);
+        minX = Math.min(minX, x - halfWidth);
+        maxX = Math.max(maxX, x + halfWidth);
         minY = Math.min(minY, y - side);
         maxY = Math.max(maxY, y + side);
       }
     }
-    const width = this.clientWidth;
-    const height = this.clientHeight;
-    if (!width || !height || maxX <= minX) {
+    if (!Number.isFinite(minX)) {
       return;
     }
-    const zoom = Math.min(1, width / (maxX - minX), height / (maxY - minY));
-    this.camera.tweenTo({
-      z: zoom,
-      x: width / 2 - ((minX + maxX) / 2) * zoom,
-      y: height / 2 - ((minY + maxY) / 2) * zoom,
-    });
+    this.camera.x = CONTENT_PADDING - minX;
+    this.camera.y = CONTENT_PADDING - minY;
+    this.style.setProperty("--hp-layout-width", `${maxX - minX + CONTENT_PADDING * 2}px`);
+    this.style.setProperty("--hp-layout-height", `${maxY - minY + CONTENT_PADDING * 2}px`);
+    // Applied now rather than on the next frame: the offset never
+    // animates, and deferring it would show one frame of content
+    // sitting at the wrong place.
+    const world = this.renderRoot.querySelector<HTMLElement>(".world");
+    if (world) {
+      syncOverlay(world, this.camera.state);
+    }
   }
 
   /** Read the resolved cell width and convert to a hex side. */
@@ -317,6 +335,7 @@ export class HpLayout extends LitElement {
       const [x, y] = axialToWorld(q, r, this.hexSide);
       this.place(id, x, y);
     }
+    this.updateContentBox();
   }
 
   /** Position a child in world units. Geometry, not visual state — it
@@ -347,13 +366,12 @@ export class HpLayout extends LitElement {
 
   private readonly frame = (now: number): void => {
     this.frameHandle = 0;
-    const cameraMoving = this.camera.step(now);
     const dragSettling = this.drag?.step(now) ?? false;
     const world = this.renderRoot.querySelector<HTMLElement>(".world");
     if (world) {
       syncOverlay(world, this.camera.state);
     }
-    if (cameraMoving || dragSettling) {
+    if (dragSettling) {
       this.frameHandle = requestAnimationFrame(this.frame);
     }
   };

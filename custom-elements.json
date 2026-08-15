@@ -723,6 +723,496 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/icons/copy.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "copy",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />'",
+          "description": "Inner SVG content for the `copy` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "copy",
+          "declaration": {
+            "name": "copy",
+            "module": "src/icons/copy.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/github.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "github",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z\"/>'",
+          "description": "Inner SVG content for the `github` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\">` to control size; this icon ships as\na brand mark (filled shape) rather than a Lucide stroke icon, so\nit ignores the standard `stroke-*` props."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "github",
+          "declaration": {
+            "name": "github",
+            "module": "src/icons/github.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "copy",
+          "declaration": {
+            "name": "copy",
+            "module": "./copy.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "github",
+          "declaration": {
+            "name": "github",
+            "module": "./github.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "moon",
+          "declaration": {
+            "name": "moon",
+            "module": "./moon.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "move",
+          "declaration": {
+            "name": "move",
+            "module": "./move.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "play",
+          "declaration": {
+            "name": "play",
+            "module": "./play.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "rows3",
+          "declaration": {
+            "name": "rows3",
+            "module": "./rows-3.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "scan",
+          "declaration": {
+            "name": "scan",
+            "module": "./scan.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "search",
+          "declaration": {
+            "name": "search",
+            "module": "./search.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "shell",
+          "declaration": {
+            "name": "shell",
+            "module": "./shell.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "sun",
+          "declaration": {
+            "name": "sun",
+            "module": "./sun.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zap",
+          "declaration": {
+            "name": "zap",
+            "module": "./zap.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/moon.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "moon",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\" />'",
+          "description": "Inner SVG content for the `moon` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "moon",
+          "declaration": {
+            "name": "moon",
+            "module": "src/icons/moon.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/move.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "move",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M12 2v20\" /> <path d=\"m15 19-3 3-3-3\" /> <path d=\"m19 9 3 3-3 3\" /> <path d=\"M2 12h20\" /> <path d=\"m5 9-3 3 3 3\" /> <path d=\"m9 5 3-3 3 3\" />'",
+          "description": "Inner SVG content for the `move` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "move",
+          "declaration": {
+            "name": "move",
+            "module": "src/icons/move.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/play.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "play",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\" />'",
+          "description": "Inner SVG content for the `play` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "play",
+          "declaration": {
+            "name": "play",
+            "module": "src/icons/play.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/rows-3.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "rows3",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M21 9H3\" /> <path d=\"M21 15H3\" />'",
+          "description": "Inner SVG content for the `rows-3` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "rows3",
+          "declaration": {
+            "name": "rows3",
+            "module": "src/icons/rows-3.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/scan.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "scan",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" />'",
+          "description": "Inner SVG content for the `scan` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "scan",
+          "declaration": {
+            "name": "scan",
+            "module": "src/icons/scan.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/search.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "search",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"m21 21-4.34-4.34\" /> <circle cx=\"11\" cy=\"11\" r=\"8\" />'",
+          "description": "Inner SVG content for the `search` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "search",
+          "declaration": {
+            "name": "search",
+            "module": "src/icons/search.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/shell.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "shell",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 6 6 0 0 1-12 0 8 8 0 0 1 16 0 10 10 0 1 1-20 0 11.93 11.93 0 0 1 2.42-7.22 2 2 0 1 1 3.16 2.44\" />'",
+          "description": "Inner SVG content for the `shell` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "shell",
+          "declaration": {
+            "name": "shell",
+            "module": "src/icons/shell.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/sun.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "sun",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />'",
+          "description": "Inner SVG content for the `sun` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "sun",
+          "declaration": {
+            "name": "sun",
+            "module": "src/icons/sun.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/zap.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "zap",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\" />'",
+          "description": "Inner SVG content for the `zap` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "zap",
+          "declaration": {
+            "name": "zap",
+            "module": "src/icons/zap.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/engine/field.ts",
       "declarations": [
         {
@@ -1870,496 +2360,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/icons/copy.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "copy",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />'",
-          "description": "Inner SVG content for the `copy` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "copy",
-          "declaration": {
-            "name": "copy",
-            "module": "src/icons/copy.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/github.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "github",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z\"/>'",
-          "description": "Inner SVG content for the `github` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\">` to control size; this icon ships as\na brand mark (filled shape) rather than a Lucide stroke icon, so\nit ignores the standard `stroke-*` props."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "github",
-          "declaration": {
-            "name": "github",
-            "module": "src/icons/github.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/index.ts",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "copy",
-          "declaration": {
-            "name": "copy",
-            "module": "./copy.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "github",
-          "declaration": {
-            "name": "github",
-            "module": "./github.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "moon",
-          "declaration": {
-            "name": "moon",
-            "module": "./moon.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "move",
-          "declaration": {
-            "name": "move",
-            "module": "./move.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "play",
-          "declaration": {
-            "name": "play",
-            "module": "./play.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "rows3",
-          "declaration": {
-            "name": "rows3",
-            "module": "./rows-3.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "scan",
-          "declaration": {
-            "name": "scan",
-            "module": "./scan.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "search",
-          "declaration": {
-            "name": "search",
-            "module": "./search.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "shell",
-          "declaration": {
-            "name": "shell",
-            "module": "./shell.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "sun",
-          "declaration": {
-            "name": "sun",
-            "module": "./sun.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "zap",
-          "declaration": {
-            "name": "zap",
-            "module": "./zap.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/moon.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "moon",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\" />'",
-          "description": "Inner SVG content for the `moon` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "moon",
-          "declaration": {
-            "name": "moon",
-            "module": "src/icons/moon.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/move.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "move",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M12 2v20\" /> <path d=\"m15 19-3 3-3-3\" /> <path d=\"m19 9 3 3-3 3\" /> <path d=\"M2 12h20\" /> <path d=\"m5 9-3 3 3 3\" /> <path d=\"m9 5 3-3 3 3\" />'",
-          "description": "Inner SVG content for the `move` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "move",
-          "declaration": {
-            "name": "move",
-            "module": "src/icons/move.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/play.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "play",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\" />'",
-          "description": "Inner SVG content for the `play` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "play",
-          "declaration": {
-            "name": "play",
-            "module": "src/icons/play.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/rows-3.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "rows3",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M21 9H3\" /> <path d=\"M21 15H3\" />'",
-          "description": "Inner SVG content for the `rows-3` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "rows3",
-          "declaration": {
-            "name": "rows3",
-            "module": "src/icons/rows-3.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/scan.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "scan",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" />'",
-          "description": "Inner SVG content for the `scan` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "scan",
-          "declaration": {
-            "name": "scan",
-            "module": "src/icons/scan.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/search.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "search",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"m21 21-4.34-4.34\" /> <circle cx=\"11\" cy=\"11\" r=\"8\" />'",
-          "description": "Inner SVG content for the `search` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "search",
-          "declaration": {
-            "name": "search",
-            "module": "src/icons/search.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/shell.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "shell",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 6 6 0 0 1-12 0 8 8 0 0 1 16 0 10 10 0 1 1-20 0 11.93 11.93 0 0 1 2.42-7.22 2 2 0 1 1 3.16 2.44\" />'",
-          "description": "Inner SVG content for the `shell` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "shell",
-          "declaration": {
-            "name": "shell",
-            "module": "src/icons/shell.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/sun.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "sun",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />'",
-          "description": "Inner SVG content for the `sun` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "sun",
-          "declaration": {
-            "name": "sun",
-            "module": "src/icons/sun.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/zap.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "zap",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\" />'",
-          "description": "Inner SVG content for the `zap` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "zap",
-          "declaration": {
-            "name": "zap",
-            "module": "src/icons/zap.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/lib/css-color.ts",
       "declarations": [
         {
@@ -2500,6 +2500,27 @@
           "declaration": {
             "name": "onEscape",
             "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/styles/hp-base.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "hpBase",
+          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "hpBase",
+          "declaration": {
+            "name": "hpBase",
+            "module": "src/styles/hp-base.ts"
           }
         }
       ]
@@ -2822,27 +2843,6 @@
           "declaration": {
             "name": "menu",
             "module": "src/pixel-icons/menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/styles/hp-base.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "hpBase",
-          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "hpBase",
-          "declaration": {
-            "name": "hpBase",
-            "module": "src/styles/hp-base.ts"
           }
         }
       ]
@@ -5266,534 +5266,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/loading/hp-progress.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-          "name": "HpProgress",
-          "cssParts": [
-            {
-              "description": "The track that the fill sits inside",
-              "name": "track"
-            },
-            {
-              "description": "The filled portion (or sliding ribbon when indeterminate)",
-              "name": "fill"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "attribute": "min"
-            },
-            {
-              "kind": "field",
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "attribute": "max"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "attribute": "indeterminate",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "syncAria",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "fieldName": "min"
-            },
-            {
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "fieldName": "max"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "fieldName": "value"
-            },
-            {
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "fieldName": "indeterminate"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-progress",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpProgress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-progress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/loading/hp-spinner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-          "name": "HpSpinner",
-          "members": [
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "attribute": "tone",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "fieldName": "size"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-spinner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpSpinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-spinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/layout/hp-cluster.ts",
       "declarations": [
         {
@@ -6900,6 +6372,1408 @@
           "declaration": {
             "name": "HpToolbar",
             "module": "src/elements/layout/hp-toolbar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/loading/hp-progress.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+          "name": "HpProgress",
+          "cssParts": [
+            {
+              "description": "The track that the fill sits inside",
+              "name": "track"
+            },
+            {
+              "description": "The filled portion (or sliding ribbon when indeterminate)",
+              "name": "fill"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "attribute": "indeterminate",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "syncAria",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "fieldName": "min"
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "fieldName": "max"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "fieldName": "value"
+            },
+            {
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "fieldName": "indeterminate"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-progress",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpProgress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-progress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/loading/hp-spinner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+          "name": "HpSpinner",
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "attribute": "tone",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "fieldName": "size"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-spinner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpSpinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-spinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/navigation/hp-link.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
+          "name": "HpLink",
+          "slots": [
+            {
+              "description": "Link label",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "href",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Destination URL.",
+              "attribute": "href"
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
+              "attribute": "target"
+            },
+            {
+              "kind": "field",
+              "name": "rel",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
+              "attribute": "rel"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "href",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Destination URL.",
+              "fieldName": "href"
+            },
+            {
+              "name": "target",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
+              "fieldName": "target"
+            },
+            {
+              "name": "rel",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
+              "fieldName": "rel"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-link",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLink",
+          "declaration": {
+            "name": "HpLink",
+            "module": "src/elements/navigation/hp-link.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link",
+          "declaration": {
+            "name": "HpLink",
+            "module": "src/elements/navigation/hp-link.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/navigation/hp-menubar.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Menu bar — managed keyboard navigation across a row of dropdown\ntriggers. role=\"menubar\"; arrow keys move focus between triggers;\nHome / End jump.",
+          "name": "HpMenubar",
+          "slots": [
+            {
+              "description": "hp-dropdown-menu children (or any [role=\"menuitem\"] triggers)",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "orientation",
+              "type": {
+                "text": "\"horizontal\" | \"vertical\""
+              },
+              "default": "\"horizontal\"",
+              "description": "Layout direction — controls arrow-key axis.",
+              "attribute": "orientation",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "getTriggers",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "syncRovingTabindex",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "orientation",
+              "type": {
+                "text": "\"horizontal\" | \"vertical\""
+              },
+              "default": "\"horizontal\"",
+              "description": "Layout direction — controls arrow-key axis.",
+              "fieldName": "orientation"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-menubar",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpMenubar",
+          "declaration": {
+            "name": "HpMenubar",
+            "module": "src/elements/navigation/hp-menubar.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-menubar",
+          "declaration": {
+            "name": "HpMenubar",
+            "module": "src/elements/navigation/hp-menubar.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/navigation/hp-navigation-menu.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Top-nav menu with optional hover-revealed submenus.",
+          "name": "HpNavigationMenu",
+          "slots": [
+            {
+              "description": "hp-nav-item children",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "method",
+              "name": "getItems",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-navigation-menu",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "Single item inside hp-navigation-menu. Plain link when no `content`\nslot, dropdown trigger when there is one.",
+          "name": "HpNavItem",
+          "cssParts": [
+            {
+              "description": "The trigger element",
+              "name": "trigger"
+            },
+            {
+              "description": "The submenu panel (when content is provided)",
+              "name": "panel"
+            }
+          ],
+          "slots": [
+            {
+              "description": "The trigger label / link text",
+              "name": ""
+            },
+            {
+              "description": "Optional submenu body (revealed on hover / focus)",
+              "name": "content"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "href",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
+              "attribute": "href"
+            },
+            {
+              "kind": "field",
+              "name": "hasContent",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "isOpen",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "openTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "closeTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "clearTimers",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleSlotChange",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleEnter",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleLeave",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleKeyDown",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "href",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
+              "fieldName": "href"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-nav-item",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpNavigationMenu",
+          "declaration": {
+            "name": "HpNavigationMenu",
+            "module": "src/elements/navigation/hp-navigation-menu.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-navigation-menu",
+          "declaration": {
+            "name": "HpNavigationMenu",
+            "module": "src/elements/navigation/hp-navigation-menu.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpNavItem",
+          "declaration": {
+            "name": "HpNavItem",
+            "module": "src/elements/navigation/hp-navigation-menu.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-nav-item",
+          "declaration": {
+            "name": "HpNavItem",
+            "module": "src/elements/navigation/hp-navigation-menu.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/navigation/hp-tabs.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Tabbed content container. Slotted hp-tab children render the tab\nlist; hp-tab-panel children render the panels. Arrow keys cycle\ntabs; Home / End jump; roving tabindex. `route=\"hash\"` syncs value\nto URL hash.",
+          "name": "HpTabs",
+          "cssParts": [
+            {
+              "description": "The tablist row / column",
+              "name": "list"
+            },
+            {
+              "description": "The panels container",
+              "name": "panels"
+            }
+          ],
+          "slots": [
+            {
+              "description": "hp-tab children for the tablist (auto-slotted)",
+              "name": "tab"
+            },
+            {
+              "description": "hp-tab-panel children for the panels",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Selected tab value. Setting this activates the matching tab\nand shows the matching panel. Default = first tab's value.",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "type": {
+                "text": "\"horizontal\" | \"vertical\""
+              },
+              "default": "\"horizontal\"",
+              "description": "Tab list orientation. Horizontal arrows = Left / Right;\nvertical = Up / Down.",
+              "attribute": "orientation",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "route",
+              "type": {
+                "text": "\"hash\" | \"query\" | undefined"
+              },
+              "description": "Sync value with the URL.\n\n- `\"hash\"`: reads / writes `location.hash`. Simple but collides\nwith any other consumer of the hash (e.g. heading anchors in\npanel content, in-page TOC links). Best for standalone pages\nwhere the hash is yours alone.\n- `\"query\"`: reads / writes a search param (default `tab`, set\nvia `query-param` attribute). Leaves the hash free for in-page\nanchors. Best for docs pages where panels contain headings\nwith their own slug anchors.",
+              "attribute": "route",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "queryParam",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"tab\"",
+              "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`.",
+              "attribute": "query-param",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "hasTabValue",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "v",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Only adopt a URL value if a tab with that value actually exists.\nHeading anchors and other in-page hashes shouldn't blow the\nactive tab away."
+            },
+            {
+              "kind": "method",
+              "name": "applyFromHash",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "applyFromQuery",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleHashChange",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handlePopState",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "dispatchChange",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "writeHash",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "writeQuery",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getTabs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "description": "Direct-child lookups only — using querySelectorAll would\ntraverse into nested hp-tabs (e.g., a hp-tabs example inside the\nComponentDocs hp-tabs), and bubbled hp-tab-select events from\nthe inner instance would then cause the outer to mark inner\ntabs as active, hide all outer panels, and slide its indicator\noff-page. Scoping to immediate children keeps each instance\nmanaging its own state."
+            },
+            {
+              "kind": "method",
+              "name": "getPanels",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureDefault",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "syncTabs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleTabSelect",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleKeyDown",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "updateIndicator",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Recompute the active-tab indicator position so the underline\nslides under whichever tab is currently active. Called after\nevery selection change and on initial render."
+            },
+            {
+              "kind": "method",
+              "name": "handleSlotChange",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-tabs-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "When the active tab changes. detail: { value }",
+              "name": "change"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Selected tab value. Setting this activates the matching tab\nand shows the matching panel. Default = first tab's value.",
+              "fieldName": "value"
+            },
+            {
+              "name": "orientation",
+              "type": {
+                "text": "\"horizontal\" | \"vertical\""
+              },
+              "default": "\"horizontal\"",
+              "description": "Tab list orientation. Horizontal arrows = Left / Right;\nvertical = Up / Down.",
+              "fieldName": "orientation"
+            },
+            {
+              "name": "route",
+              "type": {
+                "text": "\"hash\" | \"query\" | undefined"
+              },
+              "description": "Sync value with the URL.\n\n- `\"hash\"`: reads / writes `location.hash`. Simple but collides\nwith any other consumer of the hash (e.g. heading anchors in\npanel content, in-page TOC links). Best for standalone pages\nwhere the hash is yours alone.\n- `\"query\"`: reads / writes a search param (default `tab`, set\nvia `query-param` attribute). Leaves the hash free for in-page\nanchors. Best for docs pages where panels contain headings\nwith their own slug anchors.",
+              "fieldName": "route"
+            },
+            {
+              "name": "query-param",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"tab\"",
+              "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`.",
+              "fieldName": "queryParam"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tabs",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "Single tab inside hp-tabs. role=\"tab\"; auto-slotted into the\ntablist via slot=\"tab\" in connectedCallback.",
+          "name": "HpTab",
+          "slots": [
+            {
+              "description": "Tab label",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "active",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "syncAria",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleClick",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "description": "When this tab is clicked. detail: { value }",
+              "name": "hp-tab-select"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "value"
+            },
+            {
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "active"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tab",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "Panel body inside hp-tabs. role=\"tabpanel\"; visibility driven by\nthe parent hp-tabs via the `hidden` attribute.",
+          "name": "HpTabPanel",
+          "slots": [
+            {
+              "description": "Panel content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "attribute": "value"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "fieldName": "value"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tab-panel",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpTabs",
+          "declaration": {
+            "name": "HpTabs",
+            "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tabs",
+          "declaration": {
+            "name": "HpTabs",
+            "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpTab",
+          "declaration": {
+            "name": "HpTab",
+            "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tab",
+          "declaration": {
+            "name": "HpTab",
+            "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpTabPanel",
+          "declaration": {
+            "name": "HpTabPanel",
+            "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tab-panel",
+          "declaration": {
+            "name": "HpTabPanel",
+            "module": "src/elements/navigation/hp-tabs.ts"
           }
         }
       ]
@@ -8580,880 +9454,6 @@
           "declaration": {
             "name": "HpTooltip",
             "module": "src/elements/overlays/hp-tooltip.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/navigation/hp-link.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
-          "name": "HpLink",
-          "slots": [
-            {
-              "description": "Link label",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "href",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Destination URL.",
-              "attribute": "href"
-            },
-            {
-              "kind": "field",
-              "name": "target",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
-              "attribute": "target"
-            },
-            {
-              "kind": "field",
-              "name": "rel",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
-              "attribute": "rel"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "href",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Destination URL.",
-              "fieldName": "href"
-            },
-            {
-              "name": "target",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
-              "fieldName": "target"
-            },
-            {
-              "name": "rel",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
-              "fieldName": "rel"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-link",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLink",
-          "declaration": {
-            "name": "HpLink",
-            "module": "src/elements/navigation/hp-link.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link",
-          "declaration": {
-            "name": "HpLink",
-            "module": "src/elements/navigation/hp-link.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/navigation/hp-menubar.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Menu bar — managed keyboard navigation across a row of dropdown\ntriggers. role=\"menubar\"; arrow keys move focus between triggers;\nHome / End jump.",
-          "name": "HpMenubar",
-          "slots": [
-            {
-              "description": "hp-dropdown-menu children (or any [role=\"menuitem\"] triggers)",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"horizontal\"",
-              "description": "Layout direction — controls arrow-key axis.",
-              "attribute": "orientation",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "getTriggers",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "syncRovingTabindex",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleKeyDown",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"horizontal\"",
-              "description": "Layout direction — controls arrow-key axis.",
-              "fieldName": "orientation"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-menubar",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpMenubar",
-          "declaration": {
-            "name": "HpMenubar",
-            "module": "src/elements/navigation/hp-menubar.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-menubar",
-          "declaration": {
-            "name": "HpMenubar",
-            "module": "src/elements/navigation/hp-menubar.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/navigation/hp-navigation-menu.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Top-nav menu with optional hover-revealed submenus.",
-          "name": "HpNavigationMenu",
-          "slots": [
-            {
-              "description": "hp-nav-item children",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "method",
-              "name": "getItems",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleKeyDown",
-              "privacy": "private"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-navigation-menu",
-          "customElement": true
-        },
-        {
-          "kind": "class",
-          "description": "Single item inside hp-navigation-menu. Plain link when no `content`\nslot, dropdown trigger when there is one.",
-          "name": "HpNavItem",
-          "cssParts": [
-            {
-              "description": "The trigger element",
-              "name": "trigger"
-            },
-            {
-              "description": "The submenu panel (when content is provided)",
-              "name": "panel"
-            }
-          ],
-          "slots": [
-            {
-              "description": "The trigger label / link text",
-              "name": ""
-            },
-            {
-              "description": "Optional submenu body (revealed on hover / focus)",
-              "name": "content"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "href",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
-              "attribute": "href"
-            },
-            {
-              "kind": "field",
-              "name": "hasContent",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "isOpen",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "openTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "closeTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "clearTimers",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleSlotChange",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleEnter",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleLeave",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleClick",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleKeyDown",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "href",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
-              "fieldName": "href"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-nav-item",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpNavigationMenu",
-          "declaration": {
-            "name": "HpNavigationMenu",
-            "module": "src/elements/navigation/hp-navigation-menu.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-navigation-menu",
-          "declaration": {
-            "name": "HpNavigationMenu",
-            "module": "src/elements/navigation/hp-navigation-menu.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpNavItem",
-          "declaration": {
-            "name": "HpNavItem",
-            "module": "src/elements/navigation/hp-navigation-menu.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-nav-item",
-          "declaration": {
-            "name": "HpNavItem",
-            "module": "src/elements/navigation/hp-navigation-menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/navigation/hp-tabs.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Tabbed content container. Slotted hp-tab children render the tab\nlist; hp-tab-panel children render the panels. Arrow keys cycle\ntabs; Home / End jump; roving tabindex. `route=\"hash\"` syncs value\nto URL hash.",
-          "name": "HpTabs",
-          "cssParts": [
-            {
-              "description": "The tablist row / column",
-              "name": "list"
-            },
-            {
-              "description": "The panels container",
-              "name": "panels"
-            }
-          ],
-          "slots": [
-            {
-              "description": "hp-tab children for the tablist (auto-slotted)",
-              "name": "tab"
-            },
-            {
-              "description": "hp-tab-panel children for the panels",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Selected tab value. Setting this activates the matching tab\nand shows the matching panel. Default = first tab's value.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"horizontal\"",
-              "description": "Tab list orientation. Horizontal arrows = Left / Right;\nvertical = Up / Down.",
-              "attribute": "orientation",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "route",
-              "type": {
-                "text": "\"hash\" | \"query\" | undefined"
-              },
-              "description": "Sync value with the URL.\n\n- `\"hash\"`: reads / writes `location.hash`. Simple but collides\nwith any other consumer of the hash (e.g. heading anchors in\npanel content, in-page TOC links). Best for standalone pages\nwhere the hash is yours alone.\n- `\"query\"`: reads / writes a search param (default `tab`, set\nvia `query-param` attribute). Leaves the hash free for in-page\nanchors. Best for docs pages where panels contain headings\nwith their own slug anchors.",
-              "attribute": "route",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "queryParam",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"tab\"",
-              "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`.",
-              "attribute": "query-param",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "hasTabValue",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "v",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "Only adopt a URL value if a tab with that value actually exists.\nHeading anchors and other in-page hashes shouldn't blow the\nactive tab away."
-            },
-            {
-              "kind": "method",
-              "name": "applyFromHash",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "applyFromQuery",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleHashChange",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handlePopState",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "dispatchChange",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "value",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "writeHash",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "value",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "writeQuery",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "value",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "getTabs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              },
-              "description": "Direct-child lookups only — using querySelectorAll would\ntraverse into nested hp-tabs (e.g., a hp-tabs example inside the\nComponentDocs hp-tabs), and bubbled hp-tab-select events from\nthe inner instance would then cause the outer to mark inner\ntabs as active, hide all outer panels, and slide its indicator\noff-page. Scoping to immediate children keeps each instance\nmanaging its own state."
-            },
-            {
-              "kind": "method",
-              "name": "getPanels",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "ensureDefault",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "syncTabs",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleTabSelect",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleKeyDown",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "updateIndicator",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Recompute the active-tab indicator position so the underline\nslides under whichever tab is currently active. Called after\nevery selection change and on initial render."
-            },
-            {
-              "kind": "method",
-              "name": "handleSlotChange",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-tabs-change",
-              "type": {
-                "text": "CustomEvent"
-              }
-            },
-            {
-              "description": "When the active tab changes. detail: { value }",
-              "name": "change"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Selected tab value. Setting this activates the matching tab\nand shows the matching panel. Default = first tab's value.",
-              "fieldName": "value"
-            },
-            {
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"horizontal\"",
-              "description": "Tab list orientation. Horizontal arrows = Left / Right;\nvertical = Up / Down.",
-              "fieldName": "orientation"
-            },
-            {
-              "name": "route",
-              "type": {
-                "text": "\"hash\" | \"query\" | undefined"
-              },
-              "description": "Sync value with the URL.\n\n- `\"hash\"`: reads / writes `location.hash`. Simple but collides\nwith any other consumer of the hash (e.g. heading anchors in\npanel content, in-page TOC links). Best for standalone pages\nwhere the hash is yours alone.\n- `\"query\"`: reads / writes a search param (default `tab`, set\nvia `query-param` attribute). Leaves the hash free for in-page\nanchors. Best for docs pages where panels contain headings\nwith their own slug anchors.",
-              "fieldName": "route"
-            },
-            {
-              "name": "query-param",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"tab\"",
-              "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`.",
-              "fieldName": "queryParam"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tabs",
-          "customElement": true
-        },
-        {
-          "kind": "class",
-          "description": "Single tab inside hp-tabs. role=\"tab\"; auto-slotted into the\ntablist via slot=\"tab\" in connectedCallback.",
-          "name": "HpTab",
-          "slots": [
-            {
-              "description": "Tab label",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "attribute": "active",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "syncAria",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleClick",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When this tab is clicked. detail: { value }",
-              "name": "hp-tab-select"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "fieldName": "value"
-            },
-            {
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "fieldName": "active"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tab",
-          "customElement": true
-        },
-        {
-          "kind": "class",
-          "description": "Panel body inside hp-tabs. role=\"tabpanel\"; visibility driven by\nthe parent hp-tabs via the `hidden` attribute.",
-          "name": "HpTabPanel",
-          "slots": [
-            {
-              "description": "Panel content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "attribute": "value"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "fieldName": "value"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tab-panel",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpTabs",
-          "declaration": {
-            "name": "HpTabs",
-            "module": "src/elements/navigation/hp-tabs.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-tabs",
-          "declaration": {
-            "name": "HpTabs",
-            "module": "src/elements/navigation/hp-tabs.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpTab",
-          "declaration": {
-            "name": "HpTab",
-            "module": "src/elements/navigation/hp-tabs.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-tab",
-          "declaration": {
-            "name": "HpTab",
-            "module": "src/elements/navigation/hp-tabs.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpTabPanel",
-          "declaration": {
-            "name": "HpTabPanel",
-            "module": "src/elements/navigation/hp-tabs.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-tab-panel",
-          "declaration": {
-            "name": "HpTabPanel",
-            "module": "src/elements/navigation/hp-tabs.ts"
           }
         }
       ]
@@ -16576,12 +16576,20 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Hex coordinate surface — slotted children with `q` / `r`\nattributes are placed on the axial lattice. `draggable` opts into\ndrag-to-move with snap, plus pan and zoom. Pure CSS: no canvas and\nno rendering dependency.",
+          "description": "Hex layout primitive — slotted children with `q` / `r` attributes\nare placed on the axial lattice, and the element sizes to the\ncontent it placed. No camera: the page scrolls it, the way it would\nany other block. `draggable` opts into drag-to-move with snap.\nPure CSS, no rendering dependency.\n\nUse `<hp-grid>` instead for a viewport-like surface with camera\npan/zoom, semantic zoom, dive navigation or tethers.",
           "name": "HpLayout",
           "cssProperties": [
             {
               "description": "Cell width; defaults to `--hp-hex-cell-sm`",
               "name": "--hp-cell"
+            },
+            {
+              "description": "Measured content width (read-only)",
+              "name": "--hp-layout-width"
+            },
+            {
+              "description": "Measured content height (read-only)",
+              "name": "--hp-layout-height"
             }
           ],
           "slots": [
@@ -16702,13 +16710,14 @@
             },
             {
               "kind": "method",
-              "name": "recenter",
+              "name": "updateContentBox",
+              "privacy": "private",
               "return": {
                 "type": {
                   "text": "void"
                 }
               },
-              "description": "Fit the content into view, centred, never magnifying past 1×."
+              "description": "Measure the placed content and make the element that size, with\nthe content's top-left at the element's top-left. The offset is\ncarried on the identity camera rather than baked into each\nchild's coordinates, so the shared controllers keep working in\nplain world space and only the container shifts."
             },
             {
               "kind": "method",
@@ -16909,10 +16918,6 @@
             {
               "description": "Previously-adjacent cells separated",
               "name": "hp-layout-unbond"
-            },
-            {
-              "description": "While the surface is being panned",
-              "name": "hp-layout-pan"
             }
           ],
           "attributes": [
@@ -16969,7 +16974,7 @@
         {
           "kind": "variable",
           "name": "hpLayoutStyles",
-          "default": "css` :host { position: relative; display: block; overflow: hidden; /* Cell width drives the whole lattice; consumers override it * per instance. Falls back to the small cell tier. */ --hp-effective-cell: var(--hp-cell, var(--hp-hex-cell-sm)); } :host([draggable]) { touch-action: none; } /* The camera lives here: one transform write per frame instead of * one per child, so a hundred cells cost the same as one. */ .world { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; } /* Children are placed in world units and centred on their point. * The transition animates the settle when a drag releases. */ ::slotted([q][r]) { position: absolute; left: 0; top: 0; translate: -50% -50%; transform: translate(var(--hp-x, 0px), var(--hp-y, 0px)); transition: transform var(--hp-unfold-trigger) var(--hp-ease-default); } :host([draggable]) ::slotted([q][r]) { /* Custom properties cross the shadow boundary, so each atom * reads cursor: var(--hp-cursor) on its own :host. */ --hp-cursor: grab; } ::slotted([q][r][data-hp-dragging]) { z-index: var(--hp-layer-dragging); opacity: 0.85; --hp-cursor: grabbing; /* No transition while the pointer owns the position, or every * move would lag a frame behind the cursor. */ transition: none; } /* Decorative backdrops opt out of placement entirely. */ ::slotted(hp-background) { position: absolute; inset: 0; } @media (prefers-reduced-motion: reduce) { ::slotted([q][r]) { transition: none; } } `"
+          "default": "css` :host { position: relative; display: block; /* Cell width drives the whole lattice; consumers override it * per instance. Falls back to the small cell tier. */ --hp-effective-cell: var(--hp-cell, var(--hp-hex-cell-sm)); /* Measured from the placed content so the element occupies real * space in flow. Falls back to nothing until first placement. */ inline-size: var(--hp-layout-width, auto); block-size: var(--hp-layout-height, auto); } /* Children are placed in CSS pixels from the content's top-left and * centred on their point. The transition animates the settle when a * drag releases. */ ::slotted([q][r]) { position: absolute; left: 0; top: 0; translate: -50% -50%; transform: translate(var(--hp-x, 0px), var(--hp-y, 0px)); transition: transform var(--hp-unfold-trigger) var(--hp-ease-default); } :host([draggable]) ::slotted([q][r]) { /* Custom properties cross the shadow boundary, so each atom * reads cursor: var(--hp-cursor) on its own :host. */ --hp-cursor: grab; touch-action: none; } ::slotted([q][r][data-hp-dragging]) { z-index: var(--hp-layer-dragging); opacity: 0.85; --hp-cursor: grabbing; /* No transition while the pointer owns the position, or every * move would lag a frame behind the cursor. */ transition: none; } /* Decorative backdrops opt out of placement entirely. */ ::slotted(hp-background) { position: absolute; inset: 0; } @media (prefers-reduced-motion: reduce) { ::slotted([q][r]) { transition: none; } } `"
         }
       ],
       "exports": [

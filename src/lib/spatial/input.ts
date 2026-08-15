@@ -41,10 +41,15 @@ export interface GestureOptions {
   /** Element that owns pointer capture (the canvas). */
   canvas: HTMLElement;
   camera: Camera;
-  /** Omitted by consumers with no page-dive mode (hp-layout) — the
-   * gesture grammar is otherwise identical, so it is shared rather
-   * than reimplemented. */
+  /** Omitted by consumers with no page-dive mode — the gesture
+   * grammar is otherwise identical, so it is shared rather than
+   * reimplemented. */
   dive?: DiveController;
+  /** Set false on surfaces that are laid out in document flow rather
+   * than navigated as a viewport: the camera never moves, so drags on
+   * empty space and the wheel are left to the page. Drag-to-move and
+   * click still work identically. */
+  pannable?: boolean;
   drag: DragController;
   occupancy: OccupancyMap;
   hexSide: number;
@@ -126,6 +131,12 @@ export class GestureController {
         requestRender();
         return;
       }
+    }
+    if (this.options.pannable === false) {
+      // Nothing to pan — let the press through to the page so native
+      // scrolling and text selection still work.
+      this.mode = null;
+      return;
     }
     this.mode = "pan";
   };
@@ -220,6 +231,10 @@ export class GestureController {
 
   private readonly handleWheel = (event: WheelEvent): void => {
     const { camera, dive } = this.options;
+    if (this.options.pannable === false) {
+      // The page owns the wheel on a flow-layout surface.
+      return;
+    }
     event.preventDefault();
     camera.stopAnimations();
     if (event.ctrlKey || event.metaKey) {
