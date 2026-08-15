@@ -34,7 +34,8 @@ import { type AxialPos, type FillMask, PACK_RANGE, isPositionClear, maskBounds }
 export function findRowsPosition(
   mask: FillMask,
   claimed: ReadonlySet<string>,
-  halfColsAvailable: number
+  halfColsAvailable: number,
+  gap = true
 ): AxialPos {
   const { qMin, qMax } = maskBounds(mask);
   for (let r = -PACK_RANGE; r <= PACK_RANGE; r++) {
@@ -42,7 +43,7 @@ export function findRowsPosition(
     const qLo = Math.ceil(-halfColsAvailable - xShift - qMin);
     const qHi = Math.floor(halfColsAvailable - xShift - qMax);
     for (let q = qLo; q <= qHi; q++) {
-      if (isPositionClear(q, r, mask, claimed)) {
+      if (isPositionClear(q, r, mask, claimed, gap)) {
         return { q, r };
       }
     }

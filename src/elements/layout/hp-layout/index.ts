@@ -32,10 +32,9 @@ import { markClaimed, parseFillCells, type FillMask } from "../../../lib/spatial
 import type { AxialCoord } from "../../../lib/spatial/types.js";
 import { hpLayoutStyles } from "./styles.js";
 
-/** Axial-cell width cap for `layout="rows"` — sized so a typical
- * page of clusters wraps after a few per row rather than running off
- * the side. */
-const ROWS_HALF_COLS = 10;
+/** Default cells per row for `layout="rows"`. A layout primitive
+ * wraps tighter than a full-page packer; override with `row-width`. */
+const DEFAULT_ROW_WIDTH = 6;
 
 /** Breathing room in px around the placed content, so hexes on the
  * outer edge aren't clipped by the element's own box. */
@@ -87,6 +86,10 @@ export class HpLayout extends LitElement {
    * `draggable="false"` force-disables. */
   @property({ reflect: true, type: Boolean })
   override draggable = false;
+
+  /** Cells per row for `layout="rows"`. */
+  @property({ type: Number, attribute: "row-width" })
+  rowWidth = DEFAULT_ROW_WIDTH;
 
   static override styles = [hpBase, hpLayoutStyles];
 
@@ -212,15 +215,43 @@ export class HpLayout extends LitElement {
       .sort((a, b) => b.mask.length - a.mask.length);
     const claimed = new Set<string>();
     for (const { element, mask } of items) {
+      // Single hexes pack flush; multi-cell shapes keep the one-hex
+      // gap that stops two clusters reading as one blob.
+      const gap = mask.length > 1;
       const position =
         this.layout === "spiral"
-          ? findSpiralPosition(mask as FillMask, claimed)
-          : findRowsPosition(mask as FillMask, claimed, ROWS_HALF_COLS);
+          ? findSpiralPosition(mask as FillMask, claimed, gap)
+          : findRowsPosition(mask as FillMask, claimed, this.rowWidth / 2, gap);
       markClaimed(position.q, position.r, mask as FillMask, claimed);
       element.setAttribute("q", String(position.q));
       element.setAttribute("r", String(position.r));
     }
+    this.normalisePlacement(items.map((item) => item.element));
     this.syncOccupancy();
+  }
+
+  /**
+   * Shift packed coordinates so they start near the origin. The
+   * packers scan from the far edge of their range, which leaves
+   * correct-but-alarming values like `r="-40"` on the DOM; a rigid
+   * translation keeps the shape and makes the attributes readable.
+   */
+  private normalisePlacement(elements: readonly HTMLElement[]): void {
+    let minQ = Infinity;
+    let minR = Infinity;
+    for (const element of elements) {
+      minQ = Math.min(minQ, Number.parseFloat(element.getAttribute("q") ?? "0") || 0);
+      minR = Math.min(minR, Number.parseFloat(element.getAttribute("r") ?? "0") || 0);
+    }
+    if (!Number.isFinite(minQ) || (minQ === 0 && minR === 0)) {
+      return;
+    }
+    for (const element of elements) {
+      const q = Number.parseFloat(element.getAttribute("q") ?? "0") || 0;
+      const r = Number.parseFloat(element.getAttribute("r") ?? "0") || 0;
+      element.setAttribute("q", String(q - minQ));
+      element.setAttribute("r", String(r - minR));
+    }
   }
 
   /**

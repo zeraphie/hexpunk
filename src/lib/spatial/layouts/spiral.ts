@@ -60,10 +60,14 @@ function getSpiralPositions(): ReadonlyArray<AxialPos> {
  * @param claimed - Cells already taken by previously placed clusters.
  * @returns Origin coordinate for the cluster.
  */
-export function findSpiralPosition(mask: FillMask, claimed: ReadonlySet<string>): AxialPos {
+export function findSpiralPosition(
+  mask: FillMask,
+  claimed: ReadonlySet<string>,
+  gap = true
+): AxialPos {
   const positions = getSpiralPositions();
   for (const { q, r } of positions) {
-    if (isPositionClear(q, r, mask, claimed)) {
+    if (isPositionClear(q, r, mask, claimed, gap)) {
       return { q, r };
     }
   }

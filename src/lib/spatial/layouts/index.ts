@@ -85,13 +85,17 @@ export function isPositionClear(
   q: number,
   r: number,
   mask: FillMask,
-  claimed: ReadonlySet<string>
+  claimed: ReadonlySet<string>,
+  gap = true
 ): boolean {
   for (const cell of mask) {
     const cq = q + cell.q;
     const cr = r + cell.r;
     if (claimed.has(`${cq},${cr}`)) {
       return false;
+    }
+    if (!gap) {
+      continue;
     }
     for (const [dq, dr] of HEX_NEIGHBOURS) {
       if (claimed.has(`${cq + dq},${cr + dr}`)) {

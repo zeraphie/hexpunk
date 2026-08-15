@@ -723,376 +723,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/icons/copy.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "copy",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />'",
-          "description": "Inner SVG content for the `copy` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "copy",
-          "declaration": {
-            "name": "copy",
-            "module": "src/icons/copy.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/github.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "github",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z\"/>'",
-          "description": "Inner SVG content for the `github` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\">` to control size; this icon ships as\na brand mark (filled shape) rather than a Lucide stroke icon, so\nit ignores the standard `stroke-*` props."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "github",
-          "declaration": {
-            "name": "github",
-            "module": "src/icons/github.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/index.ts",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "copy",
-          "declaration": {
-            "name": "copy",
-            "module": "./copy.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "github",
-          "declaration": {
-            "name": "github",
-            "module": "./github.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "moon",
-          "declaration": {
-            "name": "moon",
-            "module": "./moon.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "move",
-          "declaration": {
-            "name": "move",
-            "module": "./move.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "play",
-          "declaration": {
-            "name": "play",
-            "module": "./play.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "rows3",
-          "declaration": {
-            "name": "rows3",
-            "module": "./rows-3.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "scan",
-          "declaration": {
-            "name": "scan",
-            "module": "./scan.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "search",
-          "declaration": {
-            "name": "search",
-            "module": "./search.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "shell",
-          "declaration": {
-            "name": "shell",
-            "module": "./shell.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "sun",
-          "declaration": {
-            "name": "sun",
-            "module": "./sun.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "zap",
-          "declaration": {
-            "name": "zap",
-            "module": "./zap.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/moon.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "moon",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\" />'",
-          "description": "Inner SVG content for the `moon` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "moon",
-          "declaration": {
-            "name": "moon",
-            "module": "src/icons/moon.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/move.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "move",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M12 2v20\" /> <path d=\"m15 19-3 3-3-3\" /> <path d=\"m19 9 3 3-3 3\" /> <path d=\"M2 12h20\" /> <path d=\"m5 9-3 3 3 3\" /> <path d=\"m9 5 3-3 3 3\" />'",
-          "description": "Inner SVG content for the `move` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "move",
-          "declaration": {
-            "name": "move",
-            "module": "src/icons/move.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/play.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "play",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\" />'",
-          "description": "Inner SVG content for the `play` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "play",
-          "declaration": {
-            "name": "play",
-            "module": "src/icons/play.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/rows-3.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "rows3",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M21 9H3\" /> <path d=\"M21 15H3\" />'",
-          "description": "Inner SVG content for the `rows-3` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "rows3",
-          "declaration": {
-            "name": "rows3",
-            "module": "src/icons/rows-3.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/scan.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "scan",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" />'",
-          "description": "Inner SVG content for the `scan` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "scan",
-          "declaration": {
-            "name": "scan",
-            "module": "src/icons/scan.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/search.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "search",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"m21 21-4.34-4.34\" /> <circle cx=\"11\" cy=\"11\" r=\"8\" />'",
-          "description": "Inner SVG content for the `search` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "search",
-          "declaration": {
-            "name": "search",
-            "module": "src/icons/search.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/shell.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "shell",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 6 6 0 0 1-12 0 8 8 0 0 1 16 0 10 10 0 1 1-20 0 11.93 11.93 0 0 1 2.42-7.22 2 2 0 1 1 3.16 2.44\" />'",
-          "description": "Inner SVG content for the `shell` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "shell",
-          "declaration": {
-            "name": "shell",
-            "module": "src/icons/shell.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/sun.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "sun",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />'",
-          "description": "Inner SVG content for the `sun` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "sun",
-          "declaration": {
-            "name": "sun",
-            "module": "src/icons/sun.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/icons/zap.ts",
-      "declarations": [
-        {
-          "kind": "variable",
-          "name": "zap",
-          "type": {
-            "text": "string"
-          },
-          "default": "'<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\" />'",
-          "description": "Inner SVG content for the `zap` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "zap",
-          "declaration": {
-            "name": "zap",
-            "module": "src/icons/zap.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/hp-bond.ts",
       "declarations": [
         {
@@ -2360,167 +1990,370 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/lib/css-color.ts",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "parseCssColor",
-          "return": {
-            "type": {
-              "text": ""
-            }
-          },
-          "parameters": [
-            {
-              "name": "s",
-              "type": {
-                "text": "string"
-              },
-              "description": "Any CSS colour string (`#rgb`, `oklch()`, `color-mix()`,\nnamed colours, …). Empty / whitespace parses as `transparent`."
-            }
-          ],
-          "description": "Resolve a CSS colour string to non-premultiplied `[r, g, b, a]` in\n`[0, 1]`. Falls back to opaque black if canvas-2D is somehow\nunavailable (extremely unlikely in any browser that has WebGL2)."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "parseCssColor",
-          "declaration": {
-            "name": "parseCssColor",
-            "module": "src/lib/css-color.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/lib/floating.ts",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "positionFloating",
-          "return": {
-            "type": {
-              "text": "FloatingPositionResult"
-            }
-          },
-          "parameters": [
-            {
-              "name": "anchorRect",
-              "type": {
-                "text": "{\n    left: number;\n    top: number;\n    right: number;\n    bottom: number;\n    width: number;\n    height: number;\n  }"
-              }
-            },
-            {
-              "name": "floatingRect",
-              "type": {
-                "text": "{ width: number; height: number }"
-              }
-            },
-            {
-              "name": "viewport",
-              "type": {
-                "text": "Viewport"
-              }
-            },
-            {
-              "name": "options",
-              "default": "{}",
-              "type": {
-                "text": "FloatingPositionOptions"
-              }
-            }
-          ],
-          "description": "Compute the (x, y) for a floating element placed against an\nanchor. Both rects are in viewport coordinates (e.g., from\ngetBoundingClientRect()); result is in the same coordinate space.\nCaller is responsible for adding scroll offsets if needed."
-        },
-        {
-          "kind": "function",
-          "name": "onOutsidePointer",
-          "return": {
-            "type": {
-              "text": "() => void"
-            }
-          },
-          "parameters": [
-            {
-              "name": "floating",
-              "type": {
-                "text": "HTMLElement"
-              }
-            },
-            {
-              "name": "callback",
-              "type": {
-                "text": "(event: PointerEvent) => void"
-              }
-            }
-          ],
-          "description": "Listen for pointer events outside the given element and fire the\ncallback. Returns a dispose function. The callback receives the\noriginal event so consumers can check details (e.g., button)."
-        },
-        {
-          "kind": "function",
-          "name": "onEscape",
-          "return": {
-            "type": {
-              "text": "() => void"
-            }
-          },
-          "parameters": [
-            {
-              "name": "callback",
-              "type": {
-                "text": "(event: KeyboardEvent) => void"
-              }
-            }
-          ],
-          "description": "Listen for a single Escape press anywhere in the document."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "positionFloating",
-          "declaration": {
-            "name": "positionFloating",
-            "module": "src/lib/floating.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "onOutsidePointer",
-          "declaration": {
-            "name": "onOutsidePointer",
-            "module": "src/lib/floating.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "onEscape",
-          "declaration": {
-            "name": "onEscape",
-            "module": "src/lib/floating.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/styles/hp-base.ts",
+      "path": "src/icons/copy.ts",
       "declarations": [
         {
           "kind": "variable",
-          "name": "hpBase",
-          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
+          "name": "copy",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />'",
+          "description": "Inner SVG content for the `copy` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "hpBase",
+          "name": "copy",
           "declaration": {
-            "name": "hpBase",
-            "module": "src/styles/hp-base.ts"
+            "name": "copy",
+            "module": "src/icons/copy.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/github.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "github",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z\"/>'",
+          "description": "Inner SVG content for the `github` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\">` to control size; this icon ships as\na brand mark (filled shape) rather than a Lucide stroke icon, so\nit ignores the standard `stroke-*` props."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "github",
+          "declaration": {
+            "name": "github",
+            "module": "src/icons/github.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "copy",
+          "declaration": {
+            "name": "copy",
+            "module": "./copy.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "github",
+          "declaration": {
+            "name": "github",
+            "module": "./github.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "moon",
+          "declaration": {
+            "name": "moon",
+            "module": "./moon.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "move",
+          "declaration": {
+            "name": "move",
+            "module": "./move.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "play",
+          "declaration": {
+            "name": "play",
+            "module": "./play.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "rows3",
+          "declaration": {
+            "name": "rows3",
+            "module": "./rows-3.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "scan",
+          "declaration": {
+            "name": "scan",
+            "module": "./scan.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "search",
+          "declaration": {
+            "name": "search",
+            "module": "./search.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "shell",
+          "declaration": {
+            "name": "shell",
+            "module": "./shell.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "sun",
+          "declaration": {
+            "name": "sun",
+            "module": "./sun.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zap",
+          "declaration": {
+            "name": "zap",
+            "module": "./zap.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/moon.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "moon",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\" />'",
+          "description": "Inner SVG content for the `moon` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "moon",
+          "declaration": {
+            "name": "moon",
+            "module": "src/icons/moon.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/move.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "move",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M12 2v20\" /> <path d=\"m15 19-3 3-3-3\" /> <path d=\"m19 9 3 3-3 3\" /> <path d=\"M2 12h20\" /> <path d=\"m5 9-3 3 3 3\" /> <path d=\"m9 5 3-3 3 3\" />'",
+          "description": "Inner SVG content for the `move` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "move",
+          "declaration": {
+            "name": "move",
+            "module": "src/icons/move.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/play.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "play",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\" />'",
+          "description": "Inner SVG content for the `play` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "play",
+          "declaration": {
+            "name": "play",
+            "module": "src/icons/play.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/rows-3.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "rows3",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M21 9H3\" /> <path d=\"M21 15H3\" />'",
+          "description": "Inner SVG content for the `rows-3` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "rows3",
+          "declaration": {
+            "name": "rows3",
+            "module": "src/icons/rows-3.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/scan.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "scan",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" />'",
+          "description": "Inner SVG content for the `scan` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "scan",
+          "declaration": {
+            "name": "scan",
+            "module": "src/icons/scan.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/search.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "search",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"m21 21-4.34-4.34\" /> <circle cx=\"11\" cy=\"11\" r=\"8\" />'",
+          "description": "Inner SVG content for the `search` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "search",
+          "declaration": {
+            "name": "search",
+            "module": "src/icons/search.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/shell.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "shell",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 6 6 0 0 1-12 0 8 8 0 0 1 16 0 10 10 0 1 1-20 0 11.93 11.93 0 0 1 2.42-7.22 2 2 0 1 1 3.16 2.44\" />'",
+          "description": "Inner SVG content for the `shell` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "shell",
+          "declaration": {
+            "name": "shell",
+            "module": "src/icons/shell.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/sun.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "sun",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />'",
+          "description": "Inner SVG content for the `sun` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "sun",
+          "declaration": {
+            "name": "sun",
+            "module": "src/icons/sun.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/icons/zap.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "zap",
+          "type": {
+            "text": "string"
+          },
+          "default": "'<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\" />'",
+          "description": "Inner SVG content for the `zap` icon. Wrap with your own\n`<svg viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"\nstroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\">` to\ncontrol size and colour."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "zap",
+          "declaration": {
+            "name": "zap",
+            "module": "src/icons/zap.ts"
           }
         }
       ]
@@ -2843,6 +2676,173 @@
           "declaration": {
             "name": "menu",
             "module": "src/pixel-icons/menu.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/css-color.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "parseCssColor",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "s",
+              "type": {
+                "text": "string"
+              },
+              "description": "Any CSS colour string (`#rgb`, `oklch()`, `color-mix()`,\nnamed colours, …). Empty / whitespace parses as `transparent`."
+            }
+          ],
+          "description": "Resolve a CSS colour string to non-premultiplied `[r, g, b, a]` in\n`[0, 1]`. Falls back to opaque black if canvas-2D is somehow\nunavailable (extremely unlikely in any browser that has WebGL2)."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "parseCssColor",
+          "declaration": {
+            "name": "parseCssColor",
+            "module": "src/lib/css-color.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/floating.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "positionFloating",
+          "return": {
+            "type": {
+              "text": "FloatingPositionResult"
+            }
+          },
+          "parameters": [
+            {
+              "name": "anchorRect",
+              "type": {
+                "text": "{\n    left: number;\n    top: number;\n    right: number;\n    bottom: number;\n    width: number;\n    height: number;\n  }"
+              }
+            },
+            {
+              "name": "floatingRect",
+              "type": {
+                "text": "{ width: number; height: number }"
+              }
+            },
+            {
+              "name": "viewport",
+              "type": {
+                "text": "Viewport"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "type": {
+                "text": "FloatingPositionOptions"
+              }
+            }
+          ],
+          "description": "Compute the (x, y) for a floating element placed against an\nanchor. Both rects are in viewport coordinates (e.g., from\ngetBoundingClientRect()); result is in the same coordinate space.\nCaller is responsible for adding scroll offsets if needed."
+        },
+        {
+          "kind": "function",
+          "name": "onOutsidePointer",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "floating",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "name": "callback",
+              "type": {
+                "text": "(event: PointerEvent) => void"
+              }
+            }
+          ],
+          "description": "Listen for pointer events outside the given element and fire the\ncallback. Returns a dispose function. The callback receives the\noriginal event so consumers can check details (e.g., button)."
+        },
+        {
+          "kind": "function",
+          "name": "onEscape",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "callback",
+              "type": {
+                "text": "(event: KeyboardEvent) => void"
+              }
+            }
+          ],
+          "description": "Listen for a single Escape press anywhere in the document."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "positionFloating",
+          "declaration": {
+            "name": "positionFloating",
+            "module": "src/lib/floating.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "onOutsidePointer",
+          "declaration": {
+            "name": "onOutsidePointer",
+            "module": "src/lib/floating.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "onEscape",
+          "declaration": {
+            "name": "onEscape",
+            "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/styles/hp-base.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "hpBase",
+          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "hpBase",
+          "declaration": {
+            "name": "hpBase",
+            "module": "src/styles/hp-base.ts"
           }
         }
       ]
@@ -6378,6 +6378,242 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/loading/hp-progress.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+          "name": "HpProgress",
+          "cssParts": [
+            {
+              "description": "The track that the fill sits inside",
+              "name": "track"
+            },
+            {
+              "description": "The filled portion (or sliding ribbon when indeterminate)",
+              "name": "fill"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "attribute": "indeterminate",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "syncAria",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "fieldName": "min"
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "fieldName": "max"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "fieldName": "value"
+            },
+            {
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "fieldName": "indeterminate"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-progress",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpProgress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-progress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/loading/hp-spinner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+          "name": "HpSpinner",
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "attribute": "tone",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "fieldName": "size"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-spinner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpSpinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-spinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/messaging/hp-banner.ts",
       "declarations": [
         {
@@ -6664,242 +6900,6 @@
           "declaration": {
             "name": "HpToast",
             "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/loading/hp-progress.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-          "name": "HpProgress",
-          "cssParts": [
-            {
-              "description": "The track that the fill sits inside",
-              "name": "track"
-            },
-            {
-              "description": "The filled portion (or sliding ribbon when indeterminate)",
-              "name": "fill"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "attribute": "min"
-            },
-            {
-              "kind": "field",
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "attribute": "max"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "attribute": "indeterminate",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "syncAria",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "fieldName": "min"
-            },
-            {
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "fieldName": "max"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "fieldName": "value"
-            },
-            {
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "fieldName": "indeterminate"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-progress",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpProgress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-progress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/loading/hp-spinner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-          "name": "HpSpinner",
-          "members": [
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "attribute": "tone",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "fieldName": "size"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-spinner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpSpinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-spinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
           }
         }
       ]
@@ -16623,6 +16623,16 @@
             },
             {
               "kind": "field",
+              "name": "rowWidth",
+              "default": "6",
+              "description": "Cells per row for `layout=\"rows\"`.",
+              "attribute": "row-width",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "kind": "field",
               "name": "occupancy",
               "privacy": "private",
               "readonly": true,
@@ -16707,6 +16717,25 @@
                 }
               },
               "description": "Run the packer for `layout=\"spiral\"` / `\"rows\"`, largest mask\nfirst. Children publish their occupied cells via\n`data-fill-cells`; those without it count as a single hex."
+            },
+            {
+              "kind": "method",
+              "name": "normalisePlacement",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "elements",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "Shift packed coordinates so they start near the origin. The\npackers scan from the far edge of their range, which leaves\ncorrect-but-alarming values like `r=\"-40\"` on the DOM; a rigid\ntranslation keeps the shape and makes the attributes readable."
             },
             {
               "kind": "method",
@@ -16938,6 +16967,12 @@
               "default": "false",
               "description": "Opt into drag-to-move, pan and zoom. Per-cell override via the\nchild's own `draggable` attribute: present force-enables,\n`draggable=\"false\"` force-disables.",
               "fieldName": "draggable"
+            },
+            {
+              "name": "row-width",
+              "default": "DEFAULT_ROW_WIDTH",
+              "description": "Cells per row for `layout=\"rows\"`.",
+              "fieldName": "rowWidth"
             }
           ],
           "superclass": {
@@ -17046,6 +17081,10 @@
                 "text": "ReadonlySet<string>"
               },
               "description": "Set of `\"q,r\"` strings already occupied by placed\nclusters."
+            },
+            {
+              "name": "gap",
+              "default": "true"
             }
           ],
           "description": "Check if placing a cluster with the given mask at `(q, r)` leaves a\n≥1-hex gap from every already-claimed cell. The candidate's own\ncells must be unclaimed, *and* every hex-neighbour of each candidate\ncell must also be unclaimed — guarantees no two filled hexes from\ndifferent clusters share an edge."
@@ -17213,6 +17252,10 @@
                 "text": "number"
               },
               "description": "Half-width of the viewport in axial\ncells (post-`r/2` shift compensation). Pinned by\n`HpGrid.WIDE_HALF_COLS` in the `rows` layout flow."
+            },
+            {
+              "name": "gap",
+              "default": "true"
             }
           ],
           "description": "Find the first position whose 1-hex-padded mask doesn't collide,\nscanning row-major (lowest r first, then lowest q) inside the\nviewport-aware q-window.\n\nReturns `{q: 0, r: 0}` as a defensive fallback when nothing fits;\nreal packs never hit it."
@@ -17255,6 +17298,10 @@
                 "text": "ReadonlySet<string>"
               },
               "description": "Cells already taken by previously placed clusters."
+            },
+            {
+              "name": "gap",
+              "default": "true"
             }
           ],
           "description": "Find the first position whose 1-hex-padded mask doesn't collide,\nscanning outward from the origin in honeycomb rings.\n\nReturns `{q: 0, r: 0}` as a defensive fallback when nothing fits\nin `±PACK_RANGE`; real packs never hit it."

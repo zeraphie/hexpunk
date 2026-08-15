@@ -83,6 +83,7 @@ export const SITEMAP: SitemapNode[] = [
           { path: "/components/layout/hp-collapsible", title: "hp-collapsible" },
           { path: "/components/layout/hp-demo", title: "hp-demo" },
           { path: "/components/layout/hp-grid", title: "hp-grid" },
+          { path: "/components/layout/hp-layout", title: "hp-layout" },
           { path: "/components/layout/hp-scroll-area", title: "hp-scroll-area" },
           { path: "/components/layout/hp-separator", title: "hp-separator" },
           { path: "/components/layout/hp-sidebar", title: "hp-sidebar" },
