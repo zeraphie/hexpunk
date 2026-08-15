@@ -49,8 +49,10 @@ export interface GestureOptions {
   occupancy: OccupancyMap;
   hexSide: number;
   /** Whether the occupant may be dragged right now — folds the
-   * host-level flag and per-occupant overrides together. */
-  isDraggable: (id: string) => boolean;
+   * host-level flag and per-occupant overrides together. Receives the
+   * originating event so DOM consumers can also honour a drag-handle
+   * selector without reimplementing the gesture. */
+  isDraggable: (id: string, event: PointerEvent) => boolean;
   onHover: (cell: AxialCoord | null) => void;
   /** A click — pressed and released without travelling. Consumers
    * decide what activating a cell means. */
@@ -117,7 +119,7 @@ export class GestureController {
     if (!dive?.dived) {
       const [wx, wy] = this.pointerWorld(event);
       const occupant = occupancy.occupantAt(worldToAxial(wx, wy, hexSide));
-      if (occupant && isDraggable(occupant)) {
+      if (occupant && isDraggable(occupant, event)) {
         this.mode = "drag";
         drag.begin(occupant, wx, wy);
         this.options.onHover(null);

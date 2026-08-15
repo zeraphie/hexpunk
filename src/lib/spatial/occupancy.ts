@@ -50,6 +50,12 @@ export class OccupancyMap {
     return true;
   }
 
+  /** Drop every placement — a full rebuild, e.g. after a re-slot. */
+  clear(): void {
+    this.cells.clear();
+    this.byId.clear();
+  }
+
   remove(id: string): void {
     const cell = this.byId.get(id);
     if (cell) {
