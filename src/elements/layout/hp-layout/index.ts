@@ -299,10 +299,33 @@ export class HpLayout extends LitElement {
     }
   }
 
-  /** Read the resolved cell width and convert to a hex side. */
+  /**
+   * Hex side for the lattice pitch, one stroke narrower than the cell
+   * so neighbours share a single edge instead of stacking two
+   * strokes — the seamless look.
+   *
+   * The cell width is measured from a real child rather than taken
+   * from `--hp-cell`, because an atom with its own `size` sets that
+   * property on itself and wins over the inherited value; trusting
+   * the token would pitch the lattice for one size while the hexes
+   * rendered at another. Tokens are only the fallback for an empty
+   * surface.
+   *
+   * Note it cannot read `--hp-effective-cell` either: that is a
+   * `calc()`, and an unregistered custom property's computed value
+   * keeps the expression unevaluated, so parsing it yields NaN.
+   */
   private measureSide(): number {
-    const raw = getComputedStyle(this).getPropertyValue("--hp-effective-cell");
-    return (Number.parseFloat(raw) || 100) / SQRT3;
+    const style = getComputedStyle(this);
+    const stroke = Number.parseFloat(style.getPropertyValue("--hp-hex-stroke")) || 0;
+    const child = this.placeableChildren()[0];
+    const rendered = child?.getBoundingClientRect().width ?? 0;
+    const cell =
+      rendered ||
+      Number.parseFloat(style.getPropertyValue("--hp-cell")) ||
+      Number.parseFloat(style.getPropertyValue("--hp-hex-cell-sm")) ||
+      100;
+    return Math.max(1, cell - stroke) / SQRT3;
   }
 
   private get prefersReducedMotion(): boolean {

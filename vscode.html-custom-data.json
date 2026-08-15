@@ -498,6 +498,67 @@
       ]
     },
     {
+      "name": "hp-progress",
+      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+      "attributes": [
+        {
+          "name": "min",
+          "description": "Lower bound. Default 0."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound. Default 100."
+        },
+        {
+          "name": "value",
+          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
+        },
+        {
+          "name": "indeterminate",
+          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+          "values": [
+            {
+              "name": "HpProgressTone"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-spinner",
+      "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+          "values": [
+            {
+              "name": "HpSpinnerTone"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "hp-cluster",
       "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
       "attributes": [
@@ -672,114 +733,6 @@
       ]
     },
     {
-      "name": "hp-progress",
-      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-      "attributes": [
-        {
-          "name": "min",
-          "description": "Lower bound. Default 0."
-        },
-        {
-          "name": "max",
-          "description": "Upper bound. Default 100."
-        },
-        {
-          "name": "value",
-          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
-        },
-        {
-          "name": "indeterminate",
-          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-          "values": [
-            {
-              "name": "HpProgressTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-spinner",
-      "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-          "values": [
-            {
-              "name": "HpSpinnerTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
-        }
-      ]
-    },
-    {
       "name": "hp-link",
       "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
       "attributes": [
@@ -911,6 +864,53 @@
         {
           "name": "value",
           "description": ""
+        }
+      ]
+    },
+    {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
         }
       ]
     },

@@ -13,9 +13,13 @@ export const hpLayoutStyles = css`
   :host {
     position: relative;
     display: block;
-    /* Cell width drives the whole lattice; consumers override it
-     * per instance. Falls back to the small cell tier. */
-    --hp-effective-cell: var(--hp-cell, var(--hp-hex-cell-sm));
+    /* The lattice pitch is one stroke narrower than the cell, so
+     * neighbouring hexes overlap by exactly their stroke width and
+     * share a single edge instead of drawing two side by side. Same
+     * correction hp-cluster applies internally. */
+    --hp-effective-cell: calc(var(--hp-cell, var(--hp-hex-cell-sm)) - var(--hp-hex-stroke));
+    --hp-col-step: var(--hp-effective-cell);
+    --hp-row-step: calc(var(--hp-effective-cell) * 0.8660254);
     /* Measured from the placed content so the element occupies real
      * space in flow. Falls back to nothing until first placement. */
     inline-size: var(--hp-layout-width, auto);

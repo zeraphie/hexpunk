@@ -16,7 +16,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <hp-demo caption="free — children keep their authored q / r">
-      <hp-layout style="--hp-cell: 90px">
+      <hp-layout>
         <hp-cell variant="anchor" q="0" r="0">0,0</hp-cell>
         <hp-cell variant="action" q="1" r="0">1,0</hp-cell>
         <hp-cell variant="secondary" q="0" r="1">0,1</hp-cell>
@@ -43,7 +43,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <hp-demo caption="In flow — no fixed height, no clipping">
       <p>Text above the layout.</p>
-      <hp-layout style="--hp-cell: 70px">
+      <hp-layout>
         <hp-cell variant="content" q="0" r="0" size="sm">a</hp-cell>
         <hp-cell variant="content" q="1" r="0" size="sm">b</hp-cell>
         <hp-cell variant="content" q="2" r="0" size="sm">c</hp-cell>
@@ -75,7 +75,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <hp-demo caption="spiral — rings outward from the origin">
-      <hp-layout layout="spiral" style="--hp-cell: 80px">
+      <hp-layout layout="spiral">
         <hp-cell variant="anchor" filled>1</hp-cell>
         <hp-cell variant="action">2</hp-cell>
         <hp-cell variant="action">3</hp-cell>
@@ -96,7 +96,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </hp-demo>
 
     <hp-demo caption="rows — reading order, wrapping at a width cap">
-      <hp-layout layout="rows" style="--hp-cell: 80px">
+      <hp-layout layout="rows">
         <hp-cell variant="anchor" filled>1</hp-cell>
         <hp-cell variant="action">2</hp-cell>
         <hp-cell variant="action">3</hp-cell>
@@ -124,7 +124,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <hp-demo caption="draggable — drag a cell; PIN refuses">
-      <hp-layout draggable style="--hp-cell: 90px">
+      <hp-layout draggable>
         <hp-cell variant="anchor" q="0" r="0">drag</hp-cell>
         <hp-cell variant="action" q="1" r="0">drag</hp-cell>
         <hp-cell variant="utility" q="0" r="1" draggable="false">pin</hp-cell>

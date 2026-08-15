@@ -723,126 +723,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/engine/field.ts",
       "declarations": [
         {
@@ -1990,6 +1870,126 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/hp-bond.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
+          "name": "HpBond",
+          "members": [
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "attribute": "state",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "state",
+              "type": {
+                "text": "HpBondState"
+              },
+              "default": "\"forming\"",
+              "description": "`forming` (default, full visibility) or `settled` (hairline).",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
+          "tagName": "hp-bond",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-bond",
+          "declaration": {
+            "name": "HpBond",
+            "module": "src/elements/hp-bond.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/hp-link-node.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
+          "name": "HpLinkNode",
+          "members": [
+            {
+              "kind": "field",
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "attribute": "bonded",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "bonded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
+              "fieldName": "bonded"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "deprecated": "Will be folded into hp-tether's internal rendering.",
+          "tagName": "hp-link-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpLinkNode",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-link-node",
+          "declaration": {
+            "name": "HpLinkNode",
+            "module": "src/elements/hp-link-node.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/icons/copy.ts",
       "declarations": [
         {
@@ -2360,6 +2360,152 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/lib/css-color.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "parseCssColor",
+          "return": {
+            "type": {
+              "text": ""
+            }
+          },
+          "parameters": [
+            {
+              "name": "s",
+              "type": {
+                "text": "string"
+              },
+              "description": "Any CSS colour string (`#rgb`, `oklch()`, `color-mix()`,\nnamed colours, …). Empty / whitespace parses as `transparent`."
+            }
+          ],
+          "description": "Resolve a CSS colour string to non-premultiplied `[r, g, b, a]` in\n`[0, 1]`. Falls back to opaque black if canvas-2D is somehow\nunavailable (extremely unlikely in any browser that has WebGL2)."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "parseCssColor",
+          "declaration": {
+            "name": "parseCssColor",
+            "module": "src/lib/css-color.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/floating.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "positionFloating",
+          "return": {
+            "type": {
+              "text": "FloatingPositionResult"
+            }
+          },
+          "parameters": [
+            {
+              "name": "anchorRect",
+              "type": {
+                "text": "{\n    left: number;\n    top: number;\n    right: number;\n    bottom: number;\n    width: number;\n    height: number;\n  }"
+              }
+            },
+            {
+              "name": "floatingRect",
+              "type": {
+                "text": "{ width: number; height: number }"
+              }
+            },
+            {
+              "name": "viewport",
+              "type": {
+                "text": "Viewport"
+              }
+            },
+            {
+              "name": "options",
+              "default": "{}",
+              "type": {
+                "text": "FloatingPositionOptions"
+              }
+            }
+          ],
+          "description": "Compute the (x, y) for a floating element placed against an\nanchor. Both rects are in viewport coordinates (e.g., from\ngetBoundingClientRect()); result is in the same coordinate space.\nCaller is responsible for adding scroll offsets if needed."
+        },
+        {
+          "kind": "function",
+          "name": "onOutsidePointer",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "floating",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "name": "callback",
+              "type": {
+                "text": "(event: PointerEvent) => void"
+              }
+            }
+          ],
+          "description": "Listen for pointer events outside the given element and fire the\ncallback. Returns a dispose function. The callback receives the\noriginal event so consumers can check details (e.g., button)."
+        },
+        {
+          "kind": "function",
+          "name": "onEscape",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "callback",
+              "type": {
+                "text": "(event: KeyboardEvent) => void"
+              }
+            }
+          ],
+          "description": "Listen for a single Escape press anywhere in the document."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "positionFloating",
+          "declaration": {
+            "name": "positionFloating",
+            "module": "src/lib/floating.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "onOutsidePointer",
+          "declaration": {
+            "name": "onOutsidePointer",
+            "module": "src/lib/floating.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "onEscape",
+          "declaration": {
+            "name": "onEscape",
+            "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/pixel-icons/dropside.ts",
       "declarations": [
         {
@@ -2676,152 +2822,6 @@
           "declaration": {
             "name": "menu",
             "module": "src/pixel-icons/menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/lib/css-color.ts",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "parseCssColor",
-          "return": {
-            "type": {
-              "text": ""
-            }
-          },
-          "parameters": [
-            {
-              "name": "s",
-              "type": {
-                "text": "string"
-              },
-              "description": "Any CSS colour string (`#rgb`, `oklch()`, `color-mix()`,\nnamed colours, …). Empty / whitespace parses as `transparent`."
-            }
-          ],
-          "description": "Resolve a CSS colour string to non-premultiplied `[r, g, b, a]` in\n`[0, 1]`. Falls back to opaque black if canvas-2D is somehow\nunavailable (extremely unlikely in any browser that has WebGL2)."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "parseCssColor",
-          "declaration": {
-            "name": "parseCssColor",
-            "module": "src/lib/css-color.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/lib/floating.ts",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "positionFloating",
-          "return": {
-            "type": {
-              "text": "FloatingPositionResult"
-            }
-          },
-          "parameters": [
-            {
-              "name": "anchorRect",
-              "type": {
-                "text": "{\n    left: number;\n    top: number;\n    right: number;\n    bottom: number;\n    width: number;\n    height: number;\n  }"
-              }
-            },
-            {
-              "name": "floatingRect",
-              "type": {
-                "text": "{ width: number; height: number }"
-              }
-            },
-            {
-              "name": "viewport",
-              "type": {
-                "text": "Viewport"
-              }
-            },
-            {
-              "name": "options",
-              "default": "{}",
-              "type": {
-                "text": "FloatingPositionOptions"
-              }
-            }
-          ],
-          "description": "Compute the (x, y) for a floating element placed against an\nanchor. Both rects are in viewport coordinates (e.g., from\ngetBoundingClientRect()); result is in the same coordinate space.\nCaller is responsible for adding scroll offsets if needed."
-        },
-        {
-          "kind": "function",
-          "name": "onOutsidePointer",
-          "return": {
-            "type": {
-              "text": "() => void"
-            }
-          },
-          "parameters": [
-            {
-              "name": "floating",
-              "type": {
-                "text": "HTMLElement"
-              }
-            },
-            {
-              "name": "callback",
-              "type": {
-                "text": "(event: PointerEvent) => void"
-              }
-            }
-          ],
-          "description": "Listen for pointer events outside the given element and fire the\ncallback. Returns a dispose function. The callback receives the\noriginal event so consumers can check details (e.g., button)."
-        },
-        {
-          "kind": "function",
-          "name": "onEscape",
-          "return": {
-            "type": {
-              "text": "() => void"
-            }
-          },
-          "parameters": [
-            {
-              "name": "callback",
-              "type": {
-                "text": "(event: KeyboardEvent) => void"
-              }
-            }
-          ],
-          "description": "Listen for a single Escape press anywhere in the document."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "positionFloating",
-          "declaration": {
-            "name": "positionFloating",
-            "module": "src/lib/floating.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "onOutsidePointer",
-          "declaration": {
-            "name": "onOutsidePointer",
-            "module": "src/lib/floating.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "onEscape",
-          "declaration": {
-            "name": "onEscape",
-            "module": "src/lib/floating.ts"
           }
         }
       ]
@@ -5266,6 +5266,242 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/loading/hp-progress.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+          "name": "HpProgress",
+          "cssParts": [
+            {
+              "description": "The track that the fill sits inside",
+              "name": "track"
+            },
+            {
+              "description": "The filled portion (or sliding ribbon when indeterminate)",
+              "name": "fill"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "attribute": "value",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "attribute": "indeterminate",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "syncAria",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "min",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Lower bound. Default 0.",
+              "fieldName": "min"
+            },
+            {
+              "name": "max",
+              "type": {
+                "text": "number"
+              },
+              "default": "100",
+              "description": "Upper bound. Default 100.",
+              "fieldName": "max"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
+              "fieldName": "value"
+            },
+            {
+              "name": "indeterminate",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
+              "fieldName": "indeterminate"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpProgressTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-progress",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpProgress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-progress",
+          "declaration": {
+            "name": "HpProgress",
+            "module": "src/elements/loading/hp-progress.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/loading/hp-spinner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+          "name": "HpSpinner",
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "attribute": "tone",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "\"sm\" | \"md\" | \"lg\""
+              },
+              "default": "\"md\"",
+              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+              "fieldName": "size"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpSpinnerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-spinner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpSpinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-spinner",
+          "declaration": {
+            "name": "HpSpinner",
+            "module": "src/elements/loading/hp-spinner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/layout/hp-cluster.ts",
       "declarations": [
         {
@@ -6378,534 +6614,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/loading/hp-progress.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-          "name": "HpProgress",
-          "cssParts": [
-            {
-              "description": "The track that the fill sits inside",
-              "name": "track"
-            },
-            {
-              "description": "The filled portion (or sliding ribbon when indeterminate)",
-              "name": "fill"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "attribute": "min"
-            },
-            {
-              "kind": "field",
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "attribute": "max"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "attribute": "indeterminate",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "syncAria",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "min",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Lower bound. Default 0.",
-              "fieldName": "min"
-            },
-            {
-              "name": "max",
-              "type": {
-                "text": "number"
-              },
-              "default": "100",
-              "description": "Upper bound. Default 100.",
-              "fieldName": "max"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set.",
-              "fieldName": "value"
-            },
-            {
-              "name": "indeterminate",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available.",
-              "fieldName": "indeterminate"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpProgressTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-progress",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpProgress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-progress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "src/elements/loading/hp-progress.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/loading/hp-spinner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-          "name": "HpSpinner",
-          "members": [
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "attribute": "tone",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "size",
-              "type": {
-                "text": "\"sm\" | \"md\" | \"lg\""
-              },
-              "default": "\"md\"",
-              "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-              "fieldName": "size"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpSpinnerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-              "fieldName": "tone"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-spinner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpSpinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-spinner",
-          "declaration": {
-            "name": "HpSpinner",
-            "module": "src/elements/loading/hp-spinner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/navigation/hp-link.ts",
       "declarations": [
         {
@@ -7774,6 +7482,298 @@
           "declaration": {
             "name": "HpTabPanel",
             "module": "src/elements/navigation/hp-tabs.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
           }
         }
       ]
@@ -16757,7 +16757,7 @@
                   "text": "number"
                 }
               },
-              "description": "Read the resolved cell width and convert to a hex side."
+              "description": "Hex side for the lattice pitch, one stroke narrower than the cell\nso neighbours share a single edge instead of stacking two\nstrokes — the seamless look.\n\nThe cell width is measured from a real child rather than taken\nfrom `--hp-cell`, because an atom with its own `size` sets that\nproperty on itself and wins over the inherited value; trusting\nthe token would pitch the lattice for one size while the hexes\nrendered at another. Tokens are only the fallback for an empty\nsurface.\n\nNote it cannot read `--hp-effective-cell` either: that is a\n`calc()`, and an unregistered custom property's computed value\nkeeps the expression unevaluated, so parsing it yields NaN."
             },
             {
               "kind": "field",
@@ -17009,7 +17009,7 @@
         {
           "kind": "variable",
           "name": "hpLayoutStyles",
-          "default": "css` :host { position: relative; display: block; /* Cell width drives the whole lattice; consumers override it * per instance. Falls back to the small cell tier. */ --hp-effective-cell: var(--hp-cell, var(--hp-hex-cell-sm)); /* Measured from the placed content so the element occupies real * space in flow. Falls back to nothing until first placement. */ inline-size: var(--hp-layout-width, auto); block-size: var(--hp-layout-height, auto); } /* Children are placed in CSS pixels from the content's top-left and * centred on their point. The transition animates the settle when a * drag releases. */ ::slotted([q][r]) { position: absolute; left: 0; top: 0; translate: -50% -50%; transform: translate(var(--hp-x, 0px), var(--hp-y, 0px)); transition: transform var(--hp-unfold-trigger) var(--hp-ease-default); } :host([draggable]) ::slotted([q][r]) { /* Custom properties cross the shadow boundary, so each atom * reads cursor: var(--hp-cursor) on its own :host. */ --hp-cursor: grab; touch-action: none; } ::slotted([q][r][data-hp-dragging]) { z-index: var(--hp-layer-dragging); opacity: 0.85; --hp-cursor: grabbing; /* No transition while the pointer owns the position, or every * move would lag a frame behind the cursor. */ transition: none; } /* Decorative backdrops opt out of placement entirely. */ ::slotted(hp-background) { position: absolute; inset: 0; } @media (prefers-reduced-motion: reduce) { ::slotted([q][r]) { transition: none; } } `"
+          "default": "css` :host { position: relative; display: block; /* The lattice pitch is one stroke narrower than the cell, so * neighbouring hexes overlap by exactly their stroke width and * share a single edge instead of drawing two side by side. Same * correction hp-cluster applies internally. */ --hp-effective-cell: calc(var(--hp-cell, var(--hp-hex-cell-sm)) - var(--hp-hex-stroke)); --hp-col-step: var(--hp-effective-cell); --hp-row-step: calc(var(--hp-effective-cell) * 0.8660254); /* Measured from the placed content so the element occupies real * space in flow. Falls back to nothing until first placement. */ inline-size: var(--hp-layout-width, auto); block-size: var(--hp-layout-height, auto); } /* Children are placed in CSS pixels from the content's top-left and * centred on their point. The transition animates the settle when a * drag releases. */ ::slotted([q][r]) { position: absolute; left: 0; top: 0; translate: -50% -50%; transform: translate(var(--hp-x, 0px), var(--hp-y, 0px)); transition: transform var(--hp-unfold-trigger) var(--hp-ease-default); } :host([draggable]) ::slotted([q][r]) { /* Custom properties cross the shadow boundary, so each atom * reads cursor: var(--hp-cursor) on its own :host. */ --hp-cursor: grab; touch-action: none; } ::slotted([q][r][data-hp-dragging]) { z-index: var(--hp-layer-dragging); opacity: 0.85; --hp-cursor: grabbing; /* No transition while the pointer owns the position, or every * move would lag a frame behind the cursor. */ transition: none; } /* Decorative backdrops opt out of placement entirely. */ ::slotted(hp-background) { position: absolute; inset: 0; } @media (prefers-reduced-motion: reduce) { ::slotted([q][r]) { transition: none; } } `"
         }
       ],
       "exports": [
