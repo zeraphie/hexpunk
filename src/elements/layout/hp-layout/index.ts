@@ -106,6 +106,9 @@ export class HpLayout extends LitElement {
   /** Hex side in px, measured once the element is styled. World units
    * and CSS pixels are then the same thing. */
   private hexSide = 0;
+  /** Cell-centre bounds in world units, from the last measure. A drag
+   * is held inside these so the surface can't be pulled out of shape. */
+  private bounds: { minX: number; minY: number; maxX: number; maxY: number } | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -130,6 +133,7 @@ export class HpLayout extends LitElement {
       instant: this.prefersReducedMotion,
       onPosition: (id, wx, wy) => this.place(id, wx, wy),
       onTargetChange: () => {},
+      clampWorld: (wx, wy) => this.clampToBounds(wx, wy),
       onDragStart: (id) => this.cells.get(id)?.setAttribute("data-hp-dragging", ""),
       onMove: ({ id, from, to }) => {
         const element = this.cells.get(id);
@@ -287,6 +291,15 @@ export class HpLayout extends LitElement {
     if (!Number.isFinite(minX)) {
       return;
     }
+    // Bounds are for cell centres, so pull in by the half-extents the
+    // box was grown by — clamping centres to the outer edge would let
+    // a cell hang half outside.
+    this.bounds = {
+      minX: minX + halfWidth,
+      maxX: maxX - halfWidth,
+      minY: minY + side,
+      maxY: maxY - side,
+    };
     this.camera.x = CONTENT_PADDING - minX;
     this.camera.y = CONTENT_PADDING - minY;
     this.style.setProperty("--hp-layout-width", `${maxX - minX + CONTENT_PADDING * 2}px`);
@@ -335,6 +348,22 @@ export class HpLayout extends LitElement {
         ? Number.parseFloat(style.getPropertyValue("--hp-hex-stroke")) || 0
         : (inset * cell) / 2;
     return Math.max(1, cell - ring) / SQRT3;
+  }
+
+  /**
+   * Hold a drag inside the surface. Without it a cell can be dropped
+   * beyond the content box, the box then grows to contain it, and the
+   * layout reshapes itself because something was dragged off its edge.
+   */
+  private clampToBounds(wx: number, wy: number): [number, number] {
+    if (!this.bounds) {
+      return [wx, wy];
+    }
+    const { minX, minY, maxX, maxY } = this.bounds;
+    return [
+      Math.min(Math.max(minX, maxX), Math.max(Math.min(minX, maxX), wx)),
+      Math.min(Math.max(minY, maxY), Math.max(Math.min(minY, maxY), wy)),
+    ];
   }
 
   private get prefersReducedMotion(): boolean {
