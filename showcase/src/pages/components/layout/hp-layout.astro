@@ -35,30 +35,33 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <h2>Sizing to content</h2>
     <p>
-      The element measures the hexes it placed and reports that size, so surrounding
-      content flows around it exactly as it would around a <code>div</code>. Nothing is
-      clipped and nothing needs an explicit height — the two paragraphs below are ordinary
-      siblings.
+      The element measures the hexes it placed and takes that size, so it occupies real
+      space in normal flow: content before it sits above, content after sits below, and its
+      height is exactly the height of the hexes. Nothing is clipped and no explicit height
+      is needed.
     </p>
 
     <hp-demo caption="In flow — no fixed height, no clipping">
-      <p>Text above the layout.</p>
-      <hp-layout>
-        <hp-cell variant="content" q="0" r="0" size="sm">a</hp-cell>
-        <hp-cell variant="content" q="1" r="0" size="sm">b</hp-cell>
-        <hp-cell variant="content" q="2" r="0" size="sm">c</hp-cell>
-      </hp-layout>
-      <p>Text below it, pushed down by the measured height.</p>
+      <div class="layout-flow-demo">
+        <p>Text above the layout.</p>
+        <hp-layout>
+          <hp-cell variant="anchor" q="0" r="0">a</hp-cell>
+          <hp-cell variant="action" q="1" r="0">b</hp-cell>
+          <hp-cell variant="secondary" q="2" r="0">c</hp-cell>
+        </hp-layout>
+        <p>Text below it, pushed down by the measured height.</p>
+      </div>
 
       <hp-code slot="code" language="html">{`<body>
   <p>Text above the layout.</p>
 
-  <!-- No height needed: the element reports the content's size
-       through --hp-layout-width / --hp-layout-height. -->
+  <!-- No height needed: the element takes the size of the hexes it
+       placed, reported as --hp-layout-width / --hp-layout-height.
+       \`size\` sets the tier for the surface and its children. -->
   <hp-layout>
-    <hp-cell variant="content" q="0" r="0" size="sm">a</hp-cell>
-    <hp-cell variant="content" q="1" r="0" size="sm">b</hp-cell>
-    <hp-cell variant="content" q="2" r="0" size="sm">c</hp-cell>
+    <hp-cell variant="anchor" q="0" r="0">a</hp-cell>
+    <hp-cell variant="action" q="1" r="0">b</hp-cell>
+    <hp-cell variant="secondary" q="2" r="0">c</hp-cell>
   </hp-layout>
 
   <p>Text below it, pushed down by the measured height.</p>
@@ -120,7 +123,8 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       occupied neighbour snaps to the nearest free one — the same nearest-free search
       <code>&lt;hp-grid&gt;</code> runs, so a given drag lands in the same place on either
       surface. Individual cells opt out with <code>draggable="false"</code>. Because there
-      is no camera, dragging empty space does nothing and the page keeps its scroll.
+      is no camera, dragging empty space does nothing and the page keeps its scroll, and a
+      drag is held inside the surface so it can't be pulled out of shape.
     </p>
 
     <hp-demo caption="draggable — drag a cell; PIN refuses">
@@ -186,4 +190,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
+  <style is:global>
+    /* hp-demo lays its preview out as a flex row, which would put
+       these siblings beside the hexes instead of above and below. */
+    .layout-flow-demo {
+      display: block;
+      width: 100%;
+    }
+  </style>
 </Layout>

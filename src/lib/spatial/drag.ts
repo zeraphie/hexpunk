@@ -33,6 +33,10 @@ export interface DragOptions {
   tetherMode?: () => boolean;
   /** Fires when a tether-mode drop lands on another occupant. */
   onTetherDrop?: (detail: { source: string; target: string }) => void;
+  /** Restrict where a drag may travel, in world units. A surface with
+   * fixed bounds (a layout box rather than a camera viewport) uses
+   * this so a cell cannot be dragged outside it. */
+  clampWorld?: (wx: number, wy: number) => [number, number];
   /** Position the occupant's visual at a world point. */
   onPosition: (id: string, wx: number, wy: number) => void;
   /** Live snap target while dragging (null = out of range). */
@@ -131,8 +135,9 @@ export class DragController {
       return;
     }
     const drag = this.active;
-    drag.wx = pointerWx + drag.grabDx;
-    drag.wy = pointerWy + drag.grabDy;
+    const [px, py] = this.options.clampWorld?.(pointerWx, pointerWy) ?? [pointerWx, pointerWy];
+    drag.wx = px + drag.grabDx;
+    drag.wy = py + drag.grabDy;
     this.options.onPosition(drag.id, drag.wx, drag.wy);
     const under = worldToAxial(drag.wx, drag.wy, this.options.hexSide);
     // Tether mode highlights whatever cell the pointer is over —
