@@ -1,0 +1,128 @@
+---
+// PerfStats.astro — the "show stats" performance disclosure.
+//
+// The measured-cost table heavy components surface in their docs
+// page's notice slot (visible on every tab), tucked behind a small
+// hexpunk-styled trigger. One component so every page's stats read
+// identically; rows are data. The ADR's future idea is feeding these
+// from a build-time measurement script — when that lands, it lands
+// here once.
+
+interface Row {
+  cost: string;
+  /** May carry entities (`&nbsp;`) — rendered as HTML. */
+  measured: string;
+  context: string;
+}
+
+const { rows } = Astro.props as { rows: Row[] };
+---
+
+<hp-collapsible class="perf-collapsible">
+  <button slot="trigger" class="stats-trigger" type="button">
+    <hp-cell variant="action" size="xxs" aria-hidden="true">
+      <hp-pixel class="stats-pixel" type="expandable" pixel-size="2"></hp-pixel>
+    </hp-cell>
+    <span class="stats-label">
+      <span class="when-closed">show stats</span>
+      <span class="when-open">hide stats</span>
+    </span>
+  </button>
+  <hp-separator></hp-separator>
+  <table class="perf-status">
+    <thead>
+      <tr>
+        <th scope="col">Cost</th>
+        <th scope="col">Measured</th>
+        <th scope="col">Context</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <td set:html={row.cost} />
+            <td set:html={row.measured} />
+            <td set:html={row.context} />
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <hp-separator></hp-separator>
+</hp-collapsible>
+
+<style>
+  /* Muted status readout — informational, not a focal element,
+   * tucked behind a small "show stats" disclosure. */
+  .perf-status {
+    font-size: 0.85rem;
+    color: var(--hp-on-surface-variant);
+  }
+
+  .perf-collapsible hp-separator:first-of-type {
+    margin-bottom: 32px;
+  }
+
+  .perf-collapsible hp-separator:last-of-type {
+    margin-block: 32px;
+  }
+
+  /* One native button is the whole trigger — hex, pixel morph, and
+   * label share a single hitbox, hover surface, and focus stop. The
+   * hex is presentational (hp-cell, not hp-button — no nested
+   * buttons); the label lives beside it, never inside, per the
+   * inline-control-tier pattern. */
+  .stats-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--hp-xs, 8px);
+    padding: var(--hp-xxs, 4px);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--hp-on-surface-variant);
+  }
+
+  .stats-trigger:hover,
+  .stats-trigger:focus-visible {
+    color: var(--hp-on-surface);
+  }
+
+  .stats-trigger:focus-visible {
+    outline: 2px solid var(--hp-primary);
+    outline-offset: 2px;
+  }
+
+  .stats-label {
+    white-space: nowrap;
+    font-family: var(--hp-typo-label-sm-font-family);
+    font-size: var(--hp-typo-label-sm-font-size);
+    font-weight: var(--hp-typo-label-sm-font-weight);
+    letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+    text-transform: uppercase;
+  }
+
+  .stats-label .when-open,
+  .stats-trigger[aria-expanded="true"] .when-closed {
+    display: none;
+  }
+
+  .stats-trigger[aria-expanded="true"] .when-open {
+    display: inline;
+  }
+
+  /* Pixel morph rides the BUTTON's state, not its own: rest is the
+   * square (idle), row-hover fans to the plus, press-and-hold or
+   * expanded rotates to the cross. The state vars are published by
+   * hp-pixel; the page just picks which one the shadow shows. */
+  .stats-trigger:hover .stats-pixel,
+  .stats-trigger:focus-visible .stats-pixel {
+    --hp-pixel-shadow: var(--hp-pixel-hover);
+  }
+
+  .stats-trigger:active .stats-pixel,
+  .stats-trigger[aria-expanded="true"] .stats-pixel {
+    --hp-pixel-shadow: var(--hp-pixel-active);
+  }
+</style>
