@@ -27,7 +27,7 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { scan } from "../../../icons/scan.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import { HpHex } from "../../primitives/hp-hex.js";
-import { SQRT3, axialToWorld, hexWidth } from "../../../lib/spatial/lattice.js";
+import { axialToWorld, hexWidth, seamlessSide } from "../../../lib/spatial/lattice.js";
 import { findRowsPosition } from "../../../lib/spatial/layouts/rows.js";
 import { findSpiralPosition } from "../../../lib/spatial/layouts/spiral.js";
 import { markClaimed, parseFillCells, type FillMask } from "../../../lib/spatial/layouts/index.js";
@@ -343,12 +343,7 @@ export class HpGrid extends LitElement {
       Number.parseFloat(style.getPropertyValue("--hp-cell")) ||
       Number.parseFloat(style.getPropertyValue("--hp-hex-cell-sm")) ||
       100;
-    // Overlap neighbours by the ring's half-width so their outlines
-    // land on each other — the same formula hp-layout derives, and it
-    // must stay the same or a cell would sit differently on the two
-    // surfaces.
-    const ring = (HpHex.RING_INSET.sm * cell) / 2;
-    return Math.max(1, cell - ring) / SQRT3;
+    return seamlessSide(cell, (HpHex.RING_INSET.sm * cell) / 2);
   }
 
   /**

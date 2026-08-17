@@ -41,6 +41,24 @@ export function hexWidth(side: number): number {
   return SQRT3 * side;
 }
 
+/**
+ * Hex side for a seamless lattice: the pitch is one visible ring
+ * narrower than the rendered cell, so neighbouring hexes overlap by
+ * exactly their outline and share a single edge instead of drawing
+ * two. Both surfaces (flow layout and canvas grid) must derive their
+ * pitch through this one function — deriving it twice is how the
+ * same cell ends up sitting differently on the two.
+ *
+ * @param cellPx - Rendered cell width in px.
+ * @param ringPx - Visible ring width in px. For hex atoms this is
+ *   `HpHex.RING_INSET[size] × cellPx / 2` (the ring comes from a
+ *   uniform polygon scale, not the stroke token); for arbitrary
+ *   children, the stroke width is the honest stand-in.
+ */
+export function seamlessSide(cellPx: number, ringPx: number): number {
+  return Math.max(1, cellPx - ringPx) / SQRT3;
+}
+
 /** Bounding height of a pointy-top hex with side `s`. */
 export function hexHeight(side: number): number {
   return 2 * side;

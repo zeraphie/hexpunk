@@ -26,7 +26,12 @@ import { DragController } from "../../../lib/spatial/drag.js";
 import { GestureController } from "../../../lib/spatial/input.js";
 import { OccupancyMap } from "../../../lib/spatial/occupancy.js";
 import { syncOverlay } from "../../../lib/spatial/overlay.js";
-import { SQRT3, axialToWorld, parseFillCellsForBbox } from "../../../lib/spatial/lattice.js";
+import {
+  SQRT3,
+  axialToWorld,
+  parseFillCellsForBbox,
+  seamlessSide,
+} from "../../../lib/spatial/lattice.js";
 import { findSpiralPosition } from "../../../lib/spatial/layouts/spiral.js";
 import { findRowsPosition, halfColsForWidth } from "../../../lib/spatial/layouts/rows.js";
 import { markClaimed, parseFillCells, type FillMask } from "../../../lib/spatial/layouts/index.js";
@@ -480,7 +485,7 @@ export class HpLayout extends LitElement {
       inset === undefined
         ? Number.parseFloat(style.getPropertyValue("--hp-hex-stroke")) || 0
         : (inset * cell) / 2;
-    return Math.max(1, cell - ring) / SQRT3;
+    return seamlessSide(cell, ring);
   }
 
   /**
