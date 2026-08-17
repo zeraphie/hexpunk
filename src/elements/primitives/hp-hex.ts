@@ -143,8 +143,7 @@ export class HpHex extends LitElement {
    * to keep the stroke ring proportional to the cell. Scale factors:
    *
    * xxs (cell 20px, stroke 1px display ≈ 5 viewBox units) → 0.90
-   * xs (stroke 1.5px at a 32px cell ≈ 4.6875 viewBox units) → 0.906
-   *   (the token later became 50px, so the ring paints ≈ 2.3px)
+   * xs (cell 50px, stroke 1.5px ≈ 3 viewBox units) → 0.94
    * sm (cell 100px, stroke 2px) → 0.95
    * md (cell 180px flat-top, stroke 4px scaled) → 0.923
    * lg (cell 320px, stroke 6px scaled) → 0.925
@@ -172,7 +171,7 @@ export class HpHex extends LitElement {
 
   private static readonly INNER_POINTS: Record<"xxs" | "xs" | "sm" | "md" | "lg", string> = {
     xxs: "50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76",
-    xs: "50,5.43 95.3,31.58 95.3,83.89 50,110.04 4.7,83.89 4.7,31.58",
+    xs: "50,3.46 97,30.6 97,84.87 50,112.01 3,84.87 3,30.6",
     sm: "50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31",
     md: "96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33",
     lg: "50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04",
