@@ -72,6 +72,13 @@ export interface HexEngineOptions {
    * per-occupant overrides) with the consumer's rule. Receives the
    * originating event so DOM consumers can honour drag handles. */
   isDraggable?: (id: string, event: PointerEvent) => boolean;
+  /** Element the gesture layer listens on. Defaults to the canvas —
+   * right when overlay content is pointer-transparent (the
+   * playground's cells). A surface whose overlay cells catch the
+   * pointer themselves passes its host here instead: composed
+   * events from the cells and raw events from the canvas both
+   * bubble to it, so one listener sees every press. */
+  gestureSurface?: HTMLElement;
   /**
    * Content tier from which arcs are drawn, fading in across the
    * threshold below it. Arcs between cells too small to label carry
@@ -83,6 +90,8 @@ export interface HexEngineOptions {
   instant?: boolean;
   onTierChange?: (tier: number) => void;
   onHoverCell?: (cell: AxialCoord | null) => void;
+  /** A gesture took or released the pointer — see GestureOptions. */
+  onGestureChange?: (mode: "pan" | "drag" | null) => void;
   /** A cell was clicked — pressed and released without travelling, so
    * a drag or pan never took over. The consumer decides what
    * activation means (diving in, selecting, opening). */
@@ -111,6 +120,12 @@ export class HexEngine {
   /** Applied to arcs the engine authors itself (a drop-toggle), so
    * they match arcs the consumer created explicitly. */
   defaultDirected = false;
+
+  /** Draw arcs even while `tetherable` is off. Declaratively
+   * authored arcs are content and must show on a surface that
+   * doesn't offer drop-toggle authoring; `tetherable` alone keeps
+   * gating the authoring gesture and the hide-the-graph toggle. */
+  showArcs = false;
 
   private tetherableFlag: boolean;
 
@@ -158,6 +173,7 @@ export class HexEngine {
       occupancy: this.occupancy,
       hexSide: options.hexSide,
       instant: options.instant,
+      clampWorld: (wx, wy) => this.clampToViewport(wx, wy),
       tetherMode: () => this.tetherableFlag,
       onTetherDrop: ({ source, target }) => this.toggleTether(source, target),
       onPosition: (id, wx, wy) => options.onOccupantPosition?.(id, wx, wy),
@@ -173,7 +189,7 @@ export class HexEngine {
     });
     this.gestures = new GestureController({
       host: options.host,
-      canvas: options.canvas,
+      canvas: options.gestureSurface ?? options.canvas,
       camera: this.camera,
       dive: this.diveNav,
       drag: this.drag,
@@ -189,6 +205,7 @@ export class HexEngine {
       },
       onActivate: options.onActivate,
       onPan: options.onPan,
+      onGestureChange: options.onGestureChange,
       requestRender: () => this.invalidate(),
     });
     prepareOverlayLayer(options.overlay);
@@ -353,6 +370,30 @@ export class HexEngine {
     return fadeAlpha(apparent, gate, TETHER_FADE_START);
   }
 
+  /**
+   * Hold a dragged occupant inside the visible viewport: with the
+   * pointer outside the host, the occupant rides the nearest
+   * on-screen position, and a release settles it near where the
+   * occupant is rather than where the pointer went. Inset by the hex
+   * extents so the whole occupant stays visible; a viewport too
+   * small for that collapses to its centreline.
+   */
+  private clampToViewport(wx: number, wy: number): [number, number] {
+    const { host } = this.options;
+    const [minX, minY] = this.camera.screenToWorld(0, 0);
+    const [maxX, maxY] = this.camera.screenToWorld(host.clientWidth, host.clientHeight);
+    const halfW = hexWidth(this.options.hexSide) / 2;
+    const halfH = this.options.hexSide;
+    const lowX = minX + halfW;
+    const highX = maxX - halfW;
+    const lowY = minY + halfH;
+    const highY = maxY - halfH;
+    return [
+      lowX > highX ? (minX + maxX) / 2 : Math.min(highX, Math.max(lowX, wx)),
+      lowY > highY ? (minY + maxY) / 2 : Math.min(highY, Math.max(lowY, wy)),
+    ];
+  }
+
   /** World centre of an occupant — its live drag position while one
    * is in flight, else the centre of the cell it holds. */
   private positionOf(id: string): [number, number] | null {
@@ -491,7 +532,7 @@ export class HexEngine {
     // close enough to read them; a frozen morph resolves on its own
     // the next time paths are resolved.
     const arcAlpha = this.tetherAlpha();
-    const drawArcs = this.tetherableFlag && arcAlpha > 0;
+    const drawArcs = (this.tetherableFlag || this.showArcs) && arcAlpha > 0;
     this.field.drawTethers(drawArcs ? this.tethers.paths(now) : [], state.z, arcAlpha);
     const visible = this.field.render(state);
     syncOverlay(this.options.overlay, state);
@@ -501,7 +542,11 @@ export class HexEngine {
       this.options.onTierChange?.(tier);
     }
     this.options.onCameraChange?.(state, visible);
-    if (cameraMoving || dragSettling || (this.tetherableFlag && this.tethers.animating)) {
+    if (
+      cameraMoving ||
+      dragSettling ||
+      ((this.tetherableFlag || this.showArcs) && this.tethers.animating)
+    ) {
       this.frameHandle = requestAnimationFrame(this.frame);
     }
   };
