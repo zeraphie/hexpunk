@@ -70,10 +70,36 @@ export const hpLayoutStyles = css`
     transition: none;
   }
 
+  /* While a drag owns the pointer, no other cell may react to it —
+   * a fast drag sweeps the cursor across neighbours, and their hover
+   * states firing mid-gesture reads as glitching. pointer-events
+   * doesn't cross the shadow boundary, so the suppression rides the
+   * custom property every hex atom's painted polygons read. */
+  :host([data-hp-gesture]) {
+    user-select: none;
+  }
+
+  :host([data-hp-gesture]) ::slotted([q][r]) {
+    --hp-hex-pointer-events: none;
+  }
+
   /* Decorative backdrops opt out of placement entirely. */
   ::slotted(hp-background) {
     position: absolute;
     inset: 0;
+  }
+
+  /* On a packed layout the packer owns placement: children arrive
+   * without q / r, and showing them before it runs flashes a clump
+   * of hexes in normal flow. They appear once placed — and the very
+   * first placement paints without the settle animation, so the
+   * surface opens already laid out. */
+  :host(:not([layout="free"])) ::slotted(:not([q])) {
+    visibility: hidden;
+  }
+
+  :host([data-hp-placing]) ::slotted([q][r]) {
+    transition: none;
   }
 
   @media (prefers-reduced-motion: reduce) {

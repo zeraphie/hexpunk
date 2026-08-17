@@ -161,6 +161,8 @@ export class HpLayout extends LitElement {
   /** Host width the last responsive-rows pack ran against, so a
    * height-only resize (which every pack causes) can't re-trigger. */
   private lastPackWidth = 0;
+  /** First pack paints in place; only re-packs animate. */
+  private hasPacked = false;
   /** Cell-centre bounds in world units, from the last measure. A drag
    * is held inside these so the surface can't be pulled out of shape. */
   private bounds: { minX: number; minY: number; maxX: number; maxY: number } | null = null;
@@ -259,6 +261,13 @@ export class HpLayout extends LitElement {
       pannable: false,
       isDraggable: (id, event) => this.canDrag(id, event),
       onHover: () => {},
+      onGestureChange: (mode) => {
+        if (mode) {
+          this.setAttribute("data-hp-gesture", mode);
+        } else {
+          this.removeAttribute("data-hp-gesture");
+        }
+      },
       requestRender: () => this.invalidate(),
     });
     this.observeChildren();
@@ -292,6 +301,14 @@ export class HpLayout extends LitElement {
   pack(): void {
     if (this.layout === "free") {
       return;
+    }
+    // The first pack is the surface's opening state — it paints
+    // already laid out. Every later pack is a change, and changes
+    // glide.
+    if (!this.hasPacked) {
+      this.hasPacked = true;
+      this.setAttribute("data-hp-placing", "");
+      requestAnimationFrame(() => this.removeAttribute("data-hp-placing"));
     }
     // The wrap cap follows the element's width unless `row-width`
     // pins it. Recorded even when pinned, so switching the attribute
