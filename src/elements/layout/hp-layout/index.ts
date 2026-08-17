@@ -41,6 +41,26 @@ const DEFAULT_ROW_WIDTH = 6;
  * outer edge aren't clipped by the element's own box. */
 const CONTENT_PADDING = 2;
 
+/** The cell tiers, matched widest-first so the tier a rendered hex
+ * belongs to can be recovered from its measured width. */
+const SIZES = ["lg", "md", "sm", "xs", "xxs"] as const;
+
+export type HpLayoutSize = (typeof SIZES)[number];
+
+/** How far a measured width may sit from a tier's token and still
+ * count as that tier. Absorbs subpixel layout and browser zoom; the
+ * closest two tiers are 1.6× apart, so it cannot pick the wrong one. */
+const TIER_TOLERANCE = 0.04;
+
+/** Pitch changes below this are layout noise, not a new tier. Also
+ * what stops a measure → re-place → measure loop from running away. */
+const PITCH_EPSILON = 0.01;
+
+/** Where a child's authored `size` is parked while the surface's tier
+ * overrides it, so clearing `size` on the surface gives it back
+ * instead of flattening the markup permanently. */
+const AUTHORED_SIZE = "hpLayoutAuthoredSize";
+
 export interface HpLayoutMoveEventDetail {
   element: HTMLElement;
   from: AxialCoord;
@@ -69,7 +89,9 @@ export interface HpLayoutBondEventDetail {
  *
  * @slot - Cells carrying `q` / `r` attributes
  *
- * @cssproperty --hp-cell - Cell width; defaults to `--hp-hex-cell-sm`
+ * @cssproperty --hp-cell - Cell width for an empty surface; once there
+ *   are children the lattice follows their rendered width. Use `size`
+ *   to scale the cells themselves.
  * @cssproperty --hp-layout-width - Measured content width (read-only)
  * @cssproperty --hp-layout-height - Measured content height (read-only)
  */
@@ -81,6 +103,21 @@ export class HpLayout extends LitElement {
    * run the same first-fit-decreasing pass the canvas grid uses. */
   @property({ reflect: true })
   layout: "free" | "spiral" | "rows" = "free";
+
+  /** Cell tier for the whole surface — the only way to scale a lattice
+   * that has no camera to zoom.
+   *
+   * It is written onto the children as their own `size`, because the
+   * tier is more than a width: the stroke step, the ring proportion,
+   * and md's flat-top orientation are all chosen by that attribute.
+   * Pushing a cell width down instead would scale the hexes while
+   * leaving them drawn to another tier's proportions.
+   *
+   * Leaving it unset touches nothing — children keep whatever size
+   * they were authored with, which is how a surface of mixed sizes is
+   * still expressible. */
+  @property({ reflect: true })
+  size?: HpLayoutSize;
 
   /** Opt into drag-to-move, pan and zoom. Per-cell override via the
    * child's own `draggable` attribute: present force-enables,
@@ -103,6 +140,17 @@ export class HpLayout extends LitElement {
   private gestures?: GestureController;
   private frameHandle = 0;
   private idCounter = 0;
+  /** Watches the children's rendered size. Their measured width is the
+   * authority for the pitch, and it is not knowable up front: a child
+   * settles on its own update cycle, and its width can come from its
+   * `variant` as much as its `size` — a `content` cell renders at the
+   * md width having been authored with neither. */
+  private sizeObserver?: ResizeObserver;
+  private measureHandle = 0;
+  /** Cell width per tier, read from the tokens rather than hardcoded —
+   * a measured width is matched back against these to recover which
+   * tier a child is actually drawn at. */
+  private cellTokens: [HpLayoutSize, number][] = [];
   /** Hex side in px, measured once the element is styled. World units
    * and CSS pixels are then the same thing. */
   private hexSide = 0;
@@ -124,6 +172,12 @@ export class HpLayout extends LitElement {
     });
     // The drag controller waits for firstUpdated: it needs the
     // resolved cell width, which isn't readable until styles apply.
+    if (this.hasUpdated) {
+      // Moved in the DOM rather than freshly created: disconnect took
+      // the observer down, so re-arm it or the surface stops following
+      // its children's size for the rest of its life.
+      this.observeChildren();
+    }
   }
 
   private buildDrag(): void {
@@ -160,9 +214,14 @@ export class HpLayout extends LitElement {
     this.gestures?.dispose();
     this.gestures = undefined;
     this.drag?.cancel();
+    this.sizeObserver?.disconnect();
     if (this.frameHandle) {
       cancelAnimationFrame(this.frameHandle);
       this.frameHandle = 0;
+    }
+    if (this.measureHandle) {
+      cancelAnimationFrame(this.measureHandle);
+      this.measureHandle = 0;
     }
   }
 
@@ -172,8 +231,12 @@ export class HpLayout extends LitElement {
       return;
     }
     // Styles have resolved by now, so the cell width is readable and
-    // the controllers can be built against a real hex side.
-    this.hexSide = this.measureSide();
+    // the controllers can be built against a real hex side. It may
+    // still be provisional — a child that hasn't finished its own
+    // update cycle measures at the wrong tier — so the observer below
+    // corrects it as soon as the children settle.
+    this.applySize();
+    this.hexSide = this.deriveSide();
     this.buildDrag();
     this.syncOccupancy();
     this.gestures = new GestureController({
@@ -191,6 +254,7 @@ export class HpLayout extends LitElement {
       onHover: () => {},
       requestRender: () => this.invalidate(),
     });
+    this.observeChildren();
   }
 
   override render() {
@@ -202,6 +266,14 @@ export class HpLayout extends LitElement {
       // One frame's grace so composite children (hp-cluster) have
       // published their own `data-fill-cells` before packing reads it.
       requestAnimationFrame(() => this.pack());
+    }
+    if (changed.has("size")) {
+      this.applySize();
+      // Children re-render at the new tier on their own schedule; the
+      // observer picks the pitch up from whatever they settle at. The
+      // measure is scheduled anyway so an empty surface still follows
+      // its own tier, where no child resize will ever fire.
+      this.scheduleMeasure();
     }
   }
 
@@ -313,41 +385,142 @@ export class HpLayout extends LitElement {
     }
   }
 
+  /** Cell width per tier, from the tokens. Re-read on every derive
+   * rather than cached: density modes rescale these at runtime, and a
+   * match against last mode's values would miss every tier. They are
+   * plain lengths, so they parse where a derived `calc()` property
+   * would not (an unregistered custom property's computed value keeps
+   * the expression unevaluated). */
+  private readCellTokens(style: CSSStyleDeclaration): void {
+    this.cellTokens = SIZES.map((size) => [
+      size,
+      Number.parseFloat(style.getPropertyValue(`--hp-hex-cell-${size}`)) || 0,
+    ]);
+  }
+
+  /** Which tier a rendered width belongs to, or null for a child that
+   * isn't drawn at any of them. */
+  private tierFor(width: number): HpLayoutSize | null {
+    for (const [size, token] of this.cellTokens) {
+      if (token > 0 && Math.abs(width - token) <= token * TIER_TOLERANCE) {
+        return size;
+      }
+    }
+    return null;
+  }
+
   /**
-   * Hex side for the lattice pitch, one stroke narrower than the cell
-   * so neighbours share a single edge instead of stacking two
-   * strokes — the seamless look.
+   * Hex side for the lattice pitch, one ring narrower than the cell so
+   * neighbours share a single edge instead of stacking two — the
+   * seamless look.
    *
-   * The cell width is measured from a real child rather than taken
-   * from `--hp-cell`, because an atom with its own `size` sets that
-   * property on itself and wins over the inherited value; trusting
-   * the token would pitch the lattice for one size while the hexes
-   * rendered at another. Tokens are only the fallback for an empty
-   * surface.
+   * The width is measured from a real child rather than read off a
+   * token or an attribute, because neither is authoritative: an atom
+   * with its own `size` sets `--hp-cell` on itself and wins over the
+   * inherited value, and a cell's width can come from its `variant`
+   * too — a `content` cell renders at the md width having been
+   * authored with no size at all.
    *
-   * Note it cannot read `--hp-effective-cell` either: that is a
-   * `calc()`, and an unregistered custom property's computed value
-   * keeps the expression unevaluated, so parsing it yields NaN.
+   * The tier is then recovered *from that width*, so the cell and the
+   * ring inset it pairs with always describe the same hex. Reading the
+   * attribute instead is what made this wrong before: mid-update it
+   * still said `sm` while the hex was already drawn at md, and the
+   * lattice ended up pitched a few pixels off.
    */
-  private measureSide(): number {
+  private deriveSide(): number {
     const style = getComputedStyle(this);
+    this.readCellTokens(style);
     const child = this.placeableChildren()[0];
     const rendered = child?.getBoundingClientRect().width ?? 0;
+    // Tokens are the fallback for an empty surface only.
     const cell =
       rendered ||
       Number.parseFloat(style.getPropertyValue("--hp-cell")) ||
       Number.parseFloat(style.getPropertyValue("--hp-hex-cell-sm")) ||
       100;
-    // Overlap by the ring's own half-width, so the two outlines land
-    // on each other exactly. Falling back to the stroke token is only
-    // for children that aren't hex atoms.
-    const size = (child?.getAttribute("size") ?? "sm") as keyof typeof HpHex.RING_INSET;
-    const inset = HpHex.RING_INSET[size];
+    const tier = rendered ? this.tierFor(rendered) : (this.size ?? "sm");
+    const inset = tier === null ? undefined : HpHex.RING_INSET[tier];
+    // Overlap by the ring's own width so the two outlines land on each
+    // other exactly. Falling back to the stroke token covers children
+    // that aren't hex atoms, where there is no ring to match.
     const ring =
       inset === undefined
         ? Number.parseFloat(style.getPropertyValue("--hp-hex-stroke")) || 0
         : (inset * cell) / 2;
     return Math.max(1, cell - ring) / SQRT3;
+  }
+
+  /**
+   * Push the surface's tier onto the children, remembering what they
+   * were authored with. The tier is an attribute rather than a cell
+   * width because the stroke step, the ring proportion and md's
+   * flat-top orientation are all selected by it.
+   */
+  private applySize(): void {
+    const size = this.size;
+    for (const child of this.placeableChildren()) {
+      if (size) {
+        child.dataset[AUTHORED_SIZE] ??= child.getAttribute("size") ?? "";
+        child.setAttribute("size", size);
+        continue;
+      }
+      const authored = child.dataset[AUTHORED_SIZE];
+      if (authored === undefined) {
+        continue;
+      }
+      delete child.dataset[AUTHORED_SIZE];
+      if (authored) {
+        child.setAttribute("size", authored);
+      } else {
+        child.removeAttribute("size");
+      }
+    }
+  }
+
+  /** Follow the children's rendered size. Re-observing wholesale keeps
+   * the set in step with slot changes without per-child bookkeeping. */
+  private observeChildren(): void {
+    this.sizeObserver ??= new ResizeObserver(() => this.scheduleMeasure());
+    this.sizeObserver.disconnect();
+    for (const child of this.placeableChildren()) {
+      this.sizeObserver.observe(child);
+    }
+  }
+
+  /** Never measure inside the observer callback — that is what turns a
+   * resize into a loop. Coalesce to the next frame instead. */
+  private scheduleMeasure(): void {
+    if (this.measureHandle) {
+      return;
+    }
+    this.measureHandle = requestAnimationFrame(() => {
+      this.measureHandle = 0;
+      this.remeasure();
+    });
+  }
+
+  /** Re-derive the pitch and, if it actually moved, re-place on it. */
+  private remeasure(): void {
+    // A drag owns the positions while it runs; re-placing under it
+    // would tear the cell out from beneath the pointer. Hold the
+    // measurement rather than dropping it — a resize that lands mid-
+    // drag is still real, and the drag is already running a frame loop.
+    if (this.drag?.dragging || this.drag?.animating) {
+      this.scheduleMeasure();
+      return;
+    }
+    const side = this.deriveSide();
+    if (Math.abs(side - this.hexSide) < PITCH_EPSILON) {
+      return;
+    }
+    this.hexSide = side;
+    if (this.drag) {
+      this.drag.hexSide = side;
+    }
+    if (this.gestures) {
+      this.gestures.hexSide = side;
+    }
+    this.syncOccupancy();
   }
 
   /**
@@ -405,7 +578,9 @@ export class HpLayout extends LitElement {
   }
 
   private handleSlotChange(): void {
+    this.applySize();
     this.syncOccupancy();
+    this.observeChildren();
     this.invalidate();
   }
 

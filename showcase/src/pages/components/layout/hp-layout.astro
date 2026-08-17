@@ -56,8 +56,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
   <p>Text above the layout.</p>
 
   <!-- No height needed: the element takes the size of the hexes it
-       placed, reported as --hp-layout-width / --hp-layout-height.
-       \`size\` sets the tier for the surface and its children. -->
+       placed, reported as --hp-layout-width / --hp-layout-height. -->
   <hp-layout>
     <hp-cell variant="anchor" q="0" r="0">a</hp-cell>
     <hp-cell variant="action" q="1" r="0">b</hp-cell>
@@ -65,6 +64,60 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
   </hp-layout>
 
   <p>Text below it, pushed down by the measured height.</p>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <h2>Sizing the lattice</h2>
+    <p>
+      <code>size</code> scales the whole surface — <code>xxs</code>, <code>xs</code>,
+      <code>sm</code> (default), <code>md</code> or <code>lg</code>. It is written onto the
+      children as their own <code>size</code>, because a tier is more than a width: the
+      stroke weight and the proportion of the hex the outline occupies come with it. The
+      lattice then follows what the children actually render at, so the hexes keep sharing
+      one edge at every tier.
+    </p>
+    <p>
+      Leave it off and nothing is touched — each child keeps the size it was authored with,
+      which is how a surface of deliberately mixed sizes stays expressible. Note that
+      <code>md</code> is the flat-top hex, and a flat-top hex does not tessellate on a
+      pointy-top lattice: an <code>md</code> surface spaces its cells correctly but they
+      won't share edges.
+    </p>
+
+    <hp-demo caption="size — the same markup at two tiers">
+      <hp-layout size="xs" layout="spiral">
+        <hp-cell variant="anchor" filled></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+      </hp-layout>
+      <hp-layout size="sm" layout="spiral">
+        <hp-cell variant="anchor" filled></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+      </hp-layout>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- One tier for the surface; the children are written to match. -->
+  <hp-layout size="xs" layout="spiral">
+    <hp-cell variant="anchor" filled></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+  </hp-layout>
+
+  <!-- Same markup, one tier up. -->
+  <hp-layout size="sm" layout="spiral">
+    <hp-cell variant="anchor" filled></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+  </hp-layout>
 </body>`}</hp-code>
     </hp-demo>
 

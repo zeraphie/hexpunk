@@ -88,6 +88,14 @@ export class DragController {
     return this.active !== null;
   }
 
+  /** Lattice pitch, settable after construction: a DOM surface only
+   * learns its real cell size once the children have rendered, and the
+   * pitch has to follow them. Read on every use, so a mid-life change
+   * lands without rebuilding the controller. */
+  set hexSide(value: number) {
+    this.options.hexSide = value;
+  }
+
   get animating(): boolean {
     return this.snap !== null;
   }

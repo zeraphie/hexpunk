@@ -85,6 +85,13 @@ export class GestureController {
     options.host.addEventListener("keydown", this.handleKeyDown);
   }
 
+  /** Lattice pitch, settable after construction — see the same setter
+   * on DragController. Both must be moved together or a press would
+   * hit-test against a different lattice than the drag runs on. */
+  set hexSide(value: number) {
+    this.options.hexSide = value;
+  }
+
   /** Camera screen space is canvas-local: client coordinates shift
    * by the canvas box (deltas are unaffected, absolutes are not). */
   private local(event: { clientX: number; clientY: number }): [number, number] {

@@ -13,17 +13,23 @@ export const hpLayoutStyles = css`
   :host {
     position: relative;
     display: block;
-    /* The lattice pitch is one stroke narrower than the cell, so
-     * neighbouring hexes overlap by exactly their stroke width and
-     * share a single edge instead of drawing two side by side. Same
-     * correction hp-cluster applies internally. */
-    --hp-effective-cell: calc(var(--hp-cell, var(--hp-hex-cell-sm)) - var(--hp-hex-stroke));
-    --hp-col-step: var(--hp-effective-cell);
-    --hp-row-step: calc(var(--hp-effective-cell) * 0.8660254);
     /* Measured from the placed content so the element occupies real
      * space in flow. Falls back to nothing until first placement. */
     inline-size: var(--hp-layout-width, auto);
     block-size: var(--hp-layout-height, auto);
+  }
+
+  /* hp-base already gives the host the xxs / xs cell widths (and the
+   * per-tier stroke for every tier); only md and lg need adding, since
+   * those live on the atoms rather than the base. The host's own
+   * --hp-cell is the pitch source for an empty surface — once there
+   * are children, their rendered width is what the lattice follows. */
+  :host([size="md"]) {
+    --hp-cell: var(--hp-hex-cell-md);
+  }
+
+  :host([size="lg"]) {
+    --hp-cell: var(--hp-hex-cell-lg);
   }
 
   /* Children are placed in CSS pixels from the content's top-left and
