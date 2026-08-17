@@ -82,10 +82,87 @@ export const hpGridStyles = css`
     transition: none;
   }
 
+  /* While a gesture owns the pointer, nothing else may react to it:
+   * a fast drag sweeps the cursor across neighbouring cells, and
+   * their hover states (hue swap, z-lift) firing mid-gesture reads
+   * as glitching. pointer-events doesn't cross the shadow boundary,
+   * so the suppression rides the custom property every hex atom's
+   * painted polygons read. */
+  :host([data-hp-gesture]) {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  :host([data-hp-gesture]) ::slotted([q][r]) {
+    --hp-hex-pointer-events: none;
+  }
+
   /* Tether children are declarative data for the canvas arcs, not
    * rendered elements. */
   ::slotted(hp-tether) {
     display: none;
+  }
+
+  /* Viewport chrome: zoom steps + the way home after panning far
+   * enough to lose the content. Always visible but at 60% opacity so
+   * it doesn't compete with the content; full opacity on hover. */
+  .controls {
+    position: absolute;
+    right: var(--hp-sm);
+    bottom: var(--hp-sm);
+    z-index: 1;
+    display: flex;
+    gap: var(--hp-xxs);
+    opacity: 0.6;
+    transition: opacity var(--hp-duration-fast) var(--hp-ease-default);
+  }
+
+  .controls:hover {
+    opacity: 1;
+  }
+
+  .controls button {
+    font: inherit;
+    font-size: var(--hp-typo-label-sm-font-size);
+    padding: 0 var(--hp-sm);
+    background: var(--hp-surface-container);
+    color: var(--hp-on-surface);
+    border: 1px solid var(--hp-outline-variant);
+    border-radius: var(--hp-rounded-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+  }
+
+  .controls button:hover {
+    color: var(--hp-secondary);
+  }
+
+  .controls svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* A surface that opted out of viewport behaviour drops the
+   * viewport chrome with it. */
+  :host([pannable="false"]) .controls {
+    display: none;
+  }
+
+  /* On a packed layout the packer owns placement: children arrive
+   * without q / r, and showing them before it runs flashes a clump
+   * of hexes in normal flow. They appear once placed — and the very
+   * first placement paints without the settle animation, so the
+   * surface opens already laid out. */
+  :host(:not([layout="free"])) ::slotted(:not([q])) {
+    visibility: hidden;
+  }
+
+  :host([data-hp-placing]) ::slotted([q][r]) {
+    transition: none;
   }
 
   @media (prefers-reduced-motion: reduce) {

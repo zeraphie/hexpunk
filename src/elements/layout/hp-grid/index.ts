@@ -22,7 +22,9 @@
 */
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 
+import { scan } from "../../../icons/scan.js";
 import { hpBase } from "../../../styles/hp-base.js";
 import { HpHex } from "../../primitives/hp-hex.js";
 import { SQRT3, axialToWorld, hexWidth } from "../../../lib/spatial/lattice.js";
@@ -47,6 +49,19 @@ const MAX_ZOOM = 14;
  * the typical components-page workload into 2–3 rows. `row-width`
  * pins a different count. */
 const WIDE_HALF_COLS = 10;
+
+/** Zoom-button step, matching the wheel's feel per press. */
+const ZOOM_STEP = 1.4;
+
+/** Breathing room around the content in the home framing, so edge
+ * hexes don't kiss the viewport border. */
+const FIT_PADDING_PX = 16;
+
+/** The viewport chrome must not read as an empty-space press — that
+ * would start a pan under every button click. */
+function stopGestureFromControls(event: PointerEvent): void {
+  event.stopPropagation();
+}
 
 export interface HpGridMoveEventDetail {
   element: HTMLElement;
@@ -99,6 +114,11 @@ export interface HpGridActivateEventDetail {
  *
  * @slot - Cells carrying `q` / `r` attributes; `<hp-tether>` children
  *   are read as declarative arc data and drawn on the canvas
+ *
+ * @csspart controls - The viewport chrome cluster (bottom right)
+ * @csspart zoom-out - The − button
+ * @csspart zoom-in - The + button
+ * @csspart recenter - The fly-home button
  */
 @customElement("hp-grid")
 export class HpGrid extends LitElement {
@@ -145,6 +165,8 @@ export class HpGrid extends LitElement {
   private idCounter = 0;
   /** Hex side in world units (CSS px at zoom 1). */
   private hexSide = 0;
+  /** First pack paints in place; only re-packs animate. */
+  private hasPacked = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -170,6 +192,25 @@ export class HpGrid extends LitElement {
     return html`
       <canvas aria-hidden="true"></canvas>
       <div class="overlay"><slot @slotchange=${this.handleSlotChange}></slot></div>
+      <div class="controls" part="controls" @pointerdown=${stopGestureFromControls}>
+        <button type="button" aria-label="Zoom out" part="zoom-out" @click=${this.stepOut}>
+          −
+        </button>
+        <button type="button" aria-label="Zoom in" part="zoom-in" @click=${this.stepIn}>+</button>
+        <button type="button" aria-label="Recenter canvas" part="recenter" @click=${this.recenter}>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            ${unsafeSVG(scan)}
+          </svg>
+        </button>
+      </div>
     `;
   }
 
@@ -241,6 +282,14 @@ export class HpGrid extends LitElement {
     if (this.layout === "free") {
       return;
     }
+    // The first pack is the surface's opening state — it paints
+    // already laid out. Every later pack is a change, and changes
+    // glide.
+    if (!this.hasPacked) {
+      this.hasPacked = true;
+      this.setAttribute("data-hp-placing", "");
+      requestAnimationFrame(() => this.removeAttribute("data-hp-placing"));
+    }
     const children = this.placeableChildren();
     const items = children
       .map((element, order) => ({
@@ -294,7 +343,12 @@ export class HpGrid extends LitElement {
       Number.parseFloat(style.getPropertyValue("--hp-cell")) ||
       Number.parseFloat(style.getPropertyValue("--hp-hex-cell-sm")) ||
       100;
-    return Math.max(1, cell - HpHex.RING_INSET.sm * cell) / SQRT3;
+    // Overlap neighbours by the ring's half-width so their outlines
+    // land on each other — the same formula hp-layout derives, and it
+    // must stay the same or a cell would sit differently on the two
+    // surfaces.
+    const ring = (HpHex.RING_INSET.sm * cell) / 2;
+    return Math.max(1, cell - ring) / SQRT3;
   }
 
   /**
@@ -331,6 +385,10 @@ export class HpGrid extends LitElement {
       host: this,
       canvas,
       overlay,
+      // Cells catch the pointer themselves (hex-shaped hit areas), so
+      // gestures listen on the host, where cell and canvas presses
+      // both bubble to.
+      gestureSurface: this,
       hexSide: this.hexSide,
       skin: buildSkin(),
       minZoom: MIN_ZOOM,
@@ -367,6 +425,13 @@ export class HpGrid extends LitElement {
           cell,
           element: occupant ? (this.cells.get(occupant) ?? null) : null,
         }),
+      onGestureChange: (mode) => {
+        if (mode) {
+          this.setAttribute("data-hp-gesture", mode);
+        } else {
+          this.removeAttribute("data-hp-gesture");
+        }
+      },
       onTierChange: (tier) => this.emit("hp-grid-tier", { tier }),
       onDiveChange: (dived) => this.emit("hp-grid-dive", { dived }),
       onPan: () => this.emit("hp-grid-pan", undefined),
@@ -480,8 +545,8 @@ export class HpGrid extends LitElement {
       if (marker.tagName.toLowerCase() !== "hp-tether") {
         continue;
       }
-      const from = marker.getAttribute("from");
-      const to = marker.getAttribute("to");
+      const from = this.resolveOccupant(marker.getAttribute("from"));
+      const to = this.resolveOccupant(marker.getAttribute("to"));
       if (!from || !to) {
         continue;
       }
@@ -497,49 +562,123 @@ export class HpGrid extends LitElement {
         });
       }
     }
+    // Declarative arcs are content: they show whether or not the
+    // surface offers drop-toggle authoring.
+    engine.showArcs = this.tetherDefs.size > 0;
   }
 
   /**
-   * Centre the camera on the content at zoom 1. Before the engine
-   * arrives the same framing is written straight onto the overlay, so
-   * the placeholder and the live canvas agree about where the world
-   * sits.
+   * An `<hp-tether>` endpoint reference as an occupant id. The
+   * element's declarative contract is a selector (`#node-a` — what
+   * the standalone hp-tether takes), so the leading `#` is accepted;
+   * any other selector resolves through the DOM and lands on the
+   * matched cell's id.
+   */
+  private resolveOccupant(ref: string | null): string | null {
+    if (!ref) {
+      return null;
+    }
+    const id = ref.startsWith("#") ? ref.slice(1) : ref;
+    if (this.cells.has(id)) {
+      return id;
+    }
+    let matched: Element | null = null;
+    try {
+      matched = this.querySelector(ref);
+    } catch {
+      return null;
+    }
+    if (!(matched instanceof HTMLElement)) {
+      return null;
+    }
+    const resolved = matched.id || matched.dataset.hpGridId;
+    return resolved && this.cells.has(resolved) ? resolved : null;
+  }
+
+  /** World bounding box of the content as centre + size. Zeroes for
+   * an empty surface. */
+  private contentBounds(): [number, number, number, number] {
+    const children = this.placeableChildren();
+    if (children.length === 0) {
+      return [0, 0, 0, 0];
+    }
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    const halfWidth = hexWidth(this.hexSide) / 2;
+    for (const child of children) {
+      const q = Number.parseFloat(child.getAttribute("q") ?? "0") || 0;
+      const r = Number.parseFloat(child.getAttribute("r") ?? "0") || 0;
+      const [x, y] = axialToWorld(q, r, this.hexSide);
+      minX = Math.min(minX, x - halfWidth);
+      maxX = Math.max(maxX, x + halfWidth);
+      minY = Math.min(minY, y - this.hexSide);
+      maxY = Math.max(maxY, y + this.hexSide);
+    }
+    return [(minX + maxX) / 2, (minY + maxY) / 2, maxX - minX, maxY - minY];
+  }
+
+  /**
+   * The camera's home framing: content centred, zoomed so every hex
+   * is fully inside the viewport — capped at 1 so a small surface
+   * shows its cells at natural size rather than inflating them.
+   */
+  private fitFraming(): [number, number, number] {
+    const [cx, cy, w, h] = this.contentBounds();
+    const vw = this.clientWidth - FIT_PADDING_PX * 2;
+    const vh = this.clientHeight - FIT_PADDING_PX * 2;
+    let zoom = 1;
+    if (w > 0 && h > 0 && vw > 0 && vh > 0) {
+      zoom = Math.max(MIN_ZOOM, Math.min(1, vw / w, vh / h));
+    }
+    return [cx, cy, zoom];
+  }
+
+  /**
+   * Jump the camera to its home framing. Before the engine arrives
+   * the same framing is written straight onto the overlay, so the
+   * placeholder and the live canvas agree about where the world sits.
    */
   private fitContent(): void {
-    const children = this.placeableChildren();
-    let cx = 0;
-    let cy = 0;
-    if (children.length > 0) {
-      let minX = Infinity;
-      let minY = Infinity;
-      let maxX = -Infinity;
-      let maxY = -Infinity;
-      const halfWidth = hexWidth(this.hexSide) / 2;
-      for (const child of children) {
-        const q = Number.parseFloat(child.getAttribute("q") ?? "0") || 0;
-        const r = Number.parseFloat(child.getAttribute("r") ?? "0") || 0;
-        const [x, y] = axialToWorld(q, r, this.hexSide);
-        minX = Math.min(minX, x - halfWidth);
-        maxX = Math.max(maxX, x + halfWidth);
-        minY = Math.min(minY, y - this.hexSide);
-        maxY = Math.max(maxY, y + this.hexSide);
-      }
-      cx = (minX + maxX) / 2;
-      cy = (minY + maxY) / 2;
-    }
+    const [cx, cy, zoom] = this.fitFraming();
     if (this.engine) {
-      this.engine.jumpTo(1, cx, cy);
+      this.engine.jumpTo(zoom, cx, cy);
       return;
     }
     const overlay = this.overlayElement;
     if (overlay) {
       syncOverlay(overlay, {
-        x: this.clientWidth / 2 - cx,
-        y: this.clientHeight / 2 - cy,
-        z: 1,
+        x: this.clientWidth / 2 - cx * zoom,
+        y: this.clientHeight / 2 - cy * zoom,
+        z: zoom,
       });
     }
   }
+
+  /** Fly the camera home — everything visible again. The way back
+   * after panning or zooming far enough to lose the content. */
+  readonly recenter = (): void => {
+    const [cx, cy, zoom] = this.fitFraming();
+    this.engine?.flyTo(zoom, cx, cy);
+  };
+
+  /** Zoom about the viewport centre, so the buttons don't shift what
+   * the user is looking at. */
+  private zoomBy(factor: number): void {
+    const engine = this.engine;
+    if (!engine) {
+      return;
+    }
+    const cam = engine.cameraState;
+    const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, cam.z * factor));
+    const wx = (this.clientWidth / 2 - cam.x) / cam.z;
+    const wy = (this.clientHeight / 2 - cam.y) / cam.z;
+    engine.flyTo(zoom, wx, wy);
+  }
+
+  private readonly stepIn = (): void => this.zoomBy(ZOOM_STEP);
+  private readonly stepOut = (): void => this.zoomBy(1 / ZOOM_STEP);
 
   /** Position a child in world units. Geometry, not visual state — it
    * rides custom properties so the CSS owns the transform. */
