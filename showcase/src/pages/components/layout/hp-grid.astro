@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import ComponentDocs from "../../../components/ComponentDocs.astro";
-import { move, play, rows3, shell, zap } from "../../../../../src/icons/index.ts";
+import { move, play, rows3, scan, shell, zap } from "../../../../../src/icons/index.ts";
 
 const ICON_SVG_ATTRS = {
   viewBox: "0 0 24 24",
@@ -108,10 +108,33 @@ const PROP_GROUPS: PropGroup[] = [
 ];
 
 const HUD_BUTTONS = [
-  { id: "pg-zoom-out", text: "−", help: "Zoom out a step from the middle of the view." },
-  { id: "pg-zoom-in", text: "+", help: "Zoom in a step on the middle of the view." },
   { id: "pg-reset", text: "reset", help: "Back to 1x at the origin, leaving any dived page." },
   { id: "pg-tour", text: "tour", help: "Fly to the next content tier. Click repeatedly to ride the whole ladder." },
+];
+import PerfStats from "../../../components/PerfStats.astro";
+
+const STATS = [
+  {
+    cost: "Script (static)",
+    measured: "54&nbsp;KB min · 19&nbsp;KB gzip",
+    context: "element + shared spatial core; what a page pays before any canvas exists",
+  },
+  {
+    cost: "Engine (deferred)",
+    measured: "348&nbsp;KB min · 102&nbsp;KB gzip",
+    context: "PixiJS + renderer, dynamic import on first connect; cached after",
+  },
+  {
+    cost: "Init (once, at connect)",
+    measured: "~35&nbsp;ms",
+    context: "WebGL context + field build; cells render as plain DOM before it",
+  },
+  {
+    cost: "Animating",
+    measured: "0.1–0.4&nbsp;ms CPU / frame",
+    context: "camera tweens, drags, arc morphs",
+  },
+  { cost: "Idle", measured: "0 frames", context: "render-on-demand; zero rAF wakeups at rest" },
 ];
 ---
 
@@ -129,55 +152,7 @@ const HUD_BUTTONS = [
     </p>
 
     <Fragment slot="notice">
-      <hp-collapsible class="perf-collapsible">
-        <button slot="trigger" class="stats-trigger" type="button">
-          <hp-cell variant="action" size="xxs" aria-hidden="true">
-            <hp-pixel class="stats-pixel" type="expandable" pixel-size="2"></hp-pixel>
-          </hp-cell>
-          <span class="stats-label">
-            <span class="when-closed">show stats</span>
-            <span class="when-open">hide stats</span>
-          </span>
-        </button>
-        <hp-separator></hp-separator>
-        <table class="perf-status">
-          <thead>
-            <tr>
-              <th scope="col">Cost</th>
-              <th scope="col">Measured</th>
-              <th scope="col">Context</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Script (static)</td>
-              <td>54&nbsp;KB min · 19&nbsp;KB gzip</td>
-              <td>element + shared spatial core; what a page pays before any canvas exists</td>
-            </tr>
-            <tr>
-              <td>Engine (deferred)</td>
-              <td>348&nbsp;KB min · 102&nbsp;KB gzip</td>
-              <td>PixiJS + renderer, dynamic import on first connect; cached after</td>
-            </tr>
-            <tr>
-              <td>Init (once, at connect)</td>
-              <td>~35&nbsp;ms</td>
-              <td>WebGL context + field build; cells render as plain DOM before it</td>
-            </tr>
-            <tr>
-              <td>Animating</td>
-              <td>0.1–0.4&nbsp;ms CPU / frame</td>
-              <td>camera tweens, drags, arc morphs</td>
-            </tr>
-            <tr>
-              <td>Idle</td>
-              <td>0 frames</td>
-              <td>render-on-demand; zero rAF wakeups at rest</td>
-            </tr>
-          </tbody>
-        </table>
-        <hp-separator></hp-separator>
-      </hp-collapsible>
+      <PerfStats rows={STATS} />
     </Fragment>
 
     <p>
@@ -188,11 +163,18 @@ const HUD_BUTTONS = [
       <code>hp-grid-*</code> stream.
     </p>
 
-    <hp-demo caption="hp-grid — pan, zoom, drag, tether, dive">
+    <hp-demo class="pg-demo" caption="hp-grid — pan, zoom, drag, tether, dive">
       <div class="pg-demo-block">
     <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
     <canvas id="pg-canvas"></canvas>
     <div id="pg-overlay"></div>
+    <div class="pg-controls">
+      <button type="button" aria-label="Zoom out" id="pg-zoom-out">−</button>
+      <button type="button" aria-label="Zoom in" id="pg-zoom-in">+</button>
+      <button type="button" aria-label="Recenter canvas" id="pg-centre">
+        <svg {...ICON_SVG_ATTRS} set:html={scan} />
+      </button>
+    </div>
     <div class="pg-hud" id="pg-hud">
       <div class="pg-hud-head">
         <div class="pg-hud-readout">zoom <b id="pg-z">1.00</b> · hex <b id="pg-px">0px</b></div>
@@ -261,11 +243,6 @@ const HUD_BUTTONS = [
     </div>
   </div>
 
-  <p class="pg-events-note">
-    Event log — newest first; a continuing pan updates its entry rather than flooding the
-    list.
-  </p>
-  <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
       </div>
 
       <hp-code slot="code" language="html">{`<body>
@@ -285,6 +262,12 @@ const HUD_BUTTONS = [
   </hp-grid>
 </body>`}</hp-code>
     </hp-demo>
+
+  <p class="pg-events-note">
+    Event log — newest first; a continuing pan updates its entry rather than flooding the
+    list.
+  </p>
+  <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
 
     <h2>Using the element</h2>
     <p>
@@ -359,6 +342,53 @@ const HUD_BUTTONS = [
 
 
 <style is:global>
+  /* The element's viewport chrome, mirrored on the stage. */
+  .pg-controls {
+    position: absolute;
+    right: var(--hp-sm);
+    bottom: var(--hp-sm);
+    z-index: 1;
+    display: flex;
+    gap: var(--hp-xxs);
+    opacity: 0.6;
+    transition: opacity var(--hp-duration-fast) var(--hp-ease-default);
+  }
+
+  .pg-controls:hover {
+    opacity: 1;
+  }
+
+  .pg-controls button {
+    font: inherit;
+    font-size: var(--hp-typo-label-sm-font-size);
+    padding: 0 var(--hp-sm);
+    background: var(--hp-surface-container);
+    color: var(--hp-on-surface);
+    border: 1px solid var(--hp-outline-variant);
+    border-radius: var(--hp-rounded-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+  }
+
+  .pg-controls button:hover {
+    color: var(--hp-secondary);
+  }
+
+  .pg-controls svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* The stage supplies its own chrome, so the demo frame hugs it
+     edge to edge. */
+  .pg-demo::part(preview) {
+    padding: 0;
+  }
+
   /* hp-demo lays its preview out as a flex row; the playground is a
      stacked block (stage, then log). */
   .pg-demo-block {
@@ -377,9 +407,7 @@ const HUD_BUTTONS = [
     height: 72vh;
     min-height: 30rem;
     overflow: hidden;
-    border: 1px solid var(--hp-outline-variant);
     background: var(--hp-surface-container-lowest);
-    margin-block: 1.5rem;
   }
   .pg-stage:focus-visible {
     outline: 2px solid var(--hp-outline);
@@ -1530,6 +1558,27 @@ const HUD_BUTTONS = [
   document.getElementById("pg-reset")!.addEventListener("click", () => {
     engine?.surface();
     engine?.flyTo(1, 0, 0);
+  });
+  document.getElementById("pg-centre")!.addEventListener("click", () => {
+    if (!engine || nodes.length === 0) {
+      return;
+    }
+    engine.surface();
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const node of nodes) {
+      minX = Math.min(minX, node.rect.cx - node.rect.w / 2);
+      maxX = Math.max(maxX, node.rect.cx + node.rect.w / 2);
+      minY = Math.min(minY, node.rect.cy - node.rect.h / 2);
+      maxY = Math.max(maxY, node.rect.cy + node.rect.h / 2);
+    }
+    const zoom = Math.max(
+      0.2,
+      Math.min(1, (stage.clientWidth - 32) / (maxX - minX), (stage.clientHeight - 32) / (maxY - minY))
+    );
+    engine.flyTo(zoom, (minX + maxX) / 2, (minY + maxY) / 2);
   });
   let tourStep = 0;
   document.getElementById("pg-tour")!.addEventListener("click", () => {
