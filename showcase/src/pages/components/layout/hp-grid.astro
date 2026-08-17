@@ -34,19 +34,6 @@ interface PropGroup {
 
 const PROP_GROUPS: PropGroup[] = [
   {
-    id: "pg-size",
-    label: "size",
-    options: [
-      { value: "sm", text: "sm", pressed: true, help: "100px cells, from --hp-hex-cell-sm." },
-      { value: "md", text: "md", help: "180px cells. Rebuilds the world at the new scale." },
-      {
-        value: "lg",
-        text: "lg",
-        help: "320px cells. Zoom out to match sm and the view is identical — camera zoom already covers this, which is why the real grid may not need a size prop at all.",
-      },
-    ],
-  },
-  {
     id: "pg-layout",
     label: "layout",
     options: [
@@ -276,6 +263,44 @@ const HUD_BUTTONS = [
   <p>Newest first; a continuing pan updates its entry rather than flooding the list.</p>
   <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
 
+    <h2>Using the element</h2>
+    <p>
+      Everything above is the surface <code>&lt;hp-grid&gt;</code> wraps. The element takes
+      slotted cells at <code>q</code> / <code>r</code>, declarative
+      <code>&lt;hp-tether&gt;</code> children drawn on its canvas, and the
+      <code>draggable</code> / <code>tetherable</code> / <code>pannable="false"</code>
+      knobs — the engine loads itself on first connect, and the cells render as plain DOM
+      until it does.
+    </p>
+    <hp-demo caption="hp-grid — cells, a pinned cell, a declarative arc">
+      <hp-grid draggable tetherable style="min-height: 360px">
+        <hp-cell variant="anchor" filled q="0" r="0" id="grid-demo-core" draggable="false">
+          core
+        </hp-cell>
+        <hp-cell variant="action" q="1" r="0" id="grid-demo-field">field</hp-cell>
+        <hp-cell variant="action" q="-1" r="1" id="grid-demo-camera">camera</hp-cell>
+        <hp-cell variant="secondary" q="0" r="-1" id="grid-demo-input">input</hp-cell>
+        <hp-tether from="#grid-demo-core" to="#grid-demo-field"></hp-tether>
+      </hp-grid>
+
+      <hp-code slot="code" language="html">{`<body>
+  <script type="module">
+    // The grid ships from its own subpath; the engine (PixiJS)
+    // loads on first connect.
+    import "@hexpunk/core/grid";
+  <\/script>
+
+  <hp-grid draggable tetherable>
+    <hp-cell variant="anchor" filled q="0" r="0" id="core" draggable="false">core</hp-cell>
+    <hp-cell variant="action" q="1" r="0" id="field">field</hp-cell>
+    <hp-cell variant="action" q="-1" r="1">camera</hp-cell>
+
+    <!-- Declarative arc, drawn on the grid's canvas. -->
+    <hp-tether from="#core" to="#field"></hp-tether>
+  </hp-grid>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>hp-grid or hp-layout?</h2>
       <hp-banner tone="do">
@@ -308,18 +333,6 @@ const HUD_BUTTONS = [
         never fetch it; buildless CDN consumers need an import map for
         <code>pixi.js</code>.
       </p>
-      <hp-code language="html">{`<body>
-  <script type="module">
-    // The grid ships from its own subpath; the engine (PixiJS)
-    // loads on first connect.
-    import "@hexpunk/core/grid";
-  </script>
-
-  <hp-grid draggable>
-    <hp-cell variant="anchor" q="0" r="0">core</hp-cell>
-    <hp-cell variant="action" q="1" r="0">field</hp-cell>
-  </hp-grid>
-</body>`}</hp-code>
 
       <p>
         Before the engine lands, slotted cells render immediately as plain DOM at their
@@ -836,6 +849,7 @@ const HUD_BUTTONS = [
 </style>
 
 <script>
+  import "../../../../../src/grid.ts";
   import {
     HexEngine,
     axialToWorld,
@@ -855,13 +869,11 @@ const HUD_BUTTONS = [
   const BASE_HEX_SIDE = 64;
   /** Tight row-major pack width for the six demo cells. */
   const ROW_WIDTH = 4;
-  /** Fallback hex-cell widths when the tokens are unavailable. */
-  const FALLBACK_CELL_WIDTH = { sm: 100, md: 180, lg: 320 };
-  /** Tour stops as APPARENT hex widths, so the ride through the
-   * tiers feels identical at every `size` setting. */
+  /** Fallback sm hex-cell width when the token is unavailable. */
+  const FALLBACK_CELL_WIDTH = 100;
+  /** Tour stops as APPARENT hex widths. */
   const TOUR_APPARENT = [110, 180, 350, 900, 110];
 
-  type SizeName = "sm" | "md" | "lg";
   type LayoutName = "free" | "spiral" | "rows";
 
   interface PlaygroundNode {
@@ -893,7 +905,6 @@ const HUD_BUTTONS = [
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const settings = {
-    size: "sm" as SizeName,
     layout: "free" as LayoutName,
     draggable: true,
     tetherable: true,
@@ -915,9 +926,11 @@ const HUD_BUTTONS = [
   let divedNode: PlaygroundNode | null = null;
   let lastSurfaceAt = 0;
 
-  function hexSideFor(size: SizeName): number {
-    const raw = getComputedStyle(stage).getPropertyValue(`--hp-hex-cell-${size}`);
-    const width = Number.parseFloat(raw) || FALLBACK_CELL_WIDTH[size];
+  /** The grid has no size prop — camera zoom subsumes it — so the
+   * world is pitched once from the sm cell token. */
+  function hexSideFor(): number {
+    const raw = getComputedStyle(stage).getPropertyValue("--hp-hex-cell-sm");
+    const width = Number.parseFloat(raw) || FALLBACK_CELL_WIDTH;
     return width / Math.sqrt(3);
   }
 
@@ -1232,7 +1245,7 @@ const HUD_BUTTONS = [
       canvas = fresh;
 
       stage.dataset.pgMotion = settings.instant ? "instant" : "animated";
-    side = hexSideFor(settings.size);
+    side = hexSideFor();
       overlay.style.setProperty("--pg-k", String(side / BASE_HEX_SIDE));
       const cells = layoutCells();
       nodes = nodeDefs.map((def) => buildCell(def, cells.get(def.name)!));
@@ -1439,10 +1452,6 @@ const HUD_BUTTONS = [
     });
   }
 
-  wireGroup("pg-size", (value) => {
-    settings.size = value as SizeName;
-    scheduleBoot();
-  });
   wireGroup("pg-layout", (value) => {
     settings.layout = value as LayoutName;
     applyLayout();
