@@ -28,14 +28,15 @@ import { OccupancyMap } from "../../../lib/spatial/occupancy.js";
 import { syncOverlay } from "../../../lib/spatial/overlay.js";
 import { SQRT3, axialToWorld, parseFillCellsForBbox } from "../../../lib/spatial/lattice.js";
 import { findSpiralPosition } from "../../../lib/spatial/layouts/spiral.js";
-import { findRowsPosition } from "../../../lib/spatial/layouts/rows.js";
+import { findRowsPosition, halfColsForWidth } from "../../../lib/spatial/layouts/rows.js";
 import { markClaimed, parseFillCells, type FillMask } from "../../../lib/spatial/layouts/index.js";
 import type { AxialCoord } from "../../../lib/spatial/types.js";
 import { hpLayoutStyles } from "./styles.js";
 
-/** Default cells per row for `layout="rows"`. A layout primitive
- * wraps tighter than a full-page packer; override with `row-width`. */
-const DEFAULT_ROW_WIDTH = 6;
+/** Widths this close (px) count as unchanged when deciding whether a
+ * resize moved the `rows` wrap point. Subpixel jitter from zoom and
+ * scrollbar appearance would otherwise re-pack for nothing. */
+const REPACK_WIDTH_EPSILON = 0.5;
 
 /** Breathing room in px around the placed content, so hexes on the
  * outer edge aren't clipped by the element's own box. */
@@ -125,9 +126,12 @@ export class HpLayout extends LitElement {
   @property({ reflect: true, type: Boolean })
   override draggable = false;
 
-  /** Cells per row for `layout="rows"`. */
+  /** Cells per row for `layout="rows"`. Unset — the default — wraps
+   * to the element's own width, the way flex items wrap, and re-packs
+   * when that width changes. Set it to pin a fixed count for
+   * compositions that must hold their shape regardless of space. */
   @property({ type: Number, attribute: "row-width" })
-  rowWidth = DEFAULT_ROW_WIDTH;
+  rowWidth?: number;
 
   static override styles = [hpBase, hpLayoutStyles];
 
@@ -154,6 +158,9 @@ export class HpLayout extends LitElement {
   /** Hex side in px, measured once the element is styled. World units
    * and CSS pixels are then the same thing. */
   private hexSide = 0;
+  /** Host width the last responsive-rows pack ran against, so a
+   * height-only resize (which every pack causes) can't re-trigger. */
+  private lastPackWidth = 0;
   /** Cell-centre bounds in world units, from the last measure. A drag
    * is held inside these so the surface can't be pulled out of shape. */
   private bounds: { minX: number; minY: number; maxX: number; maxY: number } | null = null;
@@ -262,7 +269,7 @@ export class HpLayout extends LitElement {
   }
 
   override updated(changed: Map<string, unknown>): void {
-    if (changed.has("layout") && this.layout !== "free") {
+    if ((changed.has("layout") || changed.has("rowWidth")) && this.layout !== "free") {
       // One frame's grace so composite children (hp-cluster) have
       // published their own `data-fill-cells` before packing reads it.
       requestAnimationFrame(() => this.pack());
@@ -286,6 +293,15 @@ export class HpLayout extends LitElement {
     if (this.layout === "free") {
       return;
     }
+    // The wrap cap follows the element's width unless `row-width`
+    // pins it. Recorded even when pinned, so switching the attribute
+    // off mid-life starts from an honest baseline.
+    this.lastPackWidth = this.clientWidth;
+    const pinned = this.pinnedRowWidth;
+    const halfCols =
+      pinned === null
+        ? halfColsForWidth(this.lastPackWidth - CONTENT_PADDING * 2, this.hexSide)
+        : pinned / 2;
     const children = this.placeableChildren();
     const items = children
       .map((element) => ({ element, mask: parseFillCells(element.dataset.fillCells) }))
@@ -298,7 +314,7 @@ export class HpLayout extends LitElement {
       const position =
         this.layout === "spiral"
           ? findSpiralPosition(mask as FillMask, claimed, gap)
-          : findRowsPosition(mask as FillMask, claimed, this.rowWidth / 2, gap);
+          : findRowsPosition(mask as FillMask, claimed, halfCols, gap);
       markClaimed(position.q, position.r, mask as FillMask, claimed);
       element.setAttribute("q", String(position.q));
       element.setAttribute("r", String(position.r));
@@ -477,11 +493,14 @@ export class HpLayout extends LitElement {
     }
   }
 
-  /** Follow the children's rendered size. Re-observing wholesale keeps
-   * the set in step with slot changes without per-child bookkeeping. */
+  /** Follow the children's rendered size, and the host's own — the
+   * responsive `rows` wrap point lives on the host width. Re-observing
+   * wholesale keeps the set in step with slot changes without
+   * per-child bookkeeping. */
   private observeChildren(): void {
     this.sizeObserver ??= new ResizeObserver(() => this.scheduleMeasure());
     this.sizeObserver.disconnect();
+    this.sizeObserver.observe(this);
     for (const child of this.placeableChildren()) {
       this.sizeObserver.observe(child);
     }
@@ -499,7 +518,23 @@ export class HpLayout extends LitElement {
     });
   }
 
-  /** Re-derive the pitch and, if it actually moved, re-place on it. */
+  /** The authored row cap, or null to derive one from the width.
+   * Folds together never-set (undefined), attribute-removed (Lit's
+   * Number converter yields null) and unparseable (NaN). */
+  private get pinnedRowWidth(): number | null {
+    return typeof this.rowWidth === "number" && Number.isFinite(this.rowWidth)
+      ? this.rowWidth
+      : null;
+  }
+
+  /** Whether the wrap point is the element's own width. */
+  private get autoRows(): boolean {
+    return this.layout === "rows" && this.pinnedRowWidth === null;
+  }
+
+  /** Re-derive the pitch and, if anything actually moved, re-place —
+   * and in responsive `rows`, re-pack when the width the rows wrap at
+   * has changed. */
   private remeasure(): void {
     // A drag owns the positions while it runs; re-placing under it
     // would tear the cell out from beneath the pointer. Hold the
@@ -510,17 +545,31 @@ export class HpLayout extends LitElement {
       return;
     }
     const side = this.deriveSide();
-    if (Math.abs(side - this.hexSide) < PITCH_EPSILON) {
+    const pitchChanged = Math.abs(side - this.hexSide) >= PITCH_EPSILON;
+    if (pitchChanged) {
+      this.hexSide = side;
+      if (this.drag) {
+        this.drag.hexSide = side;
+      }
+      if (this.gestures) {
+        this.gestures.hexSide = side;
+      }
+    }
+    // A pitch change moves the wrap cap too (the same width holds
+    // fewer lg columns than sm), so it re-packs rather than merely
+    // re-placing. Width comparison guards the loop: every pack grows
+    // or shrinks the measured height, which re-fires the observer,
+    // but only an inline-size change can alter where rows wrap.
+    if (
+      this.autoRows &&
+      (pitchChanged || Math.abs(this.clientWidth - this.lastPackWidth) >= REPACK_WIDTH_EPSILON)
+    ) {
+      this.pack();
       return;
     }
-    this.hexSide = side;
-    if (this.drag) {
-      this.drag.hexSide = side;
+    if (pitchChanged) {
+      this.syncOccupancy();
     }
-    if (this.gestures) {
-      this.gestures.hexSide = side;
-    }
-    this.syncOccupancy();
   }
 
   /**

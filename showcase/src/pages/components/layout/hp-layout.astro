@@ -129,6 +129,14 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <code>data-fill-cells</code> (<code>&lt;hp-cluster&gt;</code> does this
       automatically); anything without it counts as a single hex.
     </p>
+    <p>
+      <code>rows</code> is responsive by default: the element fills the width it's given,
+      the way a flex container does, and the hexes wrap to that width — re-packing (with the
+      settle animation) whenever it changes, including when <code>size</code> changes the
+      cell tier. A shape wider than the element overflows visibly, like an unbreakable flex
+      item. Set <code>row-width</code> to pin a fixed count per row instead;
+      <code>spiral</code> is radial and ignores width entirely.
+    </p>
 
     <hp-demo caption="spiral — rings outward from the origin">
       <hp-layout layout="spiral">
@@ -151,17 +159,24 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
-    <hp-demo caption="rows — reading order, wrapping at a width cap">
-      <hp-layout layout="rows">
-        <hp-cell variant="anchor" filled>1</hp-cell>
-        <hp-cell variant="action">2</hp-cell>
-        <hp-cell variant="action">3</hp-cell>
-        <hp-cell variant="secondary">4</hp-cell>
-        <hp-cell variant="secondary">5</hp-cell>
-        <hp-cell variant="utility">6</hp-cell>
-      </hp-layout>
+    <hp-demo caption="rows — wraps to the element's width; drag the corner handle">
+      <div class="rows-resize-demo">
+        <hp-layout layout="rows">
+          <hp-cell variant="anchor" filled>1</hp-cell>
+          <hp-cell variant="action">2</hp-cell>
+          <hp-cell variant="action">3</hp-cell>
+          <hp-cell variant="secondary">4</hp-cell>
+          <hp-cell variant="secondary">5</hp-cell>
+          <hp-cell variant="utility">6</hp-cell>
+          <hp-cell variant="utility">7</hp-cell>
+          <hp-cell variant="utility">8</hp-cell>
+        </hp-layout>
+      </div>
 
       <hp-code slot="code" language="html">{`<body>
+  <!-- No row-width: the rows wrap to the element's own width and
+       re-pack when it resizes, like flex items. row-width="4" would
+       pin a fixed four per row instead. -->
   <hp-layout layout="rows">
     <hp-cell variant="anchor" filled>1</hp-cell>
     <hp-cell variant="action">2</hp-cell>
@@ -250,6 +265,20 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     .layout-flow-demo {
       display: block;
       width: 100%;
+    }
+
+    /* A drag-to-resize window onto the rows demo, so the wrap point
+       can be moved without resizing the browser. min-width keeps a
+       column visible; the outline marks the edge the hexes wrap at. */
+    .rows-resize-demo {
+      resize: horizontal;
+      overflow: hidden;
+      width: 100%;
+      max-width: 100%;
+      min-width: 140px;
+      padding-block-end: var(--hp-sm);
+      outline: 1px dashed var(--hp-outline-variant);
+      outline-offset: 4px;
     }
   </style>
 </Layout>

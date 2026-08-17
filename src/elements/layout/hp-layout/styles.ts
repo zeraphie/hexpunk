@@ -19,6 +19,16 @@ export const hpLayoutStyles = css`
     block-size: var(--hp-layout-height, auto);
   }
 
+  /* rows wraps at the element's own width, so the element must take
+   * the room it's given rather than sizing to content — the way a
+   * flex container fills its line. 100% rather than auto because a
+   * flex parent (hp-demo's preview is one) would shrink-wrap an auto
+   * width back to the content, leaving nothing to wrap at. Height
+   * still comes from the measured content. */
+  :host([layout="rows"]) {
+    inline-size: 100%;
+  }
+
   /* hp-base already gives the host the xxs / xs cell widths (and the
    * per-tier stroke for every tier); only md and lg need adding, since
    * those live on the atoms rather than the base. The host's own
