@@ -188,6 +188,8 @@ const HUD_BUTTONS = [
       <code>hp-grid-*</code> stream.
     </p>
 
+    <hp-demo caption="hp-grid — pan, zoom, drag, tether, dive">
+      <div class="pg-demo-block">
     <div class="pg-stage" id="pg-stage" tabindex="0" aria-label="Hex engine playground">
     <canvas id="pg-canvas"></canvas>
     <div id="pg-overlay"></div>
@@ -259,29 +261,12 @@ const HUD_BUTTONS = [
     </div>
   </div>
 
-  <h2>Event log</h2>
-  <p>Newest first; a continuing pan updates its entry rather than flooding the list.</p>
+  <p class="pg-events-note">
+    Event log — newest first; a continuing pan updates its entry rather than flooding the
+    list.
+  </p>
   <ol class="pg-events" id="pg-events" aria-live="polite"></ol>
-
-    <h2>Using the element</h2>
-    <p>
-      Everything above is the surface <code>&lt;hp-grid&gt;</code> wraps. The element takes
-      slotted cells at <code>q</code> / <code>r</code>, declarative
-      <code>&lt;hp-tether&gt;</code> children drawn on its canvas, and the
-      <code>draggable</code> / <code>tetherable</code> / <code>pannable="false"</code>
-      knobs — the engine loads itself on first connect, and the cells render as plain DOM
-      until it does.
-    </p>
-    <hp-demo caption="hp-grid — cells, a pinned cell, a declarative arc">
-      <hp-grid draggable tetherable style="min-height: 360px">
-        <hp-cell variant="anchor" filled q="0" r="0" id="grid-demo-core" draggable="false">
-          core
-        </hp-cell>
-        <hp-cell variant="action" q="1" r="0" id="grid-demo-field">field</hp-cell>
-        <hp-cell variant="action" q="-1" r="1" id="grid-demo-camera">camera</hp-cell>
-        <hp-cell variant="secondary" q="0" r="-1" id="grid-demo-input">input</hp-cell>
-        <hp-tether from="#grid-demo-core" to="#grid-demo-field"></hp-tether>
-      </hp-grid>
+      </div>
 
       <hp-code slot="code" language="html">{`<body>
   <script type="module">
@@ -300,6 +285,16 @@ const HUD_BUTTONS = [
   </hp-grid>
 </body>`}</hp-code>
     </hp-demo>
+
+    <h2>Using the element</h2>
+    <p>
+      Everything above is the surface <code>&lt;hp-grid&gt;</code> wraps. The element takes
+      slotted cells at <code>q</code> / <code>r</code>, declarative
+      <code>&lt;hp-tether&gt;</code> children drawn on its canvas, and the
+      <code>draggable</code> / <code>tetherable</code> / <code>pannable="false"</code>
+      knobs — the engine loads itself on first connect, and the cells render as plain DOM
+      until it does.
+    </p>
 
     <Fragment slot="intent">
       <h2>hp-grid or hp-layout?</h2>
@@ -364,6 +359,19 @@ const HUD_BUTTONS = [
 
 
 <style is:global>
+  /* hp-demo lays its preview out as a flex row; the playground is a
+     stacked block (stage, then log). */
+  .pg-demo-block {
+    display: block;
+    width: 100%;
+  }
+
+  .pg-events-note {
+    margin-block: 0.75rem 0.25rem;
+    font-size: var(--hp-typo-label-sm-font-size);
+    color: var(--hp-on-surface-variant);
+  }
+
   .pg-stage {
     position: relative;
     height: 72vh;
@@ -849,7 +857,6 @@ const HUD_BUTTONS = [
 </style>
 
 <script>
-  import "../../../../../src/grid.ts";
   import {
     HexEngine,
     axialToWorld,
