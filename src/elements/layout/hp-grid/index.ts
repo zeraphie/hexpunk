@@ -251,11 +251,28 @@ export class HpGrid extends LitElement {
     }
   }
 
-  /** Dive the camera into a world rect — the hex-becomes-page
-   * navigation. Consumers wire this to `hp-grid-activate`; nothing
-   * dives automatically. */
-  diveInto(rect: WorldRect): void {
-    this.engine?.diveInto(rect);
+  /** Dive the camera into a cell — the hex-becomes-page navigation.
+   * Takes the slotted cell element (typically straight from
+   * `hp-grid-activate`'s detail) or a world rect for callers that
+   * computed their own geometry. Consumers wire this up themselves;
+   * nothing dives automatically. */
+  diveInto(target: WorldRect | HTMLElement): void {
+    if (!(target instanceof HTMLElement)) {
+      this.engine?.diveInto(target);
+      return;
+    }
+    const q = Number.parseFloat(target.getAttribute("q") ?? "");
+    const r = Number.parseFloat(target.getAttribute("r") ?? "");
+    if (Number.isNaN(q) || Number.isNaN(r)) {
+      return;
+    }
+    const [cx, cy] = axialToWorld(q, r, this.hexSide);
+    this.engine?.diveInto({
+      cx,
+      cy,
+      w: hexWidth(this.hexSide),
+      h: 2 * this.hexSide,
+    });
   }
 
   /** Return from a dive to the previous camera. */
