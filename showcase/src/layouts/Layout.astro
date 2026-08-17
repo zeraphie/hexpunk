@@ -127,6 +127,30 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
     <link rel="stylesheet" href={`${baseUrl}/fonts/fonts.css`} />
     <script is:inline set:html={themeInit}></script>
     <script is:inline set:html={unfoldPeakInit}></script>
+    <style is:inline>
+      /* Custom-element upgrade guard. Inline in the head because it
+       * must exist BEFORE first paint: the stylesheet imported via
+       * the module graph arrives with the same waterfall as the
+       * element definitions, which is exactly too late. Until an
+       * element upgrades it has no shadow DOM and no styles, so its
+       * light-DOM children paint as plain flowing content — the
+       * per-navigation flash of squashed sidebars and clumped
+       * hexes. (`:defined` matches every built-in, so this touches
+       * only un-upgraded customs.) */
+      :not(:defined) {
+        visibility: hidden;
+      }
+
+      /* The canvas grid's definition arrives via its own subpath
+       * import, later than the barrel — reserve its footprint so
+       * content below doesn't jump when it upgrades. Mirrors the
+       * element's host sizing. */
+      hp-grid:not(:defined) {
+        display: block;
+        width: 100%;
+        min-height: 400px;
+      }
+    </style>
   </head>
   <body class={fullWidth ? "page-full-width" : ""}>
     <div class="page">
