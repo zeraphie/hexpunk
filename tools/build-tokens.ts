@@ -103,9 +103,21 @@ const fm = parseYaml(fmMatch[1] as string) as Frontmatter;
 
 const lines: string[] = [];
 
-lines.push("/* tokens.dark.css — Generated from DESIGN.md frontmatter. Do not edit. */");
+lines.push("/* tokens.dark.css — Generated from DESIGN.md frontmatter. Do not edit.");
+lines.push(" *");
+lines.push(' * The selector is `:root, [data-theme="dark"]` so the dark token set');
+lines.push(" * is both the default at the document root AND an explicit opt-in");
+lines.push(" * for nested elements (e.g. hp-demo's per-preview theme toggle).");
+lines.push(" * Without the attribute selector a nested element couldn't re-enter");
+lines.push(" * dark once an ancestor switched to light. */");
 lines.push("");
-lines.push(":root {");
+lines.push(":root,");
+lines.push('[data-theme="dark"] {');
+lines.push("  /* Theme identity — readable from any descendant's computed style");
+lines.push("   * so JS (e.g. hp-code's Shiki adapter) can pick the matching");
+lines.push("   * variant for the effective theme at the element's position. */");
+lines.push("  --hp-theme-name: dark;");
+lines.push("");
 
 if (fm.colors) {
   lines.push("  /* Colors */");
@@ -189,6 +201,33 @@ if (fm.density) {
 }
 
 lines.push("");
+
+// ── Duplicate guard ────────────────────────────────────────────────
+// Two frontmatter entries colliding on one custom-property name would
+// emit both declarations; the cascade silently keeps the later one.
+// Fail so the collision gets resolved in DESIGN.md instead.
+
+const seen = new Set<string>();
+const dupes = new Set<string>();
+for (const line of lines) {
+  if (line.endsWith("{")) {
+    seen.clear();
+    continue;
+  }
+  const decl = line.match(/^\s*(--hp-[\w-]+):/);
+  if (!decl) {
+    continue;
+  }
+  const name = decl[1] as string;
+  if (seen.has(name)) {
+    dupes.add(name);
+  }
+  seen.add(name);
+}
+if (dupes.size > 0) {
+  console.error(`build-tokens: duplicate token(s) in one block: ${[...dupes].join(", ")}`);
+  process.exit(1);
+}
 
 // ── Write output ───────────────────────────────────────────────────
 

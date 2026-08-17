@@ -1,4 +1,4 @@
-/* tokens.dark.css — Generated from DESIGN.md frontmatter.
+/* tokens.dark.css — Generated from DESIGN.md frontmatter. Do not edit.
  *
  * The selector is `:root, [data-theme="dark"]` so the dark token set
  * is both the default at the document root AND an explicit opt-in
@@ -146,7 +146,7 @@
   --hp-gutter: 12px;
   --hp-margin: 24px;
   --hp-hex-cell-xxs: 20px;
-  --hp-hex-cell-xs: 32px;
+  --hp-hex-cell-xs: 50px;
   --hp-hex-cell-sm: 100px;
   --hp-hex-cell-md: 180px;
   --hp-hex-cell-lg: 320px;
@@ -161,7 +161,6 @@
   --hp-icon-sm: 16px;
   --hp-icon-md: 20px;
   --hp-icon-lg: 24px;
-  --hp-hex-cell-xs: 50px;
   --hp-tether-width: 1px;
   --hp-target-min: 44px;
   --hp-grid-snap-tolerance: 0.35;

@@ -142,6 +142,12 @@ typography:
     fontWeight: "400"
     lineHeight: 1.05
     letterSpacing: -0.04em
+  display-md:
+    fontFamily: "Iceland, Chakra Petch, Orbitron, ui-sans-serif, system-ui, sans-serif"
+    fontSize: 28px
+    fontWeight: "400"
+    lineHeight: 1.1
+    letterSpacing: 0.02em
   headline-lg:
     fontFamily: "Chakra Petch, Orbitron, ui-sans-serif, system-ui, sans-serif"
     fontSize: 32px
@@ -224,21 +230,22 @@ spacing:
   xxl: 64px
   gutter: 12px
   margin: 24px
+  hex-cell-xxs: 20px
+  hex-cell-xs: 50px
   hex-cell-sm: 100px
   hex-cell-md: 180px
   hex-cell-lg: 320px
   hex-stroke: 6px
   edge-trace-gap: 4px
   edge-trace-width: 2px
-  link-arc-width: 1.2px
-  link-arc-glow: 13px
-  link-arc-pulse-dot: 4px
+  tether-arc-width: 1.2px
+  tether-arc-glow: 13px
+  tether-arc-pulse-dot: 4px
   bond-indicator-size: 12px
   module-handle-size: 36px
   icon-sm: 16px
   icon-md: 20px
   icon-lg: 24px
-  hex-cell-xs: 50px
   tether-width: 1px
   target-min: 44px
   grid-snap-tolerance: 0.35
@@ -1056,7 +1063,7 @@ The three modes:
 | `gutter`      | 8px     | 12px    | 16px        |
 | `margin`      | 16px    | 24px    | 32px        |
 
-Everything else stays fixed regardless of density — spacing rhythm (`unit`, `xs`–`xxl`), motion timing, layer scale, accessibility floors (`target-min: 44px`), icon sizes, signature visuals (`edge-trace-*`, `link-arc-pulse-dot`), and interactive sizing (`bond-indicator-size`, `module-handle-size`, `tether-width`). Scaling these would either break the system's signal layer or violate a11y minimums.
+Everything else stays fixed regardless of density — spacing rhythm (`unit`, `xs`–`xxl`), motion timing, layer scale, accessibility floors (`target-min: 44px`), icon sizes, signature visuals (`edge-trace-*`, `tether-arc-pulse-dot`), and interactive sizing (`bond-indicator-size`, `module-handle-size`, `tether-width`). Scaling these would either break the system's signal layer or violate a11y minimums.
 
 **Surface defaults** (consumer-overridable, but these are the canonical pairings):
 
@@ -1415,15 +1422,15 @@ Hexpunk's third spatial primitive — after the **invisible grid** and **molecul
 The arc is a cubic-bezier curve drawn in SVG, layered over the hex canvas. It is inspired by network-globe visualizations (think flight-path overlays) and uses the same teal/green family that signals engagement everywhere else in Hexpunk.
 
 - **Stroke colour:** `secondary` (`green-500`, `#00CC88`) at full opacity for active links, `secondary-container` (`green-800`) for idle / inactive links. Hover brightens to `secondary` plus a glow lift.
-- **Stroke width:** `link-arc-width` (1.2px default). Adjustable per-density: tighter graphs may drop to 0.6px, hero connections may raise to 2px.
-- **Glow:** outer SVG filter `feGaussianBlur` of `link-arc-glow` (13px default) on a duplicated stroke, opacity 25–40%. Always tinted with the stroke colour, never neutral.
+- **Stroke width:** `tether-arc-width` (1.2px default). Adjustable per-density: tighter graphs may drop to 0.6px, hero connections may raise to 2px.
+- **Glow:** outer SVG filter `feGaussianBlur` of `tether-arc-glow` (13px default) on a duplicated stroke, opacity 25–40%. Always tinted with the stroke colour, never neutral.
 - **Endpoint dots:** a small filled circle (`link-node`, `spacing.xs` = 4px) at the geometric centre of each connected hex's edge or anchor point. Idle dots are `primary`-coloured; once an arc connects, the dot promotes to `link-node-bonded` (`secondary` filled).
 - **Path shape:** cubic bezier with control points pulled toward the midpoint above the chord. Bulge magnitude is proportional to chord length — short links are nearly straight, long links arc gracefully. For curved screens or globes, the path projects onto the sphere; for flat canvases it's a 2D bezier.
 - **Direction (optional):** a small arrowhead at the target end indicates directed graphs. Omit for undirected.
 
 ### Arc pulse — the signal-on-the-wire
 
-A small `link-arc-pulse-dot` (4px circle) travels along the arc from source to target with `pulse-period` (3.4s) by default (matching the Claude design demo's `Pulse speed`). The dot uses `primary-bright` (`cyan-400`) for high contrast against the green stroke, and fades in over the first 10% of the path and out over the last 10%.
+A small `tether-arc-pulse-dot` (4px circle) travels along the arc from source to target with `pulse-period` (3.4s) by default (matching the Claude design demo's `Pulse speed`). The dot uses `primary-bright` (`cyan-400`) for high contrast against the green stroke, and fades in over the first 10% of the path and out over the last 10%.
 
 - Pulses run **continuously** on active arcs to show "data is flowing" / "this connection is live."
 - Pulses **stop** on inactive arcs; the arc remains drawn but quiet.

@@ -48,7 +48,7 @@ export class HpHex extends LitElement {
   /** Cell size.
    *
    * - `xxs` (20px) — dense inline form controls
-   * - `xs` (32px) — comfortable inline form controls
+   * - `xs` (50px) — comfortable inline form controls
    * - `sm` (100px) — content-hex default
    * - `md` (180px) — flat-top content hex
    * - `lg` (320px) — large content hex
@@ -143,7 +143,8 @@ export class HpHex extends LitElement {
    * to keep the stroke ring proportional to the cell. Scale factors:
    *
    * xxs (cell 20px, stroke 1px display ≈ 5 viewBox units) → 0.90
-   * xs (cell 32px, stroke 1.5px ≈ 4.6875 viewBox units) → 0.906
+   * xs (stroke 1.5px at a 32px cell ≈ 4.6875 viewBox units) → 0.906
+   *   (the token later became 50px, so the ring paints ≈ 2.3px)
    * sm (cell 100px, stroke 2px) → 0.95
    * md (cell 180px flat-top, stroke 4px scaled) → 0.923
    * lg (cell 320px, stroke 6px scaled) → 0.925

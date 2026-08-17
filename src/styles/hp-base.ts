@@ -48,7 +48,7 @@ export const hpBase = css`
  * instead of the 100px sm default that's right for content hexes
  * but huge for inline controls.
  *
- * xs (32px) is the comfortable / touch-friendly form size.
+ * xs (50px) is the comfortable / touch-friendly form size.
  * xxs (20px) is the dense / tabular form size, closer to a
  * browser-default checkbox. Stroke widths step down so the
  * wireframe stays balanced against the cell. */
