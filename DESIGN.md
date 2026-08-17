@@ -1022,6 +1022,11 @@ Hexpunk lays out on a **sparse hex grid** of pointy-top cells with three canonic
 - `hex-cell-md` (180px) — content cells, scroll-list containers.
 - `hex-cell-lg` (320px and up) — hero / framing hexes, often partially off-canvas.
 
+Below the grid scale sit two **form-control tiers** — inline atoms (checkbox, radio, toggle, slider thumb, breadcrumb / pagination segments) that never occupy grid slots:
+
+- `hex-cell-xxs` (20px) — dense / tabular form controls, close to a browser-default checkbox. Deliberately below the touch floor; hit areas extend to `target-min`.
+- `hex-cell-xs` (50px) — comfortable / touch-friendly form controls; meets `target-min` (44px) at every density.
+
 A pointy-top hex's bounding box is `width = w` by `height = w · 2/√3`. Axial coordinates `(q, r)` project to pixels as:
 
 - `x = w · (q + r / 2)`
@@ -1059,11 +1064,12 @@ The three modes:
 | `hex-cell-sm` | 80px    | 100px   | 120px       |
 | `hex-cell-md` | 144px   | 180px   | 216px       |
 | `hex-cell-lg` | 256px   | 320px   | 380px       |
+| `hex-cell-xs` | 44px    | 50px    | 60px        |
 | `hex-stroke`  | 6px     | 6px     | 12px        |
 | `gutter`      | 8px     | 12px    | 16px        |
 | `margin`      | 16px    | 24px    | 32px        |
 
-Everything else stays fixed regardless of density — spacing rhythm (`unit`, `xs`–`xxl`), motion timing, layer scale, accessibility floors (`target-min: 44px`), icon sizes, signature visuals (`edge-trace-*`, `tether-arc-pulse-dot`), and interactive sizing (`bond-indicator-size`, `module-handle-size`, `tether-width`). Scaling these would either break the system's signal layer or violate a11y minimums.
+Everything else stays fixed regardless of density — spacing rhythm (`unit`, `xs`–`xxl`), motion timing, layer scale, accessibility floors (`target-min: 44px`), icon sizes, signature visuals (`edge-trace-*`, `tether-arc-pulse-dot`), and interactive sizing (`bond-indicator-size`, `module-handle-size`, `tether-width`, and the dense form tier `hex-cell-xxs`). Scaling these would either break the system's signal layer or violate a11y minimums.
 
 **Surface defaults** (consumer-overridable, but these are the canonical pairings):
 
