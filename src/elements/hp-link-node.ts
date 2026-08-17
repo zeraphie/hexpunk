@@ -1,11 +1,11 @@
 // hp-link-node.ts — Arc-link endpoint dot.
 //
 // The small filled circle at a hex's edge or anchor point where
-// arc-links (`<hp-link>`) originate and terminate. 4px (`spacing.xs`)
+// arc-links (`<hp-tether>`) originate and terminate. 4px (`spacing.xs`)
 // at default density, filled `primary` (blue) at rest, promotes to
 // filled `secondary` (green) when an arc connects to it.
 //
-// Presentational atom — placed by `<hp-link>` / `<hp-graph>` rather
+// Presentational atom — placed by `<hp-tether>` / `<hp-graph>` rather
 // than authored directly by consumers in most cases.
 
 import { LitElement, css, html } from "lit";
