@@ -80,6 +80,8 @@ export class GestureController {
   private samples: [number, number, number][] = [];
   /** Press origin in client px, for the click-vs-drag test. */
   private pressedAt: [number, number] | null = null;
+  /** Pointer id once capture is committed, else null. */
+  private captured: number | null = null;
 
   constructor(options: GestureOptions) {
     this.options = options;
@@ -154,19 +156,15 @@ export class GestureController {
   }
 
   private readonly handlePointerDown = (event: PointerEvent): void => {
-    const { camera, canvas, dive, drag, occupancy, hexSide, isDraggable, requestRender } =
-      this.options;
+    const { camera, dive, drag, occupancy, hexSide, isDraggable, requestRender } = this.options;
     camera.stopAnimations();
     this.samples = [[event.clientX, event.clientY, performance.now()]];
     this.pressedAt = [event.clientX, event.clientY];
-    // Capture is best-effort: it can throw when the pointer is
-    // already gone (pen lifted between events) and its loss only
-    // degrades edge-of-element tracking, never the gesture itself.
-    try {
-      canvas.setPointerCapture(event.pointerId);
-    } catch {
-      // no capture — gesture continues uncaptured
-    }
+    // Deliberately NOT capturing here. A captured pointer retargets
+    // the eventual click to the capture element, which would eat the
+    // native click on whatever was pressed — links stop navigating.
+    // Capture is committed only once travel passes the tap slop
+    // (see commitCapture), when the press has stopped being a click.
     if (!dive?.dived) {
       const [wx, wy] = this.pointerWorld(event);
       const occupant = occupancy.occupantAt(worldToAxial(wx, wy, hexSide));
@@ -187,6 +185,48 @@ export class GestureController {
     this.setMode("pan");
   };
 
+  /**
+   * Take pointer capture for a gesture that has stopped being a
+   * click. Capture is what keeps a drag or pan alive beyond the
+   * surface — and what would retarget a click, which is why it waits
+   * for the slop. Best-effort: a failure only degrades edge-of-
+   * surface tracking, never the gesture itself, and is retried on
+   * the next move.
+   */
+  private commitCapture(event: PointerEvent, force = false): void {
+    if (this.mode === null || this.captured !== null) {
+      return;
+    }
+    if (!force) {
+      const pressedAt = this.pressedAt;
+      if (!pressedAt) {
+        return;
+      }
+      const travelled = Math.hypot(event.clientX - pressedAt[0], event.clientY - pressedAt[1]);
+      if (travelled <= TAP_SLOP_PX) {
+        return;
+      }
+    }
+    try {
+      this.options.canvas.setPointerCapture(event.pointerId);
+      this.captured = event.pointerId;
+    } catch {
+      // pointer already gone — the gesture continues uncaptured
+    }
+  }
+
+  private releaseCapture(): void {
+    if (this.captured === null) {
+      return;
+    }
+    try {
+      this.options.canvas.releasePointerCapture(this.captured);
+    } catch {
+      // capture already lost — nothing to release
+    }
+    this.captured = null;
+  }
+
   private readonly handlePointerMove = (event: PointerEvent): void => {
     const { camera, dive, drag, hexSide, onHover, onPan, requestRender } = this.options;
     if (this.mode === null) {
@@ -194,6 +234,7 @@ export class GestureController {
       onHover(worldToAxial(wx, wy, hexSide));
       return;
     }
+    this.commitCapture(event);
     if (this.mode === "drag") {
       drag.update(...this.pointerWorld(event));
       requestRender();
@@ -219,20 +260,14 @@ export class GestureController {
    * rest, which is what lets `lostpointercapture` sit as a listener —
    * a normal release clears the mode before it fires.
    */
-  private abortGesture(pointerId?: number): void {
+  private abortGesture(): void {
     if (this.mode === null) {
       return;
     }
     const mode = this.mode;
     this.setMode(null);
     this.pressedAt = null;
-    if (pointerId !== undefined) {
-      try {
-        this.options.canvas.releasePointerCapture(pointerId);
-      } catch {
-        // was never captured — nothing to release
-      }
-    }
+    this.releaseCapture();
     if (mode === "drag") {
       this.options.drag.cancel();
       this.options.requestRender();
@@ -243,8 +278,8 @@ export class GestureController {
    * winning elsewhere, device change). Without this, a cancelled
    * drag stays "active" forever and every later press moves the
    * stranded occupant. */
-  private readonly handlePointerCancel = (event: PointerEvent): void => {
-    this.abortGesture(event.pointerId);
+  private readonly handlePointerCancel = (): void => {
+    this.abortGesture();
   };
 
   private readonly handleInterruption = (): void => {
@@ -263,11 +298,7 @@ export class GestureController {
     this.setMode(null);
     const pressedAt = this.pressedAt;
     this.pressedAt = null;
-    try {
-      this.options.canvas.releasePointerCapture(event.pointerId);
-    } catch {
-      // was never captured — nothing to release
-    }
+    this.releaseCapture();
     const travelled = pressedAt
       ? Math.hypot(event.clientX - pressedAt[0], event.clientY - pressedAt[1])
       : Number.POSITIVE_INFINITY;
@@ -311,10 +342,15 @@ export class GestureController {
     onActivate({ cell, occupant: occupancy.occupantAt(cell) });
   }
 
-  private readonly handlePointerLeave = (): void => {
+  private readonly handlePointerLeave = (event: PointerEvent): void => {
     if (this.mode === null) {
       this.options.onHover(null);
+      return;
     }
+    // The pointer is exiting mid-gesture before the slop committed
+    // capture (a fast flick straight over the edge). Capture now or
+    // the events stop arriving and the gesture strands.
+    this.commitCapture(event, true);
   };
 
   private readonly handleWheel = (event: WheelEvent): void => {
