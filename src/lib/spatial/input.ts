@@ -63,6 +63,12 @@ export interface GestureOptions {
    * decide what activating a cell means. */
   onActivate?: (detail: { cell: AxialCoord; occupant: string | null }) => void;
   onPan?: () => void;
+  /** A gesture took or released the pointer. Surfaces use this to
+   * suppress hover/hit reactions on everything else while a drag or
+   * pan owns the pointer — a fast drag sweeps the cursor across
+   * neighbouring cells, and their hover states firing mid-gesture
+   * reads as glitching. */
+  onGestureChange?: (mode: "pan" | "drag" | null) => void;
   /** Schedule a frame — drag mutations don't touch the camera,
    * so they can't ride its onChange invalidation. */
   requestRender: () => void;
@@ -80,9 +86,31 @@ export class GestureController {
     options.canvas.addEventListener("pointerdown", this.handlePointerDown);
     options.canvas.addEventListener("pointermove", this.handlePointerMove);
     options.canvas.addEventListener("pointerup", this.handlePointerUp);
+    options.canvas.addEventListener("pointercancel", this.handlePointerCancel);
     options.canvas.addEventListener("pointerleave", this.handlePointerLeave);
+    // The surface's gestures are pointer-driven; the browser's HTML5
+    // drag-and-drop fights them for the same movement (the host often
+    // carries the `draggable` attribute) and cancels the pointer
+    // stream when it wins. It never wins here.
+    options.canvas.addEventListener("dragstart", this.handleDragStart);
+    // Interruption nets. Pointer capture already delivers a release
+    // that happens outside the window, so these fire only when no
+    // release will ever come: focus torn away mid-gesture, or capture
+    // lost without an up. Both abandon the gesture rather than drop —
+    // released means drop, interrupted means cancel.
+    options.canvas.addEventListener("lostpointercapture", this.handleInterruption);
+    window.addEventListener("blur", this.handleInterruption);
     options.host.addEventListener("wheel", this.handleWheel, { passive: false });
     options.host.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  /** Track mode transitions so consumers hear each change once. */
+  private setMode(mode: "pan" | "drag" | null): void {
+    if (mode === this.mode) {
+      return;
+    }
+    this.mode = mode;
+    this.options.onGestureChange?.(mode);
   }
 
   /** Lattice pitch, settable after construction — see the same setter
@@ -116,7 +144,11 @@ export class GestureController {
     canvas.removeEventListener("pointerdown", this.handlePointerDown);
     canvas.removeEventListener("pointermove", this.handlePointerMove);
     canvas.removeEventListener("pointerup", this.handlePointerUp);
+    canvas.removeEventListener("pointercancel", this.handlePointerCancel);
     canvas.removeEventListener("pointerleave", this.handlePointerLeave);
+    canvas.removeEventListener("dragstart", this.handleDragStart);
+    canvas.removeEventListener("lostpointercapture", this.handleInterruption);
+    window.removeEventListener("blur", this.handleInterruption);
     host.removeEventListener("wheel", this.handleWheel);
     host.removeEventListener("keydown", this.handleKeyDown);
   }
@@ -139,7 +171,7 @@ export class GestureController {
       const [wx, wy] = this.pointerWorld(event);
       const occupant = occupancy.occupantAt(worldToAxial(wx, wy, hexSide));
       if (occupant && isDraggable(occupant, event)) {
-        this.mode = "drag";
+        this.setMode("drag");
         drag.begin(occupant, wx, wy);
         this.options.onHover(null);
         requestRender();
@@ -149,10 +181,10 @@ export class GestureController {
     if (this.options.pannable === false) {
       // Nothing to pan — let the press through to the page so native
       // scrolling and text selection still work.
-      this.mode = null;
+      this.setMode(null);
       return;
     }
-    this.mode = "pan";
+    this.setMode("pan");
   };
 
   private readonly handlePointerMove = (event: PointerEvent): void => {
@@ -181,12 +213,54 @@ export class GestureController {
     }
   };
 
+  /**
+   * Abandon the active gesture: an interrupted drag sends its
+   * occupant home rather than dropping it wherever it was. No-op at
+   * rest, which is what lets `lostpointercapture` sit as a listener —
+   * a normal release clears the mode before it fires.
+   */
+  private abortGesture(pointerId?: number): void {
+    if (this.mode === null) {
+      return;
+    }
+    const mode = this.mode;
+    this.setMode(null);
+    this.pressedAt = null;
+    if (pointerId !== undefined) {
+      try {
+        this.options.canvas.releasePointerCapture(pointerId);
+      } catch {
+        // was never captured — nothing to release
+      }
+    }
+    if (mode === "drag") {
+      this.options.drag.cancel();
+      this.options.requestRender();
+    }
+  }
+
+  /** The browser withdrew the pointer (touch takeover, native DnD
+   * winning elsewhere, device change). Without this, a cancelled
+   * drag stays "active" forever and every later press moves the
+   * stranded occupant. */
+  private readonly handlePointerCancel = (event: PointerEvent): void => {
+    this.abortGesture(event.pointerId);
+  };
+
+  private readonly handleInterruption = (): void => {
+    this.abortGesture();
+  };
+
+  private readonly handleDragStart = (event: Event): void => {
+    event.preventDefault();
+  };
+
   private readonly handlePointerUp = (event: PointerEvent): void => {
     if (this.mode === null) {
       return;
     }
     const mode = this.mode;
-    this.mode = null;
+    this.setMode(null);
     const pressedAt = this.pressedAt;
     this.pressedAt = null;
     try {
@@ -267,6 +341,12 @@ export class GestureController {
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === "Escape") {
+      // A live gesture claims the key first: Esc mid-drag is the
+      // universal "put it back". Surfacing a dive keeps second turn.
+      if (this.mode !== null) {
+        this.abortGesture();
+        return;
+      }
       this.options.dive?.surface();
     }
   };

@@ -105,4 +105,45 @@ describe("drag", () => {
     expect(harness.occupancy.cellOf("a")).toEqual({ q: 0, r: 0 });
     expect(harness.occupancy.cellOf("b")).toEqual({ q: 3, r: 0 });
   });
+
+  test("clamp holds the occupant centre in bounds, not the pointer", () => {
+    const occupancy = new OccupancyMap();
+    occupancy.place("a", { q: 0, r: 0 });
+    const positions: [number, number][] = [];
+    const drag = new DragController({
+      occupancy,
+      hexSide: SIDE,
+      clampWorld: (wx, wy) => [Math.min(200, Math.max(-200, wx)), Math.min(90, Math.max(-90, wy))],
+      onPosition: (_id, wx, wy) => positions.push([wx, wy]),
+      onTargetChange: () => {},
+    });
+    // Grab off-centre: pointer sits 30 world units right of the cell.
+    drag.begin("a", 30, 0);
+    drag.update(5000, 5000);
+    // The centre is what lands on the boundary — the grab offset must
+    // not let the occupant overhang it.
+    expect(positions.at(-1)).toEqual([200, 90]);
+  });
+
+  test("release outside settles to the nearest free cell from the clamped centre", () => {
+    const occupancy = new OccupancyMap();
+    occupancy.place("a", { q: 0, r: 0 });
+    const moves: { from: AxialCoord; to: AxialCoord }[] = [];
+    const boundary = axialToWorld(2, 0, SIDE);
+    const drag = new DragController({
+      occupancy,
+      hexSide: SIDE,
+      // One-axis clamp: nothing may travel right of cell (2, 0).
+      clampWorld: (wx, wy) => [Math.min(boundary[0], wx), wy],
+      onPosition: () => {},
+      onTargetChange: () => {},
+      onMove: ({ from, to }) => moves.push({ from, to }),
+    });
+    drag.begin("a", 0, 0);
+    // The pointer flies far off the surface; the occupant may not.
+    drag.update(boundary[0] + 100 * SIDE, 0);
+    drag.drop();
+    // Settled where the occupant was held, not where the pointer went.
+    expect(moves).toEqual([{ from: { q: 0, r: 0 }, to: { q: 2, r: 0 } }]);
+  });
 });
