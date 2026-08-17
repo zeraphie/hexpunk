@@ -1,20 +1,14 @@
-/**
- * Shadow-DOM CSS for `<hp-grid>`.
- *
- * Kept in its own module so the index can stay focused on element
- * wiring; the styles are large (the q/r → pixel transform plus the
- * viewport controls' chrome).
- */
+/*
+  ─ Canvas grid styles ─
 
+  The host is a viewport: a fixed-footprint window onto a hex
+  world, not a box that grows with content. The engine's canvas
+  paints the field; slotted cells live in an absolutely-positioned
+  overlay layer that rides the camera through one transform per
+  frame, so the two surfaces can never swim apart.
+*/
 import { css } from "lit";
 
-import { ROW_STEP_FACTOR } from "../../../lib/spatial/lattice.js";
-
-/**
- * Static `css` template assembled with the resolved `ROW_STEP_FACTOR`
- * baked into the `--hp-row-step` calc. Consumed as one entry of the
- * element's `static styles` array (combined with `hpBase`).
- */
 export const hpGridStyles = css`
   :host {
     position: relative;
@@ -23,25 +17,20 @@ export const hpGridStyles = css`
     min-height: 400px;
     overflow: hidden;
     cursor: grab;
-
-    --hp-cell: var(--hp-hex-cell-sm);
-
-    /* Effective cell width — reduced by the stroke so adjacent hexes
-     * overlap exactly along their shared edge instead of producing
-     * a double-thick line. */
-    --hp-effective-cell: calc(var(--hp-cell) - var(--hp-hex-stroke));
-    --hp-col-step: var(--hp-effective-cell);
-    --hp-row-step: calc(var(--hp-effective-cell) * ${ROW_STEP_FACTOR});
-
+    /* The viewport owns touch input the way it owns the wheel —
+     * panning a world and scrolling a page cannot share a finger. */
     touch-action: none;
   }
 
-  /* Surface tint laid as a translucent pseudo behind everything else
-   * in the shadow tree. 75%-opaque --hp-surface lets whatever sits
-   * behind the grid (the main hp-background, the page colour) show
-   * through at 25%, so the canvas reads as a tinted recess rather
-   * than an opaque block. Sits at the back of the stacking order
-   * automatically — pseudo precedes the slot in shadow tree order. */
+  /* A flow-embedded surface hands the pointer back to the page. */
+  :host([pannable="false"]) {
+    cursor: default;
+    touch-action: auto;
+  }
+
+  /* Surface tint laid behind the canvas. 75%-opaque --hp-surface
+   * lets whatever sits behind the grid show through at 25%, so the
+   * viewport reads as a tinted recess rather than an opaque block. */
   :host::before {
     content: "";
     position: absolute;
@@ -51,54 +40,36 @@ export const hpGridStyles = css`
     pointer-events: none;
   }
 
-  /* Slotted hp-background backdrop: dim the entire element so the
-   * texture stays ambient on top of the tinted canvas surface. */
-  ::slotted(hp-background) {
-    opacity: 0.6;
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
-  :host([data-hp-panning]) {
-    cursor: grabbing;
+  /* The camera-synced layer. Its transform is written by the engine
+   * every frame; cells inside lay out in world units at scale 1. */
+  .overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 
-  :host([size="md"]) {
-    --hp-cell: var(--hp-hex-cell-md);
-  }
-
-  :host([size="lg"]) {
-    --hp-cell: var(--hp-hex-cell-lg);
-  }
-
-  /* Each slotted child with both q and r positions itself via the
-   * transform — origin is the grid's centre. The drag offset vars
-   * default to 0 and only get set on the dragged child. The
-   * transition animates the snap-into-slot when the drag ends
-   * (data-hp-dragging is removed first, then drag-x/drag-y + q/r
-   * change — the transition fires across that change). */
+  /* Cells are placed at world coordinates and centred on their
+   * point — the same applier contract as hp-layout, so positioning
+   * behaviour is shared code, not a parallel implementation. The
+   * transition animates the settle when a drag releases. */
   ::slotted([q][r]) {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 0;
+    top: 0;
     translate: -50% -50%;
-    /* Axial position is multiplied by --hp-zoom (defaults to 1) so
-     * the canvas content scales as a unit; drag and pan are in
-     * viewport pixels and added post-scale. The scale() after the
-     * translate then visually resizes each hex. */
-    transform: translate(
-        calc(
-          var(--hp-col-step) * (var(--hp-q, 0) + var(--hp-r, 0) / 2) * var(--hp-zoom, 1) +
-            var(--hp-drag-x, 0px) + var(--hp-pan-x, 0px)
-        ),
-        calc(
-          var(--hp-row-step) * var(--hp-r, 0) * var(--hp-zoom, 1) + var(--hp-drag-y, 0px) +
-            var(--hp-pan-y, 0px)
-        )
-      )
-      scale(var(--hp-zoom, 1));
+    transform: translate(var(--hp-x, 0px), var(--hp-y, 0px));
     transition: transform var(--hp-unfold-trigger) var(--hp-ease-default);
-    /* --hp-cursor crosses the shadow boundary because custom
-     * properties cascade through it. Each draggable atom reads
-     * cursor: var(--hp-cursor, pointer) on its own :host. */
+  }
+
+  :host([draggable]) ::slotted([q][r]) {
     --hp-cursor: grab;
   }
 
@@ -106,66 +77,20 @@ export const hpGridStyles = css`
     z-index: var(--hp-layer-dragging);
     opacity: 0.85;
     --hp-cursor: grabbing;
+    /* No transition while the pointer owns the position, or every
+     * move would lag a frame behind the cursor. */
     transition: none;
-    /* GPU-composite the transform during the drag for smoother 60fps
-     * tracking; cleared once data-hp-dragging is removed. */
-    will-change: transform;
   }
 
-  /* Hidden probe — read getBoundingClientRect to recover the resolved
-   * pixel values of --hp-col-step and --hp-row-step. getComputedStyle
-   * returns the raw calc() expression for custom properties, so
-   * parseFloat can't recover the pixels directly. */
-  .step-probe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--hp-col-step);
-    height: var(--hp-row-step);
-    visibility: hidden;
-    pointer-events: none;
+  /* Tether children are declarative data for the canvas arcs, not
+   * rendered elements. */
+  ::slotted(hp-tether) {
+    display: none;
   }
 
-  /* Viewport controls — bottom-right cluster of zoom-out / zoom-in /
-   * recenter buttons. Always visible but at 60% opacity so they
-   * don't compete with the content; full opacity on hover. */
-  .controls {
-    position: absolute;
-    right: var(--hp-sm);
-    bottom: var(--hp-sm);
-    z-index: 1;
-    display: flex;
-    gap: var(--hp-xxs);
-    opacity: 0.6;
-    transition: opacity var(--hp-duration-fast) var(--hp-ease-default);
-  }
-
-  .controls:hover {
-    opacity: 1;
-  }
-
-  .controls button {
-    font: inherit;
-    font-size: var(--hp-typo-label-sm-font-size);
-    padding: 0 var(--hp-sm);
-    background: var(--hp-surface-container);
-    color: var(--hp-on-surface);
-    border: 1px solid var(--hp-outline-variant);
-    border-radius: var(--hp-rounded-sm);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2rem;
-    height: 2rem;
-  }
-
-  .controls button:hover {
-    color: var(--hp-secondary);
-  }
-
-  .controls svg {
-    width: 1rem;
-    height: 1rem;
+  @media (prefers-reduced-motion: reduce) {
+    ::slotted([q][r]) {
+      transition: none;
+    }
   }
 `;

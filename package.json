@@ -37,6 +37,10 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./grid": {
+      "types": "./dist/types/grid.d.ts",
+      "import": "./dist/grid.js"
+    },
     "./elements.css": "./src/styles/elements.css",
     "./hp-base.css": "./src/styles/hp-base.css",
     "./hp-latex.css": "./src/styles/hp-latex.css",

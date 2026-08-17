@@ -92,6 +92,13 @@ export class GestureController {
     this.options.hexSide = value;
   }
 
+  /** Live pan/zoom opt-out. Read per event, so a surface can hand the
+   * wheel back to the page (or reclaim it) without rebuilding the
+   * gesture layer. */
+  set pannable(value: boolean) {
+    this.options.pannable = value;
+  }
+
   /** Camera screen space is canvas-local: client coordinates shift
    * by the canvas box (deltas are unaffected, absolutes are not). */
   private local(event: { clientX: number; clientY: number }): [number, number] {

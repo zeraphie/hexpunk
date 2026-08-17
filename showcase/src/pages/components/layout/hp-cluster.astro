@@ -45,15 +45,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     <p>
       The honeycomb demos below wrap the cluster in <code>&lt;hp-grid draggable&gt;</code>
       so the centre acts as a drag handle for the whole cluster (via the
-      <code>drag-handle=":first-child"</code> selector hp-grid reads on the cluster).
-      <code>&lt;hp-background&gt;</code> sits as a sibling for the ambient hex backdrop.
-      Both are <code>&lt;hp-grid&gt;</code> features — the cluster itself works without
-      either wrapper; drop the wrapper if you just want a static layout.
+      <code>drag-handle=":first-child"</code> selector hp-grid reads on the cluster), and
+      the grid's own rendered field supplies the ambient backdrop. The cluster itself works
+      without the wrapper; drop it if you just want a static layout.
     </p>
 
     <hp-demo caption="Honeycomb — ring 1 (7 children: centre + 6 neighbours)">
       <hp-grid draggable>
-        <hp-background></hp-background>
         <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
           <hp-cell variant="anchor" filled tabindex="0">forms</hp-cell>
           <hp-cell variant="action" tabindex="0">button</hp-cell>
@@ -66,11 +64,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </hp-grid>
 
       <hp-code slot="code" language="html">{`<body>
-  <!-- hp-grid + hp-background give the cluster a draggable canvas
-       with the ambient hex backdrop. Both are optional — drop the
-       wrapper if you just want a static layout. -->
+  <!-- hp-grid gives the cluster a draggable canvas; its rendered
+       field is the backdrop. Optional — drop the wrapper if you
+       just want a static layout. -->
   <hp-grid draggable>
-    <hp-background></hp-background>
     <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
       <!-- First child is the centre — variant="anchor" + filled is the
            draggable handle for the whole cluster. Solid primary hex,
@@ -92,7 +89,6 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <hp-demo caption="Honeycomb — ring 2 (13 children: centre + 6 + 6 of ring 2)">
       <hp-grid draggable>
-        <hp-background></hp-background>
         <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
           <hp-cell variant="anchor" filled tabindex="0">layout</hp-cell>
           <hp-cell variant="action" tabindex="0">background</hp-cell>
@@ -112,7 +108,6 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
       <hp-code slot="code" language="html">{`<body>
   <hp-grid draggable>
-    <hp-background></hp-background>
     <hp-cluster layout="honeycomb" q="0" r="0" drag-handle=":first-child">
       <hp-cell variant="anchor" filled tabindex="0">layout</hp-cell>
       <hp-cell variant="action" tabindex="0">background</hp-cell>
@@ -172,4 +167,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
+  <script>
+    // The canvas grid ships from its own subpath; the shared layout's
+    // barrel import deliberately no longer registers it.
+    import "../../../../../src/grid.ts";
+  </script>
 </Layout>

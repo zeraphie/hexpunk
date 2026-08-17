@@ -142,6 +142,10 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
   </style>
 
   <script>
+    // The canvas grid ships from its own subpath; the shared layout's
+    // barrel import deliberately no longer registers it.
+    import "../../../../src/grid.ts";
+
     // Filter logic walks every <a class="component-link"> descendant
     // of the grid and toggles `hidden` based on a substring match
     // against the wrapped hp-cell's text content. When a cluster's

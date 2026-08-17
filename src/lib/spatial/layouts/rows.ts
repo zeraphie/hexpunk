@@ -44,9 +44,10 @@ export function halfColsForWidth(availablePx: number, hexSide: number): number {
  *
  * @param mask - Cluster's filled-cell offsets.
  * @param claimed - Cells already taken by previously placed clusters.
- * @param halfColsAvailable - Half-width of the viewport in axial
- *   cells (post-`r/2` shift compensation). Pinned by
- *   `HpGrid.WIDE_HALF_COLS` in the `rows` layout flow.
+ * @param halfColsAvailable - Half-width of the scan window in axial
+ *   cells (post-`r/2` shift compensation). hp-layout derives it from
+ *   its own width via `halfColsForWidth`; the canvas grid pins a
+ *   world-shape constant.
  * @returns Origin coordinate for the cluster.
  */
 export function findRowsPosition(

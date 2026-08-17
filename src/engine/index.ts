@@ -64,6 +64,14 @@ export interface HexEngineOptions {
   /** Graph-editor mode: dropping an occupant onto another toggles
    * a tether between them instead of moving it. */
   tetherable?: boolean;
+  /** Set false to leave the wheel and empty-space presses with the
+   * page — the gesture layer's flow-surface mode. Live-tunable via
+   * the engine's `pannable` setter. */
+  pannable?: boolean;
+  /** Overrides the engine's own draggable resolution (host flag +
+   * per-occupant overrides) with the consumer's rule. Receives the
+   * originating event so DOM consumers can honour drag handles. */
+  isDraggable?: (id: string, event: PointerEvent) => boolean;
   /**
    * Content tier from which arcs are drawn, fading in across the
    * threshold below it. Arcs between cells too small to label carry
@@ -171,7 +179,9 @@ export class HexEngine {
       drag: this.drag,
       occupancy: this.occupancy,
       hexSide: options.hexSide,
-      isDraggable: (id) => this.canDrag(id),
+      pannable: options.pannable,
+      isDraggable: (id, event) =>
+        options.isDraggable ? options.isDraggable(id, event) : this.canDrag(id),
       onHover: (cell) => {
         this.field.setHighlight(cell);
         this.options.onHoverCell?.(cell);
@@ -248,6 +258,12 @@ export class HexEngine {
    * (state, directed) call this to have the change drawn. */
   requestRender(): void {
     this.invalidate();
+  }
+
+  /** Live pan/zoom opt-out — forwards to the gesture layer, which
+   * reads it per event. */
+  set pannable(value: boolean) {
+    this.gestures.pannable = value;
   }
 
   /** True while a tween or inertia glide is driving the camera —

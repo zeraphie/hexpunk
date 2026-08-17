@@ -94,26 +94,27 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </hp-demo>
 
     <p>
-      <code>hp-background</code> as a sibling of the grid cells inside an <code>hp-grid</code>.
-      The grid's drag / pan behaviour is unaffected — the backdrop has
-      <code>pointer-events: none</code>, so cells and pan still receive the pointer.
+      <code>hp-background</code> as a sibling of the cells inside an <code>hp-layout</code>.
+      Drag behaviour is unaffected — the backdrop has <code>pointer-events: none</code>, so
+      cells still receive the pointer. (The canvas <code>hp-grid</code> draws its own hex
+      field, so it takes no backdrop; ambient texture belongs behind in-flow surfaces.)
     </p>
-    <hp-demo caption="Behind a layout grid">
-      <hp-grid draggable>
+    <hp-demo caption="Behind a layout surface">
+      <hp-layout draggable>
         <hp-background></hp-background>
         <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
         <hp-cell variant="action" q="1" r="0">east</hp-cell>
         <hp-cell variant="action" q="-1" r="0">west</hp-cell>
         <hp-cell variant="content" q="0" r="-1" size="sm">north</hp-cell>
         <hp-cell variant="content" q="0" r="1" size="sm">south</hp-cell>
-      </hp-grid>
+      </hp-layout>
 
       <hp-code slot="code" language="html">{`<body>
-  <hp-grid draggable>
+  <hp-layout draggable>
     <hp-background></hp-background>
     <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
     <hp-cell variant="action" q="1" r="0">east</hp-cell>
-  </hp-grid>
+  </hp-layout>
 </body>`}</hp-code>
     </hp-demo>
 
@@ -202,6 +203,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
 </Layout>
 
 <style>

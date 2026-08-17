@@ -33,14 +33,6 @@ export { HpDemo } from "./elements/layout/hp-demo.js";
 export { HpDialog } from "./elements/overlays/hp-dialog.js";
 export { HpDropdownMenu, HpMenuItem } from "./elements/overlays/hp-dropdown-menu.js";
 export { HpForm } from "./elements/forms/hp-form.js";
-export {
-  HpGrid,
-  type HpGridBondEventDetail,
-  type HpGridDropEventDetail,
-  type HpGridTetherEventDetail,
-  type HpGridMoveEventDetail,
-  type HpGridPanEventDetail,
-} from "./elements/layout/hp-grid/index.js";
 export { HpHex } from "./elements/primitives/hp-hex.js";
 export { HpHoverCard } from "./elements/overlays/hp-hover-card.js";
 export { HpIcon } from "./elements/images/hp-icon.js";

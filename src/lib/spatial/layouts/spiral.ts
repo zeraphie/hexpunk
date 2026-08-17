@@ -4,8 +4,8 @@
  * Each cluster is placed at the first free position picked from a
  * scan ordered by axial distance from `(0, 0)`: ring 0 (the origin
  * itself), then the 6 ring-1 positions, then ring 2's 12 positions,
- * and so on outward. Paired with the FFD largest-first sort in
- * `HpGrid.pack()`, the result is a tight roughly-square honeycomb —
+ * and so on outward. Paired with the FFD largest-first sort in the
+ * surfaces' `pack()`, the result is a tight roughly-square honeycomb —
  * the biggest cluster anchors the centre and smaller ones nest
  * around it with a ≥1-hex gap.
  */
