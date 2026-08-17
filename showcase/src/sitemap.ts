@@ -150,6 +150,5 @@ export const SITEMAP: SitemapNode[] = [
   },
   { path: "/palette", title: "Palette" },
   { path: "/animations", title: "Animations" },
-  { path: "/playground", title: "Playground" },
   { path: "/changelog", title: "Releases" },
 ];
