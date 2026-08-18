@@ -1,6 +1,8 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import ComponentDocs from "../../../components/ComponentDocs.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <Layout title="hp-navigation-menu">
@@ -47,6 +49,22 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     <hp-nav-item href="/contact">Contact</hp-nav-item>
   </hp-navigation-menu>
 </body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Unfold navigation — the item's colour expands to the destination">
+      <hp-navigation-menu>
+        <hp-nav-item unfold href={`${base}/palette`}>Palette</hp-nav-item>
+        <hp-nav-item unfold href={`${base}/animations`}>Animations</hp-nav-item>
+        <hp-nav-item href={`${base}/changelog`}>Changelog (plain)</hp-nav-item>
+      </hp-navigation-menu>
+
+      <hp-code slot="code" language="html">{`<hp-navigation-menu>
+  <!-- Camera-zoom unfold to the destination — same departure
+       sequence as hp-unfold-page. Reserve it for the links that
+       define a destination; plain items just jump. -->
+  <hp-nav-item unfold href="/palette">Palette</hp-nav-item>
+  <hp-nav-item href="/changelog">Changelog</hp-nav-item>
+</hp-navigation-menu>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">

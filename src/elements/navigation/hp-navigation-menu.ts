@@ -24,6 +24,8 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
+import { beginUnfoldNavigation } from "../unfold/departure.js";
+import { hpNavigate } from "../../lib/navigate.js";
 import { hpBase } from "../../styles/hp-base.js";
 
 /**
@@ -106,6 +108,14 @@ export class HpNavItem extends LitElement {
   @property()
   href?: string;
 
+  /** Navigate with the camera-zoom unfold instead of a plain jump:
+   * the item's colour expands to cover the viewport before the
+   * destination is revealed, riding the same departure sequence as
+   * hp-unfold-page. Reserve it for destination-defining links — the
+   * expand reads as "you're going somewhere important". */
+  @property({ type: Boolean, reflect: true })
+  unfold = false;
+
   @state() private hasContent = false;
   @state() private isOpen = false;
 
@@ -180,6 +190,20 @@ export class HpNavItem extends LitElement {
     }, 200);
   };
 
+  /** Plain jump or camera-zoom unfold, per the `unfold` attribute.
+   * Both paths go through the library navigation delegate, so a
+   * registered client router keeps navigations same-document. */
+  private navigateToHref(): void {
+    if (!this.href) {
+      return;
+    }
+    if (this.unfold) {
+      beginUnfoldNavigation(this, this.href);
+    } else {
+      hpNavigate(this.href);
+    }
+  }
+
   private handleClick = (event: MouseEvent): void => {
     if (this.hasContent) {
       // Don't follow a link when there's a submenu — clicking
@@ -188,9 +212,7 @@ export class HpNavItem extends LitElement {
       this.isOpen = !this.isOpen;
       return;
     }
-    if (this.href) {
-      window.location.href = this.href;
-    }
+    this.navigateToHref();
   };
 
   private handleKeyDown = (event: KeyboardEvent): void => {
@@ -202,7 +224,7 @@ export class HpNavItem extends LitElement {
     if ((event.key === "Enter" || event.key === " ") && !this.hasContent) {
       if (this.href) {
         event.preventDefault();
-        window.location.href = this.href;
+        this.navigateToHref();
       }
     }
   };

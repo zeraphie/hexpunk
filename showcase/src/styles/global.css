@@ -1,31 +1,36 @@
 /* global.css — Showcase-wide light-DOM styles. */
 
-/* ── Cross-document View Transitions ───────────────────────────── */
+/* ── View Transitions ──────────────────────────────────────────── */
 
-/* Enable native cross-document view transitions for same-origin
- * navigation. Browsers without support (Safari, Firefox at the time
- * of writing) silently navigate without animation. */
-@view-transition {
-  navigation: auto;
-}
+/* Navigation is same-document via Astro's <ClientRouter /> (wired in
+ * Layout.astro), which drives document.startViewTransition around
+ * each swap. The former cross-document opt-in (@view-transition
+ * { navigation: auto }) is gone deliberately: the router intercepts
+ * every internal link, so a cross-document transition had nothing
+ * left to fire on. Same-document transitions style through the same
+ * ::view-transition-* pseudo-elements, so everything below applies
+ * unchanged — and now also in browsers that ship same-document
+ * support only (Firefox). */
 
-/* Suppress the default cross-document root cross-fade so the
- * browser only has to composite the hp-unfold-source snapshot's
- * transform. The full-viewport raster crossfade running concurrently
- * with a 25× scale tween is what made the animation feel rough —
- * killing it frees the GPU to focus on the one element that's
- * actually moving. The destination page swaps in instantly under
- * the expanding hex. */
+/* Suppress the default root cross-fade so the browser only has to
+ * composite the hp-unfold-source snapshot's transform. The
+ * full-viewport raster crossfade running concurrently with a 25×
+ * scale tween is what made the animation feel rough — killing it
+ * frees the GPU to focus on the one element that's actually moving.
+ * The destination page swaps in instantly under the expanding hex. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
 }
 
-/* hp-unfold-page wires its source to view-transition-name:
- * hp-unfold-source just before navigation (forward) or on page load
- * if the user is returning via back/forward (reverse). The animations
- * below run on the snapshot the browser captures of the source hex
- * — the source's own colour fills the viewport at peak expansion. */
+/* hp-unfold-page (and the a[data-hp-unfold] handler in Layout.astro)
+ * names its overlay view-transition-name: hp-unfold-source just
+ * before navigating. The old-snapshot animation below runs the
+ * forward expand — the source's own colour fills the viewport at
+ * peak. The new-snapshot shrink is the documented consumer story for
+ * reverse (see the hp-unfold-page docs page); the showcase itself
+ * replays reverse arrivals with a WAAPI overlay from Layout.astro,
+ * which also covers browsers without a view transition to hook. */
 ::view-transition-old(hp-unfold-source) {
   animation: hp-unfold-expand var(--hp-unfold-bloom, 280ms) var(--hp-ease-default, ease-out)
     forwards;

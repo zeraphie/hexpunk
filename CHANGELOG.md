@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-18
+
+### Added
+
+- **Library-wide navigation delegate — `setNavigate` (from the root barrel).** Every hexpunk element that navigates routes through one internal `hpNavigate`, defaulting to a full document navigation. A consumer with a client-side router registers its own function once — `setNavigate((href) => navigate(href))` — and every element follows it: navigations become same-document, module state and custom-element definitions survive, and the router's view transitions drive the animation keyframes. Pass `null` to restore the default.
+- **Shared unfold departure — `beginUnfoldNavigation` + helpers.** The camera-zoom departure sequence (hex overlay at the source's bbox, peak-scale computation, the `sessionStorage` handshake the back-navigation reversal reads, then the delegate hand-off) now lives in one registration-free module, exported from the barrel alongside `buildUnfoldOverlay`, `computePeakScale`, `unfoldSourceColor`, and the storage-key constants. `<hp-unfold-page>`, `<hp-nav-item unfold>`, and any page-shell wiring (e.g. `a[data-hp-unfold]` links) ride exactly the same sequence.
+- **`<hp-nav-item>` `unfold` attribute** — camera-zoom unfold navigation from a nav item: the item's colour expands to cover the viewport before the destination is revealed. Reserve it for destination-defining links; plain items keep the plain jump. Back navigation reverses only across unfold departures — the marker that triggers the reversal is stamped by the unfold sequence alone.
+- Showcase: **persistent-document navigation via Astro's `<ClientRouter />`.** The document — and every custom-element definition — survives internal navigation, which removes the per-page re-fetch/re-upgrade flash at the root; page scripts re-wire per visit through the router lifecycle. On top of it: revealed sidebar links prefetch (each group's items the moment it expands; the components index deliberately stays hover-only), the `<hp-background>` canvas persists across swaps (one WebGL context per session, backdrop never blanks), warm Shiki tokenises synchronously so code paints highlighted on the first frame of a navigation, and the font faces are inlined + the critical weights preloaded so headings take their real face on cold loads.
+
+### Changed
+
+- **`<hp-unfold-page>` navigates through the library delegate** — under a registered client router the expand runs as a same-document view transition on the same keyframes; without one, behaviour is unchanged. Overlay geometry is unified with the text-link variant (seed = the larger of the source's axes), so hex sources start their expand marginally larger than before.
+- **`<hp-navigation-menu>` items navigate through the delegate** instead of raw `window.location.href`, so they stop forcing full reloads inside client-routed sites.
+
+### Fixed
+
+- **`<hp-tabs>` destroyed host history state when routing.** Both URL-writing paths called `history.replaceState(null, …)`, nulling whatever the host app had stored on the entry. Client routers stamp scroll/index state on every entry and ignore popstates whose state they don't recognise — so after any tab click, back/forward moved the address bar and navigated nothing. Both paths now pass `window.history.state` through; scroll restoration recovers with it.
+- Showcase: back/forward restores the scroll position instantly before first paint — previously the router's restore obeyed the site's `scroll-behavior: smooth` (a multi-hundred-ms glide) and ran before element layout had settled, which could clamp it short.
+- Showcase: the reverse unfold shrinks onto the anchored source element again — it was measured against the mid-glide scroll position and converged below the viewport.
+- Showcase: light-mode pages tokenise code with the light theme after navigation — the active theme is stamped onto the incoming document before the swap, since elements tokenise during the swap itself.
+
 ## [0.2.0] - 2026-08-18
 
 ### Added
