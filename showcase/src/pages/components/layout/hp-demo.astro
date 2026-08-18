@@ -1,4 +1,4 @@
----
+﻿---
 import Layout from "../../../layouts/Layout.astro";
 import ComponentDocs from "../../../components/ComponentDocs.astro";
 ---
@@ -41,12 +41,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <h2>No copy button</h2>
     <hp-demo no-copy caption="Loading">
-      <hp-spinner></hp-spinner>
-      <hp-spinner size="md"></hp-spinner>
+      <hp-loader></hp-loader>
+      <hp-loader size="md"></hp-loader>
 
       <hp-code slot="code" language="html">{`<body>
-  <hp-spinner></hp-spinner>
-  <hp-spinner size="md"></hp-spinner>
+  <hp-loader></hp-loader>
+  <hp-loader size="md"></hp-loader>
 </body>`}</hp-code>
     </hp-demo>
 
@@ -68,7 +68,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         </hp-banner>
         <hp-banner tone="do">
           Group related variants in the default slot (e.g., all tones of hp-badge side by side)
-          rather than wrapping each in its own hp-demo — keeps the page legible.
+          rather than wrapping each in its own hp-demo â€” keeps the page legible.
         </hp-banner>
       
 

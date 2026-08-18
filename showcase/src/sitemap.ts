@@ -71,8 +71,8 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Loading",
         children: [
+          { path: "/components/loading/hp-loader", title: "hp-loader" },
           { path: "/components/loading/hp-progress", title: "hp-progress" },
-          { path: "/components/loading/hp-spinner", title: "hp-spinner" },
         ],
       },
       {

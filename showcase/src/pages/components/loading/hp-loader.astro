@@ -1,0 +1,142 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-loader">
+  <ComponentDocs title="hp-loader">
+    <p slot="description">
+      Radial loading indicator — a hollow cluster of small hexes. A bare tag is indeterminate:
+      the cluster pulses in a clockwise spiral wave. Give it a <code>value</code> and it turns
+      determinate: progress fills the same spiral, the frontier hex keeps pulsing so parked
+      progress stays alive, and the percentage sits in the hollow centre (<code>md</code> /
+      <code>lg</code>). The radial counterpart of <code>&lt;hp-progress&gt;</code> — same
+      <code>min / max / value / indeterminate</code> contract. Respects
+      <code>prefers-reduced-motion</code> by slowing the pulse (rather than freezing it) so the
+      visual still reads alive.
+    </p>
+
+    <hp-demo caption="Sizes">
+      <hp-loader size="sm"></hp-loader>
+      <hp-loader size="md"></hp-loader>
+      <hp-loader size="lg"></hp-loader>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-loader size="sm"></hp-loader>
+  <hp-loader size="md"></hp-loader>
+  <hp-loader size="lg"></hp-loader>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Determinate">
+      <hp-loader value="25"></hp-loader>
+      <hp-loader value="60"></hp-loader>
+      <hp-loader value="90"></hp-loader>
+      <hp-loader value="100"></hp-loader>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-loader value="25"></hp-loader>
+  <hp-loader value="60"></hp-loader>
+  <hp-loader value="90"></hp-loader>
+  <hp-loader value="100"></hp-loader>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Live — value driven by script; irregular (left) vs timing=&quot;linear&quot; (right)">
+      <hp-loader id="loader-live" size="lg" value="0"></hp-loader>
+      <hp-loader id="loader-live-linear" timing="linear" size="lg" value="0"></hp-loader>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-loader id="job" size="lg" value="0"></hp-loader>
+  <hp-loader id="job2" timing="linear" size="lg" value="0"></hp-loader>
+
+  const job = document.getElementById("job");
+  // wherever progress arrives:
+  job.value = percentDone;
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Tones">
+      <hp-loader></hp-loader>
+      <hp-loader tone="positive"></hp-loader>
+      <hp-loader tone="warn"></hp-loader>
+      <hp-loader tone="alert"></hp-loader>
+      <hp-loader tone="error"></hp-loader>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-loader></hp-loader>
+  <hp-loader tone="positive"></hp-loader>
+  <hp-loader tone="warn"></hp-loader>
+  <hp-loader tone="alert"></hp-loader>
+  <hp-loader tone="error"></hp-loader>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <script>
+      function setup(): void {
+        const live = [
+          document.getElementById("loader-live"),
+          document.getElementById("loader-live-linear"),
+        ].filter((el): el is HTMLElement => el !== null);
+        if (!live.length) {
+          return;
+        }
+        // Real-loader rhythm: a pause, then a bump of a few percent
+        // — stalls where the frontier parks, bursts where the two
+        // timing modes visibly diverge. A lap lands around 12s,
+        // holds at 100% for a beat, then loops. Self-terminates
+        // when the demo leaves the page (no reschedule).
+        let value = 0;
+        const schedule = (): void => {
+          const delay = value >= 100 ? 2600 : 250 + Math.random() * 1250;
+          window.setTimeout(() => {
+            if (!live[0].isConnected) {
+              return;
+            }
+            value = value >= 100 ? 0 : Math.min(100, value + 2 + Math.floor(Math.random() * 11));
+            for (const el of live) {
+              el.setAttribute("value", String(value));
+            }
+            schedule();
+          }, delay);
+        };
+        schedule();
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setup);
+      } else {
+        setup();
+      }
+    </script>
+
+    <Fragment slot="intent">
+      <h2>When to use</h2>
+      <hp-banner tone="do">
+        Pass the real <code>value</code> whenever progress is knowable (upload, multi-step
+        task, download) — indeterminate is the fallback for unknowable waits, not the default.
+      </hp-banner>
+      <hp-banner tone="do">
+        Pick by geometry: <code>&lt;hp-progress&gt;</code> on linear surfaces (forms, rows,
+        toolbars), <code>&lt;hp-loader&gt;</code> for centred / hero / cell-shaped contexts.
+      </hp-banner>
+      <hp-banner tone="do">
+        Match <code>tone</code> to the operation's outcome / severity (positive for a sync,
+        warn for a check, alert / error for retries against failing endpoints).
+      </hp-banner>
+      <hp-banner tone="dont">
+        Stack multiple loaders on the same surface — at most one per region.
+      </hp-banner>
+
+      <h2>Accessibility</h2>
+      <p>
+        Auto <code>role="progressbar"</code> with <code>aria-valuemin / max</code>;
+        <code>aria-valuenow</code> is present only when determinate, so indeterminate waits
+        report as "in progress" without a misleading number. Default
+        <code>aria-label="Loading"</code> — override it for context-specific waits ("Syncing
+        changes", "Compiling shaders", etc.). The centre percentage is decorative;
+        assistive tech reads the ARIA value. At <code>sm</code> there is no hollow for the
+        label — the fill still renders, the number stays ARIA-only.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>
