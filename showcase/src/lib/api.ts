@@ -147,11 +147,16 @@ function load(): Map<string, Api> {
             description: f.description,
             reflects: f.reflects,
           })),
-          events: (decl.events ?? []).map((e) => ({
-            name: e.name,
-            type: e.type?.text,
-            description: e.description,
-          })),
+          events: (decl.events ?? [])
+            // The analyzer records an element's `emit(type, detail)`
+            // helper as an event literally named "type" — plumbing,
+            // not API. Real events are the documented `hp-*` names.
+            .filter((e) => e.name !== "type")
+            .map((e) => ({
+              name: e.name,
+              type: e.type?.text,
+              description: e.description,
+            })),
           slots: (decl.slots ?? []).map((s) => ({
             name: s.name ?? "",
             description: s.description,

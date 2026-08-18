@@ -5,7 +5,6 @@
   it never sees its own events) storing raw viewport coords;
   conversion to canvas space happens at draw time where the
   geometry is known. Reduced-motion suppresses the halo live.
-  (PLAN.hp-grid-smoothness.md § Steps › Step 3)
 */
 
 import { OFFSCREEN_MOUSE } from "./render.js";

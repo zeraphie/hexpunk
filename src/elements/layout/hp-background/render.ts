@@ -6,7 +6,6 @@
   field's local value, output premultiplied. Colour tokens are
   read from computed style at draw time so theme changes just
   work.
-  (PLAN.hp-grid-smoothness.md § Steps › Step 4)
 */
 
 import { type RgbaTuple, parseCssColor } from "../../../lib/css-color.js";

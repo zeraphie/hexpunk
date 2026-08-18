@@ -4,8 +4,9 @@
 
 import { describe, expect, test } from "bun:test";
 
+import { SQRT3 } from "../lattice.js";
 import { markClaimed } from "./index.js";
-import { findRowsPosition } from "./rows.js";
+import { findRowsPosition, halfColsForWidth } from "./rows.js";
 import { COMPONENTS_PAGE_WORKLOAD, SINGLE } from "./test-fixtures.js";
 
 describe("findRowsPosition", () => {
@@ -49,5 +50,42 @@ describe("findRowsPosition", () => {
     const rows = new Set(placements.map((p) => p.r));
     expect(rows.size).toBeGreaterThanOrEqual(2);
     expect(rows.size).toBeLessThanOrEqual(4);
+  });
+});
+
+describe("halfColsForWidth", () => {
+  /** sm-tier hex side after the ring overlap — colStep ≈ 97.5px. */
+  const SIDE = 97.5 / SQRT3;
+
+  test("six columns and the stagger fit → window admits six", () => {
+    const budget = 6.5 * 97.5;
+    const half = halfColsForWidth(budget, SIDE);
+    // (6 − 1) / 2: the wider parity of the centred window scans six
+    // integer q values.
+    expect(half).toBe(2.5);
+  });
+
+  test("just under the stagger reserve drops a column", () => {
+    // 6 columns need 6.5 × colStep (the sixth plus the odd-row
+    // shift); anything short of that only fits 5.
+    expect(halfColsForWidth(6.49 * 97.5, SIDE)).toBe(2);
+    expect(halfColsForWidth(6.4 * 97.5, SIDE)).toBe(2);
+    expect(halfColsForWidth(5.9 * 97.5, SIDE)).toBe(2);
+  });
+
+  test("never narrower than one column", () => {
+    expect(halfColsForWidth(10, SIDE)).toBe(0.5);
+    expect(halfColsForWidth(0, SIDE)).toBe(0.5);
+    expect(halfColsForWidth(-50, SIDE)).toBe(0.5);
+    expect(halfColsForWidth(500, 0)).toBe(0.5);
+  });
+
+  test("monotonically non-decreasing in width", () => {
+    let last = 0;
+    for (let px = 0; px <= 2000; px += 7) {
+      const half = halfColsForWidth(px, SIDE);
+      expect(half).toBeGreaterThanOrEqual(last);
+      last = half;
+    }
   });
 });

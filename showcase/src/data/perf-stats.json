@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-08-18T09:45:02.419Z",
+  "stats": {
+    "hp-background": {
+      "static": {
+        "minifiedBytes": 43812,
+        "gzippedBytes": 14470
+      }
+    },
+    "hp-grid": {
+      "static": {
+        "minifiedBytes": 25937,
+        "gzippedBytes": 9993
+      },
+      "deferred": {
+        "minifiedBytes": 347816,
+        "gzippedBytes": 103759
+      }
+    }
+  }
+}

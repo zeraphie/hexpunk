@@ -6,7 +6,6 @@
   occasionally branching — individual lit lines rather than a
   page-wide wave. Heads emit segment splats into the energy
   field; the trails fade with the field's own physics.
-  (PLAN.hp-grid-smoothness.md § Decisions › click-ignition)
 */
 
 /** Milliseconds for a head to traverse one lattice edge. */

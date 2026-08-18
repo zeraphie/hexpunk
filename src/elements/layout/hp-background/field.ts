@@ -6,7 +6,6 @@
   decays each simulation step. Hex strokes brighten where
   energy lives — the wake drifts and fades after the cursor
   has moved on, which is what makes v2 feel soft.
-  (PLAN.hp-grid-smoothness.md § Decisions › energy-trail reveal)
 */
 
 import { VERTEX_SHADER_SOURCE, createProgram } from "./gl.js";

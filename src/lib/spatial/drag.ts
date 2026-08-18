@@ -1,0 +1,284 @@
+/*
+  ─ Drag controller ─
+
+  Drag-to-move on the lattice with hp-grid's semantics: the
+  occupant rides the pointer, the live snap target (nearest
+  free cell by BFS) shows as the field highlight, release
+  animates into the slot — or back to its origin when nothing
+  free is in range. Move fires on release, drop when the snap
+  animation settles, bond/unbond from the adjacency diff.
+*/
+import { axialToWorld, worldToAxial } from "./lattice.js";
+import type { OccupancyMap } from "./occupancy.js";
+import type { AxialCoord } from "./types.js";
+
+/** Snap-into-slot animation length. Long enough to read as
+ * settling, short enough that rapid re-drags never queue. */
+const SNAP_DURATION_MS = 180;
+
+export interface DragEventDetail {
+  id: string;
+  from: AxialCoord;
+  to: AxialCoord;
+}
+
+export interface DragOptions {
+  occupancy: OccupancyMap;
+  hexSide: number;
+  /** Reduced-motion: drops land instantly, no settle animation. */
+  instant?: boolean;
+  /** Graph-editor mode: a drop onto another occupant toggles a
+   * tether between the pair and the source returns home, instead
+   * of the source claiming a cell. */
+  tetherMode?: () => boolean;
+  /** Fires when a tether-mode drop lands on another occupant. */
+  onTetherDrop?: (detail: { source: string; target: string }) => void;
+  /** Restrict where a drag may travel, in world units. Applied to the
+   * occupant's CENTRE, after the grab offset — the occupant is what
+   * must stay inside, not the pointer. With the pointer outside the
+   * surface, the occupant rides the nearest in-bounds position and a
+   * release settles it to the nearest free cell from there. */
+  clampWorld?: (wx: number, wy: number) => [number, number];
+  /** Position the occupant's visual at a world point. */
+  onPosition: (id: string, wx: number, wy: number) => void;
+  /** Live snap target while dragging (null = out of range). */
+  onTargetChange: (target: AxialCoord | null) => void;
+  onDragStart?: (id: string) => void;
+  /** Fires on release, before the settle animation. */
+  onMove?: (detail: DragEventDetail) => void;
+  /** Fires when the settle animation completes. */
+  onDrop?: (detail: { id: string; at: AxialCoord }) => void;
+  onBond?: (detail: { id: string; partner: string }) => void;
+  onUnbond?: (detail: { id: string; partner: string }) => void;
+}
+
+interface ActiveDrag {
+  id: string;
+  from: AxialCoord;
+  /** Pointer-to-centre offset at grab, so cells don't jump. */
+  grabDx: number;
+  grabDy: number;
+  wx: number;
+  wy: number;
+  target: AxialCoord | null;
+}
+
+interface SnapAnimation {
+  id: string;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  /** Current interpolated centre, so live position stays derivable
+   * mid-settle rather than being mirrored into outside state. */
+  x: number;
+  y: number;
+  at: AxialCoord;
+  startedAt: number | null;
+}
+
+export class DragController {
+  private readonly options: DragOptions;
+  private active: ActiveDrag | null = null;
+  private snap: SnapAnimation | null = null;
+
+  constructor(options: DragOptions) {
+    this.options = options;
+  }
+
+  get dragging(): boolean {
+    return this.active !== null;
+  }
+
+  /** Lattice pitch, settable after construction: a DOM surface only
+   * learns its real cell size once the children have rendered, and the
+   * pitch has to follow them. Read on every use, so a mid-life change
+   * lands without rebuilding the controller. */
+  set hexSide(value: number) {
+    this.options.hexSide = value;
+  }
+
+  get animating(): boolean {
+    return this.snap !== null;
+  }
+
+  /**
+   * Live world centre of an occupant while it is being dragged or
+   * settling, else null. Derived from the active gesture rather than
+   * mirrored into a cache, so it cannot outlive the drag.
+   */
+  livePositionOf(id: string): [number, number] | null {
+    if (this.active?.id === id) {
+      return [this.active.wx, this.active.wy];
+    }
+    if (this.snap?.id === id) {
+      return [this.snap.x, this.snap.y];
+    }
+    return null;
+  }
+
+  /** Begin dragging the occupant of `cell` from a world point. */
+  begin(id: string, pointerWx: number, pointerWy: number): void {
+    const from = this.options.occupancy.cellOf(id);
+    if (!from || this.active) {
+      return;
+    }
+    // A settle still in flight is completed, not abandoned — dropping
+    // it would strand that occupant mid-tween and leave consumers
+    // waiting on a drop that never comes.
+    this.finishSnap();
+    const [cx, cy] = axialToWorld(from.q, from.r, this.options.hexSide);
+    this.active = {
+      id,
+      from,
+      grabDx: cx - pointerWx,
+      grabDy: cy - pointerWy,
+      wx: cx,
+      wy: cy,
+      target: from,
+    };
+    this.options.onDragStart?.(id);
+  }
+
+  update(pointerWx: number, pointerWy: number): void {
+    if (!this.active) {
+      return;
+    }
+    const drag = this.active;
+    const centreX = pointerWx + drag.grabDx;
+    const centreY = pointerWy + drag.grabDy;
+    [drag.wx, drag.wy] = this.options.clampWorld?.(centreX, centreY) ?? [centreX, centreY];
+    this.options.onPosition(drag.id, drag.wx, drag.wy);
+    const under = worldToAxial(drag.wx, drag.wy, this.options.hexSide);
+    // Tether mode highlights whatever cell the pointer is over —
+    // including occupied ones, since those are the tether targets.
+    const target = this.tethering()
+      ? under
+      : this.options.occupancy.findNearestFree(under, drag.id);
+    if (!coordsEqual(target, drag.target)) {
+      drag.target = target;
+      this.options.onTargetChange(target);
+    }
+  }
+
+  private tethering(): boolean {
+    return this.options.tetherMode?.() ?? false;
+  }
+
+  /** Release: claim the target (origin when out of range), fire
+   * move + bond diff, start the settle animation. */
+  drop(): void {
+    if (!this.active) {
+      return;
+    }
+    const { occupancy, onMove, onBond, onUnbond } = this.options;
+    const drag = this.active;
+    this.active = null;
+    this.options.onTargetChange(null);
+
+    // Tether mode: landing on another occupant toggles an arc and
+    // sends the source home; empty cells still move normally.
+    if (this.tethering() && drag.target) {
+      const landedOn = occupancy.occupantAt(drag.target);
+      if (landedOn && landedOn !== drag.id) {
+        this.options.onTetherDrop?.({ source: drag.id, target: landedOn });
+        this.settle(drag, drag.from);
+        return;
+      }
+    }
+
+    const to = drag.target ?? drag.from;
+    const moved = !coordsEqual(to, drag.from);
+    if (moved) {
+      const partnersBefore = occupancy.occupiedNeighbours(drag.from, drag.id);
+      occupancy.place(drag.id, to);
+      const partnersAfter = occupancy.occupiedNeighbours(to, drag.id);
+      onMove?.({ id: drag.id, from: drag.from, to });
+      for (const partner of partnersAfter) {
+        if (!partnersBefore.includes(partner)) {
+          onBond?.({ id: drag.id, partner });
+        }
+      }
+      for (const partner of partnersBefore) {
+        if (!partnersAfter.includes(partner)) {
+          onUnbond?.({ id: drag.id, partner });
+        }
+      }
+    }
+    this.settle(drag, to);
+  }
+
+  /** Animate the released occupant into `to` (or land it instantly
+   * under reduced motion), then report the drop. */
+  private settle(drag: ActiveDrag, to: AxialCoord): void {
+    const [toX, toY] = axialToWorld(to.q, to.r, this.options.hexSide);
+    if (this.options.instant) {
+      this.options.onPosition(drag.id, toX, toY);
+      this.options.onDrop?.({ id: drag.id, at: to });
+      return;
+    }
+    this.snap = {
+      id: drag.id,
+      fromX: drag.wx,
+      fromY: drag.wy,
+      toX,
+      toY,
+      x: drag.wx,
+      y: drag.wy,
+      at: to,
+      startedAt: null,
+    };
+  }
+
+  /** Land an in-flight settle immediately and report it. */
+  private finishSnap(): void {
+    const snap = this.snap;
+    if (!snap) {
+      return;
+    }
+    this.snap = null;
+    this.options.onPosition(snap.id, snap.toX, snap.toY);
+    this.options.onDrop?.({ id: snap.id, at: snap.at });
+  }
+
+  /** Abandon the gesture, returning the occupant to where it began.
+   * Reports a drop so consumers can clear drag-scoped state. */
+  cancel(): void {
+    this.snap = null;
+    if (!this.active) {
+      return;
+    }
+    const drag = this.active;
+    this.active = null;
+    this.options.onTargetChange(null);
+    const [x, y] = axialToWorld(drag.from.q, drag.from.r, this.options.hexSide);
+    this.options.onPosition(drag.id, x, y);
+    this.options.onDrop?.({ id: drag.id, at: drag.from });
+  }
+
+  /** Advance the settle animation. True while still moving. */
+  step(now: number): boolean {
+    if (!this.snap) {
+      return false;
+    }
+    const snap = this.snap;
+    if (snap.startedAt === null) {
+      snap.startedAt = now;
+    }
+    const progress = Math.min(1, (now - snap.startedAt) / SNAP_DURATION_MS);
+    if (progress >= 1) {
+      this.finishSnap();
+      return false;
+    }
+    // Ease-out cubic: fast leave, soft landing.
+    const eased = 1 - Math.pow(1 - progress, 3);
+    snap.x = snap.fromX + (snap.toX - snap.fromX) * eased;
+    snap.y = snap.fromY + (snap.toY - snap.fromY) * eased;
+    this.options.onPosition(snap.id, snap.x, snap.y);
+    return true;
+  }
+}
+
+function coordsEqual(a: AxialCoord | null, b: AxialCoord | null): boolean {
+  return a?.q === b?.q && a?.r === b?.r;
+}

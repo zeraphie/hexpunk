@@ -5,7 +5,6 @@
   render model needs, shader/program compilation with useful
   failure messages, and the shared fullscreen-triangle vertex
   stage both passes draw with.
-  (PLAN.hp-grid-smoothness.md § Steps › Step 1)
 */
 
 /** Vertex shader shared by the bake and runtime programs. Emits a
