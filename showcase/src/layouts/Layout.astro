@@ -7,6 +7,7 @@ import "../../../src/styles/elements.css";
 import "../../../src/styles/hp-latex.css";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
+import fontsCssRaw from "../../../assets/fonts/fonts.css?raw";
 import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
 import {
   github as githubIcon,
@@ -31,6 +32,22 @@ interface Props {
 }
 const { title, fullWidth = false, prose = false } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// Inline the @font-face rules so the browser discovers the woff2
+// URLs during HTML parse instead of after a fonts.css round-trip.
+// Paired with the preloads below, the real faces are usually in
+// before first paint — headings stop flashing the ui-sans-serif
+// fallback on cold loads. The generated fonts.css stays the source
+// of truth; its CSS-relative URLs are rebased onto the site's font
+// directory here.
+const fontFaceCss = fontsCssRaw.replaceAll('url("./', `url("${baseUrl}/fonts/`);
+
+// Only the faces above-the-fold text always uses: Chakra Petch 400
+// (body) and 700 (headline / label), Iceland (brand + display
+// headings). Mono and the remaining weights load lazily on the
+// pages that use them — preloading all eleven would crowd the
+// bandwidth the critical three need.
+const FONT_PRELOADS = ["chakra-petch-400.woff2", "chakra-petch-700.woff2", "iceland-400.woff2"];
 const fullPath = new URL(Astro.request.url).pathname.replace(/\/$/, "") || "/";
 const active = baseUrl && fullPath.startsWith(baseUrl)
   ? (fullPath.slice(baseUrl.length) || "/")
@@ -128,7 +145,18 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | Hexpunk</title>
     <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
-    <link rel="stylesheet" href={`${baseUrl}/fonts/fonts.css`} />
+    {
+      FONT_PRELOADS.map((file) => (
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href={`${baseUrl}/fonts/${file}`}
+          crossorigin
+        />
+      ))
+    }
+    <style is:inline set:html={fontFaceCss}></style>
     <script is:inline set:html={themeInit}></script>
     <script is:inline set:html={unfoldPeakInit}></script>
     <style is:inline>
