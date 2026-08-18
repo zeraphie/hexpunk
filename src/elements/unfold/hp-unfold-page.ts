@@ -12,23 +12,32 @@
 // targets a separate overlay element rather than the source's own
 // snapshot.
 //
-// **Mechanism — overlay + cross-document View Transitions.** On
-// click we create a fixed-position hex-clipped div at the source's
-// bbox, fill it with the source's `--hp-stroke-color`, and set
+// **Mechanism — overlay + View Transitions.** On click we create a
+// fixed-position hex-clipped div at the source's bbox, fill it with
+// the source's `--hp-stroke-color`, and set
 // `view-transition-name: hp-unfold-source` on the overlay. The
 // browser snapshots the overlay; the
 // `::view-transition-old(hp-unfold-source)` keyframes (defined in
 // the showcase's `global.css`) scale it up to viewport-covering
-// size. The destination loads underneath and is revealed when the
+// size. The destination renders underneath and is revealed when the
 // overlay's snapshot fades at the end of the keyframe.
 //
-// **Back navigation** uses the `pagereveal` event handler in
-// `Layout.astro` to recreate an overlay at the source's bbox
-// before first-paint of the returning page. The browser snapshots
-// it as the new state and the
-// `::view-transition-new(hp-unfold-source)` shrink keyframes drive
-// the inverse animation. `sessionStorage` is used to track which
-// element was clicked so the correct source is animated on return.
+// **Navigation is pluggable.** The default is a full document
+// navigation (`window.location.href`), which pairs the keyframes
+// with the browser's cross-document View Transition. A consumer
+// with a client-side router (SPA frameworks, Astro's ClientRouter)
+// registers its own function via `HpUnfoldPage.setNavigate(...)` —
+// the overlay, keyframes, and sessionStorage handshake are
+// identical, but the transition runs same-document, so the page's
+// module state (and every custom-element definition) survives the
+// trip.
+//
+// **Back navigation** replays the reverse from the destination
+// side: the shell that owns navigation (see `Layout.astro` in the
+// showcase) detects a history-traversal arrival via the
+// `sessionStorage` marker stashed here, and shrinks a
+// viewport-sized overlay back onto the source's bbox with the Web
+// Animations API.
 //
 // **Preview mode.** A `preview` boolean attribute switches the
 // element to a "play the animation without navigating" mode —
@@ -57,6 +66,10 @@ import { customElement, property } from "lit/decorators.js";
 
 import { hpBase } from "../../styles/hp-base.js";
 
+/** Navigation delegate signature — receives the `href` the source
+ * was activated with. */
+export type HpUnfoldNavigate = (href: string) => void;
+
 const VIEW_TRANSITION_NAME = "hp-unfold-source";
 const STORAGE_TARGET = "hp-unfold-target";
 const STORAGE_PEAK = "hp-unfold-peak";
@@ -80,13 +93,26 @@ function computePeakScale(rect: { width: number }): number {
 /**
  * Camera-zoom navigation primitive. Click the source hex (or any
  * <a data-hp-unfold>) and its colour rapidly expands to cover the
- * viewport, then the destination page is revealed. View Transitions
- * API drive the cross-document animation.
+ * viewport, then the destination page is revealed. The View
+ * Transitions API drives the animation — cross-document by default,
+ * same-document when a client router registers `setNavigate`.
  *
  * @slot source - The hex / element that triggers the expand
  */
 @customElement("hp-unfold-page")
 export class HpUnfoldPage extends LitElement {
+  /** Currently-registered navigation delegate, or null for the
+   * default full-document navigation. */
+  static navigate: HpUnfoldNavigate | null = null;
+
+  /** Register a navigation delegate globally. Pass null to restore
+   * the default (`window.location.href`). Client routers register
+   * their own navigate here so the expand runs as a same-document
+   * view transition instead of a document reload. */
+  static setNavigate(fn: HpUnfoldNavigate | null): void {
+    HpUnfoldPage.navigate = fn;
+  }
+
   /** Target URL. Must be same-origin for cross-document View
    * Transitions to engage; cross-origin navigations skip the VT
    * and just navigate. */
@@ -166,14 +192,15 @@ export class HpUnfoldPage extends LitElement {
     if (this.preview) {
       void this.playPreview();
     } else {
-      this.navigate();
+      this.startNavigation();
     }
   }
 
   /** Forward navigation. Creates an overlay at the source's bbox,
-   * names it for the cross-document VT, stashes the target URL
-   * for back-nav arrival detection, then navigates. */
-  private navigate(): void {
+   * names it for the view transition, stashes the target URL for
+   * back-nav arrival detection, then hands off to the registered
+   * navigation delegate (or the default full-document navigation). */
+  private startNavigation(): void {
     if (!this.href || !this.sourceEl) {
       return;
     }
@@ -195,7 +222,11 @@ export class HpUnfoldPage extends LitElement {
         // nav reverse animation won't run, but forward still works.
       }
     }
-    window.location.href = this.href;
+    if (HpUnfoldPage.navigate) {
+      HpUnfoldPage.navigate(this.href);
+    } else {
+      window.location.href = this.href;
+    }
   }
 
   /** Preview animation — no navigation, just plays the expand /

@@ -75,7 +75,7 @@ export { HpTooltip, type HpTooltipSide } from "./elements/overlays/hp-tooltip.js
 export { HpVisuallyHidden } from "./elements/primitives/hp-visually-hidden.js";
 export { HpUnfoldList } from "./elements/unfold/hp-unfold-list.js";
 export { HpUnfoldOverlay } from "./elements/unfold/hp-unfold-overlay.js";
-export { HpUnfoldPage } from "./elements/unfold/hp-unfold-page.js";
+export { HpUnfoldPage, type HpUnfoldNavigate } from "./elements/unfold/hp-unfold-page.js";
 
 // Lucide icons mirrored locally — see tools/build-icons.ts.
 export * as icons from "./icons/index.js";
