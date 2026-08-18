@@ -63,8 +63,12 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       {categories.map((cat) => (
         <hp-cluster layout="honeycomb" drag-handle=":first-child">
           <hp-cell variant="anchor" filled tabindex="0">{cat.name}</hp-cell>
+          {/* Cards prefetch on hover, not the site's viewport
+            default — every card is on screen at once here, and 52
+            speculative page fetches per visit is the fan-out the
+            strategy split avoids. */}
           {cat.items.map((item) => (
-            <a href={href(item.path)} class="component-link">
+            <a href={href(item.path)} class="component-link" data-astro-prefetch="hover">
               <hp-cell variant="action" tabindex="0">{item.name}</hp-cell>
             </a>
           ))}

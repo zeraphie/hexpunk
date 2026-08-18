@@ -343,6 +343,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       // either delegated (document/window listeners that resolve
       // elements at event time) or re-run per arrival via the
       // astro:page-load / astro:after-swap events at the bottom.
+      import { prefetch } from "astro:prefetch";
       import { navigate, type TransitionBeforeSwapEvent } from "astro:transitions/client";
 
       import { HpCode, HpLatex, HpUnfoldPage } from "../../../src/index.ts";
@@ -1130,11 +1131,75 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         }
       });
 
+      // ── Sidebar prefetch ──────────────────────────────────────
+      // Astro's prefetch strategies scan light-DOM anchors only
+      // (document.getElementsByTagName), so the sidebar's shadow-DOM
+      // links are invisible to them. Prefetch what the sidebar has
+      // actually revealed instead: every item outside a collapsed
+      // group on arrival, and each group's items the moment it
+      // expands — hp-sidebar-group reflects its <details> state onto
+      // the host's `open` attribute, which the mutation observer
+      // below watches. Attribute-driven rather than an
+      // IntersectionObserver: the collapse is a closed <details>,
+      // whose contents keep geometry, so intersection would
+      // misreport them as visible.
+      const prefetchedSidebar = new Set<string>();
+
+      function revealedItems(root: ParentNode): HTMLElement[] {
+        return [...root.querySelectorAll<HTMLElement>("hp-sidebar-item[href]")].filter((item) => {
+          for (let el = item.parentElement; el; el = el.parentElement) {
+            if (el.tagName.toLowerCase() === "hp-sidebar") {
+              break;
+            }
+            if (el.tagName.toLowerCase() === "hp-sidebar-group" && !el.hasAttribute("open")) {
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      function prefetchRevealed(root: ParentNode): void {
+        for (const item of revealedItems(root)) {
+          const itemHref = item.getAttribute("href");
+          if (!itemHref || item.hasAttribute("active") || prefetchedSidebar.has(itemHref)) {
+            continue;
+          }
+          prefetchedSidebar.add(itemHref);
+          prefetch(itemHref);
+        }
+      }
+
+      const sidebarExpansion = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          const group = mutation.target as HTMLElement;
+          if (group.hasAttribute("open")) {
+            prefetchRevealed(group);
+          }
+        }
+      });
+
+      function wireSidebarPrefetch(): void {
+        const sidebar = document.querySelector(".page-sidebar");
+        if (!sidebar) {
+          return;
+        }
+        // Fresh sidebar every navigation — re-attach wholesale.
+        sidebarExpansion.disconnect();
+        sidebarExpansion.observe(sidebar, {
+          attributes: true,
+          attributeFilter: ["open"],
+          subtree: true,
+        });
+        prefetchRevealed(sidebar);
+      }
+
       // Fires on the initial load and after every router navigation,
       // once the new page's scripts have run.
       document.addEventListener("astro:page-load", () => {
         rebuildTOC();
         playReverseArrival();
+        wireSidebarPrefetch();
         routerNavDirection = null;
       });
     </script>
