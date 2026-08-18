@@ -18,6 +18,11 @@ interface Row {
 const { rows } = Astro.props as { rows: Row[] };
 ---
 
+<hp-banner tone="warn" class="perf-banner">
+  This is one of hexpunk's heavier components and can affect page performance — keep
+  hardware acceleration on for the best experience.
+</hp-banner>
+
 <hp-collapsible class="perf-collapsible">
   <button slot="trigger" class="stats-trigger" type="button">
     <hp-cell variant="action" size="xxs" aria-hidden="true">
@@ -53,6 +58,13 @@ const { rows } = Astro.props as { rows: Row[] };
 </hp-collapsible>
 
 <style>
+  /* The standard heavy-component advisory, above the disclosure so
+   * it reads before anyone digs into numbers. */
+  .perf-banner {
+    display: block;
+    margin-block-end: var(--hp-md, 16px);
+  }
+
   /* Muted status readout — informational, not a focal element,
    * tucked behind a small "show stats" disclosure. */
   .perf-status {
