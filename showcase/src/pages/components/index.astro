@@ -154,16 +154,30 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
     // After a 300ms debounce we call `grid.pack()` so the layout
     // reflows around just the visible clusters (the FFD packer
     // skips hidden children).
-    const search = document.querySelector<HTMLInputElement>("#component-search");
-    const grid = document.querySelector<HTMLElement & { pack?: () => void }>(
-      "#components-grid",
-    );
-    if (search && grid) {
+    //
+    // Wired per visit: the document persists across client-router
+    // navigations while the search input and grid are swapped out
+    // and back in, so the module-level run-once shape would leave
+    // revisits with a dead filter.
+    let active = false;
+    let repackTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function setup(): void {
+      if (active) {
+        return;
+      }
+      const search = document.querySelector<HTMLInputElement>("#component-search");
+      const grid = document.querySelector<HTMLElement & { pack?: () => void }>(
+        "#components-grid",
+      );
+      if (!search || !grid) {
+        return;
+      }
+      active = true;
       const links = Array.from(
         grid.querySelectorAll<HTMLAnchorElement>("a.component-link"),
       );
       const clusters = Array.from(grid.querySelectorAll<HTMLElement>("hp-cluster"));
-      let repackTimer: ReturnType<typeof setTimeout> | null = null;
 
       const apply = () => {
         const query = search.value.trim().toLowerCase();
@@ -195,5 +209,16 @@ const categories: Category[] = !componentsBranch || isLeaf(componentsBranch)
       // autocomplete="off" but harmless).
       apply();
     }
+
+    document.addEventListener("astro:page-load", setup);
+    document.addEventListener("astro:before-swap", () => {
+      active = false;
+      if (repackTimer) {
+        // A pending repack targets the grid this swap discards.
+        clearTimeout(repackTimer);
+        repackTimer = null;
+      }
+    });
+    setup();
   </script>
 </Layout>
