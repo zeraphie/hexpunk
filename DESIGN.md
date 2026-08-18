@@ -1250,10 +1250,10 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 **Loading atoms:**
 
 - `skeleton-hex` / `skeleton-rect` (`<hp-skeleton shape="hex|rect">`) — placeholder for loading content. Hex variant matches the cell it replaces (hollow with `outline-faint` stroke); rect variant covers content-card prose with optional `lines` attribute for prose-shimmer. **Scanning** motion: a thin `secondary`-tinted line sweeps across the placeholder over ~1.5s. Reduced-motion fallback is a static `outline-faint` line.
-- `spinner` (`<hp-spinner>`) — indeterminate progress. Hex with one edge highlighted in `primary`, advancing one edge-position per `duration-medium`. Six edges → ~1.68s per full rotation. Repeated **Charging** metaphor. `size` attr: `sm` / `md` / `lg`; `inline` variant fits inside an `<hp-cell variant="action">` for button loading.
+- `loader` (`<hp-loader>`) — indeterminate progress. Hex with one edge highlighted in `primary`, advancing one edge-position per `duration-medium`. Six edges → ~1.68s per full rotation. Repeated **Charging** metaphor. `size` attr: `sm` / `md` / `lg`; `inline` variant fits inside an `<hp-cell variant="action">` for button loading.
 - `progress-track` / `progress-fill` (`<hp-progress>`) — determinate or indeterminate progress bar. Linear hairline (2px), `outline-faint` track + `primary` fill. `value` 0–1 for determinate. `indeterminate` boolean → fill becomes a Scanning sweep with no terminus.
 
-**Loading-state rules.** Don't show multiple spinners simultaneously — pick one to represent the overall load. Don't use `<hp-spinner>` for determinate operations — use `<hp-progress>` with the actual value. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
+**Loading-state rules.** Don't show multiple spinners simultaneously — pick one to represent the overall load. Don't use `<hp-loader>` for determinate operations — use `<hp-progress>` with the actual value. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
 
 **Empty-state atom:**
 

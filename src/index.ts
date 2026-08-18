@@ -40,6 +40,7 @@ export { HpLabel } from "./elements/forms/hp-label.js";
 export { HpLatex, type HpLatexRenderer } from "./elements/primitives/hp-latex.js";
 export { HpLink } from "./elements/navigation/hp-link.js";
 export { HpLinkNode } from "./elements/hp-link-node.js";
+export { HpLoader, type HpLoaderTone } from "./elements/loading/hp-loader.js";
 export { HpMenubar } from "./elements/navigation/hp-menubar.js";
 export { HpNavigationMenu, HpNavItem } from "./elements/navigation/hp-navigation-menu.js";
 export { HpOption, HpSelect } from "./elements/forms/hp-select.js";
@@ -59,7 +60,6 @@ export { HpSidebar, type HpSidebarVariant } from "./elements/layout/hp-sidebar.j
 export { HpSidebarGroup } from "./elements/layout/hp-sidebar-group.js";
 export { HpSidebarItem } from "./elements/layout/hp-sidebar-item.js";
 export { HpSlider } from "./elements/forms/hp-slider.js";
-export { HpSpinner, type HpSpinnerTone } from "./elements/loading/hp-spinner.js";
 export { HpTab, HpTabPanel, HpTabs } from "./elements/navigation/hp-tabs.js";
 export { HpTag, type HpTagTone } from "./elements/status/hp-tag.js";
 export { HpTether, type HpTetherSettleEventDetail } from "./elements/tether/hp-tether.js";

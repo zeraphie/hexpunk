@@ -1,4 +1,4 @@
-// hp-spinner.ts — Hexagonal-cluster spinner.
+// hp-loader.ts — Hexagonal-cluster loader.
 //
 // A cluster of small filled hexes arranged in concentric rings with
 // a hollow middle. Each hex scales between 1 and ~0.25 on a loop;
@@ -29,7 +29,7 @@ import { customElement, property } from "lit/decorators.js";
 
 import { hpBase } from "../../styles/hp-base.js";
 
-export type HpSpinnerTone = "neutral" | "positive" | "warn" | "alert" | "error";
+export type HpLoaderTone = "neutral" | "positive" | "warn" | "alert" | "error";
 
 const SQRT3 = Math.sqrt(3);
 
@@ -113,12 +113,12 @@ const SIZE_CONFIG: Record<"sm" | "md" | "lg", SizeConfig> = {
 };
 
 /**
- * Hexagonal-cluster spinner. A hollow cluster of small filled hexes
+ * Hexagonal-cluster loader. A hollow cluster of small filled hexes
  * pulsing in a clockwise spiral. role="status" with
  * aria-label="Loading" by default.
  */
-@customElement("hp-spinner")
-export class HpSpinner extends LitElement {
+@customElement("hp-loader")
+export class HpLoader extends LitElement {
   /** Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),
    * `lg` (37 hexes full-page). */
   @property({ reflect: true })
@@ -127,7 +127,7 @@ export class HpSpinner extends LitElement {
   /** Semantic tone. Default `neutral` reads as --hp-primary ("system
    * busy"); others map to the matching tone stroke. */
   @property({ reflect: true })
-  tone: HpSpinnerTone = "neutral";
+  tone: HpLoaderTone = "neutral";
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -182,10 +182,10 @@ export class HpSpinner extends LitElement {
         fill: var(--hp-stroke-color);
         transform-box: fill-box;
         transform-origin: center;
-        animation: hp-spinner-pulse 1.4s ease-in-out infinite;
+        animation: hp-loader-pulse 1.4s ease-in-out infinite;
       }
 
-      @keyframes hp-spinner-pulse {
+      @keyframes hp-loader-pulse {
         0%,
         100% {
           transform: scale(1);
@@ -249,6 +249,6 @@ export class HpSpinner extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hp-spinner": HpSpinner;
+    "hp-loader": HpLoader;
   }
 }

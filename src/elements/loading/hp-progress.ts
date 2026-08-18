@@ -7,7 +7,7 @@
 // fill ribbon instead.
 //
 // For indeterminate loading states without a known duration, prefer
-// hp-spinner. Use hp-progress when the operation has knowable
+// hp-loader. Use hp-progress when the operation has knowable
 // progress (file upload, multi-step task, download with a percentage).
 
 import { LitElement, css, html } from "lit";

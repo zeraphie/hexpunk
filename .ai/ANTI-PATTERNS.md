@@ -31,8 +31,8 @@ What NOT to ask for, and what NOT to generate. Pair with `DESIGN.md` and `PROMPT
 - **Stacking more than 3 toasts simultaneously.** `<hp-toast-stack>` queues additional toasts automatically. More than 3 visible at once becomes noise.
 - **Fighting z-index for modal stacking.** Use the native `<dialog>` element + Top Layer via `<hp-dialog>`. The browser owns modal stacking; the design system doesn't.
 - **Anchoring popovers / tooltips without bounds-checking.** Use CSS Anchor Positioning's auto-flip (or the JS-positioning fallback's equivalent). Never position into the void.
-- **Multiple spinners on screen at once.** Pick one `<hp-spinner>` to represent the overall loading state. Two spinners say "we're confused"; one says "we're working."
-- **`<hp-spinner>` for determinate progress.** Use `<hp-progress>` with the actual `value`. Spinners are the indeterminate fallback, not the default.
+- **Multiple spinners on screen at once.** Pick one `<hp-loader>` to represent the overall loading state. Two spinners say "we're confused"; one says "we're working."
+- **`<hp-loader>` for determinate progress.** Use `<hp-progress>` with the actual `value`. Spinners are the indeterminate fallback, not the default.
 - **Flashing skeletons.** Skeletons that appear and disappear in under ~200ms feel jittery. Debounce — only render once the wait crosses a perceptible threshold.
 - **Empty states that look like errors.** No alarm colours (`error`, `alert`, `warn`) on empty states. Empty is a normal app state, not a failure.
 - **Empty states with no icon and no label.** Silence reads as broken — always include at least one.
