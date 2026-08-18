@@ -1,9 +1,23 @@
 // hp-loader.ts — Hexagonal-cluster loader.
 //
 // A cluster of small filled hexes arranged in concentric rings with
-// a hollow middle. Each hex scales between 1 and ~0.25 on a loop;
-// per-hex animation-delay traces a clockwise spiral so the cluster
-// reads as a rotating spiral wave rather than a uniform pulse.
+// a hollow middle, in two modes:
+//
+// - **Indeterminate** (a bare `<hp-loader>`): each hex scales
+// between 1 and ~0.25 on a loop; per-hex animation-delay traces a
+// clockwise spiral so the cluster reads as a rotating spiral wave
+// rather than a uniform pulse.
+// - **Determinate** (`value` set, `indeterminate` absent): progress
+// maps onto the same spiral order — with N hexes in the cluster,
+// `round(fraction × N)` render lit and the rest stay faint so the
+// full silhouette reads as the track. The frontier hex (last lit)
+// keeps the scale pulse so the loader stays visibly alive between
+// value changes; at 100% the pulse stops and the cluster settles.
+//
+// hp-progress is the linear counterpart; this is the radial one.
+// Both share the min / max / value / indeterminate contract and
+// progressbar semantics — aria-valuenow is present only when
+// determinate.
 //
 // Sizes — md / lg always paint the OUTER two rings with the centre +
 // inner ring left empty (matches the cyberpunk-loader reference: a
@@ -113,9 +127,11 @@ const SIZE_CONFIG: Record<"sm" | "md" | "lg", SizeConfig> = {
 };
 
 /**
- * Hexagonal-cluster loader. A hollow cluster of small filled hexes
- * pulsing in a clockwise spiral. role="status" with
- * aria-label="Loading" by default.
+ * Hexagonal-cluster loader. A hollow cluster of small filled hexes —
+ * a clockwise spiral wave when indeterminate, a spiral progress fill
+ * when a `value` is set. role="progressbar" with
+ * aria-label="Loading" by default; aria-valuenow only when
+ * determinate.
  */
 @customElement("hp-loader")
 export class HpLoader extends LitElement {
@@ -129,13 +145,71 @@ export class HpLoader extends LitElement {
   @property({ reflect: true })
   tone: HpLoaderTone = "neutral";
 
+  /** Lower bound. Default 0. */
+  @property({ type: Number })
+  min = 0;
+
+  /** Upper bound. Default 100. */
+  @property({ type: Number })
+  max = 100;
+
+  /** Current progress. Setting a value switches the loader to
+   * determinate mode (unless `indeterminate` is also set); a bare
+   * `<hp-loader>` spins. Clamped to [min, max]. */
+  @property({ type: Number, reflect: true })
+  value: number | null = null;
+
+  /** Force the indeterminate wave even while a `value` is retained —
+   * for flipping back to "busy" without losing the number. */
+  @property({ reflect: true, type: Boolean })
+  indeterminate = false;
+
+  /** Determinate when a value is set and `indeterminate` doesn't
+   * override it — the mode rule the renderer and ARIA share. */
+  private get isDeterminate(): boolean {
+    return !this.indeterminate && this.value !== null;
+  }
+
+  /** Progress in [0, 1]. 0 when the range is empty or inverted. */
+  private get fraction(): number {
+    const span = this.max - this.min;
+    if (span <= 0) {
+      return 0;
+    }
+    const v = this.value ?? this.min;
+    return Math.min(1, Math.max(0, (v - this.min) / span));
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
     if (!this.hasAttribute("role")) {
-      this.setAttribute("role", "status");
+      this.setAttribute("role", "progressbar");
     }
     if (!this.hasAttribute("aria-label")) {
       this.setAttribute("aria-label", "Loading");
+    }
+    this.syncAria();
+  }
+
+  override updated(changed: Map<string, unknown>): void {
+    if (
+      changed.has("value") ||
+      changed.has("min") ||
+      changed.has("max") ||
+      changed.has("indeterminate")
+    ) {
+      this.syncAria();
+    }
+  }
+
+  private syncAria(): void {
+    this.setAttribute("aria-valuemin", String(this.min));
+    this.setAttribute("aria-valuemax", String(this.max));
+    if (this.isDeterminate) {
+      const v = Math.min(this.max, Math.max(this.min, this.value ?? this.min));
+      this.setAttribute("aria-valuenow", String(v));
+    } else {
+      this.removeAttribute("aria-valuenow");
     }
   }
 
@@ -182,7 +256,17 @@ export class HpLoader extends LitElement {
         fill: var(--hp-stroke-color);
         transform-box: fill-box;
         transform-origin: center;
+      }
+
+      .wave,
+      .frontier {
         animation: hp-loader-pulse 1.4s ease-in-out infinite;
+      }
+
+      /* Not-yet-reached hexes stay faint so the whole cluster
+ * silhouette reads as the track under the lit fill. */
+      .unlit {
+        opacity: 0.18;
       }
 
       @keyframes hp-loader-pulse {
@@ -198,7 +282,8 @@ export class HpLoader extends LitElement {
       }
 
       @media (prefers-reduced-motion: reduce) {
-        polygon {
+        .wave,
+        .frontier {
           animation-duration: 5s;
         }
       }
@@ -218,14 +303,27 @@ export class HpLoader extends LitElement {
     // Animation cycle length matches the CSS keyframe duration.
     const cycle = 1.4;
 
+    const determinate = this.isDeterminate;
+    // Lit hexes count along the spiral order the coords already come
+    // in — the fill winds inner ring → outer, the same path the
+    // indeterminate wave travels.
+    const lit = determinate ? Math.round(this.fraction * coords.length) : 0;
+
     const polygons = coords.map((coord, idx) => {
       const cx = cw * (coord.q + coord.r / 2);
       const cy = ch * coord.r;
       const points = hexPolygonPoints(cx, cy, s);
+      if (determinate) {
+        // The frontier (last lit hex) pulses so progress-at-rest
+        // still reads as working; a full cluster settles.
+        const frontier = idx === lit - 1 && this.fraction < 1;
+        const cls = idx < lit ? (frontier ? "frontier" : "lit") : "unlit";
+        return svg`<polygon class=${cls} points=${points}></polygon>`;
+      }
       // Negative delays spread the hexes across the cycle on first
       // paint — all start mid-animation at their assigned phase.
       const delay = -(idx / coords.length) * cycle;
-      return svg`<polygon points=${points} style=${`animation-delay: ${delay.toFixed(3)}s`}></polygon>`;
+      return svg`<polygon class="wave" points=${points} style=${`animation-delay: ${delay.toFixed(3)}s`}></polygon>`;
     });
 
     // viewBox sized to fit the outermost ring's bbox: hex centres sit

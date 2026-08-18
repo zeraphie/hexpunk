@@ -1250,10 +1250,10 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 **Loading atoms:**
 
 - `skeleton-hex` / `skeleton-rect` (`<hp-skeleton shape="hex|rect">`) — placeholder for loading content. Hex variant matches the cell it replaces (hollow with `outline-faint` stroke); rect variant covers content-card prose with optional `lines` attribute for prose-shimmer. **Scanning** motion: a thin `secondary`-tinted line sweeps across the placeholder over ~1.5s. Reduced-motion fallback is a static `outline-faint` line.
-- `loader` (`<hp-loader>`) — indeterminate progress. Hex with one edge highlighted in `primary`, advancing one edge-position per `duration-medium`. Six edges → ~1.68s per full rotation. Repeated **Charging** metaphor. `size` attr: `sm` / `md` / `lg`; `inline` variant fits inside an `<hp-cell variant="action">` for button loading.
+- `loader` (`<hp-loader>`) — radial loading indicator. Hollow cluster of small filled hexes, `size` attr `sm` / `md` / `lg`. Indeterminate (bare tag): per-hex scale pulse phased along a clockwise spiral — the **Charging** metaphor as a travelling wave. Determinate (`value` with `min` / `max`, hp-progress's contract): the same spiral order fills `round(fraction × N)` hexes lit, the rest faint so the silhouette reads as the track; the frontier hex keeps the pulse so parked progress stays alive, and a full cluster settles. Percentage label in the hollow centre at `md` / `lg` (`sm` has no hollow — fill only, value stays ARIA-only). `role="progressbar"`; `aria-valuenow` present only when determinate.
 - `progress-track` / `progress-fill` (`<hp-progress>`) — determinate or indeterminate progress bar. Linear hairline (2px), `outline-faint` track + `primary` fill. `value` 0–1 for determinate. `indeterminate` boolean → fill becomes a Scanning sweep with no terminus.
 
-**Loading-state rules.** Don't show multiple spinners simultaneously — pick one to represent the overall load. Don't use `<hp-loader>` for determinate operations — use `<hp-progress>` with the actual value. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
+**Loading-state rules.** Don't show multiple loaders simultaneously — pick one to represent the overall load. When progress is knowable, pass the actual `value` — `<hp-progress>` for linear surfaces, `<hp-loader value>` for radial — never an indeterminate wave over a knowable percent. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
 
 **Empty-state atom:**
 
