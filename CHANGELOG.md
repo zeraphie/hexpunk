@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **`<hp-grid>` pointer ownership + `pannable="false"`.** The grid is a focal-point surface and takes the mouse while the cursor is inside it — plain wheel pans, ctrl/⌘ + wheel zooms, empty-space drags pan. `pannable="false"` hands the wheel and empty-space presses back to the page for embedded contexts (cell drag and click keep working; the viewport chrome hides with the gestures).
 - **`<hp-tether>` as declarative arc data inside `<hp-grid>`** — slotted tether children (selector `from` / `to` refs, `state`, `directed`) are read as data and drawn on the grid's canvas: draw-in sweep, obstacle-aware vertex anchoring with hysteresis, camera-locked. Standalone `<hp-tether>` between arbitrary elements is untouched.
 - **`bun run stats`** (`tools/build-stats.ts`) — measures each heavy component's bundle in isolation (minified, lit external) and splits page cost from dynamically-imported deferred cost by walking static import edges, emitting `perf-stats.json` for the showcase. The published size figures regenerate instead of going stale; runtime figures stay hand-profiled in a real browser.
-- Showcase: the playground is now `<hp-grid>`'s docs demo — the full stage with its settings panel, HUD and event log inside the page's `<hp-demo>`, element markup as the code panel beneath. A shared `PerfStats` component renders every heavy component's stats disclosure with a standard performance advisory (currently hp-background and hp-grid). A document-level `:not(:defined)` upgrade guard stops unstyled light-DOM content flashing during navigation.
+- Showcase: `<hp-grid>`'s docs demo is a full interactive stage — settings panel, HUD and event log inside the page's `<hp-demo>`, element markup as the code panel beneath. A shared `PerfStats` component renders every heavy component's stats disclosure with a standard performance advisory (currently hp-background and hp-grid). A document-level `:not(:defined)` upgrade guard stops unstyled light-DOM content flashing during navigation.
 
 ### Changed
 
@@ -30,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - **`size` from `<hp-grid>`** — camera zoom subsumes it (`lg` at matching zoom is pixel-identical to `sm`). The lattice pitches from the `sm` cell token; `<hp-layout>` is the surface that scales by tier.
 - **`<hp-grid>` from the root barrel** — import it from `@hexpunk/core/grid`.
-- **The `/playground` showcase route** — it became the hp-grid docs demo.
 
 ## [0.1.1-alpha] - 2026-08-10
 
