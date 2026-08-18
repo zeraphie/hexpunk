@@ -498,6 +498,114 @@
       ]
     },
     {
+      "name": "hp-progress",
+      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
+      "attributes": [
+        {
+          "name": "min",
+          "description": "Lower bound. Default 0."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound. Default 100."
+        },
+        {
+          "name": "value",
+          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
+        },
+        {
+          "name": "indeterminate",
+          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
+          "values": [
+            {
+              "name": "HpProgressTone"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-spinner",
+      "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
+          "values": [
+            {
+              "name": "HpSpinnerTone"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
+        }
+      ]
+    },
+    {
       "name": "hp-cluster",
       "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
       "attributes": [
@@ -668,114 +776,6 @@
               "name": "vertical"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "hp-progress",
-      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-      "attributes": [
-        {
-          "name": "min",
-          "description": "Lower bound. Default 0."
-        },
-        {
-          "name": "max",
-          "description": "Upper bound. Default 100."
-        },
-        {
-          "name": "value",
-          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
-        },
-        {
-          "name": "indeterminate",
-          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-          "values": [
-            {
-              "name": "HpProgressTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-spinner",
-      "description": "Hexagonal-cluster spinner. A hollow cluster of small filled hexes\npulsing in a clockwise spiral. role=\"status\" with\naria-label=\"Loading\" by default.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Cluster size — `sm` (7 hexes inline), `md` (19 hexes default),\n`lg` (37 hexes full-page).",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. Default `neutral` reads as --hp-primary (\"system\nbusy\"); others map to the matching tone stroke.",
-          "values": [
-            {
-              "name": "HpSpinnerTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
         }
       ]
     },
@@ -1400,34 +1400,11 @@
     },
     {
       "name": "hp-grid",
-      "description": "Hex coordinate space — slotted children with q / r attributes are\npositioned by CSS transforms. `draggable` opts into drag-to-move\nand canvas pan; `tetherable` opts into drag-to-toggle hp-tether\narcs.",
+      "description": "Canvas hex grid — a pannable, zoomable viewport onto the lattice.\nSlotted children with `q` / `r` attributes become camera-riding\noverlay cells; the field beneath is engine-rendered. Ships from\n`@hexpunk/core/grid`, and the rendering engine loads by dynamic\nimport on first connect.\n\nUse `<hp-layout>` instead when the hexes are part of a page — it\nplaces the same lattice in document flow with no camera and no\nrendering dependency.",
       "attributes": [
         {
-          "name": "size",
-          "description": "Cell size for the grid — `sm` (default `hex-cell-sm`), `md`, `lg`.",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tetherable",
-          "description": "Opt into graph-editor semantics. When set, dropping a hex onto\nanother hex toggles an `<hp-tether>` arc between the two instead\nof BFS-snapping to the nearest empty axial neighbour. The\nsource snaps back to its origin slot; the target stays put. A\ntether is created if none exists between the pair (in either\ndirection); an existing tether is removed (toggle). Empty-cell\ndrops still move the hex normally. Consumers building layout\nsurfaces leave this off; consumers building graph / node\neditors turn it on."
-        },
-        {
-          "name": "draggable",
-          "description": "Opt into drag / pan. When unset (default), the grid is static —\ncells stay where they're authored and empty-space pointerdowns\ndo nothing. When set, all interactive cells become draggable\nby default and empty-space drags pan the canvas. Per-cell\noverride via the cell's own `draggable` attribute: `draggable`\n(presence) force-enables drag on that cell (useful for decorative\ncells that would otherwise be static); `draggable=\"false\"`\nforce-disables drag on that cell (useful for interactive cells\nthat should stay put)."
-        },
-        {
           "name": "layout",
-          "description": "Layout mode.\n\n- `free` (default) respects each child's authored `q` / `r`\n attributes.\n- `spiral` runs an FFD bin-pack with a spiral-from-origin scan:\n children are sorted by mask size descending, then each is\n placed at the first free position picked from a scan ordered\n by axial distance from `(0, 0)` (ring 0, then ring 1's 6\n positions, ring 2's 12, …). Produces a tight roughly-square\n honeycomb — largest cluster anchors the centre, smaller ones\n nest around it with a ≥1-hex gap.\n- `rows` runs the same FFD pack but with a row-major scan capped\n at `WIDE_HALF_COLS` axial cells wide, so the layout grows as\n left-to-right rows that wrap downward — roughly-rectangular\n wide arrangement, ideal for full-page-width surfaces (component\n index pages) where the spiral's square shape leaves too much\n horizontal space unused.\n\nChildren publish their actual filled hexes via `data-fill-cells`\n(composite elements like `<hp-cluster>` set this on slotchange);\nchildren without it are treated as single-hex. The gap check\nuses hex-adjacency (the 6 axial neighbours) — not rectangular\nbbox padding — so non-symmetric clusters' empty corners stay\navailable for neighbours to tuck into.\n\nTriggered automatically on first render when set to `spiral` or\n`rows`, and re-runs when the attribute changes. Manual repack\nvia `.pack()`. Drag interactions stay live; calling `.pack()`\nagain re-runs the FFD pack from scratch (dragged positions are\nignored).",
+          "description": "Placement strategy — same packers as `<hp-layout>`. `free`\nhonours authored `q` / `r`; `spiral` and `rows` run the shared\nfirst-fit-decreasing pack.",
           "values": [
             {
               "name": "free"
@@ -1437,6 +1414,78 @@
             },
             {
               "name": "rows"
+            }
+          ]
+        },
+        {
+          "name": "draggable",
+          "description": "Opt into drag-to-move. Per-cell override via the child's own\n`draggable` attribute: present force-enables, `draggable=\"false\"`\nforce-disables."
+        },
+        {
+          "name": "tetherable",
+          "description": "Graph-editor mode: dropping a cell onto another toggles an arc\nbetween the pair instead of moving in."
+        },
+        {
+          "name": "pannable",
+          "description": "The grid owns the pointer while the cursor is inside it — wheel\npans, ctrl/⌘-wheel zooms, empty-space drags pan. Set\n`pannable=\"false\"` to hand the wheel and empty-space presses back\nto the page; cell drag and click keep working.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "row-width",
+          "description": "Cells per row for `layout=\"rows\"`; unset uses the world-shape\ndefault.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-layout",
+      "description": "Hex layout primitive — slotted children with `q` / `r` attributes\nare placed on the axial lattice, and the element sizes to the\ncontent it placed. No camera: the page scrolls it, the way it would\nany other block. `draggable` opts into drag-to-move with snap.\nPure CSS, no rendering dependency.\n\nUse `<hp-grid>` instead for a viewport-like surface with camera\npan/zoom, semantic zoom, dive navigation or tethers.",
+      "attributes": [
+        {
+          "name": "layout",
+          "description": "Placement strategy. `free` honours each child's authored\n`q` / `r`; `spiral` packs outward from the origin in rings;\n`rows` packs in reading order with a width cap. The packed modes\nrun the same first-fit-decreasing pass the canvas grid uses.",
+          "values": [
+            {
+              "name": "free"
+            },
+            {
+              "name": "spiral"
+            },
+            {
+              "name": "rows"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Cell tier for the whole surface — the only way to scale a lattice\nthat has no camera to zoom.\n\nIt is written onto the children as their own `size`, because the\ntier is more than a width: the stroke step, the ring proportion,\nand md's flat-top orientation are all chosen by that attribute.\nPushing a cell width down instead would scale the hexes while\nleaving them drawn to another tier's proportions.\n\nLeaving it unset touches nothing — children keep whatever size\nthey were authored with, which is how a surface of mixed sizes is\nstill expressible.",
+          "values": [
+            {
+              "name": "HpLayoutSize"
+            },
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "draggable",
+          "description": "Opt into drag-to-move, pan and zoom. Per-cell override via the\nchild's own `draggable` attribute: present force-enables,\n`draggable=\"false\"` force-disables."
+        },
+        {
+          "name": "row-width",
+          "description": "Cells per row for `layout=\"rows\"`. Unset — the default — wraps\nto the element's own width, the way flex items wrap, and re-packs\nwhen that width changes. Set it to pin a fixed count for\ncompositions that must hold their shape regardless of space.",
+          "values": [
+            {
+              "name": "undefined"
             }
           ]
         }

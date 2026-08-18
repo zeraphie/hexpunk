@@ -159,4 +159,10 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
+  <script>
+    // The canvas grid ships from its own subpath; the shared layout's
+    // barrel import deliberately no longer registers it.
+    import "../../../../../src/grid.ts";
+  </script>
 </Layout>

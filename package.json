@@ -1,6 +1,6 @@
 {
   "name": "@hexpunk/core",
-  "version": "0.1.1-alpha",
+  "version": "0.2.0",
   "private": false,
   "description": "Hexagonal-first, wireframe-cyberpunk Lit component design system.",
   "keywords": [
@@ -37,6 +37,10 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./grid": {
+      "types": "./dist/types/grid.d.ts",
+      "import": "./dist/grid.js"
+    },
     "./elements.css": "./src/styles/elements.css",
     "./hp-base.css": "./src/styles/hp-base.css",
     "./hp-latex.css": "./src/styles/hp-latex.css",
@@ -55,6 +59,7 @@
     "analyze": "cem analyze --litelement --globs 'src/**/*.ts' && bun run vscode-data",
     "vscode-data": "bun run tools/build-vscode-data.ts",
     "tokens": "bun run tools/build-tokens.ts",
+    "stats": "bun run tools/build-stats.ts",
     "icons": "bun run tools/build-icons.ts",
     "fonts": "bun run tools/build-fonts.ts",
     "logos": "bun run tools/build-logos.ts",
@@ -67,7 +72,8 @@
     "setup:bindings": "bun run tools/setup-bindings.ts"
   },
   "dependencies": {
-    "lit": "^3.2.0"
+    "lit": "^3.2.0",
+    "pixi.js": "^8.19.0"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.10.0",

@@ -5,7 +5,6 @@
   a small R8 texture, once per (hex-size, DPR) pair. Runtime
   then pays a single texture sample per fragment instead of
   ~30 ALU ops of hex math — and REPEAT wrap tiles it forever.
-  (PLAN.hp-grid-smoothness.md § Decisions › Step 2 architecture)
 */
 
 import { VERTEX_SHADER_SOURCE, createProgram } from "./gl.js";

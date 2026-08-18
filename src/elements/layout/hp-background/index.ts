@@ -7,7 +7,6 @@
   pointer stirs — a wake that drifts and fades. This file is
   only lifecycle + wiring; each concern lives in its sibling
   module.
-  (PLAN.hp-grid-smoothness.md § Steps › Steps 3-4)
 */
 
 import { LitElement, html } from "lit";

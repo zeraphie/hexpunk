@@ -1,5 +1,5 @@
 // convert-jsx-panels.ts — One-shot transformer for the
-// HTML-code-panel migration (see PLAN.html-code-panels.md).
+// HTML-code-panel migration.
 //
 // Reads every showcase page and rewrites `<hp-code language="jsx">`
 // panels into `<hp-code language="html">` panels containing just the

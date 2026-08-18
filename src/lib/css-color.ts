@@ -5,7 +5,6 @@
   browser's canvas-2D rasteriser do the parsing — one shared
   1×1 context, every colour form supported (oklch, color-mix,
   named colours) with no hand-rolled parser to maintain.
-  (PLAN.hp-grid-smoothness.md § Decisions › Token bridge)
 */
 
 /** Module-scoped canvas-2D context used to canonicalise / rasterise

@@ -1,6 +1,36 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import ComponentDocs from "../../../components/ComponentDocs.astro";
+import PerfStats from "../../../components/PerfStats.astro";
+import perfStats from "../../../data/perf-stats.json";
+
+const kb = (bytes: number) => Math.round(bytes / 1024);
+
+const STATS = [
+  {
+    cost: "Script",
+    measured: `${kb(perfStats.stats["hp-background"].static.minifiedBytes)}&nbsp;KB minified · ${kb(
+      perfStats.stats["hp-background"].static.gzippedBytes
+    )}&nbsp;KB gzipped`,
+    context: "about 2.5 times a typical hexpunk atom (5.6&nbsp;KB gzipped)",
+  },
+  {
+    cost: "Initialisation (once, when it connects)",
+    measured: "about 20&nbsp;milliseconds",
+    context: "creates the WebGL context, compiles the shaders and bakes the tile; slower on weak GPUs",
+  },
+  {
+    cost: "Animating",
+    measured: "about 0.1&nbsp;milliseconds of CPU time per frame",
+    context:
+      "9 frames in 10 stay under 0.7&nbsp;milliseconds — the energy-field simulation runs at one-eighth of the viewport's resolution, a sixty-fourth of the pixels",
+  },
+  {
+    cost: "Idle",
+    measured: "0 frames",
+    context: "the render loop sleeps; pointer movement, scrolling or an ignition wakes it",
+  },
+];
 ---
 
 <Layout title="hp-background">
@@ -14,50 +44,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </p>
 
     <Fragment slot="notice">
-      <hp-collapsible class="perf-collapsible">
-        <button slot="trigger" class="stats-trigger" type="button">
-          <hp-cell variant="action" size="xxs" aria-hidden="true">
-            <hp-pixel class="stats-pixel" type="expandable" pixel-size="2"></hp-pixel>
-          </hp-cell>
-          <span class="stats-label">
-            <span class="when-closed">show stats</span>
-            <span class="when-open">hide stats</span>
-          </span>
-        </button>
-        <hp-separator></hp-separator>
-        <table class="perf-status">
-        <thead>
-          <tr>
-            <th scope="col">Cost</th>
-            <th scope="col">Measured</th>
-            <th scope="col">Context</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Script</td>
-            <td>43&nbsp;KB min · 14&nbsp;KB gzip</td>
-            <td>≈2.5× a typical hexpunk atom (5.6&nbsp;KB gzip)</td>
-          </tr>
-          <tr>
-            <td>Init (once, at connect)</td>
-            <td>~20&nbsp;ms</td>
-            <td>WebGL context + shader compile + tile bake; slower on weak GPUs</td>
-          </tr>
-          <tr>
-            <td>Animating</td>
-            <td>~0.1&nbsp;ms CPU / frame</td>
-            <td>p90 0.7&nbsp;ms; field sim at 1/8 viewport resolution</td>
-          </tr>
-          <tr>
-            <td>Idle</td>
-            <td>0 frames</td>
-            <td>render loop sleeps; wakes on pointer / scroll / ignite</td>
-          </tr>
-        </tbody>
-        </table>
-        <hp-separator></hp-separator>
-      </hp-collapsible>
+      <PerfStats rows={STATS} />
     </Fragment>
 
     <p>
@@ -94,26 +81,27 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </hp-demo>
 
     <p>
-      <code>hp-background</code> as a sibling of the grid cells inside an <code>hp-grid</code>.
-      The grid's drag / pan behaviour is unaffected — the backdrop has
-      <code>pointer-events: none</code>, so cells and pan still receive the pointer.
+      <code>hp-background</code> as a sibling of the cells inside an <code>hp-layout</code>.
+      Drag behaviour is unaffected — the backdrop has <code>pointer-events: none</code>, so
+      cells still receive the pointer. (The canvas <code>hp-grid</code> draws its own hex
+      field, so it takes no backdrop; ambient texture belongs behind in-flow surfaces.)
     </p>
-    <hp-demo caption="Behind a layout grid">
-      <hp-grid draggable>
+    <hp-demo caption="Behind a layout surface">
+      <hp-layout draggable>
         <hp-background></hp-background>
         <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
         <hp-cell variant="action" q="1" r="0">east</hp-cell>
         <hp-cell variant="action" q="-1" r="0">west</hp-cell>
         <hp-cell variant="content" q="0" r="-1" size="sm">north</hp-cell>
         <hp-cell variant="content" q="0" r="1" size="sm">south</hp-cell>
-      </hp-grid>
+      </hp-layout>
 
       <hp-code slot="code" language="html">{`<body>
-  <hp-grid draggable>
+  <hp-layout draggable>
     <hp-background></hp-background>
     <hp-cell variant="anchor" q="0" r="0">centre</hp-cell>
     <hp-cell variant="action" q="1" r="0">east</hp-cell>
-  </hp-grid>
+  </hp-layout>
 </body>`}</hp-code>
     </hp-demo>
 
@@ -202,79 +190,5 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
 </Layout>
-
-<style>
-  /* Muted status readout — informational, not a focal element,
-   * tucked behind a small "show stats" disclosure. */
-  .perf-status {
-    font-size: 0.85rem;
-    color: var(--hp-on-surface-variant);
-  }
-
-  .perf-collapsible hp-separator:first-of-type {
-    margin-bottom: 32px;
-  }
-
-  .perf-collapsible hp-separator:last-of-type {
-    margin-block: 32px;
-  }
-
-  /* One native button is the whole trigger — hex, pixel morph, and
-   * label share a single hitbox, hover surface, and focus stop. The
-   * hex is presentational (hp-cell, not hp-button — no nested
-   * buttons); the label lives beside it, never inside, per the
-   * inline-control-tier pattern. */
-  .stats-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--hp-xs, 8px);
-    padding: var(--hp-xxs, 4px);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--hp-on-surface-variant);
-  }
-
-  .stats-trigger:hover,
-  .stats-trigger:focus-visible {
-    color: var(--hp-on-surface);
-  }
-
-  .stats-trigger:focus-visible {
-    outline: 2px solid var(--hp-primary);
-    outline-offset: 2px;
-  }
-
-  .stats-label {
-    white-space: nowrap;
-    font-family: var(--hp-typo-label-sm-font-family);
-    font-size: var(--hp-typo-label-sm-font-size);
-    font-weight: var(--hp-typo-label-sm-font-weight);
-    letter-spacing: var(--hp-typo-label-sm-letter-spacing);
-    text-transform: uppercase;
-  }
-
-  .stats-label .when-open,
-  .stats-trigger[aria-expanded="true"] .when-closed {
-    display: none;
-  }
-
-  .stats-trigger[aria-expanded="true"] .when-open {
-    display: inline;
-  }
-
-  /* Pixel morph rides the BUTTON's state, not its own: rest is the
-   * square (idle), row-hover fans to the plus, press-and-hold or
-   * expanded rotates to the cross. The state vars are published by
-   * hp-pixel; the page just picks which one the shadow shows. */
-  .stats-trigger:hover .stats-pixel,
-  .stats-trigger:focus-visible .stats-pixel {
-    --hp-pixel-shadow: var(--hp-pixel-hover);
-  }
-
-  .stats-trigger:active .stats-pixel,
-  .stats-trigger[aria-expanded="true"] .stats-pixel {
-    --hp-pixel-shadow: var(--hp-pixel-active);
-  }
-</style>

@@ -5,7 +5,6 @@
   SVG-data-URL hex tile instead — degraded but present, no
   cursor reactivity, inherently full-height (it is a CSS
   background, not a canvas).
-  (PLAN.hp-grid-smoothness.md § Open questions › Q2, resolved)
 */
 
 /**
