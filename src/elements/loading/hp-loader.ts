@@ -14,6 +14,22 @@
 // keeps the scale pulse so the loader stays visibly alive between
 // value changes; at 100% the pulse stops and the cluster settles.
 //
+// Forward fill is choreographed, never cut: moving the frontier
+// mid-pulse reads as a flash, so each newly due hex lights only
+// after the previous one's animation completes — one hex per
+// animation, rippling outward until the fill reaches the value. A
+// parked frontier runs the full 1.4s pulse loop; while catching up
+// each hex plays a one-shot ignite — a one-way grow from the faint
+// not-progress state into the lit progress state — whose duration
+// shrinks with the backlog (base ÷ backlog, floored), so a deep
+// queue ripples faster and the fill stays on the value's heels.
+// That bumpy catch-up is the default (`timing="irregular"`);
+// `timing="linear"` spends the measured due-rate instead of the
+// fixed budget, locking the ripple to the value's own pace.
+// The label and ARIA carry the true value immediately. Mode entry,
+// a regressing value, and the from-empty start snap instead (there
+// is no in-flight animation worth finishing).
+//
 // hp-progress is the linear counterpart; this is the radial one.
 // Both share the min / max / value / indeterminate contract and
 // progressbar semantics — aria-valuenow is present only when
@@ -38,12 +54,15 @@
 // it — the visual stays alive at a calm pace for users who've opted
 // out of motion.
 
-import { LitElement, css, html, svg } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { LitElement, css, html, nothing, svg } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import type { PropertyValues } from "lit";
 
 import { hpBase } from "../../styles/hp-base.js";
 
 export type HpLoaderTone = "neutral" | "positive" | "warn" | "alert" | "error";
+
+export type HpLoaderTiming = "irregular" | "linear";
 
 const SQRT3 = Math.sqrt(3);
 
@@ -126,6 +145,18 @@ const SIZE_CONFIG: Record<"sm" | "md" | "lg", SizeConfig> = {
   lg: { firstRing: 2, lastRing: 3, hexSize: 6, gap: 1.18 },
 };
 
+/** Catch-up ignite pacing: each due hex's grow-in runs at
+ * base ÷ backlog (floored) so the whole backlog clears in roughly
+ * the base duration however deep it is, while a single due hex
+ * gets the full unhurried grow. The floor keeps the cascade
+ * readable when dozens of hexes are due at once. Reduced-motion
+ * uses the slower pair — the duration is applied inline (it is
+ * per-hex dynamic), which would override a CSS media query. */
+const IGNITE_BASE_MS = 350;
+const IGNITE_MIN_MS = 50;
+const IGNITE_REDUCED_BASE_MS = 800;
+const IGNITE_REDUCED_MIN_MS = 200;
+
 /**
  * Hexagonal-cluster loader. A hollow cluster of small filled hexes —
  * a clockwise spiral wave when indeterminate, a spiral progress fill
@@ -164,6 +195,15 @@ export class HpLoader extends LitElement {
   @property({ reflect: true, type: Boolean })
   indeterminate = false;
 
+  /** Catch-up pacing. `irregular` (default) clears any backlog
+   * inside a fixed ~⅓s budget, so bursts of progress visibly
+   * quicken the ripple — the honest "this part loaded faster" jank
+   * real loaders have. `linear` locks the per-hex pace to the
+   * value's measured advance rate instead, so the ripple flows at
+   * constant speed. */
+  @property({ reflect: true })
+  timing: HpLoaderTiming = "irregular";
+
   /** Determinate when a value is set and `indeterminate` doesn't
    * override it — the mode rule the renderer and ARIA share. */
   private get isDeterminate(): boolean {
@@ -180,8 +220,119 @@ export class HpLoader extends LitElement {
     return Math.min(1, Math.max(0, (v - this.min) / span));
   }
 
+  /** Hexes due lit for the current value — `round(fraction × N)`. */
+  private get targetLit(): number {
+    const config = SIZE_CONFIG[this.size];
+    const n = getRingCoords(config.firstRing, config.lastRing).length;
+    return Math.round(this.fraction * n);
+  }
+
+  /** Hexes actually rendered lit. Trails `targetLit` on forward
+   * progress — advancing exactly one hex per completed frontier
+   * animation (see `handleFrontierAnimation`), so every hex
+   * animates once before the next lights. */
+  @state()
+  private visualLit = 0;
+
+  /** How the frontier animates: the parked 1.4s pulse loop, or the
+   * quick one-shot ignite while the fill is catching up. Sticky for
+   * the current frontier — re-evaluated only when the frontier
+   * moves, never mid-animation. */
+  @state()
+  private frontierMode: "pulse" | "ignite" = "pulse";
+
+  /** Duration of the current ignite, frozen when it starts —
+   * recomputing mid-flight would rescale the running animation and
+   * visibly jump it. */
+  private igniteDurationMs = IGNITE_BASE_MS;
+
+  /** Read once at connect; the ignite duration maths swaps to the
+   * slower reduced pair when set (and ignores the linear-timing
+   * estimator — calm choreography wins over rate-matching). */
+  private reducedMotion = false;
+
+  /** `timing="linear"` rate estimator: EMA of the interval per newly
+   * due hex, sampled in `willUpdate` whenever the target advances.
+   * Samples cap at the base duration so stalls can't poison the
+   * average upward. */
+  private estIntervalMs = IGNITE_BASE_MS;
+  private prevTargetLit = 0;
+  private lastAdvanceAt = 0;
+
+  /** Per-hex ignite duration for the given backlog. `irregular`
+   * spends the fixed base budget — quicker the deeper the queue;
+   * `linear` spends the measured due-interval, locking the ripple
+   * to the value's own pace. */
+  private igniteDuration(backlog: number): number {
+    if (this.reducedMotion) {
+      return Math.max(
+        IGNITE_REDUCED_MIN_MS,
+        Math.round(IGNITE_REDUCED_BASE_MS / Math.max(1, backlog))
+      );
+    }
+    const budget = this.timing === "linear" ? this.estIntervalMs : IGNITE_BASE_MS;
+    return Math.max(IGNITE_MIN_MS, Math.round(budget / Math.max(1, backlog)));
+  }
+
+  /** Previous-update mode, so entering determinate renders the fill
+   * directly instead of animating a catch-up from zero. */
+  private wasDeterminate = false;
+
+  override willUpdate(_changed: PropertyValues<this>): void {
+    const determinate = this.isDeterminate;
+    if (determinate) {
+      const target = this.targetLit;
+      // Sample the due-rate while the target advances — feeds the
+      // `linear` pacing. Equal-weight EMA follows tempo changes in
+      // a couple of steps without twitching on a single outlier.
+      if (target > this.prevTargetLit) {
+        const now = performance.now();
+        if (this.lastAdvanceAt > 0) {
+          const perHex = Math.min(
+            (now - this.lastAdvanceAt) / (target - this.prevTargetLit),
+            IGNITE_BASE_MS
+          );
+          this.estIntervalMs = this.estIntervalMs * 0.5 + perHex * 0.5;
+        }
+        this.lastAdvanceAt = now;
+      }
+      this.prevTargetLit = target;
+      // Catch-up choreography covers forward progress only. Mode
+      // entry paints the fill as-is; a regressing value snaps down;
+      // and from empty there is no animating frontier to wait on —
+      // without this the fill would deadlock at zero.
+      if (!this.wasDeterminate || target < this.visualLit || this.visualLit === 0) {
+        this.visualLit = target;
+        this.frontierMode = "pulse";
+      }
+    }
+    this.wasDeterminate = determinate;
+  }
+
+  /** The frontier finished an animation (a parked-pulse iteration
+   * or a one-shot ignite) — the only moments the fill may advance.
+   * One hex per completion: the next hex ignites if the fill is
+   * still behind, or the frontier settles into the parked pulse. */
+  private handleFrontierAnimation = (e: AnimationEvent): void => {
+    const isOurs = e.animationName === "hp-loader-pulse" || e.animationName === "hp-loader-ignite";
+    if (!this.isDeterminate || !isOurs) {
+      return;
+    }
+    if (this.targetLit > this.visualLit) {
+      this.visualLit += 1;
+      // Every newly lit hex grows in — the last due one included;
+      // it parks into the pulse when its own ignite completes.
+      this.frontierMode = "ignite";
+      this.igniteDurationMs = this.igniteDuration(this.targetLit - this.visualLit);
+    } else if (this.frontierMode === "ignite") {
+      // Ignite finished with nothing due — park into the pulse loop.
+      this.frontierMode = "pulse";
+    }
+  };
+
   override connectedCallback(): void {
     super.connectedCallback();
+    this.reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!this.hasAttribute("role")) {
       this.setAttribute("role", "progressbar");
     }
@@ -263,6 +414,14 @@ export class HpLoader extends LitElement {
         animation: hp-loader-pulse 1.4s ease-in-out infinite;
       }
 
+      /* Catch-up ignite: the frontier's one-shot while the fill is
+ * behind the value — one hex per shot. A one-way grow from the
+ * faint not-progress state into the lit progress state; never
+ * an oscillation, so lit-ness only ever increases. */
+      .ignite {
+        animation: hp-loader-ignite 0.35s ease-out;
+      }
+
       /* Not-yet-reached hexes stay faint so the whole cluster
  * silhouette reads as the track under the lit fill. */
       .unlit {
@@ -291,6 +450,17 @@ export class HpLoader extends LitElement {
         }
       }
 
+      @keyframes hp-loader-ignite {
+        from {
+          transform: scale(0.25);
+          opacity: 0.18;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .wave,
         .frontier {
@@ -316,19 +486,23 @@ export class HpLoader extends LitElement {
     const determinate = this.isDeterminate;
     // Lit hexes count along the spiral order the coords already come
     // in — the fill winds inner ring → outer, the same path the
-    // indeterminate wave travels.
-    const lit = determinate ? Math.round(this.fraction * coords.length) : 0;
+    // indeterminate wave travels. `visualLit` (not the raw value)
+    // drives the split so forward progress lands at pulse boundaries.
+    const lit = determinate ? Math.min(this.visualLit, coords.length) : 0;
 
     const polygons = coords.map((coord, idx) => {
       const cx = cw * (coord.q + coord.r / 2);
       const cy = ch * coord.r;
       const points = hexPolygonPoints(cx, cy, s);
       if (determinate) {
-        // The frontier (last lit hex) pulses so progress-at-rest
-        // still reads as working; a full cluster settles.
-        const frontier = idx === lit - 1 && this.fraction < 1;
-        const cls = idx < lit ? (frontier ? "frontier" : "lit") : "unlit";
-        return svg`<polygon class=${cls} points=${points}></polygon>`;
+        // The frontier (last lit hex) animates — the parked pulse,
+        // or the backlog-paced ignite while catching up; a full
+        // cluster settles. Everything else holds steady.
+        const frontier = idx === lit - 1 && lit < coords.length;
+        const igniting = frontier && this.frontierMode === "ignite";
+        const cls = idx < lit ? (frontier ? (igniting ? "ignite" : "frontier") : "lit") : "unlit";
+        const style = igniting ? `animation-duration: ${this.igniteDurationMs}ms` : nothing;
+        return svg`<polygon class=${cls} points=${points} style=${style}></polygon>`;
       }
       // Negative delays spread the hexes across the cycle on first
       // paint — all start mid-animation at their assigned phase.
@@ -362,6 +536,8 @@ export class HpLoader extends LitElement {
         viewBox=${`${-halfW} ${-halfH} ${halfW * 2} ${halfH * 2}`}
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
+        @animationiteration=${determinate ? this.handleFrontierAnimation : nothing}
+        @animationend=${determinate ? this.handleFrontierAnimation : nothing}
       >
         ${polygons} ${label}
       </svg>

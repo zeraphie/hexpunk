@@ -40,7 +40,7 @@ export { HpLabel } from "./elements/forms/hp-label.js";
 export { HpLatex, type HpLatexRenderer } from "./elements/primitives/hp-latex.js";
 export { HpLink } from "./elements/navigation/hp-link.js";
 export { HpLinkNode } from "./elements/hp-link-node.js";
-export { HpLoader, type HpLoaderTone } from "./elements/loading/hp-loader.js";
+export { HpLoader, type HpLoaderTiming, type HpLoaderTone } from "./elements/loading/hp-loader.js";
 export { HpMenubar } from "./elements/navigation/hp-menubar.js";
 export { HpNavigationMenu, HpNavItem } from "./elements/navigation/hp-navigation-menu.js";
 export { HpOption, HpSelect } from "./elements/forms/hp-select.js";
