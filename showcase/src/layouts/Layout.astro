@@ -1096,6 +1096,25 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
           // sessionStorage unavailable — the expand keyframes fall
           // back to their default peak.
         }
+        // Back/forward scroll restoration: the router calls a plain
+        // scrollTo at swap time, which (a) obeys the site's
+        // scroll-behavior: smooth — a multi-hundred-ms glide instead
+        // of a jump — and (b) runs before Lit elements have produced
+        // their first shadow render, so the still-collapsed page can
+        // clamp it. Re-apply the entry's stored position after the
+        // pending element updates flush (same microtask drain,
+        // still before first paint), instantly — which also cancels
+        // the router's in-flight glide. Forward navigations store
+        // 0/0 on their fresh entry, so this is a no-op for them.
+        const stored = history.state as { scrollX?: number; scrollY?: number } | null;
+        if (stored && typeof stored.scrollY === "number" && typeof stored.scrollX === "number") {
+          const { scrollX: left, scrollY: top } = stored;
+          queueMicrotask(() => {
+            if (window.scrollX !== left || window.scrollY !== top) {
+              scrollTo({ left, top, behavior: "instant" });
+            }
+          });
+        }
       });
 
       // Fires on the initial load and after every router navigation,
