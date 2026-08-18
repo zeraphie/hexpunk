@@ -403,47 +403,52 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         }
         return name === "light" ? "github-light" : "tokyo-night";
       }
-      const shikiHighlighter: Parameters<typeof HpCode.setHighlighter>[0] = async (
-        code,
-        lang,
-        el,
-      ) => {
+      // Once the singleton is warm the adapter answers SYNCHRONOUSLY:
+      // hp-code applies a sync result before its first render, so on
+      // every navigation after the first tokenisation of the session,
+      // code paints highlighted on the first frame instead of
+      // flashing plain monospace for a beat. Only the very first
+      // code block of a session takes the async path.
+      const SHIKI_THEMES = ["github-light", "tokyo-night"];
+      const SHIKI_LANGS = ["html", "css", "javascript", "typescript", "jsx", "tsx", "bash", "json"];
+      let shikiSingleton: {
+        codeToHtml(code: string, options: { lang: string; theme: string }): string;
+      } | null = null;
+
+      function tokenizeWarm(code: string, lang: string, theme: string): string | null {
+        try {
+          const html = shikiSingleton!.codeToHtml(code, { lang, theme });
+          return html.replace(/^<pre[^>]*><code[^>]*>/, "").replace(/<\/code><\/pre>$/, "");
+        } catch (err) {
+          // Unknown language, theme, or engine failure — surface the
+          // error so it's diagnosable, then fall back to plain
+          // monospaced text in hp-code.
+          console.warn(`[hp-code] Shiki failed for lang="${lang}" theme="${theme}":`, err);
+          return null;
+        }
+      }
+
+      const shikiHighlighter: Parameters<typeof HpCode.setHighlighter>[0] = (code, lang, el) => {
         if (!lang) {
           return null;
         }
         const theme = shikiThemeFor(el);
-        try {
-          const { getSingletonHighlighter } = await import("shiki");
-          const highlighter = await getSingletonHighlighter({
-            themes: ["github-light", "tokyo-night"],
-            langs: [
-              "html",
-              "css",
-              "javascript",
-              "typescript",
-              "jsx",
-              "tsx",
-              "bash",
-              "json",
-            ],
-          });
-          const html = highlighter.codeToHtml(code, {
-            lang: lang as never,
-            theme,
-          });
-          return html
-            .replace(/^<pre[^>]*><code[^>]*>/, "")
-            .replace(/<\/code><\/pre>$/, "");
-        } catch (err) {
-          // Unknown language, theme, or load failure — surface the
-          // error so it's diagnosable, then fall back to plain
-          // monospaced text in hp-code.
-          console.warn(
-            `[hp-code] Shiki failed for lang="${lang}" theme="${theme}":`,
-            err,
-          );
-          return null;
+        if (shikiSingleton) {
+          return tokenizeWarm(code, lang, theme);
         }
+        return (async () => {
+          try {
+            const { getSingletonHighlighter } = await import("shiki");
+            shikiSingleton = await getSingletonHighlighter({
+              themes: SHIKI_THEMES,
+              langs: SHIKI_LANGS,
+            });
+          } catch (err) {
+            console.warn(`[hp-code] Shiki failed to load:`, err);
+            return null;
+          }
+          return tokenizeWarm(code, lang, theme);
+        })();
       };
       HpCode.setHighlighter(shikiHighlighter);
 
@@ -1075,23 +1080,26 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       HpUnfoldPage.setNavigate((href) => void navigate(href));
 
       document.addEventListener("astro:before-swap", (ev) => {
-        routerNavDirection = (ev as TransitionBeforeSwapEvent).direction;
+        const swap = ev as TransitionBeforeSwapEvent;
+        routerNavDirection = swap.direction;
+        // Stamp the active theme onto the INCOMING document before
+        // the swap installs its <html> attributes. Elements connect
+        // — and hp-code tokenises — during the swap itself, so
+        // re-applying the theme afterwards would let a light-mode
+        // page tokenise against the dark default. The incoming
+        // document never carries data-theme; it's client-set.
+        swap.newDocument.documentElement.setAttribute(
+          "data-theme",
+          document.documentElement.getAttribute("data-theme") ?? "dark",
+        );
       });
 
-      // The swap resets <html>'s attributes to the incoming page's
-      // server-rendered set, which carries neither the client-set
-      // data-theme nor the --hp-unfold-peak inline style. Re-apply
-      // both after the swap, before the new state paints — the
-      // same-document mirror of the inline head init scripts.
+      // The swap resets <html>'s style attribute to the incoming
+      // page's server-rendered (empty) one, which drops the
+      // --hp-unfold-peak custom property. Re-apply it after the
+      // swap, before the new state paints — the same-document
+      // mirror of the inline head init script.
       document.addEventListener("astro:after-swap", () => {
-        try {
-          const stored = localStorage.getItem("hp-theme");
-          const theme =
-            stored || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
         try {
           const peak = sessionStorage.getItem(UNFOLD_PEAK_KEY);
           if (peak) {
