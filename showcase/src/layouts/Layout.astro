@@ -346,7 +346,17 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       import { prefetch } from "astro:prefetch";
       import { navigate, type TransitionBeforeSwapEvent } from "astro:transitions/client";
 
-      import { HpCode, HpLatex, HpUnfoldPage } from "../../../src/index.ts";
+      import {
+        beginUnfoldNavigation,
+        buildUnfoldOverlay,
+        computePeakScale,
+        HpCode,
+        HpLatex,
+        setNavigate,
+        unfoldSourceColor,
+        UNFOLD_STORAGE_PEAK,
+        UNFOLD_STORAGE_TARGET,
+      } from "../../../src/index.ts";
       import katex from "katex";
 
       // ── Math renderer (KaTeX) ─────────────────────────────────
@@ -822,52 +832,12 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       window.addEventListener("hashchange", rebuildTOC);
 
       // ── hp-unfold-page for text links ──────────────────────────
-      // Any <a data-hp-unfold> link triggers the same view-transition
-      // expand animation as <hp-unfold-page>. The link's own CSS
-      // color becomes the overlay's fill so the brand colour floods
-      // the viewport at peak expansion. Created as a fixed-position
-      // hex-clipped div at the link's bbox with view-transition-name
-      // set to "hp-unfold-source" — the same name hp-unfold-page
-      // uses, so the existing ::view-transition-old keyframes
-      // (defined in global.css) drive the animation.
-      const HEX_CLIP =
-        "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-      const UNFOLD_TARGET_KEY = "hp-unfold-target";
-      const UNFOLD_PEAK_KEY = "hp-unfold-peak";
-      const MIN_PEAK = 25;
-
-      function computePeak(rect: { width: number }): number {
-        const target = 2 * Math.max(window.innerWidth, window.innerHeight);
-        const w = Math.max(rect.width, 1);
-        return Math.max(MIN_PEAK, target / w);
-      }
-
-      function buildOverlay(
-        rect: DOMRect,
-        color: string,
-      ): HTMLDivElement {
-        const seed = Math.max(rect.width, rect.height, 32);
-        const hexHeight = seed * 1.1547;
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const overlay = document.createElement("div");
-        overlay.setAttribute("aria-hidden", "true");
-        overlay.dataset.hpUnfoldOverlay = "";
-        Object.assign(overlay.style, {
-          position: "fixed",
-          left: `${cx - seed / 2}px`,
-          top: `${cy - hexHeight / 2}px`,
-          width: `${seed}px`,
-          height: `${hexHeight}px`,
-          background: color || "var(--hp-primary)",
-          clipPath: HEX_CLIP,
-          zIndex: "9999",
-          pointerEvents: "none",
-          willChange: "transform, opacity",
-        });
-        return overlay;
-      }
-
+      // Any <a data-hp-unfold> link rides the library's shared
+      // unfold departure — same overlay, keyframes, and storage
+      // handshake as <hp-unfold-page> and <hp-nav-item unfold>. The
+      // registered setNavigate (below) makes the expand run as a
+      // same-document view transition, so the destination arrives
+      // with every element already defined.
       document.addEventListener("click", (ev) => {
         const target = ev.target as Element | null;
         const link = target?.closest<HTMLAnchorElement>("a[data-hp-unfold]");
@@ -885,32 +855,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
           return;
         }
         ev.preventDefault();
-
-        const rect = link.getBoundingClientRect();
-        const color = window.getComputedStyle(link).color || "";
-        const overlay = buildOverlay(rect, color);
-        overlay.style.viewTransitionName = "hp-unfold-source";
-        document.body.appendChild(overlay);
-
-        const peak = computePeak(rect);
-        document.documentElement.style.setProperty(
-          "--hp-unfold-peak",
-          String(peak),
-        );
-
-        try {
-          const pathname = new URL(link.href, location.origin).pathname;
-          sessionStorage.setItem(UNFOLD_TARGET_KEY, pathname);
-          sessionStorage.setItem(UNFOLD_PEAK_KEY, String(peak));
-        } catch {
-          // sessionStorage unavailable — forward still works, back
-          // animation will just fall back to the default fade.
-        }
-
-        // Through the router, so the expand runs as a same-document
-        // view transition on the same keyframes and the destination
-        // arrives with every element already defined.
-        void navigate(link.href);
+        beginUnfoldNavigation(link, link.href);
       });
 
       // ── Back-nav reverse animation ────────────────────────────
@@ -924,7 +869,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         sourceEl: HTMLElement;
         color: string;
       } | null {
-        const target = sessionStorage.getItem(UNFOLD_TARGET_KEY);
+        const target = sessionStorage.getItem(UNFOLD_STORAGE_TARGET);
         if (!target) {
           return null;
         }
@@ -968,19 +913,30 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
             if (!source) {
               continue;
             }
-            const computed = window.getComputedStyle(source);
-            const color =
-              computed.getPropertyValue("--hp-stroke-color").trim() ||
-              computed.color ||
-              "var(--hp-primary)";
-            sessionStorage.removeItem(UNFOLD_TARGET_KEY);
-            return { sourceEl: source, color };
+            sessionStorage.removeItem(UNFOLD_STORAGE_TARGET);
+            return { sourceEl: source, color: unfoldSourceColor(source) };
           } catch {
             // Skip and continue searching.
           }
         }
 
-        // 2) Fall back to a data-hp-unfold link whose href matches.
+        // 2) An <hp-nav-item unfold> whose href matches — the item
+        //    itself is the source hexes shrink back onto.
+        const navItems = document.querySelectorAll<HTMLElement>("hp-nav-item[unfold][href]");
+        for (const item of navItems) {
+          try {
+            const itemHref = item.getAttribute("href");
+            if (!itemHref || new URL(itemHref, location.origin).pathname !== target) {
+              continue;
+            }
+            sessionStorage.removeItem(UNFOLD_STORAGE_TARGET);
+            return { sourceEl: item, color: unfoldSourceColor(item) };
+          } catch {
+            // Skip and continue searching.
+          }
+        }
+
+        // 3) Fall back to a data-hp-unfold link whose href matches.
         const links =
           document.querySelectorAll<HTMLAnchorElement>("a[data-hp-unfold]");
         for (const link of links) {
@@ -988,9 +944,8 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
             if (new URL(link.href, location.origin).pathname !== target) {
               continue;
             }
-            const color = window.getComputedStyle(link).color || "";
-            sessionStorage.removeItem(UNFOLD_TARGET_KEY);
-            return { sourceEl: link, color };
+            sessionStorage.removeItem(UNFOLD_STORAGE_TARGET);
+            return { sourceEl: link, color: unfoldSourceColor(link) };
           } catch {
             // Skip and continue searching.
           }
@@ -1021,8 +976,11 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         if (rect.width === 0 || rect.height === 0) {
           return;
         }
-        const peak = computePeak(rect);
-        const overlay = buildOverlay(rect, match.color);
+        const peak = computePeakScale(rect);
+        const overlay = buildUnfoldOverlay(match.sourceEl, match.color);
+        if (!overlay) {
+          return;
+        }
         overlay.style.transform = `scale(${peak})`;
         document.body.appendChild(overlay);
         // Force the initial scale to commit before animating, so the
@@ -1074,11 +1032,12 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       });
 
       // ── Client-router lifecycle ───────────────────────────────
-      // hp-unfold-page defaults to a full document navigation; under
-      // the router that reload is exactly the flash this site
-      // avoids. With Astro's navigate() registered, the expand runs
-      // as a same-document view transition on the same keyframes.
-      HpUnfoldPage.setNavigate((href) => void navigate(href));
+      // Navigating hexpunk elements default to full document
+      // navigations; under the router that reload is exactly the
+      // flash this site avoids. One registration covers every
+      // element and sequence — hp-unfold-page, hp-nav-item, and the
+      // data-hp-unfold link handler above all route through it.
+      setNavigate((href) => void navigate(href));
 
       document.addEventListener("astro:before-swap", (ev) => {
         const swap = ev as TransitionBeforeSwapEvent;
@@ -1102,7 +1061,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       // mirror of the inline head init script.
       document.addEventListener("astro:after-swap", () => {
         try {
-          const peak = sessionStorage.getItem(UNFOLD_PEAK_KEY);
+          const peak = sessionStorage.getItem(UNFOLD_STORAGE_PEAK);
           if (peak) {
             document.documentElement.style.setProperty("--hp-unfold-peak", peak);
           }

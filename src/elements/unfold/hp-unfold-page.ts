@@ -12,9 +12,10 @@
 // targets a separate overlay element rather than the source's own
 // snapshot.
 //
-// **Mechanism — overlay + View Transitions.** On click we create a
-// fixed-position hex-clipped div at the source's bbox, fill it with
-// the source's `--hp-stroke-color`, and set
+// **Mechanism — overlay + View Transitions.** On click the shared
+// departure sequence (departure.ts) creates a fixed-position
+// hex-clipped div at the source's bbox, fills it with the source's
+// `--hp-stroke-color`, and sets
 // `view-transition-name: hp-unfold-source` on the overlay. The
 // browser snapshots the overlay; the
 // `::view-transition-old(hp-unfold-source)` keyframes (defined in
@@ -22,20 +23,21 @@
 // size. The destination renders underneath and is revealed when the
 // overlay's snapshot fades at the end of the keyframe.
 //
-// **Navigation is pluggable.** The default is a full document
-// navigation (`window.location.href`), which pairs the keyframes
-// with the browser's cross-document View Transition. A consumer
-// with a client-side router (SPA frameworks, Astro's ClientRouter)
-// registers its own function via `HpUnfoldPage.setNavigate(...)` —
-// the overlay, keyframes, and sessionStorage handshake are
-// identical, but the transition runs same-document, so the page's
+// **Navigation is pluggable — library-wide.** The default is a full
+// document navigation (`window.location.href`), which pairs the
+// keyframes with the browser's cross-document View Transition. A
+// consumer with a client-side router (SPA frameworks, Astro's
+// ClientRouter) registers its own function once via `setNavigate`
+// (src/lib/navigate.ts) — every navigating hexpunk element follows
+// it, the overlay, keyframes, and sessionStorage handshake are
+// identical, and the transition runs same-document, so the page's
 // module state (and every custom-element definition) survives the
 // trip.
 //
 // **Back navigation** replays the reverse from the destination
 // side: the shell that owns navigation (see `Layout.astro` in the
 // showcase) detects a history-traversal arrival via the
-// `sessionStorage` marker stashed here, and shrinks a
+// `sessionStorage` marker the departure stamps, and shrinks a
 // viewport-sized overlay back onto the source's bbox with the Web
 // Animations API.
 //
@@ -55,64 +57,32 @@
 // <hp-cell variant="action" filled slot="source">play</hp-cell>
 // </hp-unfold-page>
 //
-// **Text-link parity.** Any `<a data-hp-unfold>` triggers the same
-// animation via the global handler in Layout.astro — text links use
-// the link's CSS `color` as the overlay fill. See that file for the
-// shared overlay-creation logic; `hp-unfold-page` and the link
-// handler are intentionally symmetrical.
+// **Parity.** Any `<a data-hp-unfold>` a page shell wires to
+// `beginUnfoldNavigation` (see the showcase's Layout.astro) and any
+// `<hp-nav-item unfold>` ride exactly the same departure sequence.
 
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { hpBase } from "../../styles/hp-base.js";
+import { beginUnfoldNavigation, buildUnfoldOverlay, computePeakScale } from "./departure.js";
 
-/** Navigation delegate signature — receives the `href` the source
- * was activated with. */
-export type HpUnfoldNavigate = (href: string) => void;
-
-const VIEW_TRANSITION_NAME = "hp-unfold-source";
-const STORAGE_TARGET = "hp-unfold-target";
-const STORAGE_PEAK = "hp-unfold-peak";
-const HEX_CLIP = "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
 const ANIMATION_DURATION = 280;
 const HOLD_DURATION = 180;
-const MIN_PEAK_SCALE = 25;
 const EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
-
-/** Peak scale that gets the hex bbox to at least 2× the longer viewport
- * axis, so the hex's inscribed area covers the viewport from any
- * starting position. Returns at least MIN_PEAK_SCALE so very small
- * sources still get a meaningful expansion (and divide-by-zero is
- * impossible). */
-function computePeakScale(rect: { width: number }): number {
-  const target = 2 * Math.max(window.innerWidth, window.innerHeight);
-  const w = Math.max(rect.width, 1);
-  return Math.max(MIN_PEAK_SCALE, target / w);
-}
 
 /**
  * Camera-zoom navigation primitive. Click the source hex (or any
  * <a data-hp-unfold>) and its colour rapidly expands to cover the
  * viewport, then the destination page is revealed. The View
  * Transitions API drives the animation — cross-document by default,
- * same-document when a client router registers `setNavigate`.
+ * same-document when a client router registers the library-wide
+ * `setNavigate`.
  *
  * @slot source - The hex / element that triggers the expand
  */
 @customElement("hp-unfold-page")
 export class HpUnfoldPage extends LitElement {
-  /** Currently-registered navigation delegate, or null for the
-   * default full-document navigation. */
-  static navigate: HpUnfoldNavigate | null = null;
-
-  /** Register a navigation delegate globally. Pass null to restore
-   * the default (`window.location.href`). Client routers register
-   * their own navigate here so the expand runs as a same-document
-   * view transition instead of a document reload. */
-  static setNavigate(fn: HpUnfoldNavigate | null): void {
-    HpUnfoldPage.navigate = fn;
-  }
-
   /** Target URL. Must be same-origin for cross-document View
    * Transitions to engage; cross-origin navigations skip the VT
    * and just navigate. */
@@ -196,37 +166,14 @@ export class HpUnfoldPage extends LitElement {
     }
   }
 
-  /** Forward navigation. Creates an overlay at the source's bbox,
-   * names it for the view transition, stashes the target URL for
-   * back-nav arrival detection, then hands off to the registered
-   * navigation delegate (or the default full-document navigation). */
+  /** Forward navigation — the shared departure sequence: overlay at
+   * the source's bbox, keyframe peak, sessionStorage handshake,
+   * then the library navigation delegate. */
   private startNavigation(): void {
     if (!this.href || !this.sourceEl) {
       return;
     }
-    const overlay = this.createOverlay();
-    if (overlay) {
-      overlay.style.viewTransitionName = VIEW_TRANSITION_NAME;
-      document.body.appendChild(overlay);
-      const peak = computePeakScale(this.sourceEl.getBoundingClientRect());
-      // Set on the outgoing document so the view-transition snapshot
-      // captures the right keyframe target; also stash for the
-      // destination page's inline init to apply on arrival, since
-      // custom properties don't cross document boundaries.
-      document.documentElement.style.setProperty("--hp-unfold-peak", String(peak));
-      try {
-        sessionStorage.setItem(STORAGE_TARGET, new URL(this.href, location.origin).pathname);
-        sessionStorage.setItem(STORAGE_PEAK, String(peak));
-      } catch {
-        // sessionStorage unavailable (private mode, blocked) — back
-        // nav reverse animation won't run, but forward still works.
-      }
-    }
-    if (HpUnfoldPage.navigate) {
-      HpUnfoldPage.navigate(this.href);
-    } else {
-      window.location.href = this.href;
-    }
+    beginUnfoldNavigation(this.sourceEl, this.href);
   }
 
   /** Preview animation — no navigation, just plays the expand /
@@ -236,7 +183,7 @@ export class HpUnfoldPage extends LitElement {
       return;
     }
     const peak = computePeakScale(this.sourceEl.getBoundingClientRect());
-    const overlay = this.createOverlay();
+    const overlay = buildUnfoldOverlay(this.sourceEl);
     if (!overlay) {
       return;
     }
@@ -260,62 +207,6 @@ export class HpUnfoldPage extends LitElement {
     } finally {
       overlay.remove();
     }
-  }
-
-  /** Build the colour-only hex overlay at the source's current
-   * bbox. The overlay carries no label / content — it's just the
-   * source's "skin" — so when the snapshot scales, only the colour
-   * expands. The original source (with its label) stays on the
-   * page until the destination swaps in. */
-  private createOverlay(): HTMLDivElement | null {
-    if (!this.sourceEl) {
-      return null;
-    }
-    const rect = this.sourceEl.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) {
-      return null;
-    }
-    const color = this.getSourceColor();
-    const w = rect.width;
-    const h = w * 1.1547;
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const overlay = document.createElement("div");
-    overlay.setAttribute("aria-hidden", "true");
-    overlay.dataset.hpUnfoldOverlay = "";
-    Object.assign(overlay.style, {
-      position: "fixed",
-      left: `${cx - w / 2}px`,
-      top: `${cy - h / 2}px`,
-      width: `${w}px`,
-      height: `${h}px`,
-      background: color,
-      clipPath: HEX_CLIP,
-      zIndex: "9999",
-      pointerEvents: "none",
-      transformOrigin: "center",
-      willChange: "transform, opacity",
-    });
-    return overlay;
-  }
-
-  /** Resolve the source's intended "main" colour. Prefers
-   * `--hp-stroke-color` (the hex's outline / fill token), falls
-   * back to the element's computed colour, then to currentColor. */
-  private getSourceColor(): string {
-    if (!this.sourceEl) {
-      return "currentColor";
-    }
-    const computed = window.getComputedStyle(this.sourceEl);
-    const stroke = computed.getPropertyValue("--hp-stroke-color").trim();
-    if (stroke) {
-      return stroke;
-    }
-    const color = computed.color;
-    if (color) {
-      return color;
-    }
-    return "currentColor";
   }
 
   static override styles = [hpBase];
