@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **`<hp-layout>` — hex layout primitive.** What flex is for rows, this is for the lattice: slotted children carrying `q` / `r` place on the axial grid and the element sizes to the content it placed, sitting in normal document flow with no camera. Shares its placement code with `<hp-grid>` (one spatial core, two appliers — pinned by an agreement test suite), so a drag, a blocked drop, a bond diff or a pack resolves identically on either surface. `draggable` opts into drag-to-move with snap-and-settle; drags are clamped to the content box, and an interrupted gesture (window blur, `Esc`, pointer cancel) returns the cell home. Ships from the root barrel with zero rendering dependency.
+- **`<hp-layout>` `size` tiers** — `xxs` / `xs` / `sm` / `md` / `lg` scale the whole surface. The tier is written onto the children as their own `size` (a tier is more than a width: stroke step and ring proportion come with it), authored sizes are restored when the attribute clears, and the lattice pitch follows the children's **rendered** width via ResizeObserver — a cell whose width comes from its `variant` still lands on a correctly-pitched lattice.
+- **`<hp-layout>` responsive `rows`** — with no `row-width`, `layout="rows"` wraps to the element's own width like flex items and re-packs (with the settle glide) when it resizes, including when `size` changes the cell scale. `row-width` pins a fixed count; packed surfaces first-paint already laid out instead of flashing unplaced children.
+- **`<hp-grid>` rebuilt as a canvas hex viewport.** A camera onto a rendered hex world: engine-drawn field, float64 pan/zoom with inertia and zoom-to-cursor, semantic content tiers, dive navigation (`diveInto()` a cell element / `surface()`, wired by the consumer via `hp-grid-activate` — never automatic), drag-snap with the live target highlight, and viewport chrome (zoom steps + a recenter that flies to fit-everything framing). Slotted cells stay live DOM riding the camera — focus, links and semantics intact — and render immediately as the placeholder while the engine loads. Events are real composed `CustomEvent`s with element-carrying details: `hp-grid-move` / `drop` / `bond` / `unbond` / `tether` / `untether` / `activate` / `tier` / `dive` / `pan`.
+- **`@hexpunk/core/grid` subpath.** The canvas grid ships from its own entrypoint and the rendering engine (PixiJS) loads by dynamic `import()` on first connect — the root barrel cannot reach `pixi.js` (verified by measurement: zero references in the barrel bundle), so consumers who never render a grid never pay for it. Static cost ≈ 25 KB minified / 10 KB gzipped; the deferred engine chunk ≈ 340 KB minified / 101 KB gzipped, fetched once. Buildless CDN consumers need an import map for `pixi.js`.
+- **`<hp-grid>` pointer ownership + `pannable="false"`.** The grid is a focal-point surface and takes the mouse while the cursor is inside it — plain wheel pans, ctrl/⌘ + wheel zooms, empty-space drags pan. `pannable="false"` hands the wheel and empty-space presses back to the page for embedded contexts (cell drag and click keep working; the viewport chrome hides with the gestures).
+- **`<hp-tether>` as declarative arc data inside `<hp-grid>`** — slotted tether children (selector `from` / `to` refs, `state`, `directed`) are read as data and drawn on the grid's canvas: draw-in sweep, obstacle-aware vertex anchoring with hysteresis, camera-locked. Standalone `<hp-tether>` between arbitrary elements is untouched.
+- **`bun run stats`** (`tools/build-stats.ts`) — measures each heavy component's bundle in isolation (minified, lit external) and splits page cost from dynamically-imported deferred cost by walking static import edges, emitting `perf-stats.json` for the showcase. The published size figures regenerate instead of going stale; runtime figures stay hand-profiled in a real browser.
+- Showcase: the playground is now `<hp-grid>`'s docs demo — the full stage with its settings panel, HUD and event log inside the page's `<hp-demo>`, element markup as the code panel beneath. A shared `PerfStats` component renders every heavy component's stats disclosure with a standard performance advisory (currently hp-background and hp-grid). A document-level `:not(:defined)` upgrade guard stops unstyled light-DOM content flashing during navigation.
+
+### Changed
+
+- **The old CSS-transform `<hp-grid>` is replaced outright.** Its two jobs split into two elements: hex **layout** is `<hp-layout>` (in-flow, no camera, no dependency); the hex **viewport** is the new canvas `<hp-grid>` (from `@hexpunk/core/grid`). When to reach for which is documented on both components' pages — the short version: part of a page → `hp-layout`; a world you move through → `hp-grid`.
+- **PixiJS (`pixi.js` ^8) becomes a real bundled dependency** — unlike `hp-code` / `hp-latex`, which document consumer-registered libraries and ship no engine. Isolation is structural: only the `/grid` subpath's dynamic import reaches it.
+- **Blocked drops resolve through one canonical neighbour order.** The axial neighbour walk is unified to clockwise ring order (E, NE, NW, W, SW, SE) across every surface — the old grid walked E, W, SE, NW, NE, SW, so the same blocked drop can now land in a different (consistent, adjacent-stepping) neighbour than before.
+- **Pointer capture waits for the tap slop.** A press that stays within the slop is a click and reaches its target natively (links navigate, cells activate); capture engages only once the gesture commits to a drag or pan, and drops settle from wherever the clamped cell is held — releasing outside the surface lands it at the nearest edge slot rather than wherever the pointer went.
+
+### Removed
+
+- **`size` from `<hp-grid>`** — camera zoom subsumes it (`lg` at matching zoom is pixel-identical to `sm`). The lattice pitches from the `sm` cell token; `<hp-layout>` is the surface that scales by tier.
+- **`<hp-grid>` from the root barrel** — import it from `@hexpunk/core/grid`.
+- **The `/playground` showcase route** — it became the hp-grid docs demo.
+
 ## [0.1.1-alpha] - 2026-08-10
 
 ### Added
