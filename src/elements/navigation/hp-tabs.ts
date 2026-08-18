@@ -143,7 +143,12 @@ export class HpTabs extends LitElement {
     }
     const oldURL = window.location.href;
     const target = `${window.location.pathname}${window.location.search}${newHash}`;
-    window.history.replaceState(null, "", target);
+    // Preserve the entry's existing history state — nulling it would
+    // destroy what the host app stored there. Client routers stamp
+    // scroll / index state on every entry and ignore popstates whose
+    // state they don't recognise, so a nulled entry turns back /
+    // forward into a dead address-bar change.
+    window.history.replaceState(window.history.state, "", target);
     // Manually fire hashchange so consumers that hook into URL
     // changes still get notified — replaceState by itself doesn't
     // trigger one.
@@ -170,7 +175,8 @@ export class HpTabs extends LitElement {
     if (target === `${window.location.pathname}${window.location.search}${window.location.hash}`) {
       return;
     }
-    window.history.replaceState(null, "", target);
+    // Same state-preservation contract as writeHash above.
+    window.history.replaceState(window.history.state, "", target);
   }
 
   /** Direct-child lookups only — using querySelectorAll would
