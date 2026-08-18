@@ -269,6 +269,16 @@ export class HpLoader extends LitElement {
         opacity: 0.18;
       }
 
+      /* Percentage label in the hollow centre (md / lg only — sm
+ * has no hollow to hold it). Font-size is in viewBox units so
+ * the label scales with the cluster. */
+      .label {
+        fill: var(--hp-stroke-color);
+        font-family: var(--hp-typo-label-md-font-family, inherit);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
       @keyframes hp-loader-pulse {
         0%,
         100% {
@@ -326,6 +336,20 @@ export class HpLoader extends LitElement {
       return svg`<polygon class="wave" points=${points} style=${`animation-delay: ${delay.toFixed(3)}s`}></polygon>`;
     });
 
+    // The hollow centre fits the label at md / lg; sm's cluster has
+    // no hollow, so its value stays ARIA-only. Decorative here —
+    // aria-valuenow carries the number for assistive tech.
+    const label =
+      determinate && this.size !== "sm"
+        ? svg`<text
+ class="label"
+ x="0"
+ y="0"
+ text-anchor="middle"
+ dominant-baseline="central"
+ >${Math.round(this.fraction * 100)}%</text>`
+        : "";
+
     // viewBox sized to fit the outermost ring's bbox: hex centres sit
     // at ±(lastRing × axial-step), each hex extends a further s in
     // either direction. Add a hair of padding for the scale-up phase.
@@ -339,7 +363,7 @@ export class HpLoader extends LitElement {
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
       >
-        ${polygons}
+        ${polygons} ${label}
       </svg>
     `;
   }
