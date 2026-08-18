@@ -112,16 +112,23 @@ const HUD_BUTTONS = [
   { id: "pg-tour", text: "tour", help: "Fly to the next content tier. Click repeatedly to ride the whole ladder." },
 ];
 import PerfStats from "../../../components/PerfStats.astro";
+import perfStats from "../../../data/perf-stats.json";
+
+const kb = (bytes: number) => Math.round(bytes / 1024);
 
 const STATS = [
   {
     cost: "Script (loads with the page)",
-    measured: "54&nbsp;KB minified · 19&nbsp;KB gzipped",
+    measured: `${kb(perfStats.stats["hp-grid"].static.minifiedBytes)}&nbsp;KB minified · ${kb(
+      perfStats.stats["hp-grid"].static.gzippedBytes
+    )}&nbsp;KB gzipped`,
     context: "the element and the shared spatial core — what a page pays before any canvas exists",
   },
   {
     cost: "Rendering engine (loads on first use)",
-    measured: "348&nbsp;KB minified · 102&nbsp;KB gzipped",
+    measured: `${kb(perfStats.stats["hp-grid"].deferred!.minifiedBytes)}&nbsp;KB minified · ${kb(
+      perfStats.stats["hp-grid"].deferred!.gzippedBytes
+    )}&nbsp;KB gzipped`,
     context: "PixiJS and the renderer, fetched once when the first grid connects; cached afterwards",
   },
   {
@@ -310,7 +317,7 @@ const STATS = [
         library and ship no engine — PixiJS is a real bundled dependency of hexpunk. The
         cost is isolated twice over: the element ships only from the
         <code>@hexpunk/core/grid</code> subpath (the root barrel can't reach it, enforced by
-        the exports map), and the engine chunk (~102&nbsp;KB gzip with PixiJS) loads by
+        the exports map), and the engine chunk (the deferred cost in the stats above) loads by
         dynamic <code>import()</code> on first connect. Consumers who never render a grid
         never fetch it; buildless CDN consumers need an import map for
         <code>pixi.js</code>.

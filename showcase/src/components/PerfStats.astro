@@ -4,9 +4,11 @@
 // The measured-cost table heavy components surface in their docs
 // page's notice slot (visible on every tab), tucked behind a small
 // hexpunk-styled trigger. One component so every page's stats read
-// identically; rows are data. The ADR's future idea is feeding these
-// from a build-time measurement script — when that lands, it lands
-// here once.
+// identically; rows are data. Bundle-size rows come from
+// `bun run stats` (tools/build-stats.ts → data/perf-stats.json), so
+// those figures regenerate rather than go stale; runtime rows
+// (initialisation, per-frame cost) are profiled by hand in a real
+// browser and dated by their prose.
 
 interface Row {
   cost: string;

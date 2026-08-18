@@ -2,11 +2,16 @@
 import Layout from "../../../layouts/Layout.astro";
 import ComponentDocs from "../../../components/ComponentDocs.astro";
 import PerfStats from "../../../components/PerfStats.astro";
+import perfStats from "../../../data/perf-stats.json";
+
+const kb = (bytes: number) => Math.round(bytes / 1024);
 
 const STATS = [
   {
     cost: "Script",
-    measured: "43&nbsp;KB minified · 14&nbsp;KB gzipped",
+    measured: `${kb(perfStats.stats["hp-background"].static.minifiedBytes)}&nbsp;KB minified · ${kb(
+      perfStats.stats["hp-background"].static.gzippedBytes
+    )}&nbsp;KB gzipped`,
     context: "about 2.5 times a typical hexpunk atom (5.6&nbsp;KB gzipped)",
   },
   {
