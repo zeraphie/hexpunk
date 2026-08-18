@@ -115,26 +115,30 @@ import PerfStats from "../../../components/PerfStats.astro";
 
 const STATS = [
   {
-    cost: "Script (static)",
-    measured: "54&nbsp;KB min · 19&nbsp;KB gzip",
-    context: "element + shared spatial core; what a page pays before any canvas exists",
+    cost: "Script (loads with the page)",
+    measured: "54&nbsp;KB minified · 19&nbsp;KB gzipped",
+    context: "the element and the shared spatial core — what a page pays before any canvas exists",
   },
   {
-    cost: "Engine (deferred)",
-    measured: "348&nbsp;KB min · 102&nbsp;KB gzip",
-    context: "PixiJS + renderer, dynamic import on first connect; cached after",
+    cost: "Rendering engine (loads on first use)",
+    measured: "348&nbsp;KB minified · 102&nbsp;KB gzipped",
+    context: "PixiJS and the renderer, fetched once when the first grid connects; cached afterwards",
   },
   {
-    cost: "Init (once, at connect)",
-    measured: "~35&nbsp;ms",
-    context: "WebGL context + field build; cells render as plain DOM before it",
+    cost: "Initialisation (once, when it connects)",
+    measured: "about 35&nbsp;milliseconds",
+    context: "creates the WebGL context and builds the field; cells render as plain DOM until then",
   },
   {
     cost: "Animating",
-    measured: "0.1–0.4&nbsp;ms CPU / frame",
-    context: "camera tweens, drags, arc morphs",
+    measured: "0.1 to 0.4&nbsp;milliseconds of CPU time per frame",
+    context: "camera movement, drags and arc animations",
   },
-  { cost: "Idle", measured: "0 frames", context: "render-on-demand; zero rAF wakeups at rest" },
+  {
+    cost: "Idle",
+    measured: "0 frames",
+    context: "renders only on demand — fully asleep while nothing changes",
+  },
 ];
 ---
 

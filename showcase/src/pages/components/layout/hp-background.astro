@@ -6,23 +6,24 @@ import PerfStats from "../../../components/PerfStats.astro";
 const STATS = [
   {
     cost: "Script",
-    measured: "43&nbsp;KB min · 14&nbsp;KB gzip",
-    context: "≈2.5× a typical hexpunk atom (5.6&nbsp;KB gzip)",
+    measured: "43&nbsp;KB minified · 14&nbsp;KB gzipped",
+    context: "about 2.5 times a typical hexpunk atom (5.6&nbsp;KB gzipped)",
   },
   {
-    cost: "Init (once, at connect)",
-    measured: "~20&nbsp;ms",
-    context: "WebGL context + shader compile + tile bake; slower on weak GPUs",
+    cost: "Initialisation (once, when it connects)",
+    measured: "about 20&nbsp;milliseconds",
+    context: "creates the WebGL context, compiles the shaders and bakes the tile; slower on weak GPUs",
   },
   {
     cost: "Animating",
-    measured: "~0.1&nbsp;ms CPU / frame",
-    context: "p90 0.7&nbsp;ms; field sim at 1/8 viewport resolution",
+    measured: "about 0.1&nbsp;milliseconds of CPU time per frame",
+    context:
+      "9 frames in 10 stay under 0.7&nbsp;milliseconds — the energy-field simulation runs at one-eighth of the viewport's resolution, a sixty-fourth of the pixels",
   },
   {
     cost: "Idle",
     measured: "0 frames",
-    context: "render loop sleeps; wakes on pointer / scroll / ignite",
+    context: "the render loop sleeps; pointer movement, scrolling or an ignition wakes it",
   },
 ];
 ---
