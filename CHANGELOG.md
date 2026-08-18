@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-18
+
 ### Added
 
 - **`<hp-layout>` — hex layout primitive.** What flex is for rows, this is for the lattice: slotted children carrying `q` / `r` place on the axial grid and the element sizes to the content it placed, sitting in normal document flow with no camera. Shares its placement code with `<hp-grid>` (one spatial core, two appliers — pinned by an agreement test suite), so a drag, a blocked drop, a bond diff or a pack resolves identically on either surface. `draggable` opts into drag-to-move with snap-and-settle; drags are clamped to the content box, and an interrupted gesture (window blur, `Esc`, pointer cancel) returns the cell home. Ships from the root barrel with zero rendering dependency.
