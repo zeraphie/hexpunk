@@ -42,11 +42,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
-    <hp-demo caption="Live — value driven by script">
+    <hp-demo caption="Live — value driven by script; irregular (left) vs timing=&quot;linear&quot; (right)">
       <hp-loader id="loader-live" size="lg" value="0"></hp-loader>
+      <hp-loader id="loader-live-linear" timing="linear" size="lg" value="0"></hp-loader>
 
       <hp-code slot="code" language="html">{`<body>
   <hp-loader id="job" size="lg" value="0"></hp-loader>
+  <hp-loader id="job2" timing="linear" size="lg" value="0"></hp-loader>
 
   const job = document.getElementById("job");
   // wherever progress arrives:
@@ -72,22 +74,33 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <script>
       function setup(): void {
-        const live = document.getElementById("loader-live");
-        if (!live) {
+        const live = [
+          document.getElementById("loader-live"),
+          document.getElementById("loader-live-linear"),
+        ].filter((el): el is HTMLElement => el !== null);
+        if (!live.length) {
           return;
         }
-        // Ticks past 100 hold the full cluster for ~2.4s before the
-        // loop resets; the attribute is clamped so the label parks
-        // at 100%. Self-terminates when the demo leaves the page.
-        let tick = 0;
-        const id = window.setInterval(() => {
-          if (!live.isConnected) {
-            window.clearInterval(id);
-            return;
-          }
-          tick = tick >= 130 ? 0 : tick + 1;
-          live.setAttribute("value", String(Math.min(tick, 100)));
-        }, 80);
+        // Real-loader rhythm: a pause, then a bump of a few percent
+        // — stalls where the frontier parks, bursts where the two
+        // timing modes visibly diverge. A lap lands around 12s,
+        // holds at 100% for a beat, then loops. Self-terminates
+        // when the demo leaves the page (no reschedule).
+        let value = 0;
+        const schedule = (): void => {
+          const delay = value >= 100 ? 2600 : 250 + Math.random() * 1250;
+          window.setTimeout(() => {
+            if (!live[0].isConnected) {
+              return;
+            }
+            value = value >= 100 ? 0 : Math.min(100, value + 2 + Math.floor(Math.random() * 11));
+            for (const el of live) {
+              el.setAttribute("value", String(value));
+            }
+            schedule();
+          }, delay);
+        };
+        schedule();
       }
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", setup);
