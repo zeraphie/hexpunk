@@ -264,12 +264,18 @@ const STATS = [
   <\/script>
 
   <hp-grid draggable tetherable>
-    <hp-cell variant="anchor" filled q="0" r="0" id="core" draggable="false">core</hp-cell>
-    <hp-cell variant="action" q="1" r="0" id="field">field</hp-cell>
-    <hp-cell variant="action" q="-1" r="1">camera</hp-cell>
+    <hp-cell variant="anchor" filled q="0" r="0" id="relay-07">RELAY-07</hp-cell>
+    <hp-cell variant="anchor" q="-2" r="3" id="sentry-k">SENTRY-K</hp-cell>
+    <hp-cell variant="anchor" q="3" r="-1" id="archive-3">ARCHIVE-3</hp-cell>
 
-    <!-- Declarative arc, drawn on the grid's canvas. -->
-    <hp-tether from="#core" to="#field"></hp-tether>
+    <!-- Category cells stay pinned while the dossiers drag. -->
+    <hp-cell variant="content" size="sm" q="1" r="0" draggable="false">LOGS</hp-cell>
+    <hp-cell variant="content" size="sm" q="-1" r="1" draggable="false">PEERS</hp-cell>
+    <hp-cell variant="content" size="sm" q="0" r="-1" draggable="false">CONFIG</hp-cell>
+
+    <!-- The arcs this world starts with, drawn on the canvas. -->
+    <hp-tether from="#relay-07" to="#archive-3"></hp-tether>
+    <hp-tether from="#sentry-k" to="#archive-3"></hp-tether>
   </hp-grid>
 </body>`}</hp-code>
     </hp-demo>
