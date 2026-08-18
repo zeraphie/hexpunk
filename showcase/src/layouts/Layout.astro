@@ -275,7 +275,12 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         set:html={sidebarNavHtml}
       ></hp-sidebar>
       <main>
-        <hp-background page></hp-background>
+        {/* Persisted across router swaps: the canvas node (and the
+          frame it last drew) survives navigation, so the backdrop
+          never blanks. The element's own move handling re-inits GL
+          on reconnect — synchronously inside the swap, before the
+          next paint. */}
+        <hp-background page transition:persist="hp-background"></hp-background>
         {prose ? <div class="hp-prose"><slot /></div> : <slot />}
       </main>
       <hp-sidebar
