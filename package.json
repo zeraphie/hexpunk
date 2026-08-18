@@ -59,6 +59,7 @@
     "analyze": "cem analyze --litelement --globs 'src/**/*.ts' && bun run vscode-data",
     "vscode-data": "bun run tools/build-vscode-data.ts",
     "tokens": "bun run tools/build-tokens.ts",
+    "stats": "bun run tools/build-stats.ts",
     "icons": "bun run tools/build-icons.ts",
     "fonts": "bun run tools/build-fonts.ts",
     "logos": "bun run tools/build-logos.ts",
