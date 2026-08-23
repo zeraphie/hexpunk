@@ -32,6 +32,7 @@ export type HpToastTone = "neutral" | "positive" | "warn" | "alert" | "error";
  *
  * @csspart toast - The wrapping toast element
  * @csspart content - The content container
+ * @status wip
  */
 @customElement("hp-toast")
 export class HpToast extends LitElement {

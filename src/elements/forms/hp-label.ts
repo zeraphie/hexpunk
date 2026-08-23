@@ -20,6 +20,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * markers.
  *
  * @slot - Label text
+ * @status wip
  */
 @customElement("hp-label")
 export class HpLabel extends LitElement {

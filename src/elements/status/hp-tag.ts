@@ -25,6 +25,7 @@ export type HpTagTone = HpCellTone;
  * @slot - Tag label
  *
  * @csspart remove - The dismiss button (when removable)
+ * @status wip
  */
 @customElement("hp-tag")
 export class HpTag extends LitElement {

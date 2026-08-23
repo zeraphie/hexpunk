@@ -42,6 +42,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @cssproperty --hp-hex-fill - Inner polygon fill (defaults to canvas)
  * @cssproperty --hp-cell - Cell width; usually set per size attribute
  * @cssproperty --hp-hex-pointer-events - pointer-events on the painted polygons
+ * @status done
  */
 @customElement("hp-hex")
 export class HpHex extends LitElement {

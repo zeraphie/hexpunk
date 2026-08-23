@@ -24,6 +24,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart avatar - The avatar wrapper
  * @csspart fallback - The fallback container holding the slotted initials
+ * @status wip
  */
 @customElement("hp-avatar")
 export class HpAvatar extends LitElement {

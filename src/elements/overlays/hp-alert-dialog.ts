@@ -34,6 +34,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart dialog - The native <dialog> element
  * @csspart actions - The action button container
+ * @status wip
  */
 @customElement("hp-alert-dialog")
 export class HpAlertDialog extends LitElement {

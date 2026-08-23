@@ -126,6 +126,7 @@ function bboxFor(positionGroups: HpPixelPosition[][]): {
  * [x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;
  * configurable palette and per-state delay drive a sprite-like
  * animation loop.
+ * @status done
  */
 @customElement("hp-pixel")
 export class HpPixel extends LitElement {

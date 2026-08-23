@@ -29,6 +29,7 @@ export type HpScrollVisibility = "auto" | "always" | "hover";
  * @csspart viewport - The scroll viewport (the element that actually scrolls)
  * @csspart scrollbar - The vertical scrollbar track
  * @csspart thumb - The scrollbar thumb
+ * @status wip
  */
 @customElement("hp-scroll-area")
 export class HpScrollArea extends LitElement {

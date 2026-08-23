@@ -30,6 +30,7 @@ const ROW_STEP_FACTOR = 0.8660254;
  * @fires change - When selection changes. detail: { value }
  *
  * @slot - hp-button or hp-cell children with `value` attributes
+ * @status wip
  */
 @customElement("hp-toggle-group")
 export class HpToggleGroup extends LitElement {

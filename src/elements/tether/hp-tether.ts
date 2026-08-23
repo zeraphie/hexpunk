@@ -119,6 +119,7 @@ const ADJACENCY_EXCLUSIONS: Record<
  * @cssproperty --hp-tether-arc-width - Stroke width of the arc
  * @cssproperty --hp-tether-arc-glow - Glow filter blur radius
  * @cssproperty --hp-tether-arc-pulse-dot - Diameter of the pulse dot
+ * @status done
  */
 @customElement("hp-tether")
 export class HpTether extends LitElement {

@@ -163,6 +163,7 @@ const IGNITE_REDUCED_MIN_MS = 200;
  * when a `value` is set. role="progressbar" with
  * aria-label="Loading" by default; aria-valuenow only when
  * determinate.
+ * @status done
  */
 @customElement("hp-loader")
 export class HpLoader extends LitElement {

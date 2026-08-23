@@ -33,6 +33,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @slot content - Card body
  *
  * @csspart card - The floating card element
+ * @status wip
  */
 @customElement("hp-hover-card")
 export class HpHoverCard extends LitElement {

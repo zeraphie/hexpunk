@@ -20,6 +20,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart track - The pill-shaped track element
  * @csspart thumb - The sliding hex thumb
+ * @status wip
  */
 @customElement("hp-toggle")
 export class HpToggle extends LitElement {

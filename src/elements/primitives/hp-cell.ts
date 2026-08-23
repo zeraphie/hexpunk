@@ -73,6 +73,7 @@ const UNLABELLED_VARIANTS = new Set<HpCellVariant>(["support", "slot"]);
  *
  * @csspart cell - The wrapping cell element (positioned ancestor for label / trace)
  * @csspart label - The label container (when the variant has a label)
+ * @status done
  */
 @customElement("hp-cell")
 export class HpCell extends LitElement {

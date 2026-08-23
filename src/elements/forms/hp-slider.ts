@@ -25,6 +25,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @csspart track - The track that the fill sits on
  * @csspart fill - The progress fill (left edge → thumb)
  * @csspart thumb - The hex thumb
+ * @status wip
  */
 @customElement("hp-slider")
 export class HpSlider extends LitElement {

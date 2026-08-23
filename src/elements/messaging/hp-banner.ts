@@ -23,6 +23,7 @@ export type HpBannerTone = "neutral" | "positive" | "warn" | "alert" | "error" |
  * @csspart banner - The wrapping container
  * @csspart icon - The leading icon
  * @csspart label - The uppercase label header (when set)
+ * @status done
  */
 @customElement("hp-banner")
 export class HpBanner extends LitElement {

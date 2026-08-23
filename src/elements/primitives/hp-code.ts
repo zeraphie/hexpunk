@@ -66,6 +66,7 @@ function dedent(code: string): string {
  * @cssproperty --hp-code-background - Override the block background
  * @csspart pre - The internal <pre> element
  * @csspart code - The internal <code> element
+ * @status done
  */
 @customElement("hp-code")
 export class HpCode extends LitElement {

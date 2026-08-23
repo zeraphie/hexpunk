@@ -42,6 +42,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @fires hp-copy-success - Bubbling CustomEvent on successful clipboard write; detail = { value }
  * @fires hp-copy-error - Bubbling CustomEvent on failed clipboard write; detail = { error, value }
  * @csspart button - The internal <button> element
+ * @status done
  */
 @customElement("hp-copy")
 export class HpCopy extends LitElement {

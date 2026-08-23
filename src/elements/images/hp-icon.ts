@@ -21,6 +21,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * `currentColor`.
  *
  * @slot - SVG content (stroke-based icon)
+ * @status wip
  */
 @customElement("hp-icon")
 export class HpIcon extends LitElement {

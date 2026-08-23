@@ -25,6 +25,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart box - The hex container wrapping hp-hex + the glyph
  * @csspart glyph - The check / dash glyph overlay
+ * @status wip
  */
 @customElement("hp-checkbox")
 export class HpCheckbox extends LitElement {

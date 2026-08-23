@@ -27,6 +27,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart list - The tablist row / column
  * @csspart panels - The panels container
+ * @status done
  */
 @customElement("hp-tabs")
 export class HpTabs extends LitElement {
@@ -432,6 +433,7 @@ export class HpTabs extends LitElement {
  * @fires hp-tab-select - When this tab is clicked. detail: { value }
  *
  * @slot - Tab label
+ * @status done
  */
 @customElement("hp-tab")
 export class HpTab extends LitElement {
@@ -529,6 +531,7 @@ export class HpTab extends LitElement {
  * the parent hp-tabs via the `hidden` attribute.
  *
  * @slot - Panel content
+ * @status done
  */
 @customElement("hp-tab-panel")
 export class HpTabPanel extends LitElement {

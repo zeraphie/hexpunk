@@ -21,6 +21,7 @@ export type HpSidebarVariant = "primary" | "secondary";
  * and `<hp-sidebar-group>` collapsible sections.
  *
  * @slot - Nav tree (hp-sidebar-item + hp-sidebar-group children)
+ * @status done
  */
 @customElement("hp-sidebar")
 export class HpSidebar extends LitElement {

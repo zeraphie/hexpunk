@@ -88,6 +88,7 @@ function shuffledRange(n: number): number[] {
  *
  * @slot source - The trigger hex (always visible)
  * @slot - Children fanned into the ring when open
+ * @status wip
  */
 @customElement("hp-unfold-list")
 export class HpUnfoldList extends LitElement {

@@ -41,6 +41,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @slot content - hp-menu-item children
  *
  * @csspart menu - The floating menu container
+ * @status wip
  */
 @customElement("hp-dropdown-menu")
 export class HpDropdownMenu extends LitElement {
@@ -271,6 +272,7 @@ export class HpDropdownMenu extends LitElement {
  * @fires hp-menu-select - When activated. detail: { value, item }
  *
  * @slot - Item label
+ * @status wip
  */
 @customElement("hp-menu-item")
 export class HpMenuItem extends LitElement {

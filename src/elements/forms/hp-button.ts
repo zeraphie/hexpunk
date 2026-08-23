@@ -25,6 +25,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * type="submit" drives form.requestSubmit() inside a form.
  *
  * @slot - Button label content
+ * @status done
  */
 @customElement("hp-button")
 export class HpButton extends LitElement {

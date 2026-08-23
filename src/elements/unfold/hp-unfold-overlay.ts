@@ -50,6 +50,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @slot source - The trigger element (always visible)
  * @slot - The overlay body content
+ * @status wip
  */
 @customElement("hp-unfold-overlay")
 export class HpUnfoldOverlay extends LitElement {

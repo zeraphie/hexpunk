@@ -100,6 +100,7 @@ export interface HpLayoutBondEventDetail {
  *   to scale the cells themselves.
  * @cssproperty --hp-layout-width - Measured content width (read-only)
  * @cssproperty --hp-layout-height - Measured content height (read-only)
+ * @status done
  */
 @customElement("hp-layout")
 export class HpLayout extends LitElement {

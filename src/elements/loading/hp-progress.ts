@@ -24,6 +24,7 @@ export type HpProgressTone = "neutral" | "positive" | "warn" | "alert" | "error"
  *
  * @csspart track - The track that the fill sits inside
  * @csspart fill - The filled portion (or sliding ribbon when indeterminate)
+ * @status wip
  */
 @customElement("hp-progress")
 export class HpProgress extends LitElement {

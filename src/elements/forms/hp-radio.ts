@@ -23,6 +23,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart radio - The radio container wrapping hp-hex + inner dot
  * @csspart dot - The inner filled hex shown when checked
+ * @status wip
  */
 @customElement("hp-radio")
 export class HpRadio extends LitElement {

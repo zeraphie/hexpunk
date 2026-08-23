@@ -27,6 +27,7 @@ const FOCUSABLE_SELECTOR =
  *
  * @slot - Toolbar controls (hp-button, hp-toggle, hp-checkbox,
  * hp-separator, etc.)
+ * @status wip
  */
 @customElement("hp-toolbar")
 export class HpToolbar extends LitElement {

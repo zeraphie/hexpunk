@@ -20,6 +20,7 @@ export type HpBadgeTone = "neutral" | "positive" | "warn" | "alert" | "error";
  * variant at sm size with an optional tone overlay.
  *
  * @slot - Badge label or count
+ * @status wip
  */
 @customElement("hp-badge")
 export class HpBadge extends LitElement {

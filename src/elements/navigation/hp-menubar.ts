@@ -33,6 +33,7 @@ const TRIGGER_SELECTOR = "hp-dropdown-menu, [role='menuitem']";
  * Home / End jump.
  *
  * @slot - hp-dropdown-menu children (or any [role="menuitem"] triggers)
+ * @status wip
  */
 @customElement("hp-menubar")
 export class HpMenubar extends LitElement {

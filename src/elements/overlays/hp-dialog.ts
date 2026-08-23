@@ -26,6 +26,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @slot - Dialog body content
  *
  * @csspart dialog - The native <dialog> element
+ * @status wip
  */
 @customElement("hp-dialog")
 export class HpDialog extends LitElement {

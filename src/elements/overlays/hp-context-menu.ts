@@ -33,6 +33,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @slot content - hp-menu-item children
  *
  * @csspart menu - The floating menu container
+ * @status wip
  */
 @customElement("hp-context-menu")
 export class HpContextMenu extends LitElement {

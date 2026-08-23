@@ -18,6 +18,7 @@ import { customElement } from "lit/decorators.js";
  * but doesn't render on screen.
  *
  * @slot - Content for screen readers only
+ * @status wip
  */
 @customElement("hp-visually-hidden")
 export class HpVisuallyHidden extends LitElement {

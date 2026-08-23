@@ -42,6 +42,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @slot content - Panel body
  *
  * @csspart panel - The floating panel element
+ * @status wip
  */
 @customElement("hp-popover")
 export class HpPopover extends LitElement {

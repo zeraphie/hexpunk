@@ -64,6 +64,7 @@ export type HpLatexRenderer = (latex: string, displayMode: "inline" | "block") =
  * @property background - Mount an hp-background backdrop (block-mode only)
  * @property copyable - Show a copy-source button in the top-right corner (block-mode only)
  * @fires render-error - Bubbling CustomEvent when the renderer throws; detail = { error, latex }
+ * @status done
  */
 @customElement("hp-latex")
 export class HpLatex extends LitElement {

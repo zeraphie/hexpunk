@@ -119,6 +119,7 @@ export interface HpGridActivateEventDetail {
  * @csspart zoom-out - The − button
  * @csspart zoom-in - The + button
  * @csspart recenter - The fly-home button
+ * @status done
  */
 @customElement("hp-grid")
 export class HpGrid extends LitElement {

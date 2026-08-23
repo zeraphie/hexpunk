@@ -19,6 +19,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * @fires change - When selection changes via click or arrow keys. detail: { value }
  *
  * @slot - One or more <hp-radio> children
+ * @status wip
  */
 @customElement("hp-radio-group")
 export class HpRadioGroup extends LitElement {

@@ -32,6 +32,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * Top-nav menu with optional hover-revealed submenus.
  *
  * @slot - hp-nav-item children
+ * @status done
  */
 @customElement("hp-navigation-menu")
 export class HpNavigationMenu extends LitElement {
@@ -100,6 +101,7 @@ export class HpNavigationMenu extends LitElement {
  *
  * @csspart trigger - The trigger element
  * @csspart panel - The submenu panel (when content is provided)
+ * @status done
  */
 @customElement("hp-nav-item")
 export class HpNavItem extends LitElement {

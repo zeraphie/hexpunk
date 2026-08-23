@@ -19,6 +19,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * consistent gap + label / input alignment. Stub.
  *
  * @slot - Form controls (hp-checkbox, hp-toggle, hp-button, etc.)
+ * @status wip
  */
 @customElement("hp-form")
 export class HpForm extends LitElement {
