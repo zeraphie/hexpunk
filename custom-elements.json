@@ -7785,341 +7785,11 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/overlays/hp-alert-dialog.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Alert dialog — role=\"alertdialog\" variant of hp-dialog. Requires\nan explicit action; backdrop clicks don't dismiss. Use for\ndestructive confirmations and blocking errors.",
-          "name": "HpAlertDialog",
-          "cssParts": [
-            {
-              "description": "The native <dialog> element",
-              "name": "dialog"
-            },
-            {
-              "description": "The action button container",
-              "name": "actions"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Dialog message body",
-              "name": ""
-            },
-            {
-              "description": "Action buttons (typically cancel + confirm)",
-              "name": "actions"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Reflect open state. Setting `open` programmatically opens / closes.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "dialogEl",
-              "type": {
-                "text": "HTMLDialogElement"
-              },
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show as a modal alert dialog."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the alert dialog."
-            },
-            {
-              "kind": "field",
-              "name": "handleNativeClose",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleBackdropClick",
-              "privacy": "private",
-              "description": "Block backdrop-click dismissal — only explicit action buttons\nor Escape should close an alert dialog."
-            }
-          ],
-          "events": [
-            {
-              "description": "When the dialog opens",
-              "name": "hp-alert-dialog-open"
-            },
-            {
-              "description": "When the dialog closes",
-              "name": "hp-alert-dialog-close"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Reflect open state. Setting `open` programmatically opens / closes.",
-              "fieldName": "open"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-alert-dialog",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpAlertDialog",
-          "declaration": {
-            "name": "HpAlertDialog",
-            "module": "src/elements/overlays/hp-alert-dialog.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-alert-dialog",
-          "declaration": {
-            "name": "HpAlertDialog",
-            "module": "src/elements/overlays/hp-alert-dialog.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/overlays/hp-context-menu.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Context menu — right-click on the target region opens the menu at\nthe cursor.",
-          "name": "HpContextMenu",
-          "cssParts": [
-            {
-              "description": "The floating menu container",
-              "name": "menu"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Target region (everything not slotted into \"content\")",
-              "name": ""
-            },
-            {
-              "description": "hp-menu-item children",
-              "name": "content"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "positionStyle",
-              "type": {
-                "text": "string"
-              },
-              "privacy": "private",
-              "default": "\"\""
-            },
-            {
-              "kind": "field",
-              "name": "disposeOutside",
-              "type": {
-                "text": "(() => void) | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "disposeEscape",
-              "type": {
-                "text": "(() => void) | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "lastFocused",
-              "type": {
-                "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "getItems",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleContextMenu",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "openAt",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "clientX",
-                  "type": {
-                    "text": "number"
-                  }
-                },
-                {
-                  "name": "clientY",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "handleSelect",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleKeyDown",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleOpened",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "handleClosed",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-context-menu-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the menu opens"
-            },
-            {
-              "name": "hp-context-menu-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the menu closes"
-            },
-            {
-              "description": "When a menuitem is activated (bubbles from hp-menu-item)",
-              "name": "hp-menu-select"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "fieldName": "open"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-context-menu",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpContextMenu",
-          "declaration": {
-            "name": "HpContextMenu",
-            "module": "src/elements/overlays/hp-context-menu.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-context-menu",
-          "declaration": {
-            "name": "HpContextMenu",
-            "module": "src/elements/overlays/hp-context-menu.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/overlays/hp-dialog.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "Modal dialog backed by the native <dialog> + showModal(). Browser\nfocus trap + Escape dismiss + aria-modal. Backdrop click closes\nby default — `no-backdrop-close` opts out.",
+          "description": "Modal dialog backed by the native <dialog> + showModal(). Browser\nfocus trap + Escape dismiss + aria-modal. Backdrop click closes\nby default — `no-backdrop-close` opts out, and `alert` makes it\nan alertdialog that never backdrop-dismisses (destructive\nconfirmations, blocking errors).",
           "name": "HpDialog",
           "cssParts": [
             {
@@ -8131,6 +7801,10 @@
             {
               "description": "Dialog body content",
               "name": ""
+            },
+            {
+              "description": "Action buttons, right-aligned (typically cancel + confirm)",
+              "name": "actions"
             }
           ],
           "members": [
@@ -8154,6 +7828,17 @@
               "default": "false",
               "description": "When set, clicking the backdrop doesn't close. Use for\ndestructive / blocking dialogs that require an explicit\naction.",
               "attribute": "no-backdrop-close",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "alert",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Alert variant — role=\"alertdialog\", and the backdrop never\ndismisses; an explicit action (or Escape) closes.",
+              "attribute": "alert",
               "reflects": true
             },
             {
@@ -8230,6 +7915,15 @@
               "default": "false",
               "description": "When set, clicking the backdrop doesn't close. Use for\ndestructive / blocking dialogs that require an explicit\naction.",
               "fieldName": "noBackdropClose"
+            },
+            {
+              "name": "alert",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Alert variant — role=\"alertdialog\", and the backdrop never\ndismisses; an explicit action (or Escape) closes.",
+              "fieldName": "alert"
             }
           ],
           "superclass": {
@@ -8266,7 +7960,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Dropdown menu — click-triggered popover with menuitem semantics\nand arrow-key navigation.",
+          "description": "Dropdown menu — menu popover with menuitem semantics and\narrow-key navigation. trigger=\"click\" (default) opens from the\nslotted trigger element; trigger=\"contextmenu\" opens at the\ncursor from a right-click anywhere in the host region.",
           "name": "HpDropdownMenu",
           "cssParts": [
             {
@@ -8285,6 +7979,17 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "trigger",
+              "type": {
+                "text": "\"click\" | \"contextmenu\""
+              },
+              "default": "\"click\"",
+              "description": "How the menu opens: from the slotted trigger's click, or at\nthe cursor on right-click anywhere in the host region.",
+              "attribute": "trigger",
+              "reflects": true
+            },
             {
               "kind": "field",
               "name": "side",
@@ -8335,7 +8040,17 @@
             },
             {
               "kind": "field",
-              "name": "trigger",
+              "name": "pointAnchor",
+              "type": {
+                "text": "{ x: number; y: number } | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "Cursor anchor for the contextmenu trigger mode."
+            },
+            {
+              "kind": "field",
+              "name": "triggerEl",
               "type": {
                 "text": "HTMLElement | null"
               },
@@ -8406,6 +8121,11 @@
             },
             {
               "kind": "field",
+              "name": "handleContextMenu",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
               "name": "handleViewportChange",
               "privacy": "private"
             },
@@ -8472,6 +8192,15 @@
           ],
           "attributes": [
             {
+              "name": "trigger",
+              "type": {
+                "text": "\"click\" | \"contextmenu\""
+              },
+              "default": "\"click\"",
+              "description": "How the menu opens: from the slotted trigger's click, or at\nthe cursor on right-click anywhere in the host region.",
+              "fieldName": "trigger"
+            },
+            {
               "name": "side",
               "type": {
                 "text": "FloatingSide"
@@ -8514,7 +8243,7 @@
         },
         {
           "kind": "class",
-          "description": "A single menu item inside hp-dropdown-menu / hp-context-menu.\nrole=\"menuitem\"; Enter / Space activate; emits hp-menu-select.",
+          "description": "A single menu item inside hp-dropdown-menu (either trigger mode).\nrole=\"menuitem\"; Enter / Space activate; emits hp-menu-select.",
           "name": "HpMenuItem",
           "slots": [
             {
@@ -8650,314 +8379,11 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/overlays/hp-hover-card.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Hover- / focus-triggered floating card. Larger and interactive\nthan hp-tooltip; lighter than hp-popover (no outside-click).",
-          "name": "HpHoverCard",
-          "cssParts": [
-            {
-              "description": "The floating card element",
-              "name": "card"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Trigger element (first child)",
-              "name": ""
-            },
-            {
-              "description": "Card body",
-              "name": "content"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "side",
-              "type": {
-                "text": "FloatingSide"
-              },
-              "default": "\"bottom\"",
-              "description": "Preferred side relative to the trigger.",
-              "attribute": "side",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "align",
-              "type": {
-                "text": "FloatingAlign"
-              },
-              "default": "\"center\"",
-              "description": "Alignment along the chosen side.",
-              "attribute": "align",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "offset",
-              "type": {
-                "text": "number"
-              },
-              "default": "8",
-              "description": "Pixel gap between trigger and card.",
-              "attribute": "offset"
-            },
-            {
-              "kind": "field",
-              "name": "openDelay",
-              "type": {
-                "text": "number"
-              },
-              "default": "400",
-              "description": "Open delay (ms) before showing. Default 400 — long enough to\navoid flashes while skimming, short enough to feel responsive\non intent.",
-              "attribute": "open-delay"
-            },
-            {
-              "kind": "field",
-              "name": "closeDelay",
-              "type": {
-                "text": "number"
-              },
-              "default": "300",
-              "description": "Close delay (ms) before hiding after pointer leaves both the\ntrigger and the card. Default 300 — gives users time to move\nthe pointer from trigger to card.",
-              "attribute": "close-delay"
-            },
-            {
-              "kind": "field",
-              "name": "isOpen",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "positionStyle",
-              "type": {
-                "text": "string"
-              },
-              "privacy": "private",
-              "default": "\"\""
-            },
-            {
-              "kind": "field",
-              "name": "trigger",
-              "type": {
-                "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "openTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "closeTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "disposeEscape",
-              "type": {
-                "text": "(() => void) | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "wireTrigger",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "unwireTrigger",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "clearTimers",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleEnter",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleLeave",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleCardEnter",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleViewportChange",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "hide",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "reposition",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-hover-card-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the card opens"
-            },
-            {
-              "name": "hp-hover-card-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the card closes"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "side",
-              "type": {
-                "text": "FloatingSide"
-              },
-              "default": "\"bottom\"",
-              "description": "Preferred side relative to the trigger.",
-              "fieldName": "side"
-            },
-            {
-              "name": "align",
-              "type": {
-                "text": "FloatingAlign"
-              },
-              "default": "\"center\"",
-              "description": "Alignment along the chosen side.",
-              "fieldName": "align"
-            },
-            {
-              "name": "offset",
-              "type": {
-                "text": "number"
-              },
-              "default": "8",
-              "description": "Pixel gap between trigger and card.",
-              "fieldName": "offset"
-            },
-            {
-              "name": "open-delay",
-              "type": {
-                "text": "number"
-              },
-              "default": "400",
-              "description": "Open delay (ms) before showing. Default 400 — long enough to\navoid flashes while skimming, short enough to feel responsive\non intent.",
-              "fieldName": "openDelay"
-            },
-            {
-              "name": "close-delay",
-              "type": {
-                "text": "number"
-              },
-              "default": "300",
-              "description": "Close delay (ms) before hiding after pointer leaves both the\ntrigger and the card. Default 300 — gives users time to move\nthe pointer from trigger to card.",
-              "fieldName": "closeDelay"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-hover-card",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpHoverCard",
-          "declaration": {
-            "name": "HpHoverCard",
-            "module": "src/elements/overlays/hp-hover-card.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-hover-card",
-          "declaration": {
-            "name": "HpHoverCard",
-            "module": "src/elements/overlays/hp-hover-card.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/overlays/hp-popover.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "Anchored floating panel. Click-triggered; click-outside / Escape\ndismiss; focus restoration to the trigger on close.",
+          "description": "Anchored floating panel. trigger=\"click\" (default): click to\nopen, click-outside / Escape dismiss, focus restoration on close.\ntrigger=\"hover\": opens on hover / focus after `open-delay`,\ncloses `close-delay` after the pointer leaves both trigger and\npanel — the hover-card behaviour, with the panel's interactive\ncontent reachable.",
           "name": "HpPopover",
           "cssParts": [
             {
@@ -8976,6 +8402,17 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "trigger",
+              "type": {
+                "text": "\"click\" | \"hover\""
+              },
+              "default": "\"click\"",
+              "description": "How the panel opens: on the trigger's click, or on hover /\nfocus with delays (the hover-card behaviour).",
+              "attribute": "trigger",
+              "reflects": true
+            },
             {
               "kind": "field",
               "name": "side",
@@ -9021,6 +8458,26 @@
             },
             {
               "kind": "field",
+              "name": "openDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "400",
+              "description": "Open delay (ms) in hover mode — long enough to avoid flashes\nwhile skimming, short enough to feel responsive on intent.",
+              "attribute": "open-delay"
+            },
+            {
+              "kind": "field",
+              "name": "closeDelay",
+              "type": {
+                "text": "number"
+              },
+              "default": "300",
+              "description": "Close delay (ms) in hover mode after the pointer leaves both\nthe trigger and the panel — time to travel between them.",
+              "attribute": "close-delay"
+            },
+            {
+              "kind": "field",
               "name": "positionStyle",
               "type": {
                 "text": "string"
@@ -9030,7 +8487,7 @@
             },
             {
               "kind": "field",
-              "name": "trigger",
+              "name": "triggerEl",
               "type": {
                 "text": "HTMLElement | null"
               },
@@ -9065,6 +8522,24 @@
               "default": "null"
             },
             {
+              "kind": "field",
+              "name": "openTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "closeTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
               "kind": "method",
               "name": "wireTrigger",
               "privacy": "private",
@@ -9083,6 +8558,32 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "clearTimers",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "handleEnter",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleHostEnter",
+              "privacy": "private",
+              "description": "Pointer entering the open panel cancels the pending close."
+            },
+            {
+              "kind": "field",
+              "name": "handleLeave",
+              "privacy": "private"
             },
             {
               "kind": "field",
@@ -9176,6 +8677,15 @@
           ],
           "attributes": [
             {
+              "name": "trigger",
+              "type": {
+                "text": "\"click\" | \"hover\""
+              },
+              "default": "\"click\"",
+              "description": "How the panel opens: on the trigger's click, or on hover /\nfocus with delays (the hover-card behaviour).",
+              "fieldName": "trigger"
+            },
+            {
               "name": "side",
               "type": {
                 "text": "FloatingSide"
@@ -9210,6 +8720,24 @@
               "default": "false",
               "description": "Reflect open state. Setting `open` programmatically opens / closes.",
               "fieldName": "open"
+            },
+            {
+              "name": "open-delay",
+              "type": {
+                "text": "number"
+              },
+              "default": "400",
+              "description": "Open delay (ms) in hover mode — long enough to avoid flashes\nwhile skimming, short enough to feel responsive on intent.",
+              "fieldName": "openDelay"
+            },
+            {
+              "name": "close-delay",
+              "type": {
+                "text": "number"
+              },
+              "default": "300",
+              "description": "Close delay (ms) in hover mode after the pointer leaves both\nthe trigger and the panel — time to travel between them.",
+              "fieldName": "closeDelay"
             }
           ],
           "superclass": {

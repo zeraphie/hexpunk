@@ -2,16 +2,6 @@
   "version": 1.1,
   "tags": [
     {
-      "name": "hp-alert-dialog",
-      "description": "Alert dialog — role=\"alertdialog\" variant of hp-dialog. Requires\nan explicit action; backdrop clicks don't dismiss. Use for\ndestructive confirmations and blocking errors.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Reflect open state. Setting `open` programmatically opens / closes."
-        }
-      ]
-    },
-    {
       "name": "hp-background",
       "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
       "attributes": [
@@ -318,16 +308,6 @@
       ]
     },
     {
-      "name": "hp-context-menu",
-      "description": "Context menu — right-click on the target region opens the menu at\nthe cursor.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": ""
-        }
-      ]
-    },
-    {
       "name": "hp-copy",
       "description": "Copy-to-clipboard button.",
       "attributes": [
@@ -370,7 +350,7 @@
     },
     {
       "name": "hp-dialog",
-      "description": "Modal dialog backed by the native <dialog> + showModal(). Browser\nfocus trap + Escape dismiss + aria-modal. Backdrop click closes\nby default — `no-backdrop-close` opts out.",
+      "description": "Modal dialog backed by the native <dialog> + showModal(). Browser\nfocus trap + Escape dismiss + aria-modal. Backdrop click closes\nby default — `no-backdrop-close` opts out, and `alert` makes it\nan alertdialog that never backdrop-dismisses (destructive\nconfirmations, blocking errors).",
       "attributes": [
         {
           "name": "open",
@@ -379,13 +359,29 @@
         {
           "name": "no-backdrop-close",
           "description": "When set, clicking the backdrop doesn't close. Use for\ndestructive / blocking dialogs that require an explicit\naction."
+        },
+        {
+          "name": "alert",
+          "description": "Alert variant — role=\"alertdialog\", and the backdrop never\ndismisses; an explicit action (or Escape) closes."
         }
       ]
     },
     {
       "name": "hp-dropdown-menu",
-      "description": "Dropdown menu — click-triggered popover with menuitem semantics\nand arrow-key navigation.",
+      "description": "Dropdown menu — menu popover with menuitem semantics and\narrow-key navigation. trigger=\"click\" (default) opens from the\nslotted trigger element; trigger=\"contextmenu\" opens at the\ncursor from a right-click anywhere in the host region.",
       "attributes": [
+        {
+          "name": "trigger",
+          "description": "How the menu opens: from the slotted trigger's click, or at\nthe cursor on right-click anywhere in the host region.",
+          "values": [
+            {
+              "name": "click"
+            },
+            {
+              "name": "contextmenu"
+            }
+          ]
+        },
         {
           "name": "side",
           "description": "",
@@ -523,42 +519,6 @@
               "name": "lg"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "hp-hover-card",
-      "description": "Hover- / focus-triggered floating card. Larger and interactive\nthan hp-tooltip; lighter than hp-popover (no outside-click).",
-      "attributes": [
-        {
-          "name": "side",
-          "description": "Preferred side relative to the trigger.",
-          "values": [
-            {
-              "name": "FloatingSide"
-            }
-          ]
-        },
-        {
-          "name": "align",
-          "description": "Alignment along the chosen side.",
-          "values": [
-            {
-              "name": "FloatingAlign"
-            }
-          ]
-        },
-        {
-          "name": "offset",
-          "description": "Pixel gap between trigger and card."
-        },
-        {
-          "name": "open-delay",
-          "description": "Open delay (ms) before showing. Default 400 — long enough to\navoid flashes while skimming, short enough to feel responsive\non intent."
-        },
-        {
-          "name": "close-delay",
-          "description": "Close delay (ms) before hiding after pointer leaves both the\ntrigger and the card. Default 300 — gives users time to move\nthe pointer from trigger to card."
         }
       ]
     },
@@ -720,7 +680,7 @@
     },
     {
       "name": "hp-menu-item",
-      "description": "A single menu item inside hp-dropdown-menu / hp-context-menu.\nrole=\"menuitem\"; Enter / Space activate; emits hp-menu-select.",
+      "description": "A single menu item inside hp-dropdown-menu (either trigger mode).\nrole=\"menuitem\"; Enter / Space activate; emits hp-menu-select.",
       "attributes": [
         {
           "name": "value",
@@ -854,8 +814,20 @@
     },
     {
       "name": "hp-popover",
-      "description": "Anchored floating panel. Click-triggered; click-outside / Escape\ndismiss; focus restoration to the trigger on close.",
+      "description": "Anchored floating panel. trigger=\"click\" (default): click to\nopen, click-outside / Escape dismiss, focus restoration on close.\ntrigger=\"hover\": opens on hover / focus after `open-delay`,\ncloses `close-delay` after the pointer leaves both trigger and\npanel — the hover-card behaviour, with the panel's interactive\ncontent reachable.",
       "attributes": [
+        {
+          "name": "trigger",
+          "description": "How the panel opens: on the trigger's click, or on hover /\nfocus with delays (the hover-card behaviour).",
+          "values": [
+            {
+              "name": "click"
+            },
+            {
+              "name": "hover"
+            }
+          ]
+        },
         {
           "name": "side",
           "description": "Preferred side relative to the trigger.",
@@ -881,6 +853,14 @@
         {
           "name": "open",
           "description": "Reflect open state. Setting `open` programmatically opens / closes."
+        },
+        {
+          "name": "open-delay",
+          "description": "Open delay (ms) in hover mode — long enough to avoid flashes\nwhile skimming, short enough to feel responsive on intent."
+        },
+        {
+          "name": "close-delay",
+          "description": "Close delay (ms) in hover mode after the pointer leaves both\nthe trigger and the panel — time to travel between them."
         }
       ]
     },
