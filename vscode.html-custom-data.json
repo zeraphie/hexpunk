@@ -86,7 +86,7 @@
     },
     {
       "name": "hp-badge",
-      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay. `dismissible`\nturns it into a removable chip.",
       "attributes": [
         {
           "name": "tone",
@@ -100,6 +100,14 @@
         {
           "name": "active",
           "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
+        },
+        {
+          "name": "dismissible",
+          "description": "Show the dismiss ×. Fires `hp-badge-dismiss` on activation."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks dismiss and dims the visual."
         }
       ]
     },
@@ -1214,29 +1222,6 @@
         {
           "name": "query-param",
           "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`."
-        }
-      ]
-    },
-    {
-      "name": "hp-tag",
-      "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone — same set as hp-cell.",
-          "values": [
-            {
-              "name": "HpTagTone"
-            }
-          ]
-        },
-        {
-          "name": "removable",
-          "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks dismiss action and dims the visual."
         }
       ]
     },
