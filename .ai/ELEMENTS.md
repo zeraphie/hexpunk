@@ -3,7 +3,7 @@
 Auto-generated from `custom-elements.json` by `tools/build-elements-md.ts` — do not edit
 by hand. Regenerate with `bun run analyze`.
 
-25 elements, alphabetical (33 wip elements omitted — showcase-only,
+25 elements, alphabetical (32 wip elements omitted — showcase-only,
 not exported). Per element: tag, status, role, attributes / properties (type, default),
 slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md` (style) and
 `.ai/PROMPTS.md` (prompt recipes) when briefing an agent.

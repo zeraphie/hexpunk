@@ -11080,49 +11080,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/primitives/hp-visually-hidden.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Visually hidden but accessible — content is read by assistive tech\nbut doesn't render on screen.",
-          "name": "HpVisuallyHidden",
-          "slots": [
-            {
-              "description": "Content for screen readers only",
-              "name": ""
-            }
-          ],
-          "members": [],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-visually-hidden",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpVisuallyHidden",
-          "declaration": {
-            "name": "HpVisuallyHidden",
-            "module": "src/elements/primitives/hp-visually-hidden.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-visually-hidden",
-          "declaration": {
-            "name": "HpVisuallyHidden",
-            "module": "src/elements/primitives/hp-visually-hidden.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/status/hp-badge.ts",
       "declarations": [
         {

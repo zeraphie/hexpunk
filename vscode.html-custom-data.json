@@ -1494,11 +1494,6 @@
           "description": "When set, clicking the source plays the expand-and-shrink\nanimation in place without navigating. The overlay scales up\nto viewport coverage, holds, then scales back down. Use for\nshowcase demos and visual previews."
         }
       ]
-    },
-    {
-      "name": "hp-visually-hidden",
-      "description": "Visually hidden but accessible — content is read by assistive tech\nbut doesn't render on screen.",
-      "attributes": []
     }
   ]
 }
