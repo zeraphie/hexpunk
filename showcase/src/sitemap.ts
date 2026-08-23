@@ -65,6 +65,7 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Forms",
         children: [
+          { path: "/components/forms/spike-checkbox", title: "checkbox spike" },
           { path: "/components/forms/hp-button", title: "hp-button" },
           { path: "/components/forms/hp-checkbox", title: "hp-checkbox" },
           { path: "/components/forms/hp-form", title: "hp-form" },

@@ -1,0 +1,474 @@
+---
+// spike-checkbox.astro — Forms spike: the hex checkbox three ways.
+//
+// Decision page for the component cull's Forms step: native pattern
+// (CSS only) vs light-DOM alias element vs form-associated custom
+// element, each probed live against the current shadow hp-checkbox.
+// Temporary page — it leaves the showcase once the decision lands.
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout title="checkbox spike">
+  <h1>checkbox spike</h1>
+  <p class="hp-prose">
+    Four builds of the same control. The winner decides the pattern for every hex form
+    control (radio, switch, slider) and whether hexpunk ships thin aliases over native
+    inputs. Probes below exercise what actually differs: form participation, label
+    association, validation, and where per-field state can live.
+  </p>
+
+  <hp-banner tone="neutral" label="the contenders">
+    <strong>current</strong> — today's shadow-DOM hp-checkbox (no form participation) ·
+    <strong>native</strong> — <code>&lt;label class="spike-checkbox"&gt;&lt;input&gt;&lt;span&gt;</code>
+    pattern, CSS only ·
+    <strong>alias</strong> — <code>&lt;spike-checkbox&gt;</code> element rendering that same
+    pattern in light DOM ·
+    <strong>face</strong> — <code>&lt;spike-checkbox-face&gt;</code>, shadow DOM +
+    <code>ElementInternals</code>.
+  </hp-banner>
+
+  <h2>Look &amp; states</h2>
+  <hp-demo caption="rest / checked / indeterminate / disabled">
+    <div class="spike-grid">
+      <span class="col-label">current</span>
+      <hp-checkbox></hp-checkbox>
+      <hp-checkbox checked></hp-checkbox>
+      <hp-checkbox indeterminate></hp-checkbox>
+      <hp-checkbox disabled checked></hp-checkbox>
+
+      <span class="col-label">native</span>
+      <label class="spike-checkbox"><input type="checkbox" /><span class="spike-hex" aria-hidden="true"></span></label>
+      <label class="spike-checkbox"><input type="checkbox" checked /><span class="spike-hex" aria-hidden="true"></span></label>
+      <label class="spike-checkbox"><input type="checkbox" class="js-indeterminate" /><span class="spike-hex" aria-hidden="true"></span></label>
+      <label class="spike-checkbox"><input type="checkbox" checked disabled /><span class="spike-hex" aria-hidden="true"></span></label>
+
+      <span class="col-label">alias</span>
+      <spike-checkbox></spike-checkbox>
+      <spike-checkbox checked></spike-checkbox>
+      <spike-checkbox indeterminate></spike-checkbox>
+      <spike-checkbox checked disabled></spike-checkbox>
+
+      <span class="col-label">face</span>
+      <spike-checkbox-face></spike-checkbox-face>
+      <spike-checkbox-face checked></spike-checkbox-face>
+      <spike-checkbox-face indeterminate></spike-checkbox-face>
+      <spike-checkbox-face checked disabled></spike-checkbox-face>
+    </div>
+  </hp-demo>
+
+  <h2>Form participation</h2>
+  <p class="hp-prose">
+    All four sit in one <code>&lt;form&gt;</code>, each with a <code>name</code>. Check some
+    boxes, then read the FormData — only entries the browser actually serialises appear.
+  </p>
+  <hp-demo caption="FormData probe">
+    <form id="spike-form" onsubmit="event.preventDefault()">
+      <div class="spike-row">
+        <hp-checkbox name="current" checked></hp-checkbox><span>current (name="current")</span>
+      </div>
+      <div class="spike-row">
+        <label class="spike-checkbox"><input type="checkbox" name="native" checked /><span class="spike-hex" aria-hidden="true"></span> native (name="native")</label>
+      </div>
+      <div class="spike-row">
+        <spike-checkbox name="alias" checked label='alias (name="alias")'></spike-checkbox>
+      </div>
+      <div class="spike-row">
+        <spike-checkbox-face name="face" checked id="face-in-form"></spike-checkbox-face><span>face (name="face")</span>
+      </div>
+      <hp-button size="sm" id="read-formdata">Read FormData</hp-button>
+      <pre id="formdata-out" class="spike-out">–</pre>
+    </form>
+  </hp-demo>
+
+  <h2>Label association</h2>
+  <p class="hp-prose">
+    Click the <em>text</em>, not the hex. Wrapping-label and <code>for=</code> both count.
+  </p>
+  <hp-demo caption="Label probe">
+    <div class="spike-col">
+      <label class="spike-checkbox"><input type="checkbox" /><span class="spike-hex" aria-hidden="true"></span> native — wrapping label toggles</label>
+      <label><spike-checkbox label=""></spike-checkbox> alias — wrapping label toggles the inner input</label>
+      <div>
+        <spike-checkbox-face id="face-labelled"></spike-checkbox-face>
+        <label for="face-labelled">face — <code>for=</code> association via ElementInternals</label>
+      </div>
+      <div>
+        <hp-checkbox id="current-labelled"></hp-checkbox>
+        <label for="current-labelled">current — <code>for=</code> does nothing (not labelable)</label>
+      </div>
+    </div>
+  </hp-demo>
+
+  <h2>Validation</h2>
+  <p class="hp-prose">
+    Both boxes are <code>required</code> and unchecked. Submit and watch what the browser
+    does for free — the native one blocks submission and reports; the face one does the
+    same through <code>setValidity</code>. The current element can't participate at all.
+  </p>
+  <hp-demo caption="required probe">
+    <form id="spike-validate">
+      <div class="spike-row">
+        <label class="spike-checkbox"><input type="checkbox" name="terms" required /><span class="spike-hex" aria-hidden="true"></span> native — accept the terms</label>
+      </div>
+      <div class="spike-row">
+        <spike-checkbox-face name="policy" required id="face-required"></spike-checkbox-face>
+        <span>face — accept the policy</span>
+      </div>
+      <hp-button size="sm" id="try-submit">Try to submit</hp-button>
+      <pre id="validate-out" class="spike-out">–</pre>
+    </form>
+  </hp-demo>
+
+  <h2>Field state (the react-hook-form criteria)</h2>
+  <p class="hp-prose">
+    The alias and face builds stamp <code>data-dirty</code> / <code>data-touched</code> on
+    themselves as you interact — an element to hang field state, error messages, and form
+    orchestration on. The native pattern has nowhere to put this without consumer JS.
+  </p>
+  <hp-demo caption="dirty / touched probe">
+    <div class="spike-col">
+      <spike-checkbox label="alias — toggle me, then tab away" id="alias-state"></spike-checkbox>
+      <div><spike-checkbox-face id="face-state"></spike-checkbox-face><span> face — toggle me, then tab away</span></div>
+      <pre id="state-out" class="spike-out">–</pre>
+    </div>
+  </hp-demo>
+
+  <style is:global>
+    /* ── Candidate elements.css block: the native hex-checkbox pattern ──
+     * Markup: <label class="spike-checkbox"><input type="checkbox">
+     *           <span class="spike-hex" aria-hidden="true"></span> text</label>
+     * The ring/fill masks are hp-hex's exact xs polygons (outer +
+     * 0.94-inset inner), so fidelity is geometric, not approximate. */
+
+    .spike-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--hp-sm);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .spike-checkbox input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .spike-hex {
+      display: inline-block;
+      width: calc(var(--hp-hex-cell-xs) * 0.64);
+      aspect-ratio: 100 / 115.47;
+      position: relative;
+      flex: none;
+    }
+
+    .spike-hex::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--hp-outline);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 115.47'%3E%3Cpath fill-rule='evenodd' d='M50 0L100 28.87L100 86.6L50 115.47L0 86.6L0 28.87Z M50 3.46L97 30.6L97 84.87L50 112.01L3 84.87L3 30.6Z'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+      transition: background-color var(--hp-duration-fast) var(--hp-ease-default);
+    }
+
+    .spike-checkbox:hover input:not(:disabled) + .spike-hex::before,
+    .spike-checkbox input:focus-visible + .spike-hex::before {
+      background: var(--hp-secondary);
+    }
+
+    .spike-checkbox input:checked + .spike-hex::before,
+    .spike-checkbox input:indeterminate + .spike-hex::before {
+      background: var(--hp-primary);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 115.47'%3E%3Cpath d='M50 0L100 28.87L100 86.6L50 115.47L0 86.6L0 28.87Z'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+
+    .spike-hex::after {
+      content: "";
+      position: absolute;
+      inset: 22%;
+      background: var(--hp-on-primary);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolyline points='5,12 10,17 19,7' fill='none' stroke='black' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+      opacity: 0;
+      transition: opacity var(--hp-duration-medium) var(--hp-ease-default);
+    }
+
+    .spike-checkbox input:checked + .spike-hex::after {
+      opacity: 1;
+    }
+
+    .spike-checkbox input:indeterminate + .spike-hex::after {
+      opacity: 1;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cline x1='6' y1='12' x2='18' y2='12' stroke='black' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+
+    .spike-checkbox input:focus-visible + .spike-hex {
+      outline: 2px solid var(--hp-focus-ring);
+      outline-offset: 2px;
+    }
+
+    .spike-checkbox:has(input:disabled) {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* :user-invalid needs interaction; after a rejected submit the
+     * form is marked and the ring flips to the error tone. */
+    .spike-checkbox input:user-invalid + .spike-hex::before,
+    #spike-validate.submit-attempted .spike-checkbox input:invalid + .spike-hex::before {
+      background: var(--hp-error);
+    }
+
+    /* ── Spike page scaffolding (not part of the candidate block) ── */
+    .spike-grid {
+      display: grid;
+      grid-template-columns: 6rem repeat(4, auto);
+      gap: var(--hp-md);
+      align-items: center;
+      justify-content: start;
+    }
+
+    .col-label {
+      font-family: var(--hp-typo-label-sm-font-family);
+      font-size: var(--hp-typo-label-sm-font-size);
+      letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+      text-transform: uppercase;
+      color: var(--hp-on-surface-variant);
+    }
+
+    .spike-row {
+      display: flex;
+      align-items: center;
+      gap: var(--hp-sm);
+      margin-block: var(--hp-sm);
+    }
+
+    .spike-col {
+      display: grid;
+      gap: var(--hp-md);
+      justify-items: start;
+    }
+
+    .spike-out {
+      font-family: var(--hp-typo-code-font-family, monospace);
+      font-size: var(--hp-typo-body-sm-font-size);
+      color: var(--hp-on-surface-variant);
+      background: var(--hp-surface-dim);
+      border: 1px solid var(--hp-outline-variant);
+      padding: var(--hp-sm);
+      min-width: 24rem;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+  </style>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    // ── Option 2: light-DOM alias ─────────────────────────────────
+    // Renders the native pattern for you; the inner input is the
+    // real control, so participation / labels / validation stay
+    // native. Attributes forward once at upgrade (spike-grade).
+    if (!customElements.get("spike-checkbox")) {
+      customElements.define(
+        "spike-checkbox",
+        class extends HTMLElement {
+          connectedCallback(): void {
+            if (this.querySelector("input")) {
+              return;
+            }
+            const label = document.createElement("label");
+            label.className = "spike-checkbox";
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            for (const attr of ["name", "value"]) {
+              const v = this.getAttribute(attr);
+              if (v !== null) {
+                input.setAttribute(attr, v);
+              }
+            }
+            for (const attr of ["checked", "disabled", "required"]) {
+              if (this.hasAttribute(attr)) {
+                input.toggleAttribute(attr, true);
+              }
+            }
+            if (this.hasAttribute("indeterminate")) {
+              input.indeterminate = true;
+            }
+            const hex = document.createElement("span");
+            hex.className = "spike-hex";
+            hex.setAttribute("aria-hidden", "true");
+            label.append(input, hex);
+            const text = this.getAttribute("label");
+            if (text) {
+              label.append(` ${text}`);
+            }
+            this.append(label);
+            // Field state lives on the element itself.
+            input.addEventListener("change", () => {
+              this.toggleAttribute("data-dirty", true);
+            });
+            input.addEventListener("focusout", () => {
+              this.toggleAttribute("data-touched", true);
+            });
+          }
+        }
+      );
+    }
+
+    // ── Option 3: form-associated custom element ──────────────────
+    // Shadow DOM look (composes hp-hex exactly like the current
+    // element); ElementInternals supplies form value, validity,
+    // labels, and the checkbox role.
+    if (!customElements.get("spike-checkbox-face")) {
+      customElements.define(
+        "spike-checkbox-face",
+        class extends HTMLElement {
+          static formAssociated = true;
+          #internals = this.attachInternals();
+          #checked = false;
+
+          connectedCallback(): void {
+            if (!this.shadowRoot) {
+              const root = this.attachShadow({ mode: "open" });
+              root.innerHTML = `
+                <style>
+                  :host { display: inline-block; cursor: pointer; line-height: 0;
+                    --hp-stroke-color: var(--hp-outline); }
+                  :host(:hover), :host(:focus-visible) { --hp-stroke-color: var(--hp-secondary); }
+                  :host([checked]), :host([indeterminate]) {
+                    --hp-stroke-color: var(--hp-primary); --hp-hex-fill: var(--hp-primary); }
+                  :host([disabled]) { opacity: 0.5; cursor: not-allowed; }
+                  :host(:state(user-invalid)) { --hp-stroke-color: var(--hp-error); }
+                  .box { position: relative; display: inline-block; line-height: 0; }
+                  .glyph { position: absolute; inset: 0; display: grid; place-items: center;
+                    color: var(--hp-on-primary); opacity: 0; pointer-events: none;
+                    transition: opacity var(--hp-duration-medium) var(--hp-ease-default); }
+                  :host([checked]) .glyph, :host([indeterminate]) .glyph { opacity: 1; }
+                  .glyph svg { width: 60%; height: 60%; stroke: currentColor; stroke-width: 3;
+                    stroke-linecap: square; stroke-linejoin: miter; fill: none; }
+                  .check, .dash { display: none; }
+                  :host(:not([indeterminate])) .check { display: block; }
+                  :host([indeterminate]) .dash { display: block; }
+                </style>
+                <span class="box"><hp-hex size="xs"></hp-hex>
+                  <span class="glyph" aria-hidden="true">
+                    <svg class="check" viewBox="0 0 24 24"><polyline points="5,12 10,17 19,7"></polyline></svg>
+                    <svg class="dash" viewBox="0 0 24 24"><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+                  </span>
+                </span>`;
+            }
+            this.#internals.role = "checkbox";
+            if (!this.hasAttribute("tabindex") && !this.hasAttribute("disabled")) {
+              this.tabIndex = 0;
+            }
+            this.#checked = this.hasAttribute("checked");
+            this.addEventListener("click", this.#onClick);
+            this.addEventListener("keydown", this.#onKeydown);
+            this.addEventListener("focusout", () => {
+              this.toggleAttribute("data-touched", true);
+            });
+            this.#sync();
+          }
+
+          #onClick = (): void => {
+            if (this.hasAttribute("disabled")) {
+              return;
+            }
+            this.removeAttribute("indeterminate");
+            this.#checked = !this.#checked;
+            this.toggleAttribute("data-dirty", true);
+            this.#sync();
+            this.dispatchEvent(new Event("change", { bubbles: true }));
+          };
+
+          #onKeydown = (e: KeyboardEvent): void => {
+            if (e.key === " ") {
+              e.preventDefault();
+              this.#onClick();
+            }
+          };
+
+          /** Forward internals so form probes read like native. */
+          get validationMessage(): string {
+            return this.#internals.validationMessage;
+          }
+
+          #sync(): void {
+            this.toggleAttribute("checked", this.#checked);
+            this.#internals.ariaChecked = this.hasAttribute("indeterminate")
+              ? "mixed"
+              : String(this.#checked);
+            this.#internals.setFormValue(
+              this.#checked ? (this.getAttribute("value") ?? "on") : null
+            );
+            if (this.hasAttribute("required") && !this.#checked) {
+              this.#internals.setValidity({ valueMissing: true }, "Please check this box.");
+            } else {
+              this.#internals.setValidity({});
+            }
+          }
+        }
+      );
+    }
+
+    onPageVisit((signal) => {
+      const form = document.getElementById("spike-form") as HTMLFormElement | null;
+      if (!form) {
+        return;
+      }
+      // rest-state indeterminate demo for the native column
+      for (const el of document.querySelectorAll<HTMLInputElement>(".js-indeterminate")) {
+        el.indeterminate = true;
+      }
+
+      const fdOut = document.getElementById("formdata-out")!;
+      document.getElementById("read-formdata")!.addEventListener(
+        "click",
+        () => {
+          const entries = [...new FormData(form).entries()]
+            .map(([k, v]) => `${k}=${String(v)}`)
+            .join("  ");
+          fdOut.textContent = entries || "(no entries)";
+        },
+        { signal }
+      );
+
+      const vForm = document.getElementById("spike-validate") as HTMLFormElement;
+      const vOut = document.getElementById("validate-out")!;
+      document.getElementById("try-submit")!.addEventListener(
+        "click",
+        () => {
+          vForm.classList.add("submit-attempted");
+          const ok = vForm.reportValidity();
+          const parts = [...vForm.elements]
+            .filter((el): el is HTMLObjectElement => "validationMessage" in el && el.getAttribute("name") !== null)
+            .map((el) => `${el.getAttribute("name")}: ${el.validationMessage || "valid"}`);
+          vOut.textContent = `${ok ? "submitted" : "blocked"}  —  ${parts.join("  ·  ")}`;
+        },
+        { signal }
+      );
+
+      const stateOut = document.getElementById("state-out")!;
+      const renderState = (): void => {
+        const a = document.getElementById("alias-state")!;
+        const f = document.getElementById("face-state")!;
+        const flags = (el: HTMLElement): string =>
+          `dirty=${el.hasAttribute("data-dirty")} touched=${el.hasAttribute("data-touched")}`;
+        stateOut.textContent = `alias: ${flags(a)}\nface:  ${flags(f)}`;
+      };
+      renderState();
+      document.addEventListener("change", renderState, { signal });
+      document.addEventListener("focusout", () => setTimeout(renderState, 0), { signal });
+    });
+  </script>
+</Layout>
