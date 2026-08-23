@@ -25,7 +25,6 @@ import "../../../src/elements/overlays/hp-hover-card.ts";
 import "../../../src/elements/overlays/hp-popover.ts";
 import "../../../src/elements/overlays/hp-tooltip.ts";
 import "../../../src/elements/status/hp-badge.ts";
-import "../../../src/elements/status/hp-tag.ts";
 import "../../../src/elements/unfold/hp-module-handle.ts";
 import "../../../src/elements/unfold/hp-unfold-list.ts";
 import "../../../src/elements/unfold/hp-unfold-overlay.ts";
