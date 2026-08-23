@@ -108,11 +108,9 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Overlays",
         children: [
-          { path: "/components/overlays/hp-alert-dialog", title: "hp-alert-dialog" },
-          { path: "/components/overlays/hp-context-menu", title: "hp-context-menu" },
+          { path: "/components/overlays/dialog", title: "<dialog>" },
           { path: "/components/overlays/hp-dialog", title: "hp-dialog" },
           { path: "/components/overlays/hp-dropdown-menu", title: "hp-dropdown-menu" },
-          { path: "/components/overlays/hp-hover-card", title: "hp-hover-card" },
           { path: "/components/overlays/hp-module-handle", title: "hp-module-handle" },
           { path: "/components/overlays/hp-popover", title: "hp-popover" },
           { path: "/components/overlays/hp-tooltip", title: "hp-tooltip" },

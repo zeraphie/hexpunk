@@ -33,6 +33,28 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <hp-demo caption='trigger="hover" — the hover-card behaviour'>
+      <hp-popover trigger="hover" side="bottom" align="start">
+        <span class="hover-handle">@hissalia</span>
+        <div slot="content" class="hover-body">
+          <strong>Hissalia</strong>
+          <p>Hexpunk's first inhabitant. The panel is interactive — links and buttons
+          inside stay reachable while the pointer travels over.</p>
+          <hp-button size="sm">follow</hp-button>
+        </div>
+      </hp-popover>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-popover trigger="hover">
+    <span>@hissalia</span>
+    <div slot="content">
+      <strong>Hissalia</strong>
+      <p>…</p>
+      <hp-button size="sm">follow</hp-button>
+    </div>
+  </hp-popover>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>Accessibility</h2>
       <p>
@@ -43,4 +65,25 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
+  <style>
+    .hover-handle {
+      color: var(--hp-primary);
+      cursor: default;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+
+    .hover-body {
+      display: grid;
+      gap: var(--hp-sm);
+      justify-items: start;
+      max-width: 26ch;
+    }
+
+    .hover-body p {
+      margin: 0;
+      color: var(--hp-on-surface-variant);
+    }
+  </style>
 </Layout>

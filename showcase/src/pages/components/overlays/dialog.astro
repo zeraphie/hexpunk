@@ -1,0 +1,63 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="<dialog>">
+  <ComponentDocs title="<dialog>" native>
+    <p slot="description">
+      The native modal, styled to the system — surface-container panel, hairline border,
+      dimmed blurred backdrop, a settle-in animation. <code>showModal()</code> brings the
+      focus trap, Escape dismiss, <code>aria-modal</code>, and the top layer for free.
+      Backdrop-click dismissal isn't native at the current browser floor — that's what
+      <a href="/components/overlays/hp-dialog"><code>hp-dialog</code></a> adds, along with
+      the <code>alert</code> variant.
+    </p>
+
+    <hp-demo caption="showModal + a form-method close">
+      <div>
+        <hp-button id="open-native-dialog">Open dialog</hp-button>
+        <dialog id="native-dialog">
+          <p>
+            A raw <code>&lt;dialog&gt;</code>. Escape closes it natively; the button below
+            closes it via <code>method="dialog"</code> — no script needed for either.
+          </p>
+          <form method="dialog" style="text-align: right; margin-top: var(--hp-lg);">
+            <hp-button type="submit">close</hp-button>
+          </form>
+        </dialog>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <button id="open">Open dialog</button>
+  <dialog id="modal">
+    <p>A raw dialog. Escape closes natively.</p>
+    <form method="dialog">
+      <button>close</button>
+    </form>
+  </dialog>
+  <script>
+    open.addEventListener("click", () => modal.showModal());
+  </script>
+</body>`}</hp-code>
+    </hp-demo>
+  </ComponentDocs>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    onPageVisit((signal) => {
+      const trigger = document.getElementById("open-native-dialog");
+      const dialog = document.getElementById("native-dialog") as HTMLDialogElement | null;
+      if (!trigger || !dialog) {
+        return;
+      }
+      trigger.addEventListener(
+        "click",
+        () => {
+          dialog.showModal();
+        },
+        { signal }
+      );
+    });
+  </script>
+</Layout>
