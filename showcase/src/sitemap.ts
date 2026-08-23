@@ -5,9 +5,10 @@
 // Components are grouped by the seven-category taxonomy (hex core,
 // typography, forms, feedback, layout, navigation, overlays); the
 // folder structure under showcase/src/pages/components/ matches.
-// Native HTML elements will file into the same categories as their
-// pages land, labelled by bare tag (`<details>`) so native-ness is
-// visible in the sidebar.
+// Native HTML elements file into the same categories, labelled by
+// bare tag (`<details>`) so native-ness is visible in the sidebar.
+// Within a category: native entries first, then hp-* components,
+// each set alphabetical.
 
 export interface SitemapLeaf {
   path: string;
@@ -86,11 +87,11 @@ export const SITEMAP: SitemapNode[] = [
         title: "Layout",
         children: [
           { path: "/components/layout/details", title: "<details>" },
+          { path: "/components/layout/hr", title: "<hr>" },
           { path: "/components/layout/table", title: "<table>" },
           { path: "/components/layout/hp-collapsible", title: "hp-collapsible" },
           { path: "/components/layout/hp-demo", title: "hp-demo" },
           { path: "/components/layout/hp-scroll-area", title: "hp-scroll-area" },
-          { path: "/components/layout/hr", title: "<hr>" },
           { path: "/components/layout/hp-toolbar", title: "hp-toolbar" },
         ],
       },
