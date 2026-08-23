@@ -33,7 +33,9 @@ oxlint's — style review is about what tools can't check.
 
 ## Key paths
 
-- `DESIGN.md` — the system spec; every committed decision lives here
+- `DESIGN.md` — the system spec; every committed decision lives
+  here, and only decided work — parked or speculative elements and
+  modes stay in PLAN files until they're decided
 - `PLAN.md` — canonical roadmap; `PLAN.*.md` — per-rework ADRs
 - `.ai/STYLE.md` — code style rules
 - `.ai/ANTI-PATTERNS.md` / `.ai/PROMPTS.md` / `.ai/ELEMENTS.md` —
