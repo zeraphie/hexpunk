@@ -2,6 +2,132 @@
   "version": 1.1,
   "tags": [
     {
+      "name": "hp-alert-dialog",
+      "description": "Alert dialog — role=\"alertdialog\" variant of hp-dialog. Requires\nan explicit action; backdrop clicks don't dismiss. Use for\ndestructive confirmations and blocking errors.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Reflect open state. Setting `open` programmatically opens / closes."
+        }
+      ]
+    },
+    {
+      "name": "hp-avatar",
+      "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
+      "attributes": [
+        {
+          "name": "src",
+          "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead."
+        },
+        {
+          "name": "alt",
+          "description": "Alt text for the image. Required for non-decorative avatars."
+        },
+        {
+          "name": "size",
+          "description": "Avatar size — matches hp-hex sizes.",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-background",
+      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
+      "attributes": [
+        {
+          "name": "hex-size",
+          "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement."
+        },
+        {
+          "name": "pointer-radius",
+          "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200."
+        },
+        {
+          "name": "decay",
+          "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\")."
+        },
+        {
+          "name": "splat-strength",
+          "description": "Multiplier on the energy injected per pointer move. Default 1."
+        },
+        {
+          "name": "splat-radius",
+          "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80."
+        },
+        {
+          "name": "scroll-stir",
+          "description": "Where scroll velocity stirs the field: \"edge\" (a band along\nthe viewport edge new content arrives from), \"pointer\" (at the\ncursor/touch position), \"band\" (a soft full-width band at the\nviewport centre), or \"off\". Scroll stirring is capped at the\nbright tier and disabled under reduced motion.",
+          "values": [
+            {
+              "name": "edge"
+            },
+            {
+              "name": "pointer"
+            },
+            {
+              "name": "band"
+            },
+            {
+              "name": "off"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-badge",
+      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+          "values": [
+            {
+              "name": "HpBadgeTone"
+            }
+          ]
+        },
+        {
+          "name": "active",
+          "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
+        }
+      ]
+    },
+    {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "hp-bond",
       "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
       "attributes": [
@@ -13,16 +139,6 @@
               "name": "HpBondState"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "hp-link-node",
-      "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-      "attributes": [
-        {
-          "name": "bonded",
-          "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`."
         }
       ]
     },
@@ -77,6 +193,59 @@
       ]
     },
     {
+      "name": "hp-cell",
+      "description": "Universal labelled hex. Subsumes anchor / action / secondary /\nutility (interactive), content / support / slot (decorative), and\npositive / warn / alert / error (tone overlay) into one element.",
+      "attributes": [
+        {
+          "name": "variant",
+          "description": "Role + visual preset. Interactive variants\n(`anchor|action|secondary|utility`) lift on hover, show the focus\ntrace, and accept keyboard input via the host's `tabindex`.\nDecorative variants (`content|support|slot`) are static.",
+          "values": [
+            {
+              "name": "HpCellVariant"
+            }
+          ]
+        },
+        {
+          "name": "size",
+          "description": "Cell size.\n\n- `xxs` (20px) — dense inline form-control hex\n- `xs` (32px) — comfortable inline form-control hex\n- `sm` (100px, default) — content-hex / general UI tile\n- `md` (180px, flat-top) — large content tile\n- `lg` (320px) — feature tile\n\nVariant-aware auto-defaults apply when `size` isn't set:\n`content` → `md`, `support` → `lg`. Form-input components\n(hp-checkbox, hp-radio) own their own xs/xxs defaults via\ntheir own `size` attribute.",
+          "values": [
+            {
+              "name": "xxs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone overlay. `neutral` (default) leaves variant tokens\nuntouched; the others swap stroke / label to the matching\nsemantic colour pair.",
+          "values": [
+            {
+              "name": "HpCellTone"
+            }
+          ]
+        },
+        {
+          "name": "active",
+          "description": "When set with a non-neutral tone, fills the hex with the\ntone-container colour and flips the label to the on-container\ncontrast pair. The cell reads as \"this state is in effect\"."
+        },
+        {
+          "name": "filled",
+          "description": "Filled-hex paint. Works on `variant=\"action\"` (high-emphasis CTA;\ndarkens to primary-container on hover/focus) and `variant=\"anchor\"`\n(identity / grip / drag-handle; hue-swaps to secondary on\nhover/focus/aria-pressed — same as the unfilled anchor engagement\nmotion). Both paint the polygon with `--hp-primary` and flip the\nlabel to `--hp-on-primary` at rest."
+        }
+      ]
+    },
+    {
       "name": "hp-checkbox",
       "description": "Hex checkbox. role=\"checkbox\", aria-checked reflects state\n(true / false / mixed). Space toggles; disabled blocks.",
       "attributes": [
@@ -123,6 +292,164 @@
       ]
     },
     {
+      "name": "hp-cluster",
+      "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
+      "attributes": [
+        {
+          "name": "size",
+          "description": "Cell size for the cluster — `sm` (default), `md`, or `lg`.",
+          "values": [
+            {
+              "name": "sm"
+            },
+            {
+              "name": "md"
+            },
+            {
+              "name": "lg"
+            }
+          ]
+        },
+        {
+          "name": "layout",
+          "description": "Layout mode. `rosette` is the canonical 5-hex navigation\nrosette (named slots, current behaviour). `honeycomb` accepts\nN default-slot children packed into rings outward from the\nfirst child.",
+          "values": [
+            {
+              "name": "rosette"
+            },
+            {
+              "name": "honeycomb"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-code",
+      "description": "Monospaced code block with optional line numbers and per-line\nhover highlighting. Syntax highlighting is opt-in via\n`HpCode.setHighlighter(...)`.",
+      "attributes": [
+        {
+          "name": "language",
+          "description": "Language hint passed to the tokeniser (e.g. \"typescript\")."
+        },
+        {
+          "name": "no-line-numbers",
+          "description": "Hide the line-number gutter."
+        }
+      ]
+    },
+    {
+      "name": "hp-collapsible",
+      "description": "Disclosure: trigger + collapsible content. Trigger toggles\n`open`; content expands via a smooth grid-template-rows\ntransition. aria-expanded + aria-controls wire automatically.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open / closed state. Reflects to the host."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks the trigger and removes it from the tab\norder."
+        }
+      ]
+    },
+    {
+      "name": "hp-context-menu",
+      "description": "Context menu — right-click on the target region opens the menu at\nthe cursor.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "hp-copy",
+      "description": "Copy-to-clipboard button.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Text to write to the clipboard on click"
+        },
+        {
+          "name": "copied",
+          "description": "Toast text shown briefly after a successful copy (default: \"Copied\")"
+        },
+        {
+          "name": "icon-only",
+          "description": "Drop the visible text label (still in the a11y tree); show only the icon"
+        }
+      ]
+    },
+    {
+      "name": "hp-demo",
+      "description": "Documentation example envelope. Hex-pattern preview area + code\narea + Copy code button. Wraps each example on a component doc\npage.",
+      "attributes": [
+        {
+          "name": "caption",
+          "description": "Optional caption shown above the demo (e.g., \"Default\", \"Sizes\",\n\"Active state\"). Leave empty for a bare envelope.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "no-copy",
+          "description": "Suppress the Copy code button."
+        },
+        {
+          "name": "no-theme-toggle",
+          "description": "Suppress the per-demo theme toggle."
+        }
+      ]
+    },
+    {
+      "name": "hp-dialog",
+      "description": "Modal dialog backed by the native <dialog> + showModal(). Browser\nfocus trap + Escape dismiss + aria-modal. Backdrop click closes\nby default — `no-backdrop-close` opts out.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Reflect open state. Setting `open` programmatically calls\nshowModal(); clearing it calls close()."
+        },
+        {
+          "name": "no-backdrop-close",
+          "description": "When set, clicking the backdrop doesn't close. Use for\ndestructive / blocking dialogs that require an explicit\naction."
+        }
+      ]
+    },
+    {
+      "name": "hp-dropdown-menu",
+      "description": "Dropdown menu — click-triggered popover with menuitem semantics\nand arrow-key navigation.",
+      "attributes": [
+        {
+          "name": "side",
+          "description": "",
+          "values": [
+            {
+              "name": "FloatingSide"
+            }
+          ]
+        },
+        {
+          "name": "align",
+          "description": "",
+          "values": [
+            {
+              "name": "FloatingAlign"
+            }
+          ]
+        },
+        {
+          "name": "offset",
+          "description": ""
+        },
+        {
+          "name": "open",
+          "description": ""
+        }
+      ]
+    },
+    {
       "name": "hp-form",
       "description": "Form container — thin wrapper around the native <form> with\nconsistent gap + label / input alignment. Stub.",
       "attributes": [
@@ -161,50 +488,44 @@
       ]
     },
     {
-      "name": "hp-label",
-      "description": "Form label primitive — wraps a native <label> with consistent\nstyling and the `for` forwarding, plus optional required / optional\nmarkers.",
+      "name": "hp-grid",
+      "description": "Canvas hex grid — a pannable, zoomable viewport onto the lattice.\nSlotted children with `q` / `r` attributes become camera-riding\noverlay cells; the field beneath is engine-rendered. Ships from\n`@hexpunk/core/grid`, and the rendering engine loads by dynamic\nimport on first connect.\n\nUse `<hp-layout>` instead when the hexes are part of a page — it\nplaces the same lattice in document flow with no camera and no\nrendering dependency.",
       "attributes": [
         {
-          "name": "for",
-          "description": "ID of the input this label targets. Forwarded to the inner\n`<label>`'s `for` attribute — clicking the label focuses /\ntoggles the linked input. Maps to the `for` HTML attribute."
-        },
-        {
-          "name": "required",
-          "description": "Append a \"*\" required marker after the label text. Stamps\naria-required on the linked input is the consumer's job — this\nis the visual cue only."
-        },
-        {
-          "name": "optional",
-          "description": "Append a muted \"(optional)\" hint after the label text."
-        }
-      ]
-    },
-    {
-      "name": "hp-radio-group",
-      "description": "Radio group container. Manages selection across slotted hp-radio\nchildren — arrow keys move focus + selection between siblings,\nHome / End jump to first / last, only one child checked at a\ntime. role=\"radiogroup\".",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Currently selected radio value. Setting this checks the matching\nchild; clearing it unchecks all."
-        },
-        {
-          "name": "disabled",
-          "description": "Disable the entire group — every child reads as disabled."
-        },
-        {
-          "name": "orientation",
-          "description": "Orientation — controls arrow-key direction. `horizontal` moves\nwith ArrowLeft/Right; `vertical` (default) with ArrowUp/Down.",
+          "name": "layout",
+          "description": "Placement strategy — same packers as `<hp-layout>`. `free`\nhonours authored `q` / `r`; `spiral` and `rows` run the shared\nfirst-fit-decreasing pack.",
           "values": [
             {
-              "name": "horizontal"
+              "name": "free"
             },
             {
-              "name": "vertical"
+              "name": "spiral"
+            },
+            {
+              "name": "rows"
             }
           ]
         },
         {
-          "name": "name",
-          "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
+          "name": "draggable",
+          "description": "Opt into drag-to-move. Per-cell override via the child's own\n`draggable` attribute: present force-enables, `draggable=\"false\"`\nforce-disables."
+        },
+        {
+          "name": "tetherable",
+          "description": "Graph-editor mode: dropping a cell onto another toggles an arc\nbetween the pair instead of moving in."
+        },
+        {
+          "name": "pannable",
+          "description": "The grid owns the pointer while the cursor is inside it — wheel\npans, ctrl/⌘-wheel zooms, empty-space drags pan. Set\n`pannable=\"false\"` to hand the wheel and empty-space presses back\nto the page; cell drag and click keep working.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "row-width",
+          "description": "Cells per row for `layout=\"rows\"`; unset uses the world-shape\ndefault.",
           "values": [
             {
               "name": "undefined"
@@ -214,24 +535,12 @@
       ]
     },
     {
-      "name": "hp-radio",
-      "description": "Single radio option. Pairs with hp-radio-group as a parent.\nrole=\"radio\", aria-checked reflects state; emits hp-radio-select\non click / Space / Enter for the group to track.",
+      "name": "hp-hex",
+      "description": "SVG hex primitive. Every other hex-shaped atom composes this for\nits stencil; size is the only public knob.",
       "attributes": [
         {
-          "name": "value",
-          "description": "Value emitted when this radio is selected. Required for the\nparent hp-radio-group to track selection."
-        },
-        {
-          "name": "checked",
-          "description": "Selected state. Set by the parent hp-radio-group; consumers\nshouldn't write directly — use the group's `value` instead."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks selection, removes from tab order."
-        },
-        {
           "name": "size",
-          "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+          "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (50px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
           "values": [
             {
               "name": "xxs"
@@ -239,227 +548,6 @@
             {
               "name": "xs"
             },
-            {
-              "name": "sm"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-select",
-      "description": "Custom listbox select — trigger button + popover list of options.\nrole=\"combobox\" on the trigger, role=\"listbox\" on the popover,\nrole=\"option\" on each child.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Currently selected value. Setting programmatically activates\nthe matching option (or empty when no match)."
-        },
-        {
-          "name": "placeholder",
-          "description": "Placeholder shown on the trigger when no value is selected."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks toggle and removes from tab order."
-        },
-        {
-          "name": "name",
-          "description": "Optional form name.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-option",
-      "description": "Single option inside hp-select. role=\"option\"; Enter / Space\nactivate; emits hp-option-select.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Value emitted to the parent hp-select."
-        },
-        {
-          "name": "selected",
-          "description": "Selected — auto-set by parent hp-select."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks activation."
-        }
-      ]
-    },
-    {
-      "name": "hp-slider",
-      "description": "Single-thumb continuous-value slider. role=\"slider\";\naria-valuemin / max / now reflect state. Arrow keys step by `step`,\nPageUp/PageDown by 10×, Home/End jump to min/max. Pointer drag\nwith capture.",
-      "attributes": [
-        {
-          "name": "min",
-          "description": "Lower bound (default 0)."
-        },
-        {
-          "name": "max",
-          "description": "Upper bound (default 100)."
-        },
-        {
-          "name": "step",
-          "description": "Step size for arrow keys / pointer drag (default 1)."
-        },
-        {
-          "name": "value",
-          "description": "Current value. Clamped to [min, max] on set."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — no input, removed from tab order."
-        },
-        {
-          "name": "name",
-          "description": "Optional form name (placeholder for hp-form).",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toggle-group",
-      "description": "Group of toggle buttons with single or multi-select semantics.\nSlotted children carry `value` attributes; the group tracks\n`value` (string for single, space-separated for multiple) and\nstamps aria-pressed on each pressed child.",
-      "attributes": [
-        {
-          "name": "type",
-          "description": "Selection model. `single` allows one button pressed at a time\n(toggling on a different button unpresses the previous one).\n`multiple` allows any combination.",
-          "values": [
-            {
-              "name": "HpToggleGroupType"
-            }
-          ]
-        },
-        {
-          "name": "value",
-          "description": "Current selection. Single mode: the chosen value as a string;\nempty string = nothing selected. Multiple mode: space-separated\nvalues."
-        },
-        {
-          "name": "orientation",
-          "description": "Layout direction — also drives the honeycomb zigzag direction\nwhen `layout=\"honeycomb\"`.",
-          "values": [
-            {
-              "name": "horizontal"
-            },
-            {
-              "name": "vertical"
-            }
-          ]
-        },
-        {
-          "name": "layout",
-          "description": "Visual arrangement.\n\n- `flex` (default) — children laid out as inline-flex with a\nstandard row / column.\n- `honeycomb` — children positioned in a hex-grid zigzag.\nSubsequent items add to the right (orientation=horizontal)\nor alternate bottom-right / bottom-left (orientation=vertical).\nEach adjacent pair shares an edge with hp-grid's stroke-overlap\ncorrection so the strokes coincide into a single line.",
-          "values": [
-            {
-              "name": "HpToggleGroupLayout"
-            }
-          ]
-        },
-        {
-          "name": "disabled",
-          "description": "Disable the entire group."
-        }
-      ]
-    },
-    {
-      "name": "hp-toggle",
-      "description": "Two-state on/off switch. role=\"switch\", aria-checked reflects\nstate; Space / Enter activate; disabled blocks.",
-      "attributes": [
-        {
-          "name": "checked",
-          "description": "On (checked) state."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — no activation, removed from tab order."
-        },
-        {
-          "name": "name",
-          "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "value",
-          "description": "Submitted value when checked."
-        }
-      ]
-    },
-    {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
-        }
-      ]
-    },
-    {
-      "name": "hp-avatar",
-      "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
-      "attributes": [
-        {
-          "name": "src",
-          "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead."
-        },
-        {
-          "name": "alt",
-          "description": "Alt text for the image. Required for non-decorative avatars."
-        },
-        {
-          "name": "size",
-          "description": "Avatar size — matches hp-hex sizes.",
-          "values": [
             {
               "name": "sm"
             },
@@ -470,6 +558,42 @@
               "name": "lg"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "hp-hover-card",
+      "description": "Hover- / focus-triggered floating card. Larger and interactive\nthan hp-tooltip; lighter than hp-popover (no outside-click).",
+      "attributes": [
+        {
+          "name": "side",
+          "description": "Preferred side relative to the trigger.",
+          "values": [
+            {
+              "name": "FloatingSide"
+            }
+          ]
+        },
+        {
+          "name": "align",
+          "description": "Alignment along the chosen side.",
+          "values": [
+            {
+              "name": "FloatingAlign"
+            }
+          ]
+        },
+        {
+          "name": "offset",
+          "description": "Pixel gap between trigger and card."
+        },
+        {
+          "name": "open-delay",
+          "description": "Open delay (ms) before showing. Default 400 — long enough to\navoid flashes while skimming, short enough to feel responsive\non intent."
+        },
+        {
+          "name": "close-delay",
+          "description": "Close delay (ms) before hiding after pointer leaves both the\ntrigger and the card. Default 300 — gives users time to move\nthe pointer from trigger to card."
         }
       ]
     },
@@ -495,226 +619,126 @@
       ]
     },
     {
-      "name": "hp-pixel",
-      "description": "Pixel-art renderer. Draws a sequence of states (each a list of\n[x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;\nconfigurable palette and per-state delay drive a sprite-like\nanimation loop.",
+      "name": "hp-label",
+      "description": "Form label primitive — wraps a native <label> with consistent\nstyling and the `for` forwarding, plus optional required / optional\nmarkers.",
       "attributes": [
         {
-          "name": "art",
-          "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
+          "name": "for",
+          "description": "ID of the input this label targets. Forwarded to the inner\n`<label>`'s `for` attribute — clicking the label focuses /\ntoggles the linked input. Maps to the `for` HTML attribute."
         },
         {
-          "name": "type",
-          "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` / `.palette` win when both are set.",
-          "values": [
-            {
-              "name": "menu"
-            },
-            {
-              "name": "expandable"
-            },
-            {
-              "name": "dropside"
-            },
-            {
-              "name": "undefined"
-            }
-          ]
+          "name": "required",
+          "description": "Append a \"*\" required marker after the label text. Stamps\naria-required on the linked input is the consumer's job — this\nis the visual cue only."
         },
         {
-          "name": "state",
-          "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "pixel-size",
-          "description": "Pixel size in CSS px. Default `3`."
-        },
-        {
-          "name": "interactive",
-          "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required."
+          "name": "optional",
+          "description": "Append a muted \"(optional)\" hint after the label text."
         }
       ]
     },
     {
-      "name": "hp-cluster",
-      "description": "Multi-hex group layout. `layout=\"rosette\"` (default) preserves\nthe canonical 5-hex navigation rosette via named slots;\n`layout=\"honeycomb\"` accepts N default-slot children and packs\nthem in honeycomb rings outward from the first child (the\ncentre).",
+      "name": "hp-latex",
+      "description": "LaTeX math primitive. Render-only.\n\nThe LaTeX source comes from the `value` attribute or the element's\ntext content (attribute wins when both are present). Consumers\nregister a renderer once at startup via `HpLatex.setRenderer(...)`.",
       "attributes": [
         {
-          "name": "size",
-          "description": "Cell size for the cluster — `sm` (default), `md`, or `lg`.",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
+          "name": "value",
+          "description": "LaTeX source string"
         },
+        {
+          "name": "block",
+          "description": "Switch to block (display) mode (default: inline)"
+        },
+        {
+          "name": "background",
+          "description": "Mount an hp-background backdrop (block-mode only)"
+        },
+        {
+          "name": "copyable",
+          "description": "Show a copy-source button in the top-right corner (block-mode only)"
+        }
+      ]
+    },
+    {
+      "name": "hp-layout",
+      "description": "Hex layout primitive — slotted children with `q` / `r` attributes\nare placed on the axial lattice, and the element sizes to the\ncontent it placed. No camera: the page scrolls it, the way it would\nany other block. `draggable` opts into drag-to-move with snap.\nPure CSS, no rendering dependency.\n\nUse `<hp-grid>` instead for a viewport-like surface with camera\npan/zoom, semantic zoom, dive navigation or tethers.",
+      "attributes": [
         {
           "name": "layout",
-          "description": "Layout mode. `rosette` is the canonical 5-hex navigation\nrosette (named slots, current behaviour). `honeycomb` accepts\nN default-slot children packed into rings outward from the\nfirst child.",
+          "description": "Placement strategy. `free` honours each child's authored\n`q` / `r`; `spiral` packs outward from the origin in rings;\n`rows` packs in reading order with a width cap. The packed modes\nrun the same first-fit-decreasing pass the canvas grid uses.",
           "values": [
             {
-              "name": "rosette"
+              "name": "free"
             },
             {
-              "name": "honeycomb"
+              "name": "spiral"
+            },
+            {
+              "name": "rows"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "hp-collapsible",
-      "description": "Disclosure: trigger + collapsible content. Trigger toggles\n`open`; content expands via a smooth grid-template-rows\ntransition. aria-expanded + aria-controls wire automatically.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open / closed state. Reflects to the host."
         },
         {
-          "name": "disabled",
-          "description": "Disabled — blocks the trigger and removes it from the tab\norder."
-        }
-      ]
-    },
-    {
-      "name": "hp-demo",
-      "description": "Documentation example envelope. Hex-pattern preview area + code\narea + Copy code button. Wraps each example on a component doc\npage.",
-      "attributes": [
-        {
-          "name": "caption",
-          "description": "Optional caption shown above the demo (e.g., \"Default\", \"Sizes\",\n\"Active state\"). Leave empty for a bare envelope.",
+          "name": "size",
+          "description": "Cell tier for the whole surface — the only way to scale a lattice\nthat has no camera to zoom.\n\nIt is written onto the children as their own `size`, because the\ntier is more than a width: the stroke step, the ring proportion,\nand md's flat-top orientation are all chosen by that attribute.\nPushing a cell width down instead would scale the hexes while\nleaving them drawn to another tier's proportions.\n\nLeaving it unset touches nothing — children keep whatever size\nthey were authored with, which is how a surface of mixed sizes is\nstill expressible.",
           "values": [
+            {
+              "name": "HpLayoutSize"
+            },
             {
               "name": "undefined"
             }
           ]
         },
         {
-          "name": "no-copy",
-          "description": "Suppress the Copy code button."
+          "name": "draggable",
+          "description": "Opt into drag-to-move, pan and zoom. Per-cell override via the\nchild's own `draggable` attribute: present force-enables,\n`draggable=\"false\"` force-disables."
         },
         {
-          "name": "no-theme-toggle",
-          "description": "Suppress the per-demo theme toggle."
-        }
-      ]
-    },
-    {
-      "name": "hp-scroll-area",
-      "description": "Custom-scrollbar wrapper. Hides the native scrollbar inside and\npaints a themed one on top. Native scroll model preserved.",
-      "attributes": [
-        {
-          "name": "visibility",
-          "description": "Scrollbar visibility:\n- `auto` (default): visible whenever the content overflows\n- `always`: persistently visible\n- `hover`: only visible while the area is hovered",
+          "name": "row-width",
+          "description": "Cells per row for `layout=\"rows\"`. Unset — the default — wraps\nto the element's own width, the way flex items wrap, and re-packs\nwhen that width changes. Set it to pin a fixed count for\ncompositions that must hold their shape regardless of space.",
           "values": [
             {
-              "name": "HpScrollVisibility"
+              "name": "undefined"
             }
           ]
         }
       ]
     },
     {
-      "name": "hp-separator",
-      "description": "Visual + semantic divider. Horizontal (default) or vertical;\noptional centre glyph (hex / dot / none). `decorative` switches\nbetween role=separator and role=presentation.",
-      "attributes": [
-        {
-          "name": "orientation",
-          "description": "Layout direction. Horizontal is a row divider; vertical is a\ncolumn divider.",
-          "values": [
-            {
-              "name": "HpSeparatorOrientation"
-            }
-          ]
-        },
-        {
-          "name": "decorative",
-          "description": "When set, the separator is purely visual (role=presentation,\ninvisible to assistive tech). Default unset = role=separator."
-        },
-        {
-          "name": "mark",
-          "description": "Centre glyph. `hex` (default) reads as a small node on the\ndivider; `dot` is a tighter filled dot; `none` is a clean line.",
-          "values": [
-            {
-              "name": "HpSeparatorMark"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-sidebar-group",
-      "description": "Collapsible nav section inside `<hp-sidebar>`. Children (typically\n`<hp-sidebar-item>` and other `<hp-sidebar-group>`) are slotted\ninto the expanded panel.",
-      "attributes": [
-        {
-          "name": "label",
-          "description": "Summary label text."
-        },
-        {
-          "name": "open",
-          "description": "Whether the section is expanded. Reflects user toggles."
-        }
-      ]
-    },
-    {
-      "name": "hp-sidebar-item",
-      "description": "Leaf navigation entry inside `<hp-sidebar>`. The slotted text\ncontent is the visible label.",
+      "name": "hp-link",
+      "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
       "attributes": [
         {
           "name": "href",
           "description": "Destination URL."
         },
         {
-          "name": "active",
-          "description": "Currently-active page; applies the active highlight."
-        }
-      ]
-    },
-    {
-      "name": "hp-sidebar",
-      "description": "Navigation sidebar chrome. Compose with `<hp-sidebar-item>` leaves\nand `<hp-sidebar-group>` collapsible sections.",
-      "attributes": [
-        {
-          "name": "variant",
-          "description": "Visual variant.\n\n- `\"primary\"` (default): full chrome with a right border.\nIntended as the page's main nav rail on the left.\n- `\"secondary\"`: lighter chrome, no right border. Intended for\na right-rail table-of-contents or similar companion list.",
+          "name": "target",
+          "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
           "values": [
             {
-              "name": "HpSidebarVariant"
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "rel",
+          "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
+          "values": [
+            {
+              "name": "undefined"
             }
           ]
         }
       ]
     },
     {
-      "name": "hp-toolbar",
-      "description": "Toolbar container with managed keyboard navigation. Roving\ntabindex over slotted focusable children; arrow keys move between\nthem; Home / End jump to first / last; Tab leaves the toolbar.",
+      "name": "hp-link-node",
+      "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
       "attributes": [
         {
-          "name": "orientation",
-          "description": "Layout direction — controls which arrow keys move focus.",
-          "values": [
-            {
-              "name": "horizontal"
-            },
-            {
-              "name": "vertical"
-            }
-          ]
+          "name": "bonded",
+          "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`."
         }
       ]
     },
@@ -779,6 +803,172 @@
       ]
     },
     {
+      "name": "hp-menu-item",
+      "description": "A single menu item inside hp-dropdown-menu / hp-context-menu.\nrole=\"menuitem\"; Enter / Space activate; emits hp-menu-select.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Value emitted in hp-menu-select. Defaults to the trimmed text\ncontent if not provided."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks activation and removes from focus order."
+        }
+      ]
+    },
+    {
+      "name": "hp-menubar",
+      "description": "Menu bar — managed keyboard navigation across a row of dropdown\ntriggers. role=\"menubar\"; arrow keys move focus between triggers;\nHome / End jump.",
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Layout direction — controls arrow-key axis.",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-module-handle",
+      "description": "Drag handle — a small filled hex used as the grip for moving an\nhp-cluster or hp-unfold-list. Pure visual indicator; the parent\ndrives the actual drag interaction via drag-handle attribute.",
+      "attributes": [
+        {
+          "name": "active",
+          "description": "When set, the handle is currently grabbed — fills with `primary`."
+        }
+      ]
+    },
+    {
+      "name": "hp-nav-item",
+      "description": "Single item inside hp-navigation-menu. Plain link when no `content`\nslot, dropdown trigger when there is one.",
+      "attributes": [
+        {
+          "name": "href",
+          "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "unfold",
+          "description": "Navigate with the camera-zoom unfold instead of a plain jump:\nthe item's colour expands to cover the viewport before the\ndestination is revealed, riding the same departure sequence as\nhp-unfold-page. Reserve it for destination-defining links — the\nexpand reads as \"you're going somewhere important\"."
+        }
+      ]
+    },
+    {
+      "name": "hp-navigation-menu",
+      "description": "Top-nav menu with optional hover-revealed submenus.",
+      "attributes": []
+    },
+    {
+      "name": "hp-option",
+      "description": "Single option inside hp-select. role=\"option\"; Enter / Space\nactivate; emits hp-option-select.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Value emitted to the parent hp-select."
+        },
+        {
+          "name": "selected",
+          "description": "Selected — auto-set by parent hp-select."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks activation."
+        }
+      ]
+    },
+    {
+      "name": "hp-pixel",
+      "description": "Pixel-art renderer. Draws a sequence of states (each a list of\n[x, y, paletteIndex] pixels) on a fixed hex-clipped canvas;\nconfigurable palette and per-state delay drive a sprite-like\nanimation loop.",
+      "attributes": [
+        {
+          "name": "art",
+          "description": "Static ASCII grid. `#` = lit, `.` = empty, digits index into `palette`.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "type",
+          "description": "Built-in icon set by name — no JS wiring needed. Explicit\n`.states` / `.palette` win when both are set.",
+          "values": [
+            {
+              "name": "menu"
+            },
+            {
+              "name": "expandable"
+            },
+            {
+              "name": "dropside"
+            },
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "state",
+          "description": "Current state when `.states` is set. Falls back to `\"idle\"`.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "pixel-size",
+          "description": "Pixel size in CSS px. Default `3`."
+        },
+        {
+          "name": "interactive",
+          "description": "Auto-swap to `hover` / `focus` / `active` named states on the\nmatching pseudo-classes. No JS state-flip required."
+        }
+      ]
+    },
+    {
+      "name": "hp-popover",
+      "description": "Anchored floating panel. Click-triggered; click-outside / Escape\ndismiss; focus restoration to the trigger on close.",
+      "attributes": [
+        {
+          "name": "side",
+          "description": "Preferred side relative to the trigger.",
+          "values": [
+            {
+              "name": "FloatingSide"
+            }
+          ]
+        },
+        {
+          "name": "align",
+          "description": "Alignment along the chosen side.",
+          "values": [
+            {
+              "name": "FloatingAlign"
+            }
+          ]
+        },
+        {
+          "name": "offset",
+          "description": "Pixel gap between trigger and panel. Default 8."
+        },
+        {
+          "name": "open",
+          "description": "Reflect open state. Setting `open` programmatically opens / closes."
+        }
+      ]
+    },
+    {
       "name": "hp-progress",
       "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
       "attributes": [
@@ -810,40 +1000,53 @@
       ]
     },
     {
-      "name": "hp-link",
-      "description": "Inline text link. Styled anchor with the hexpunk hue-swap.",
+      "name": "hp-radio",
+      "description": "Single radio option. Pairs with hp-radio-group as a parent.\nrole=\"radio\", aria-checked reflects state; emits hp-radio-select\non click / Space / Enter for the group to track.",
       "attributes": [
         {
-          "name": "href",
-          "description": "Destination URL."
+          "name": "value",
+          "description": "Value emitted when this radio is selected. Required for the\nparent hp-radio-group to track selection."
         },
         {
-          "name": "target",
-          "description": "Optional anchor target — `_blank`, `_self`, etc. When `_blank`,\n`rel=\"noopener\"` is appended automatically.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
+          "name": "checked",
+          "description": "Selected state. Set by the parent hp-radio-group; consumers\nshouldn't write directly — use the group's `value` instead."
         },
         {
-          "name": "rel",
-          "description": "Optional `rel` override. With `target=\"_blank\"` the component\ndefaults to `noopener` — set this prop to extend / override.",
+          "name": "disabled",
+          "description": "Disabled — blocks selection, removes from tab order."
+        },
+        {
+          "name": "size",
+          "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
           "values": [
             {
-              "name": "undefined"
+              "name": "xxs"
+            },
+            {
+              "name": "xs"
+            },
+            {
+              "name": "sm"
             }
           ]
         }
       ]
     },
     {
-      "name": "hp-menubar",
-      "description": "Menu bar — managed keyboard navigation across a row of dropdown\ntriggers. role=\"menubar\"; arrow keys move focus between triggers;\nHome / End jump.",
+      "name": "hp-radio-group",
+      "description": "Radio group container. Manages selection across slotted hp-radio\nchildren — arrow keys move focus + selection between siblings,\nHome / End jump to first / last, only one child checked at a\ntime. role=\"radiogroup\".",
       "attributes": [
         {
+          "name": "value",
+          "description": "Currently selected radio value. Setting this checks the matching\nchild; clearing it unchecks all."
+        },
+        {
+          "name": "disabled",
+          "description": "Disable the entire group — every child reads as disabled."
+        },
+        {
           "name": "orientation",
-          "description": "Layout direction — controls arrow-key axis.",
+          "description": "Orientation — controls arrow-key direction. `horizontal` moves\nwith ArrowLeft/Right; `vertical` (default) with ArrowUp/Down.",
           "values": [
             {
               "name": "horizontal"
@@ -852,30 +1055,191 @@
               "name": "vertical"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "hp-navigation-menu",
-      "description": "Top-nav menu with optional hover-revealed submenus.",
-      "attributes": []
-    },
-    {
-      "name": "hp-nav-item",
-      "description": "Single item inside hp-navigation-menu. Plain link when no `content`\nslot, dropdown trigger when there is one.",
-      "attributes": [
+        },
         {
-          "name": "href",
-          "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
+          "name": "name",
+          "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
           "values": [
             {
               "name": "undefined"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "hp-scroll-area",
+      "description": "Custom-scrollbar wrapper. Hides the native scrollbar inside and\npaints a themed one on top. Native scroll model preserved.",
+      "attributes": [
+        {
+          "name": "visibility",
+          "description": "Scrollbar visibility:\n- `auto` (default): visible whenever the content overflows\n- `always`: persistently visible\n- `hover`: only visible while the area is hovered",
+          "values": [
+            {
+              "name": "HpScrollVisibility"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-select",
+      "description": "Custom listbox select — trigger button + popover list of options.\nrole=\"combobox\" on the trigger, role=\"listbox\" on the popover,\nrole=\"option\" on each child.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "Currently selected value. Setting programmatically activates\nthe matching option (or empty when no match)."
         },
         {
-          "name": "unfold",
-          "description": "Navigate with the camera-zoom unfold instead of a plain jump:\nthe item's colour expands to cover the viewport before the\ndestination is revealed, riding the same departure sequence as\nhp-unfold-page. Reserve it for destination-defining links — the\nexpand reads as \"you're going somewhere important\"."
+          "name": "placeholder",
+          "description": "Placeholder shown on the trigger when no value is selected."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — blocks toggle and removes from tab order."
+        },
+        {
+          "name": "name",
+          "description": "Optional form name.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-separator",
+      "description": "Visual + semantic divider. Horizontal (default) or vertical;\noptional centre glyph (hex / dot / none). `decorative` switches\nbetween role=separator and role=presentation.",
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Layout direction. Horizontal is a row divider; vertical is a\ncolumn divider.",
+          "values": [
+            {
+              "name": "HpSeparatorOrientation"
+            }
+          ]
+        },
+        {
+          "name": "decorative",
+          "description": "When set, the separator is purely visual (role=presentation,\ninvisible to assistive tech). Default unset = role=separator."
+        },
+        {
+          "name": "mark",
+          "description": "Centre glyph. `hex` (default) reads as a small node on the\ndivider; `dot` is a tighter filled dot; `none` is a clean line.",
+          "values": [
+            {
+              "name": "HpSeparatorMark"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-sidebar",
+      "description": "Navigation sidebar chrome. Compose with `<hp-sidebar-item>` leaves\nand `<hp-sidebar-group>` collapsible sections.",
+      "attributes": [
+        {
+          "name": "variant",
+          "description": "Visual variant.\n\n- `\"primary\"` (default): full chrome with a right border.\nIntended as the page's main nav rail on the left.\n- `\"secondary\"`: lighter chrome, no right border. Intended for\na right-rail table-of-contents or similar companion list.",
+          "values": [
+            {
+              "name": "HpSidebarVariant"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-sidebar-group",
+      "description": "Collapsible nav section inside `<hp-sidebar>`. Children (typically\n`<hp-sidebar-item>` and other `<hp-sidebar-group>`) are slotted\ninto the expanded panel.",
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Summary label text."
+        },
+        {
+          "name": "open",
+          "description": "Whether the section is expanded. Reflects user toggles."
+        }
+      ]
+    },
+    {
+      "name": "hp-sidebar-item",
+      "description": "Leaf navigation entry inside `<hp-sidebar>`. The slotted text\ncontent is the visible label.",
+      "attributes": [
+        {
+          "name": "href",
+          "description": "Destination URL."
+        },
+        {
+          "name": "active",
+          "description": "Currently-active page; applies the active highlight."
+        }
+      ]
+    },
+    {
+      "name": "hp-slider",
+      "description": "Single-thumb continuous-value slider. role=\"slider\";\naria-valuemin / max / now reflect state. Arrow keys step by `step`,\nPageUp/PageDown by 10×, Home/End jump to min/max. Pointer drag\nwith capture.",
+      "attributes": [
+        {
+          "name": "min",
+          "description": "Lower bound (default 0)."
+        },
+        {
+          "name": "max",
+          "description": "Upper bound (default 100)."
+        },
+        {
+          "name": "step",
+          "description": "Step size for arrow keys / pointer drag (default 1)."
+        },
+        {
+          "name": "value",
+          "description": "Current value. Clamped to [min, max] on set."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — no input, removed from tab order."
+        },
+        {
+          "name": "name",
+          "description": "Optional form name (placeholder for hp-form).",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-tab",
+      "description": "Single tab inside hp-tabs. role=\"tab\"; auto-slotted into the\ntablist via slot=\"tab\" in connectedCallback.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": ""
+        },
+        {
+          "name": "active",
+          "description": ""
+        },
+        {
+          "name": "disabled",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "hp-tab-panel",
+      "description": "Panel body inside hp-tabs. role=\"tabpanel\"; visibility driven by\nthe parent hp-tabs via the `hidden` attribute.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": ""
         }
       ]
     },
@@ -917,363 +1281,6 @@
         {
           "name": "query-param",
           "description": "Search-param name used when `route=\"query\"`. Defaults to `tab`."
-        }
-      ]
-    },
-    {
-      "name": "hp-tab",
-      "description": "Single tab inside hp-tabs. role=\"tab\"; auto-slotted into the\ntablist via slot=\"tab\" in connectedCallback.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": ""
-        },
-        {
-          "name": "active",
-          "description": ""
-        },
-        {
-          "name": "disabled",
-          "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-tab-panel",
-      "description": "Panel body inside hp-tabs. role=\"tabpanel\"; visibility driven by\nthe parent hp-tabs via the `hidden` attribute.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-alert-dialog",
-      "description": "Alert dialog — role=\"alertdialog\" variant of hp-dialog. Requires\nan explicit action; backdrop clicks don't dismiss. Use for\ndestructive confirmations and blocking errors.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Reflect open state. Setting `open` programmatically opens / closes."
-        }
-      ]
-    },
-    {
-      "name": "hp-context-menu",
-      "description": "Context menu — right-click on the target region opens the menu at\nthe cursor.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-dialog",
-      "description": "Modal dialog backed by the native <dialog> + showModal(). Browser\nfocus trap + Escape dismiss + aria-modal. Backdrop click closes\nby default — `no-backdrop-close` opts out.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Reflect open state. Setting `open` programmatically calls\nshowModal(); clearing it calls close()."
-        },
-        {
-          "name": "no-backdrop-close",
-          "description": "When set, clicking the backdrop doesn't close. Use for\ndestructive / blocking dialogs that require an explicit\naction."
-        }
-      ]
-    },
-    {
-      "name": "hp-dropdown-menu",
-      "description": "Dropdown menu — click-triggered popover with menuitem semantics\nand arrow-key navigation.",
-      "attributes": [
-        {
-          "name": "side",
-          "description": "",
-          "values": [
-            {
-              "name": "FloatingSide"
-            }
-          ]
-        },
-        {
-          "name": "align",
-          "description": "",
-          "values": [
-            {
-              "name": "FloatingAlign"
-            }
-          ]
-        },
-        {
-          "name": "offset",
-          "description": ""
-        },
-        {
-          "name": "open",
-          "description": ""
-        }
-      ]
-    },
-    {
-      "name": "hp-menu-item",
-      "description": "A single menu item inside hp-dropdown-menu / hp-context-menu.\nrole=\"menuitem\"; Enter / Space activate; emits hp-menu-select.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Value emitted in hp-menu-select. Defaults to the trimmed text\ncontent if not provided."
-        },
-        {
-          "name": "disabled",
-          "description": "Disabled — blocks activation and removes from focus order."
-        }
-      ]
-    },
-    {
-      "name": "hp-hover-card",
-      "description": "Hover- / focus-triggered floating card. Larger and interactive\nthan hp-tooltip; lighter than hp-popover (no outside-click).",
-      "attributes": [
-        {
-          "name": "side",
-          "description": "Preferred side relative to the trigger.",
-          "values": [
-            {
-              "name": "FloatingSide"
-            }
-          ]
-        },
-        {
-          "name": "align",
-          "description": "Alignment along the chosen side.",
-          "values": [
-            {
-              "name": "FloatingAlign"
-            }
-          ]
-        },
-        {
-          "name": "offset",
-          "description": "Pixel gap between trigger and card."
-        },
-        {
-          "name": "open-delay",
-          "description": "Open delay (ms) before showing. Default 400 — long enough to\navoid flashes while skimming, short enough to feel responsive\non intent."
-        },
-        {
-          "name": "close-delay",
-          "description": "Close delay (ms) before hiding after pointer leaves both the\ntrigger and the card. Default 300 — gives users time to move\nthe pointer from trigger to card."
-        }
-      ]
-    },
-    {
-      "name": "hp-popover",
-      "description": "Anchored floating panel. Click-triggered; click-outside / Escape\ndismiss; focus restoration to the trigger on close.",
-      "attributes": [
-        {
-          "name": "side",
-          "description": "Preferred side relative to the trigger.",
-          "values": [
-            {
-              "name": "FloatingSide"
-            }
-          ]
-        },
-        {
-          "name": "align",
-          "description": "Alignment along the chosen side.",
-          "values": [
-            {
-              "name": "FloatingAlign"
-            }
-          ]
-        },
-        {
-          "name": "offset",
-          "description": "Pixel gap between trigger and panel. Default 8."
-        },
-        {
-          "name": "open",
-          "description": "Reflect open state. Setting `open` programmatically opens / closes."
-        }
-      ]
-    },
-    {
-      "name": "hp-tooltip",
-      "description": "Lightweight tooltip — wraps a trigger element and shows the\nslotted `content` on hover / focus. role=\"tooltip\", auto\naria-describedby on the trigger while visible, Escape dismisses.",
-      "attributes": [
-        {
-          "name": "side",
-          "description": "Tooltip side relative to the trigger.",
-          "values": [
-            {
-              "name": "HpTooltipSide"
-            }
-          ]
-        },
-        {
-          "name": "open-delay",
-          "description": "Delay before showing on hover (ms). Default 300. Reduces\nflickering when the cursor passes over a trigger."
-        },
-        {
-          "name": "close-delay",
-          "description": "Delay before hiding on mouseleave (ms). Default 100."
-        }
-      ]
-    },
-    {
-      "name": "hp-cell",
-      "description": "Universal labelled hex. Subsumes anchor / action / secondary /\nutility (interactive), content / support / slot (decorative), and\npositive / warn / alert / error (tone overlay) into one element.",
-      "attributes": [
-        {
-          "name": "variant",
-          "description": "Role + visual preset. Interactive variants\n(`anchor|action|secondary|utility`) lift on hover, show the focus\ntrace, and accept keyboard input via the host's `tabindex`.\nDecorative variants (`content|support|slot`) are static.",
-          "values": [
-            {
-              "name": "HpCellVariant"
-            }
-          ]
-        },
-        {
-          "name": "size",
-          "description": "Cell size.\n\n- `xxs` (20px) — dense inline form-control hex\n- `xs` (32px) — comfortable inline form-control hex\n- `sm` (100px, default) — content-hex / general UI tile\n- `md` (180px, flat-top) — large content tile\n- `lg` (320px) — feature tile\n\nVariant-aware auto-defaults apply when `size` isn't set:\n`content` → `md`, `support` → `lg`. Form-input components\n(hp-checkbox, hp-radio) own their own xs/xxs defaults via\ntheir own `size` attribute.",
-          "values": [
-            {
-              "name": "xxs"
-            },
-            {
-              "name": "xs"
-            },
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone overlay. `neutral` (default) leaves variant tokens\nuntouched; the others swap stroke / label to the matching\nsemantic colour pair.",
-          "values": [
-            {
-              "name": "HpCellTone"
-            }
-          ]
-        },
-        {
-          "name": "active",
-          "description": "When set with a non-neutral tone, fills the hex with the\ntone-container colour and flips the label to the on-container\ncontrast pair. The cell reads as \"this state is in effect\"."
-        },
-        {
-          "name": "filled",
-          "description": "Filled-hex paint. Works on `variant=\"action\"` (high-emphasis CTA;\ndarkens to primary-container on hover/focus) and `variant=\"anchor\"`\n(identity / grip / drag-handle; hue-swaps to secondary on\nhover/focus/aria-pressed — same as the unfilled anchor engagement\nmotion). Both paint the polygon with `--hp-primary` and flip the\nlabel to `--hp-on-primary` at rest."
-        }
-      ]
-    },
-    {
-      "name": "hp-code",
-      "description": "Monospaced code block with optional line numbers and per-line\nhover highlighting. Syntax highlighting is opt-in via\n`HpCode.setHighlighter(...)`.",
-      "attributes": [
-        {
-          "name": "language",
-          "description": "Language hint passed to the tokeniser (e.g. \"typescript\")."
-        },
-        {
-          "name": "no-line-numbers",
-          "description": "Hide the line-number gutter."
-        }
-      ]
-    },
-    {
-      "name": "hp-copy",
-      "description": "Copy-to-clipboard button.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Text to write to the clipboard on click"
-        },
-        {
-          "name": "copied",
-          "description": "Toast text shown briefly after a successful copy (default: \"Copied\")"
-        },
-        {
-          "name": "icon-only",
-          "description": "Drop the visible text label (still in the a11y tree); show only the icon"
-        }
-      ]
-    },
-    {
-      "name": "hp-hex",
-      "description": "SVG hex primitive. Every other hex-shaped atom composes this for\nits stencil; size is the only public knob.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (50px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
-          "values": [
-            {
-              "name": "xxs"
-            },
-            {
-              "name": "xs"
-            },
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-latex",
-      "description": "LaTeX math primitive. Render-only.\n\nThe LaTeX source comes from the `value` attribute or the element's\ntext content (attribute wins when both are present). Consumers\nregister a renderer once at startup via `HpLatex.setRenderer(...)`.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "LaTeX source string"
-        },
-        {
-          "name": "block",
-          "description": "Switch to block (display) mode (default: inline)"
-        },
-        {
-          "name": "background",
-          "description": "Mount an hp-background backdrop (block-mode only)"
-        },
-        {
-          "name": "copyable",
-          "description": "Show a copy-source button in the top-right corner (block-mode only)"
-        }
-      ]
-    },
-    {
-      "name": "hp-visually-hidden",
-      "description": "Visually hidden but accessible — content is read by assistive tech\nbut doesn't render on screen.",
-      "attributes": []
-    },
-    {
-      "name": "hp-badge",
-      "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-          "values": [
-            {
-              "name": "HpBadgeTone"
-            }
-          ]
-        },
-        {
-          "name": "active",
-          "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`."
         }
       ]
     },
@@ -1341,12 +1348,137 @@
       ]
     },
     {
-      "name": "hp-module-handle",
-      "description": "Drag handle — a small filled hex used as the grip for moving an\nhp-cluster or hp-unfold-list. Pure visual indicator; the parent\ndrives the actual drag interaction via drag-handle attribute.",
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
       "attributes": [
         {
-          "name": "active",
-          "description": "When set, the handle is currently grabbed — fills with `primary`."
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
+        }
+      ]
+    },
+    {
+      "name": "hp-toggle",
+      "description": "Two-state on/off switch. role=\"switch\", aria-checked reflects\nstate; Space / Enter activate; disabled blocks.",
+      "attributes": [
+        {
+          "name": "checked",
+          "description": "On (checked) state."
+        },
+        {
+          "name": "disabled",
+          "description": "Disabled — no activation, removed from tab order."
+        },
+        {
+          "name": "name",
+          "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "value",
+          "description": "Submitted value when checked."
+        }
+      ]
+    },
+    {
+      "name": "hp-toggle-group",
+      "description": "Group of toggle buttons with single or multi-select semantics.\nSlotted children carry `value` attributes; the group tracks\n`value` (string for single, space-separated for multiple) and\nstamps aria-pressed on each pressed child.",
+      "attributes": [
+        {
+          "name": "type",
+          "description": "Selection model. `single` allows one button pressed at a time\n(toggling on a different button unpresses the previous one).\n`multiple` allows any combination.",
+          "values": [
+            {
+              "name": "HpToggleGroupType"
+            }
+          ]
+        },
+        {
+          "name": "value",
+          "description": "Current selection. Single mode: the chosen value as a string;\nempty string = nothing selected. Multiple mode: space-separated\nvalues."
+        },
+        {
+          "name": "orientation",
+          "description": "Layout direction — also drives the honeycomb zigzag direction\nwhen `layout=\"honeycomb\"`.",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        },
+        {
+          "name": "layout",
+          "description": "Visual arrangement.\n\n- `flex` (default) — children laid out as inline-flex with a\nstandard row / column.\n- `honeycomb` — children positioned in a hex-grid zigzag.\nSubsequent items add to the right (orientation=horizontal)\nor alternate bottom-right / bottom-left (orientation=vertical).\nEach adjacent pair shares an edge with hp-grid's stroke-overlap\ncorrection so the strokes coincide into a single line.",
+          "values": [
+            {
+              "name": "HpToggleGroupLayout"
+            }
+          ]
+        },
+        {
+          "name": "disabled",
+          "description": "Disable the entire group."
+        }
+      ]
+    },
+    {
+      "name": "hp-toolbar",
+      "description": "Toolbar container with managed keyboard navigation. Roving\ntabindex over slotted focusable children; arrow keys move between\nthem; Home / End jump to first / last; Tab leaves the toolbar.",
+      "attributes": [
+        {
+          "name": "orientation",
+          "description": "Layout direction — controls which arrow keys move focus.",
+          "values": [
+            {
+              "name": "horizontal"
+            },
+            {
+              "name": "vertical"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-tooltip",
+      "description": "Lightweight tooltip — wraps a trigger element and shows the\nslotted `content` on hover / focus. role=\"tooltip\", auto\naria-describedby on the trigger while visible, Escape dismisses.",
+      "attributes": [
+        {
+          "name": "side",
+          "description": "Tooltip side relative to the trigger.",
+          "values": [
+            {
+              "name": "HpTooltipSide"
+            }
+          ]
+        },
+        {
+          "name": "open-delay",
+          "description": "Delay before showing on hover (ms). Default 300. Reduces\nflickering when the cursor passes over a trigger."
+        },
+        {
+          "name": "close-delay",
+          "description": "Delay before hiding on mouseleave (ms). Default 100."
         }
       ]
     },
@@ -1389,141 +1521,9 @@
       ]
     },
     {
-      "name": "hp-background",
-      "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
-      "attributes": [
-        {
-          "name": "hex-size",
-          "description": "Hex side length in pixels (centre-to-vertex). Smaller = denser\npattern. Default 14 — reads as ambient texture, not a focal\nelement."
-        },
-        {
-          "name": "pointer-radius",
-          "description": "Radius in pixels of the pointer reveal on the CSS fallback\npath (tiers 2/3). The GL path's wake size is governed by\nsplat-radius + diffusion instead. Default 200."
-        },
-        {
-          "name": "decay",
-          "description": "Energy retention per 60 Hz frame in the GL wake sim — higher\nvalues leave longer trails. Clamped to [0.5, 0.995]; wall-clock\nfade time is roughly proportional to 1/(1 − decay). Default\n0.964 ≈ a 1.2–1.6 s visible fade (feel-tuned 2026-08-09 from\n0.97 — \"1.2× faster\")."
-        },
-        {
-          "name": "splat-strength",
-          "description": "Multiplier on the energy injected per pointer move. Default 1."
-        },
-        {
-          "name": "splat-radius",
-          "description": "Gaussian radius of the pointer splat in CSS pixels — the width\nof the freshly-painted wake before diffusion spreads it.\nDefault 80."
-        },
-        {
-          "name": "scroll-stir",
-          "description": "Where scroll velocity stirs the field: \"edge\" (a band along\nthe viewport edge new content arrives from), \"pointer\" (at the\ncursor/touch position), \"band\" (a soft full-width band at the\nviewport centre), or \"off\". Scroll stirring is capped at the\nbright tier and disabled under reduced motion.",
-          "values": [
-            {
-              "name": "edge"
-            },
-            {
-              "name": "pointer"
-            },
-            {
-              "name": "band"
-            },
-            {
-              "name": "off"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-grid",
-      "description": "Canvas hex grid — a pannable, zoomable viewport onto the lattice.\nSlotted children with `q` / `r` attributes become camera-riding\noverlay cells; the field beneath is engine-rendered. Ships from\n`@hexpunk/core/grid`, and the rendering engine loads by dynamic\nimport on first connect.\n\nUse `<hp-layout>` instead when the hexes are part of a page — it\nplaces the same lattice in document flow with no camera and no\nrendering dependency.",
-      "attributes": [
-        {
-          "name": "layout",
-          "description": "Placement strategy — same packers as `<hp-layout>`. `free`\nhonours authored `q` / `r`; `spiral` and `rows` run the shared\nfirst-fit-decreasing pack.",
-          "values": [
-            {
-              "name": "free"
-            },
-            {
-              "name": "spiral"
-            },
-            {
-              "name": "rows"
-            }
-          ]
-        },
-        {
-          "name": "draggable",
-          "description": "Opt into drag-to-move. Per-cell override via the child's own\n`draggable` attribute: present force-enables, `draggable=\"false\"`\nforce-disables."
-        },
-        {
-          "name": "tetherable",
-          "description": "Graph-editor mode: dropping a cell onto another toggles an arc\nbetween the pair instead of moving in."
-        },
-        {
-          "name": "pannable",
-          "description": "The grid owns the pointer while the cursor is inside it — wheel\npans, ctrl/⌘-wheel zooms, empty-space drags pan. Set\n`pannable=\"false\"` to hand the wheel and empty-space presses back\nto the page; cell drag and click keep working.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "row-width",
-          "description": "Cells per row for `layout=\"rows\"`; unset uses the world-shape\ndefault.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-layout",
-      "description": "Hex layout primitive — slotted children with `q` / `r` attributes\nare placed on the axial lattice, and the element sizes to the\ncontent it placed. No camera: the page scrolls it, the way it would\nany other block. `draggable` opts into drag-to-move with snap.\nPure CSS, no rendering dependency.\n\nUse `<hp-grid>` instead for a viewport-like surface with camera\npan/zoom, semantic zoom, dive navigation or tethers.",
-      "attributes": [
-        {
-          "name": "layout",
-          "description": "Placement strategy. `free` honours each child's authored\n`q` / `r`; `spiral` packs outward from the origin in rings;\n`rows` packs in reading order with a width cap. The packed modes\nrun the same first-fit-decreasing pass the canvas grid uses.",
-          "values": [
-            {
-              "name": "free"
-            },
-            {
-              "name": "spiral"
-            },
-            {
-              "name": "rows"
-            }
-          ]
-        },
-        {
-          "name": "size",
-          "description": "Cell tier for the whole surface — the only way to scale a lattice\nthat has no camera to zoom.\n\nIt is written onto the children as their own `size`, because the\ntier is more than a width: the stroke step, the ring proportion,\nand md's flat-top orientation are all chosen by that attribute.\nPushing a cell width down instead would scale the hexes while\nleaving them drawn to another tier's proportions.\n\nLeaving it unset touches nothing — children keep whatever size\nthey were authored with, which is how a surface of mixed sizes is\nstill expressible.",
-          "values": [
-            {
-              "name": "HpLayoutSize"
-            },
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "draggable",
-          "description": "Opt into drag-to-move, pan and zoom. Per-cell override via the\nchild's own `draggable` attribute: present force-enables,\n`draggable=\"false\"` force-disables."
-        },
-        {
-          "name": "row-width",
-          "description": "Cells per row for `layout=\"rows\"`. Unset — the default — wraps\nto the element's own width, the way flex items wrap, and re-packs\nwhen that width changes. Set it to pin a fixed count for\ncompositions that must hold their shape regardless of space.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
+      "name": "hp-visually-hidden",
+      "description": "Visually hidden but accessible — content is read by assistive tech\nbut doesn't render on screen.",
+      "attributes": []
     }
   ]
 }
