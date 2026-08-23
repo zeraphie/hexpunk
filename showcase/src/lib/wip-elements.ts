@@ -14,7 +14,6 @@ import "../../../src/elements/images/hp-icon.ts";
 import "../../../src/elements/layout/hp-cluster.ts";
 import "../../../src/elements/layout/hp-scroll-area.ts";
 import "../../../src/elements/layout/hp-toolbar.ts";
-import "../../../src/elements/loading/hp-progress.ts";
 import "../../../src/elements/messaging/hp-toast.ts";
 import "../../../src/elements/navigation/hp-menubar.ts";
 import "../../../src/elements/overlays/hp-alert-dialog.ts";

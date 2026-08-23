@@ -82,7 +82,6 @@ export const SITEMAP: SitemapNode[] = [
           { path: "/components/feedback/hp-badge", title: "hp-badge" },
           { path: "/components/feedback/hp-banner", title: "hp-banner" },
           { path: "/components/feedback/hp-loader", title: "hp-loader" },
-          { path: "/components/feedback/hp-progress", title: "hp-progress" },
           { path: "/components/feedback/hp-toast", title: "hp-toast" },
         ],
       },

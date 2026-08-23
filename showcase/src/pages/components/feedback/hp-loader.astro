@@ -10,7 +10,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       the cluster pulses in a clockwise spiral wave. Give it a <code>value</code> and it turns
       determinate: progress fills the same spiral, the frontier hex keeps pulsing so parked
       progress stays alive, and the percentage sits in the hollow centre (<code>md</code> /
-      <code>lg</code>). The radial counterpart of <code>&lt;hp-progress&gt;</code> — same
+      <code>lg</code>). The radial counterpart of the styled native <code>&lt;progress&gt;</code> — same
       <code>min / max / value / indeterminate</code> contract. Respects
       <code>prefers-reduced-motion</code> by slowing the pulse (rather than freezing it) so the
       visual still reads alive.
@@ -113,7 +113,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         task, download) — indeterminate is the fallback for unknowable waits, not the default.
       </hp-banner>
       <hp-banner tone="do">
-        Pick by geometry: <code>&lt;hp-progress&gt;</code> on linear surfaces (forms, rows,
+        Pick by geometry: native <code>&lt;progress&gt;</code> on linear surfaces (forms, rows,
         toolbars), <code>&lt;hp-loader&gt;</code> for centred / hero / cell-shaped contexts.
       </hp-banner>
       <hp-banner tone="do">

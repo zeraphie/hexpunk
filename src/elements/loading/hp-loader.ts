@@ -30,7 +30,8 @@
 // a regressing value, and the from-empty start snap instead (there
 // is no in-flight animation worth finishing).
 //
-// hp-progress is the linear counterpart; this is the radial one.
+// the styled native <progress> is the linear counterpart; this is
+// the radial one.
 // Both share the min / max / value / indeterminate contract and
 // progressbar semantics — aria-valuenow is present only when
 // determinate.

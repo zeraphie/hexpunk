@@ -935,37 +935,6 @@
       ]
     },
     {
-      "name": "hp-progress",
-      "description": "Determinate progress indicator. role=\"progressbar\";\naria-valuemin / max / now reflect state. `indeterminate` mode\nanimates a sliding ribbon when the percent isn't known.",
-      "attributes": [
-        {
-          "name": "min",
-          "description": "Lower bound. Default 0."
-        },
-        {
-          "name": "max",
-          "description": "Upper bound. Default 100."
-        },
-        {
-          "name": "value",
-          "description": "Current value. Clamped to [min, max]. Ignored when\n`indeterminate` is set."
-        },
-        {
-          "name": "indeterminate",
-          "description": "Indeterminate mode — animates a sliding ribbon, hides the\nnumeric value from assistive tech. Use when progress is\nknowable but a specific number isn't available."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone for the fill — neutral (primary), positive, warn,\nalert, error.",
-          "values": [
-            {
-              "name": "HpProgressTone"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "hp-radio",
       "description": "Hex radio — light-DOM alias over `<input type=\"radio\">`. Group\nbehaviour (single-select, arrow keys) comes from the shared\n`name`, natively. `change` bubbles from the inner input; the host\nkeeps `checked` in sync even when a sibling steals the selection,\nand stamps `data-dirty` / `data-touched` on interaction.",
       "attributes": [
