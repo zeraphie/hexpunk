@@ -1,0 +1,177 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="form fields">
+  <ComponentDocs title="form fields" native>
+    <p slot="description">
+      The native form baseline: text inputs, textarea, select, and fieldset as
+      <code>elements.css</code> grounds them — tokenised typography, restrained borders,
+      the system focus ring — plus the raw hex-control patterns from the generated
+      <code>hex-controls.css</code>, usable with no JS at all. The
+      <code>hp-checkbox</code> / <code>hp-radio</code> / <code>hp-toggle</code> /
+      <code>hp-slider</code> aliases render these exact patterns.
+    </p>
+
+    <hp-demo caption="Text inputs">
+      <form onsubmit="event.preventDefault()" class="fields-grid">
+        <label>
+          Name
+          <input type="text" placeholder="Hissalia" />
+        </label>
+        <label>
+          Email (validates on blur)
+          <input type="email" required placeholder="izzy@example.com" />
+        </label>
+        <label>
+          Bio
+          <textarea placeholder="Tell us about your hex obsession"></textarea>
+        </label>
+        <label>
+          Country
+          <select>
+            <option>United Kingdom</option>
+            <option>United States</option>
+            <option>Japan</option>
+          </select>
+        </label>
+      </form>
+      <hp-code slot="code" language="html">{`<body>
+  <form>
+    <label>
+      Name
+      <input type="text" placeholder="Hissalia" />
+    </label>
+    <label>
+      Email
+      <input type="email" required placeholder="izzy@example.com" />
+    </label>
+    <label>
+      Bio
+      <textarea></textarea>
+    </label>
+    <label>
+      Country
+      <select>
+        <option>United Kingdom</option>
+      </select>
+    </label>
+  </form>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="The raw hex patterns — no JS anywhere">
+      <form onsubmit="event.preventDefault()" class="fields-col">
+        <label class="hp-checkbox">
+          <input type="checkbox" checked />
+          <span class="hp-checkbox-hex" aria-hidden="true"></span>
+          Checkbox pattern
+        </label>
+        <label class="hp-radio">
+          <input type="radio" name="raw" checked />
+          <span class="hp-radio-hex" aria-hidden="true"></span>
+          Radio pattern A
+        </label>
+        <label class="hp-radio">
+          <input type="radio" name="raw" />
+          <span class="hp-radio-hex" aria-hidden="true"></span>
+          Radio pattern B
+        </label>
+        <label class="hp-toggle">
+          <input type="checkbox" role="switch" />
+          <span class="hp-toggle-track" aria-hidden="true"></span>
+          Switch pattern
+        </label>
+        <label class="hp-slider">
+          Range pattern
+          <input type="range" min="0" max="100" value="42" />
+        </label>
+      </form>
+      <hp-code slot="code" language="html">{`<body>
+  <label class="hp-checkbox">
+    <input type="checkbox" />
+    <span class="hp-checkbox-hex" aria-hidden="true"></span>
+    Checkbox pattern
+  </label>
+
+  <label class="hp-toggle">
+    <input type="checkbox" role="switch" />
+    <span class="hp-toggle-track" aria-hidden="true"></span>
+    Switch pattern
+  </label>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Fieldset + legend">
+      <fieldset class="fields-set">
+        <legend>Display preferences</legend>
+        <label class="hp-checkbox" data-size="xxs">
+          <input type="checkbox" />
+          <span class="hp-checkbox-hex" aria-hidden="true"></span>
+          Reduce motion
+        </label>
+        <label class="hp-checkbox" data-size="xxs">
+          <input type="checkbox" checked />
+          <span class="hp-checkbox-hex" aria-hidden="true"></span>
+          Show focus rings
+        </label>
+      </fieldset>
+      <hp-code slot="code" language="html">{`<body>
+  <fieldset>
+    <legend>Display preferences</legend>
+    <label class="hp-checkbox" data-size="xxs">
+      <input type="checkbox" />
+      <span class="hp-checkbox-hex" aria-hidden="true"></span>
+      Reduce motion
+    </label>
+  </fieldset>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Aliases or patterns?</h2>
+      <hp-banner tone="do">
+        Reach for the <code>hp-*</code> aliases in app code — one tag, slotted label,
+        field-state stamps, delegated validity. Use the raw patterns where JS isn't
+        welcome: static pages, emails-adjacent surfaces, CSS-only contexts. The slider
+        pattern is the one exception: its track fill needs the alias (or Firefox).
+      </hp-banner>
+      <hp-banner tone="dont">
+        Rebuild text inputs as components — the baseline styling is the design system's
+        job and the native controls already do everything else.
+      </hp-banner>
+    </Fragment>
+  </ComponentDocs>
+
+  <style>
+    .fields-grid {
+      display: grid;
+      gap: var(--hp-md);
+      max-width: 32rem;
+    }
+
+    .fields-grid label {
+      display: grid;
+      gap: var(--hp-xs);
+    }
+
+    .fields-col {
+      display: grid;
+      gap: var(--hp-md);
+      justify-items: start;
+      max-width: 24rem;
+    }
+
+    .fields-col .hp-slider {
+      justify-self: stretch;
+    }
+
+    .fields-set {
+      display: grid;
+      gap: var(--hp-sm);
+      justify-items: start;
+      max-width: 32rem;
+    }
+  </style>
+</Layout>

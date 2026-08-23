@@ -14,10 +14,10 @@ import Layout from "../../layouts/Layout.astro";
   <hp-banner tone="neutral">
     Two layers in one file. The <strong>bare reset</strong> auto-applies to every native
     element. The <strong>.hp-prose</strong> class is an opt-in rhythm scope for long-form
-    content. The flowing-text set — headings, inline marks, links, lists, blockquote,
-    rules, and the prose rhythm — now lives on
-    <a href="/components/typography/text">HTML text</a>; tables, details, and the
-    form baseline below move into their categories as those pages land.
+    content. The flowing-text set lives on
+    <a href="/components/typography/text">HTML text</a>; the form baseline lives on
+    <a href="/components/forms/fields">form fields</a>; tables and details below move
+    into Layout as those pages land.
   </hp-banner>
 
   <h2>Installation</h2>
@@ -108,111 +108,6 @@ import "@hexpunk/core/elements.css";`}</hp-code>
     <summary>Open by default</summary>
     <p>The <code>open</code> attribute starts expanded.</p>
   </details>
-</body>`}</hp-code>
-  </hp-demo>
-
-  <h2>Form primitives</h2>
-  <hp-banner tone="neutral">
-    Raw form inputs get tokenised typography, restrained borders, and a focus ring that
-    matches the rest of the system. They deliberately don't carry hex geometry — for
-    the full Hexpunk aesthetic (hex buttons, hex-bonded toggles, single/multi toggle
-    groups, sliders, labelled selects, form-association via
-    <a href="/components/forms/hp-form"><code>&lt;hp-form&gt;</code></a>), reach for:
-    <a href="/components/forms/hp-button"><code>hp-button</code></a> ·
-    <a href="/components/forms/hp-checkbox"><code>hp-checkbox</code></a> ·
-    <a href="/components/forms/hp-radio"><code>hp-radio</code></a> ·
-    <a href="/components/forms/hp-select"><code>hp-select</code></a> ·
-    <a href="/components/forms/hp-slider"><code>hp-slider</code></a> ·
-    <a href="/components/forms/hp-toggle"><code>hp-toggle</code></a> ·
-    <a href="/components/forms/hp-toggle-group"><code>hp-toggle-group</code></a> ·
-    <a href="/components/forms/hp-label"><code>hp-label</code></a>.
-  </hp-banner>
-
-  <hp-demo caption="Text inputs">
-    <form
-      onsubmit="event.preventDefault()"
-      style="display: grid; gap: 12px; max-width: 32rem;"
-    >
-      <label>
-        Name
-        <input type="text" placeholder="Hissalia" style="display: block; width: 100%;">
-      </label>
-      <label>
-        Email (validates on blur)
-        <input type="email" required placeholder="izzy@example.com" style="display: block; width: 100%;">
-      </label>
-      <label>
-        Bio
-        <textarea placeholder="Tell us about your hex obsession" style="display: block; width: 100%;"></textarea>
-      </label>
-      <label>
-        Country
-        <select style="display: block; width: 100%;">
-          <option>United Kingdom</option>
-          <option>United States</option>
-          <option>Japan</option>
-        </select>
-      </label>
-    </form>
-    <hp-code slot="code" language="html">{`<body>
-  <form>
-    <label>
-      Name
-      <input type="text" placeholder="Hissalia" />
-    </label>
-    <label>
-      Email
-      <input type="email" required placeholder="izzy@example.com" />
-    </label>
-    <label>
-      Bio
-      <textarea></textarea>
-    </label>
-    <label>
-      Country
-      <select>
-        <option>United Kingdom</option>
-        <option>United States</option>
-      </select>
-    </label>
-  </form>
-</body>`}</hp-code>
-  </hp-demo>
-
-  <hp-demo caption="Buttons, checkbox, radio, range">
-    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center;">
-      <button>raw button</button>
-      <button disabled>disabled</button>
-      <label><input type="checkbox" checked> Subscribe</label>
-      <label><input type="radio" name="r" checked> A</label>
-      <label><input type="radio" name="r"> B</label>
-      <input type="range" min="0" max="100" value="42">
-      <input type="color" value="#00cc88">
-    </div>
-    <hp-code slot="code" language="html">{`<body>
-  <button>raw button</button>
-  <button disabled>disabled</button>
-  <label><input type="checkbox" checked /> Subscribe</label>
-  <label><input type="radio" name="r" /> A</label>
-  <input type="range" min="0" max="100" value="42" />
-  <input type="color" value="#00cc88" />
-</body>`}</hp-code>
-  </hp-demo>
-
-  <hp-demo caption="Fieldset + legend">
-    <fieldset style="max-width: 32rem;">
-      <legend>Display preferences</legend>
-      <label style="display: block;"><input type="checkbox"> Reduce motion</label>
-      <label style="display: block;"><input type="checkbox" checked> Show focus rings</label>
-      <label style="display: block;"><input type="checkbox"> High contrast</label>
-    </fieldset>
-    <hp-code slot="code" language="html">{`<body>
-  <fieldset>
-    <legend>Display preferences</legend>
-    <label><input type="checkbox" /> Reduce motion</label>
-    <label><input type="checkbox" checked /> Show focus rings</label>
-    <label><input type="checkbox" /> High contrast</label>
-  </fieldset>
 </body>`}</hp-code>
   </hp-demo>
 

@@ -65,16 +65,14 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Forms",
         children: [
-          { path: "/components/forms/spike-checkbox", title: "checkbox spike" },
+          { path: "/components/forms/fields", title: "form fields" },
           { path: "/components/forms/hp-button", title: "hp-button" },
           { path: "/components/forms/hp-checkbox", title: "hp-checkbox" },
           { path: "/components/forms/hp-form", title: "hp-form" },
-          { path: "/components/forms/hp-label", title: "hp-label" },
           { path: "/components/forms/hp-radio", title: "hp-radio" },
           { path: "/components/forms/hp-select", title: "hp-select" },
           { path: "/components/forms/hp-slider", title: "hp-slider" },
           { path: "/components/forms/hp-toggle", title: "hp-toggle" },
-          { path: "/components/forms/hp-toggle-group", title: "hp-toggle-group" },
         ],
       },
       {
