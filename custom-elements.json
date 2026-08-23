@@ -57,7 +57,7 @@
                 "text": "\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\""
               },
               "default": "\"sm\"",
-              "description": "Cell size.\n\n- `xxs` (20px) — dense / tabular controls (e.g. inline icon\nbuttons in a table row)\n- `xs` (32px) — comfortable form-control sized buttons (e.g.\nhp-toggle-group, segmented controls)\n- `sm` (100px, default) — full content / CTA size\n- `md` (180px) — feature-tile button\n- `lg` (320px) — hero / landing tile",
+              "description": "Cell size.\n\n- `xxs` (20px) — dense / tabular controls (e.g. inline icon\nbuttons in a table row)\n- `xs` (32px) — comfortable form-control sized buttons (e.g.\ntoolbars of aria-pressed buttons, segmented controls)\n- `sm` (100px, default) — full content / CTA size\n- `md` (180px) — feature-tile button\n- `lg` (320px) — hero / landing tile",
               "attribute": "size",
               "reflects": true
             },
@@ -116,7 +116,7 @@
                 "text": "\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\""
               },
               "default": "\"sm\"",
-              "description": "Cell size.\n\n- `xxs` (20px) — dense / tabular controls (e.g. inline icon\nbuttons in a table row)\n- `xs` (32px) — comfortable form-control sized buttons (e.g.\nhp-toggle-group, segmented controls)\n- `sm` (100px, default) — full content / CTA size\n- `md` (180px) — feature-tile button\n- `lg` (320px) — hero / landing tile",
+              "description": "Cell size.\n\n- `xxs` (20px) — dense / tabular controls (e.g. inline icon\nbuttons in a table row)\n- `xs` (32px) — comfortable form-control sized buttons (e.g.\ntoolbars of aria-pressed buttons, segmented controls)\n- `sm` (100px, default) — full content / CTA size\n- `md` (180px) — feature-tile button\n- `lg` (320px) — hero / landing tile",
               "fieldName": "size"
             }
           ],
@@ -520,297 +520,19 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/forms/hp-label.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Form label primitive — wraps a native <label> with consistent\nstyling and the `for` forwarding, plus optional required / optional\nmarkers.",
-          "name": "HpLabel",
-          "slots": [
-            {
-              "description": "Label text",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "htmlFor",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "ID of the input this label targets. Forwarded to the inner\n`<label>`'s `for` attribute — clicking the label focuses /\ntoggles the linked input. Maps to the `for` HTML attribute.",
-              "attribute": "for"
-            },
-            {
-              "kind": "field",
-              "name": "required",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Append a \"*\" required marker after the label text. Stamps\naria-required on the linked input is the consumer's job — this\nis the visual cue only.",
-              "attribute": "required",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "optional",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Append a muted \"(optional)\" hint after the label text.",
-              "attribute": "optional",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "for",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "ID of the input this label targets. Forwarded to the inner\n`<label>`'s `for` attribute — clicking the label focuses /\ntoggles the linked input. Maps to the `for` HTML attribute.",
-              "fieldName": "htmlFor"
-            },
-            {
-              "name": "required",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Append a \"*\" required marker after the label text. Stamps\naria-required on the linked input is the consumer's job — this\nis the visual cue only.",
-              "fieldName": "required"
-            },
-            {
-              "name": "optional",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Append a muted \"(optional)\" hint after the label text.",
-              "fieldName": "optional"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-label",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLabel",
-          "declaration": {
-            "name": "HpLabel",
-            "module": "src/elements/forms/hp-label.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-label",
-          "declaration": {
-            "name": "HpLabel",
-            "module": "src/elements/forms/hp-label.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/forms/hp-radio-group.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Radio group container. Manages selection across slotted hp-radio\nchildren — arrow keys move focus + selection between siblings,\nHome / End jump to first / last, only one child checked at a\ntime. role=\"radiogroup\".",
-          "name": "HpRadioGroup",
-          "slots": [
-            {
-              "description": "One or more <hp-radio> children",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Currently selected radio value. Setting this checks the matching\nchild; clearing it unchecks all.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disable the entire group — every child reads as disabled.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"vertical\"",
-              "description": "Orientation — controls arrow-key direction. `horizontal` moves\nwith ArrowLeft/Right; `vertical` (default) with ArrowUp/Down.",
-              "attribute": "orientation",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
-              "attribute": "name"
-            },
-            {
-              "kind": "method",
-              "name": "getRadios",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "syncChildren",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleRadioSelect",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleKeyDown",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When selection changes via click or arrow keys. detail: { value }",
-              "name": "change"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Currently selected radio value. Setting this checks the matching\nchild; clearing it unchecks all.",
-              "fieldName": "value"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disable the entire group — every child reads as disabled.",
-              "fieldName": "disabled"
-            },
-            {
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"vertical\"",
-              "description": "Orientation — controls arrow-key direction. `horizontal` moves\nwith ArrowLeft/Right; `vertical` (default) with ArrowUp/Down.",
-              "fieldName": "orientation"
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
-              "fieldName": "name"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-radio-group",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpRadioGroup",
-          "declaration": {
-            "name": "HpRadioGroup",
-            "module": "src/elements/forms/hp-radio-group.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-radio-group",
-          "declaration": {
-            "name": "HpRadioGroup",
-            "module": "src/elements/forms/hp-radio-group.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/forms/hp-radio.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "Single radio option. Pairs with hp-radio-group as a parent.\nrole=\"radio\", aria-checked reflects state; emits hp-radio-select\non click / Space / Enter for the group to track.",
+          "description": "Hex radio — light-DOM alias over `<input type=\"radio\">`. Group\nbehaviour (single-select, arrow keys) comes from the shared\n`name`, natively. `change` bubbles from the inner input; the host\nkeeps `checked` in sync even when a sibling steals the selection,\nand stamps `data-dirty` / `data-touched` on interaction.",
           "name": "HpRadio",
-          "cssParts": [
+          "slots": [
             {
-              "description": "The radio container wrapping hp-hex + inner dot",
-              "name": "radio"
-            },
-            {
-              "description": "The inner filled hex shown when checked",
-              "name": "dot"
+              "description": "Label text, rendered inside the wrapping label",
+              "name": ""
             }
           ],
           "members": [
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Value emitted when this radio is selected. Required for the\nparent hp-radio-group to track selection.",
-              "attribute": "value"
-            },
             {
               "kind": "field",
               "name": "checked",
@@ -818,9 +540,8 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Selected state. Set by the parent hp-radio-group; consumers\nshouldn't write directly — use the group's `value` instead.",
-              "attribute": "checked",
-              "reflects": true
+              "description": "Current checked state; mirrors the inner input.",
+              "attribute": "checked"
             },
             {
               "kind": "field",
@@ -829,78 +550,133 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — blocks selection, removes from tab order.",
+              "description": "Disabled — out of tab order and submission.",
               "attribute": "disabled",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Required — the group must have a selection to submit.",
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Group name; radios sharing it are one single-select group.",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"on\"",
+              "description": "Submitted value when this radio is the group's selection.",
+              "attribute": "value"
             },
             {
               "kind": "field",
               "name": "size",
               "type": {
-                "text": "\"xxs\" | \"xs\" | \"sm\""
+                "text": "\"xxs\" | \"xs\""
               },
               "default": "\"xs\"",
-              "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+              "description": "Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).",
               "attribute": "size",
               "reflects": true
             },
             {
-              "kind": "method",
-              "name": "syncAria",
+              "kind": "field",
+              "name": "labelNodes",
+              "type": {
+                "text": "Node[]"
+              },
               "privacy": "private",
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "input",
+              "type": {
+                "text": "HTMLInputElement | null"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState | undefined"
+              },
+              "description": "Native constraint-validation surface, forwarded.",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
               "return": {
                 "type": {
-                  "text": "void"
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "return": {
+                "type": {
+                  "text": "boolean"
                 }
               }
             },
             {
               "kind": "field",
-              "name": "handleClick",
+              "name": "syncFromGroup",
               "privacy": "private"
             },
             {
               "kind": "field",
-              "name": "handleKeyDown",
+              "name": "handleChange",
               "privacy": "private"
             },
             {
-              "kind": "method",
-              "name": "emitSelect",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
+              "kind": "field",
+              "name": "handleFocusout",
+              "privacy": "private"
             }
           ],
           "events": [
             {
-              "name": "hp-radio-select",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When this radio is activated. detail: { value }"
+              "description": "Native change, bubbled from the inner input",
+              "name": "change"
             }
           ],
           "attributes": [
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Value emitted when this radio is selected. Required for the\nparent hp-radio-group to track selection.",
-              "fieldName": "value"
-            },
             {
               "name": "checked",
               "type": {
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Selected state. Set by the parent hp-radio-group; consumers\nshouldn't write directly — use the group's `value` instead.",
+              "description": "Current checked state; mirrors the inner input.",
               "fieldName": "checked"
             },
             {
@@ -909,16 +685,42 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — blocks selection, removes from tab order.",
+              "description": "Disabled — out of tab order and submission.",
               "fieldName": "disabled"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Required — the group must have a selection to submit.",
+              "fieldName": "required"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Group name; radios sharing it are one single-select group.",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"on\"",
+              "description": "Submitted value when this radio is the group's selection.",
+              "fieldName": "value"
             },
             {
               "name": "size",
               "type": {
-                "text": "\"xxs\" | \"xs\" | \"sm\""
+                "text": "\"xxs\" | \"xs\""
               },
               "default": "\"xs\"",
-              "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+              "description": "Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).",
               "fieldName": "size"
             }
           ],
@@ -926,7 +728,7 @@
             "name": "LitElement",
             "package": "lit"
           },
-          "status": "wip",
+          "status": "experimental",
           "tagName": "hp-radio",
           "customElement": true
         }
@@ -1400,24 +1202,12 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Single-thumb continuous-value slider. role=\"slider\";\naria-valuemin / max / now reflect state. Arrow keys step by `step`,\nPageUp/PageDown by 10×, Home/End jump to min/max. Pointer drag\nwith capture.",
+          "description": "Hex slider — light-DOM alias over `<input type=\"range\">`. Arrows\nstep by `step`, PageUp/PageDown by the browser's larger step,\nHome/End jump to the ends — all native. `input` / `change` bubble\nfrom the inner control; the host stamps `data-dirty` /\n`data-touched`.",
           "name": "HpSlider",
-          "cssParts": [
+          "slots": [
             {
-              "description": "The slider container",
-              "name": "slider"
-            },
-            {
-              "description": "The track that the fill sits on",
-              "name": "track"
-            },
-            {
-              "description": "The progress fill (left edge → thumb)",
-              "name": "fill"
-            },
-            {
-              "description": "The hex thumb",
-              "name": "thumb"
+              "description": "Label text, rendered inside the wrapping label",
+              "name": ""
             }
           ],
           "members": [
@@ -1428,7 +1218,7 @@
                 "text": "number"
               },
               "default": "0",
-              "description": "Lower bound (default 0).",
+              "description": "Lower bound.",
               "attribute": "min"
             },
             {
@@ -1438,7 +1228,7 @@
                 "text": "number"
               },
               "default": "100",
-              "description": "Upper bound (default 100).",
+              "description": "Upper bound.",
               "attribute": "max"
             },
             {
@@ -1448,7 +1238,7 @@
                 "text": "number"
               },
               "default": "1",
-              "description": "Step size for arrow keys / pointer drag (default 1).",
+              "description": "Keyboard / drag granularity.",
               "attribute": "step"
             },
             {
@@ -1457,10 +1247,9 @@
               "type": {
                 "text": "number"
               },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max] on set.",
-              "attribute": "value",
-              "reflects": true
+              "default": "50",
+              "description": "Current value; mirrors the inner input.",
+              "attribute": "value"
             },
             {
               "kind": "field",
@@ -1469,7 +1258,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — no input, removed from tab order.",
+              "description": "Disabled — out of tab order and submission.",
               "attribute": "disabled",
               "reflects": true
             },
@@ -1479,119 +1268,56 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Optional form name (placeholder for hp-form).",
+              "description": "Form field name for submission.",
               "attribute": "name"
             },
             {
               "kind": "field",
-              "name": "pointerActive",
+              "name": "labelNodes",
               "type": {
-                "text": "boolean"
+                "text": "Node[]"
               },
               "privacy": "private",
-              "default": "false"
+              "default": "[]"
             },
             {
               "kind": "field",
-              "name": "trackRect",
+              "name": "input",
               "type": {
-                "text": "DOMRect | null"
+                "text": "HTMLInputElement | null"
               },
               "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncAria",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "clamp",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "number"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "v",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "setValue",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "next",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
+              "readonly": true
             },
             {
               "kind": "field",
-              "name": "handleKeyDown",
+              "name": "fill",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "description": "Fill fraction for the track, as a percentage string.",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleInput",
               "privacy": "private"
             },
             {
               "kind": "field",
-              "name": "handlePointerDown",
+              "name": "handleFocusout",
               "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handlePointerMove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handlePointerUp",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "updateFromPointer",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "clientX",
-                  "type": {
-                    "text": "number"
-                  }
-                }
-              ]
             }
           ],
           "events": [
             {
-              "name": "change",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the value changes (keyboard or pointer). detail: { value }"
+              "description": "Native input, bubbled while dragging",
+              "name": "input"
+            },
+            {
+              "description": "Native change, bubbled on release",
+              "name": "change"
             }
           ],
           "attributes": [
@@ -1601,7 +1327,7 @@
                 "text": "number"
               },
               "default": "0",
-              "description": "Lower bound (default 0).",
+              "description": "Lower bound.",
               "fieldName": "min"
             },
             {
@@ -1610,7 +1336,7 @@
                 "text": "number"
               },
               "default": "100",
-              "description": "Upper bound (default 100).",
+              "description": "Upper bound.",
               "fieldName": "max"
             },
             {
@@ -1619,7 +1345,7 @@
                 "text": "number"
               },
               "default": "1",
-              "description": "Step size for arrow keys / pointer drag (default 1).",
+              "description": "Keyboard / drag granularity.",
               "fieldName": "step"
             },
             {
@@ -1627,8 +1353,8 @@
               "type": {
                 "text": "number"
               },
-              "default": "0",
-              "description": "Current value. Clamped to [min, max] on set.",
+              "default": "50",
+              "description": "Current value; mirrors the inner input.",
               "fieldName": "value"
             },
             {
@@ -1637,7 +1363,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — no input, removed from tab order.",
+              "description": "Disabled — out of tab order and submission.",
               "fieldName": "disabled"
             },
             {
@@ -1645,7 +1371,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Optional form name (placeholder for hp-form).",
+              "description": "Form field name for submission.",
               "fieldName": "name"
             }
           ],
@@ -1653,7 +1379,7 @@
             "name": "LitElement",
             "package": "lit"
           },
-          "status": "wip",
+          "status": "experimental",
           "tagName": "hp-slider",
           "customElement": true
         }
@@ -1679,218 +1405,16 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/forms/hp-toggle-group.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Group of toggle buttons with single or multi-select semantics.\nSlotted children carry `value` attributes; the group tracks\n`value` (string for single, space-separated for multiple) and\nstamps aria-pressed on each pressed child.",
-          "name": "HpToggleGroup",
-          "slots": [
-            {
-              "description": "hp-button or hp-cell children with `value` attributes",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "type",
-              "type": {
-                "text": "HpToggleGroupType"
-              },
-              "default": "\"single\"",
-              "description": "Selection model. `single` allows one button pressed at a time\n(toggling on a different button unpresses the previous one).\n`multiple` allows any combination.",
-              "attribute": "type",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Current selection. Single mode: the chosen value as a string;\nempty string = nothing selected. Multiple mode: space-separated\nvalues.",
-              "attribute": "value",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"horizontal\"",
-              "description": "Layout direction — also drives the honeycomb zigzag direction\nwhen `layout=\"honeycomb\"`.",
-              "attribute": "orientation",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "layout",
-              "type": {
-                "text": "HpToggleGroupLayout"
-              },
-              "default": "\"flex\"",
-              "description": "Visual arrangement.\n\n- `flex` (default) — children laid out as inline-flex with a\nstandard row / column.\n- `honeycomb` — children positioned in a hex-grid zigzag.\nSubsequent items add to the right (orientation=horizontal)\nor alternate bottom-right / bottom-left (orientation=vertical).\nEach adjacent pair shares an edge with hp-grid's stroke-overlap\ncorrection so the strokes coincide into a single line.",
-              "attribute": "layout",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disable the entire group.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "layoutItems",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Position children in a hex-grid zigzag when layout=honeycomb,\nor clear any previous inline positioning when reverting to\nlayout=flex. Reads --hp-cell + --hp-hex-stroke from the first\nchild's computed style so the layout adapts to whatever cell\nsize the child uses (xs / xxs / sm / …).\n\nPer-item placement (i-th child, 0-indexed):\n\nhorizontal: pair = floor(i / 2), inPair = i % 2\nx = pair * colStep + inPair * colStep / 2\ny = inPair * rowStep\n\nvertical:\nx = (i % 2) * colStep / 2\ny = i * rowStep\n\nWhere colStep = cell - stroke and rowStep = colStep × √3/2,\nmatching hp-grid's stroke-overlap correction (so adjacent hex\noutlines coincide into one shared edge instead of running\nparallel with a hairline gap)."
-            },
-            {
-              "kind": "method",
-              "name": "getItems",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[]"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "currentValues",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "Set<string>"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "syncChildren",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "handleClick",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When selection changes. detail: { value }",
-              "name": "change"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "type",
-              "type": {
-                "text": "HpToggleGroupType"
-              },
-              "default": "\"single\"",
-              "description": "Selection model. `single` allows one button pressed at a time\n(toggling on a different button unpresses the previous one).\n`multiple` allows any combination.",
-              "fieldName": "type"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "\"\"",
-              "description": "Current selection. Single mode: the chosen value as a string;\nempty string = nothing selected. Multiple mode: space-separated\nvalues.",
-              "fieldName": "value"
-            },
-            {
-              "name": "orientation",
-              "type": {
-                "text": "\"horizontal\" | \"vertical\""
-              },
-              "default": "\"horizontal\"",
-              "description": "Layout direction — also drives the honeycomb zigzag direction\nwhen `layout=\"honeycomb\"`.",
-              "fieldName": "orientation"
-            },
-            {
-              "name": "layout",
-              "type": {
-                "text": "HpToggleGroupLayout"
-              },
-              "default": "\"flex\"",
-              "description": "Visual arrangement.\n\n- `flex` (default) — children laid out as inline-flex with a\nstandard row / column.\n- `honeycomb` — children positioned in a hex-grid zigzag.\nSubsequent items add to the right (orientation=horizontal)\nor alternate bottom-right / bottom-left (orientation=vertical).\nEach adjacent pair shares an edge with hp-grid's stroke-overlap\ncorrection so the strokes coincide into a single line.",
-              "fieldName": "layout"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disable the entire group.",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "wip",
-          "tagName": "hp-toggle-group",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToggleGroup",
-          "declaration": {
-            "name": "HpToggleGroup",
-            "module": "src/elements/forms/hp-toggle-group.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toggle-group",
-          "declaration": {
-            "name": "HpToggleGroup",
-            "module": "src/elements/forms/hp-toggle-group.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/forms/hp-toggle.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "Two-state on/off switch. role=\"switch\", aria-checked reflects\nstate; Space / Enter activate; disabled blocks.",
+          "description": "Hex switch — light-DOM alias over `<input type=\"checkbox\"\nrole=\"switch\">`. Discrete on/off with a sliding hex thumb; use\nhp-slider for continuous values. `change` bubbles from the inner\ninput; the host stamps `data-dirty` / `data-touched`.",
           "name": "HpToggle",
-          "cssParts": [
+          "slots": [
             {
-              "description": "The pill-shaped track element",
-              "name": "track"
-            },
-            {
-              "description": "The sliding hex thumb",
-              "name": "thumb"
+              "description": "Label text, rendered inside the wrapping label",
+              "name": ""
             }
           ],
           "members": [
@@ -1901,9 +1425,8 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "On (checked) state.",
-              "attribute": "checked",
-              "reflects": true
+              "description": "Current on/off state; mirrors the inner input.",
+              "attribute": "checked"
             },
             {
               "kind": "field",
@@ -1912,9 +1435,19 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — no activation, removed from tab order.",
+              "description": "Disabled — out of tab order and submission.",
               "attribute": "disabled",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Required — off blocks submission via constraint validation.",
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -1922,7 +1455,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
+              "description": "Form field name; present in FormData when on.",
               "attribute": "name"
             },
             {
@@ -1932,47 +1465,77 @@
                 "text": "string"
               },
               "default": "\"on\"",
-              "description": "Submitted value when checked.",
+              "description": "Submitted value (with `name`) when on.",
               "attribute": "value"
             },
             {
-              "kind": "method",
-              "name": "syncAria",
+              "kind": "field",
+              "name": "labelNodes",
+              "type": {
+                "text": "Node[]"
+              },
               "privacy": "private",
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "input",
+              "type": {
+                "text": "HTMLInputElement | null"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState | undefined"
+              },
+              "description": "Native constraint-validation surface, forwarded.",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
               "return": {
                 "type": {
-                  "text": "void"
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "return": {
+                "type": {
+                  "text": "boolean"
                 }
               }
             },
             {
               "kind": "field",
-              "name": "handleClick",
+              "name": "handleChange",
               "privacy": "private"
             },
             {
               "kind": "field",
-              "name": "handleKeyDown",
+              "name": "handleFocusout",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "toggle",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
             }
           ],
           "events": [
             {
-              "name": "change",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the switch flips via user input. detail: { checked }"
+              "description": "Native change, bubbled from the inner input",
+              "name": "change"
             }
           ],
           "attributes": [
@@ -1982,7 +1545,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "On (checked) state.",
+              "description": "Current on/off state; mirrors the inner input.",
               "fieldName": "checked"
             },
             {
@@ -1991,15 +1554,24 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — no activation, removed from tab order.",
+              "description": "Disabled — out of tab order and submission.",
               "fieldName": "disabled"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Required — off blocks submission via constraint validation.",
+              "fieldName": "required"
             },
             {
               "name": "name",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
+              "description": "Form field name; present in FormData when on.",
               "fieldName": "name"
             },
             {
@@ -2008,7 +1580,7 @@
                 "text": "string"
               },
               "default": "\"on\"",
-              "description": "Submitted value when checked.",
+              "description": "Submitted value (with `name`) when on.",
               "fieldName": "value"
             }
           ],
@@ -2016,7 +1588,7 @@
             "name": "LitElement",
             "package": "lit"
           },
-          "status": "wip",
+          "status": "experimental",
           "tagName": "hp-toggle",
           "customElement": true
         }
@@ -14492,6 +14064,14 @@
         },
         {
           "kind": "js",
+          "name": "HpRadio",
+          "declaration": {
+            "name": "HpRadio",
+            "module": "./elements/forms/hp-radio.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "HpPixel",
           "declaration": {
             "name": "HpPixel",
@@ -14512,6 +14092,14 @@
           "declaration": {
             "name": "HpPixelStates",
             "module": "./elements/images/hp-pixel.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpSlider",
+          "declaration": {
+            "name": "HpSlider",
+            "module": "./elements/forms/hp-slider.js"
           }
         },
         {
@@ -14592,6 +14180,14 @@
           "declaration": {
             "name": "HpTabs",
             "module": "./elements/navigation/hp-tabs.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpToggle",
+          "declaration": {
+            "name": "HpToggle",
+            "module": "./elements/forms/hp-toggle.js"
           }
         },
         {

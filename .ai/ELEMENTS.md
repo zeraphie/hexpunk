@@ -3,7 +3,7 @@
 Auto-generated from `custom-elements.json` by `tools/build-elements-md.ts` — do not edit
 by hand. Regenerate with `bun run analyze`.
 
-27 elements, alphabetical (30 wip elements omitted — showcase-only,
+30 elements, alphabetical (24 wip elements omitted — showcase-only,
 not exported). Per element: tag, status, role, attributes / properties (type, default),
 slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md` (style) and
 `.ai/PROMPTS.md` (prompt recipes) when briefing an agent.
@@ -69,7 +69,7 @@ Button primitive — composes hp-cell variant="action" with the semantics consum
 - `type`: `"button" | "submit" | "reset"` = `"button"` — Native button type. Determines submit / reset behaviour inside a `<form>`. Default `button` (inert in forms).
 - `disabled`: `boolean` = `false` — When set, the button doesn't activate on click / Enter / Space and is removed from the tab order. Visual state inherits hp- cell's stroke at the disabled opacity.
 - `filled`: `boolean` = `false` — High-emphasis filled CTA — forwards `filled` to the composed hp-cell.
-- `size`: `"xxs" | "xs" | "sm" | "md" | "lg"` = `"sm"` — Cell size. - `xxs` (20px) — dense / tabular controls (e.g. inline icon buttons in a table row) - `xs` (32px) — comfortable form-control sized buttons (e.g. hp-toggle-group, segmented controls) - `sm` (100px, default) — full content / CTA size - `md` (180px) — feature-tile button - `lg` (320px) — hero / landing tile
+- `size`: `"xxs" | "xs" | "sm" | "md" | "lg"` = `"sm"` — Cell size. - `xxs` (20px) — dense / tabular controls (e.g. inline icon buttons in a table row) - `xs` (32px) — comfortable form-control sized buttons (e.g. toolbars of aria-pressed buttons, segmented controls) - `sm` (100px, default) — full content / CTA size - `md` (180px) — feature-tile button - `lg` (320px) — hero / landing tile
 
 **Slots**
 
@@ -417,6 +417,31 @@ Pixel-art renderer. Draws a sequence of states (each a list of [x, y, paletteInd
 - `pixel-size`: `number` = `3` — Pixel size in CSS px. Default `3`.
 - `interactive`: `boolean` = `false` — Auto-swap to `hover` / `focus` / `active` named states on the matching pseudo-classes. No JS state-flip required.
 
+## `<hp-radio>`
+
+**Status:** experimental
+
+Hex radio — light-DOM alias over `<input type="radio">`. Group behaviour (single-select, arrow keys) comes from the shared `name`, natively. `change` bubbles from the inner input; the host keeps `checked` in sync even when a sibling steals the selection, and stamps `data-dirty` / `data-touched` on interaction.
+
+**Attributes / properties**
+
+- `checked`: `boolean` = `false` — Current checked state; mirrors the inner input.
+- `disabled`: `boolean` = `false` — Disabled — out of tab order and submission.
+- `required`: `boolean` = `false` — Required — the group must have a selection to submit.
+- `name`: `string | undefined` — Group name; radios sharing it are one single-select group.
+- `value`: `string` = `"on"` — Submitted value when this radio is the group's selection.
+- `size`: `"xxs" | "xs"` = `"xs"` — Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).
+- `validity (property)`: `ValidityState | undefined` — Native constraint-validation surface, forwarded.
+- `validationMessage (property)`: `string`
+
+**Slots**
+
+- (default) — Label text, rendered inside the wrapping label
+
+**Events**
+
+- `change` — Native change, bubbled from the inner input
+
 ## `<hp-separator>`
 
 **Status:** done
@@ -485,6 +510,30 @@ Leaf navigation entry inside `<hp-sidebar>`. The slotted text content is the vis
 **CSS parts**
 
 - `link` — The internal anchor element
+
+## `<hp-slider>`
+
+**Status:** experimental
+
+Hex slider — light-DOM alias over `<input type="range">`. Arrows step by `step`, PageUp/PageDown by the browser's larger step, Home/End jump to the ends — all native. `input` / `change` bubble from the inner control; the host stamps `data-dirty` / `data-touched`.
+
+**Attributes / properties**
+
+- `min`: `number` = `0` — Lower bound.
+- `max`: `number` = `100` — Upper bound.
+- `step`: `number` = `1` — Keyboard / drag granularity.
+- `value`: `number` = `50` — Current value; mirrors the inner input.
+- `disabled`: `boolean` = `false` — Disabled — out of tab order and submission.
+- `name`: `string | undefined` — Form field name for submission.
+
+**Slots**
+
+- (default) — Label text, rendered inside the wrapping label
+
+**Events**
+
+- `input` — Native input, bubbled while dragging
+- `change` — Native change, bubbled on release
 
 ## `<hp-tab>`
 
@@ -570,6 +619,30 @@ Arc-tether between two distant molecules — curved SVG bezier connecting two he
 - `--hp-tether-arc-width` — Stroke width of the arc
 - `--hp-tether-arc-glow` — Glow filter blur radius
 - `--hp-tether-arc-pulse-dot` — Diameter of the pulse dot
+
+## `<hp-toggle>`
+
+**Status:** experimental
+
+Hex switch — light-DOM alias over `<input type="checkbox" role="switch">`. Discrete on/off with a sliding hex thumb; use hp-slider for continuous values. `change` bubbles from the inner input; the host stamps `data-dirty` / `data-touched`.
+
+**Attributes / properties**
+
+- `checked`: `boolean` = `false` — Current on/off state; mirrors the inner input.
+- `disabled`: `boolean` = `false` — Disabled — out of tab order and submission.
+- `required`: `boolean` = `false` — Required — off blocks submission via constraint validation.
+- `name`: `string | undefined` — Form field name; present in FormData when on.
+- `value`: `string` = `"on"` — Submitted value (with `name`) when on.
+- `validity (property)`: `ValidityState | undefined` — Native constraint-validation surface, forwarded.
+- `validationMessage (property)`: `string`
+
+**Slots**
+
+- (default) — Label text, rendered inside the wrapping label
+
+**Events**
+
+- `change` — Native change, bubbled from the inner input
 
 ## `<hp-unfold-page>`
 

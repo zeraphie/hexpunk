@@ -156,7 +156,7 @@
         },
         {
           "name": "size",
-          "description": "Cell size.\n\n- `xxs` (20px) — dense / tabular controls (e.g. inline icon\nbuttons in a table row)\n- `xs` (32px) — comfortable form-control sized buttons (e.g.\nhp-toggle-group, segmented controls)\n- `sm` (100px, default) — full content / CTA size\n- `md` (180px) — feature-tile button\n- `lg` (320px) — hero / landing tile",
+          "description": "Cell size.\n\n- `xxs` (20px) — dense / tabular controls (e.g. inline icon\nbuttons in a table row)\n- `xs` (32px) — comfortable form-control sized buttons (e.g.\ntoolbars of aria-pressed buttons, segmented controls)\n- `sm` (100px, default) — full content / CTA size\n- `md` (180px) — feature-tile button\n- `lg` (320px) — hero / landing tile",
           "values": [
             {
               "name": "xxs"
@@ -605,24 +605,6 @@
       ]
     },
     {
-      "name": "hp-label",
-      "description": "Form label primitive — wraps a native <label> with consistent\nstyling and the `for` forwarding, plus optional required / optional\nmarkers.",
-      "attributes": [
-        {
-          "name": "for",
-          "description": "ID of the input this label targets. Forwarded to the inner\n`<label>`'s `for` attribute — clicking the label focuses /\ntoggles the linked input. Maps to the `for` HTML attribute."
-        },
-        {
-          "name": "required",
-          "description": "Append a \"*\" required marker after the label text. Stamps\naria-required on the linked input is the consumer's job — this\nis the visual cue only."
-        },
-        {
-          "name": "optional",
-          "description": "Append a muted \"(optional)\" hint after the label text."
-        }
-      ]
-    },
-    {
       "name": "hp-latex",
       "description": "LaTeX math primitive. Render-only.\n\nThe LaTeX source comes from the `value` attribute or the element's\ntext content (attribute wins when both are present). Consumers\nregister a renderer once at startup via `HpLatex.setRenderer(...)`.",
       "attributes": [
@@ -977,67 +959,42 @@
     },
     {
       "name": "hp-radio",
-      "description": "Single radio option. Pairs with hp-radio-group as a parent.\nrole=\"radio\", aria-checked reflects state; emits hp-radio-select\non click / Space / Enter for the group to track.",
+      "description": "Hex radio — light-DOM alias over `<input type=\"radio\">`. Group\nbehaviour (single-select, arrow keys) comes from the shared\n`name`, natively. `change` bubbles from the inner input; the host\nkeeps `checked` in sync even when a sibling steals the selection,\nand stamps `data-dirty` / `data-touched` on interaction.",
       "attributes": [
         {
-          "name": "value",
-          "description": "Value emitted when this radio is selected. Required for the\nparent hp-radio-group to track selection."
-        },
-        {
           "name": "checked",
-          "description": "Selected state. Set by the parent hp-radio-group; consumers\nshouldn't write directly — use the group's `value` instead."
+          "description": "Current checked state; mirrors the inner input."
         },
         {
           "name": "disabled",
-          "description": "Disabled — blocks selection, removes from tab order."
+          "description": "Disabled — out of tab order and submission."
+        },
+        {
+          "name": "required",
+          "description": "Required — the group must have a selection to submit."
+        },
+        {
+          "name": "name",
+          "description": "Group name; radios sharing it are one single-select group.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "value",
+          "description": "Submitted value when this radio is the group's selection."
         },
         {
           "name": "size",
-          "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+          "description": "Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).",
           "values": [
             {
               "name": "xxs"
             },
             {
               "name": "xs"
-            },
-            {
-              "name": "sm"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-radio-group",
-      "description": "Radio group container. Manages selection across slotted hp-radio\nchildren — arrow keys move focus + selection between siblings,\nHome / End jump to first / last, only one child checked at a\ntime. role=\"radiogroup\".",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "Currently selected radio value. Setting this checks the matching\nchild; clearing it unchecks all."
-        },
-        {
-          "name": "disabled",
-          "description": "Disable the entire group — every child reads as disabled."
-        },
-        {
-          "name": "orientation",
-          "description": "Orientation — controls arrow-key direction. `horizontal` moves\nwith ArrowLeft/Right; `vertical` (default) with ArrowUp/Down.",
-          "values": [
-            {
-              "name": "horizontal"
-            },
-            {
-              "name": "vertical"
-            }
-          ]
-        },
-        {
-          "name": "name",
-          "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
-          "values": [
-            {
-              "name": "undefined"
             }
           ]
         }
@@ -1158,31 +1115,31 @@
     },
     {
       "name": "hp-slider",
-      "description": "Single-thumb continuous-value slider. role=\"slider\";\naria-valuemin / max / now reflect state. Arrow keys step by `step`,\nPageUp/PageDown by 10×, Home/End jump to min/max. Pointer drag\nwith capture.",
+      "description": "Hex slider — light-DOM alias over `<input type=\"range\">`. Arrows\nstep by `step`, PageUp/PageDown by the browser's larger step,\nHome/End jump to the ends — all native. `input` / `change` bubble\nfrom the inner control; the host stamps `data-dirty` /\n`data-touched`.",
       "attributes": [
         {
           "name": "min",
-          "description": "Lower bound (default 0)."
+          "description": "Lower bound."
         },
         {
           "name": "max",
-          "description": "Upper bound (default 100)."
+          "description": "Upper bound."
         },
         {
           "name": "step",
-          "description": "Step size for arrow keys / pointer drag (default 1)."
+          "description": "Keyboard / drag granularity."
         },
         {
           "name": "value",
-          "description": "Current value. Clamped to [min, max] on set."
+          "description": "Current value; mirrors the inner input."
         },
         {
           "name": "disabled",
-          "description": "Disabled — no input, removed from tab order."
+          "description": "Disabled — out of tab order and submission."
         },
         {
           "name": "name",
-          "description": "Optional form name (placeholder for hp-form).",
+          "description": "Form field name for submission.",
           "values": [
             {
               "name": "undefined"
@@ -1348,19 +1305,23 @@
     },
     {
       "name": "hp-toggle",
-      "description": "Two-state on/off switch. role=\"switch\", aria-checked reflects\nstate; Space / Enter activate; disabled blocks.",
+      "description": "Hex switch — light-DOM alias over `<input type=\"checkbox\"\nrole=\"switch\">`. Discrete on/off with a sliding hex thumb; use\nhp-slider for continuous values. `change` bubbles from the inner\ninput; the host stamps `data-dirty` / `data-touched`.",
       "attributes": [
         {
           "name": "checked",
-          "description": "On (checked) state."
+          "description": "Current on/off state; mirrors the inner input."
         },
         {
           "name": "disabled",
-          "description": "Disabled — no activation, removed from tab order."
+          "description": "Disabled — out of tab order and submission."
+        },
+        {
+          "name": "required",
+          "description": "Required — off blocks submission via constraint validation."
         },
         {
           "name": "name",
-          "description": "Optional form name (placeholder for forthcoming hp-form wiring).",
+          "description": "Form field name; present in FormData when on.",
           "values": [
             {
               "name": "undefined"
@@ -1369,51 +1330,7 @@
         },
         {
           "name": "value",
-          "description": "Submitted value when checked."
-        }
-      ]
-    },
-    {
-      "name": "hp-toggle-group",
-      "description": "Group of toggle buttons with single or multi-select semantics.\nSlotted children carry `value` attributes; the group tracks\n`value` (string for single, space-separated for multiple) and\nstamps aria-pressed on each pressed child.",
-      "attributes": [
-        {
-          "name": "type",
-          "description": "Selection model. `single` allows one button pressed at a time\n(toggling on a different button unpresses the previous one).\n`multiple` allows any combination.",
-          "values": [
-            {
-              "name": "HpToggleGroupType"
-            }
-          ]
-        },
-        {
-          "name": "value",
-          "description": "Current selection. Single mode: the chosen value as a string;\nempty string = nothing selected. Multiple mode: space-separated\nvalues."
-        },
-        {
-          "name": "orientation",
-          "description": "Layout direction — also drives the honeycomb zigzag direction\nwhen `layout=\"honeycomb\"`.",
-          "values": [
-            {
-              "name": "horizontal"
-            },
-            {
-              "name": "vertical"
-            }
-          ]
-        },
-        {
-          "name": "layout",
-          "description": "Visual arrangement.\n\n- `flex` (default) — children laid out as inline-flex with a\nstandard row / column.\n- `honeycomb` — children positioned in a hex-grid zigzag.\nSubsequent items add to the right (orientation=horizontal)\nor alternate bottom-right / bottom-left (orientation=vertical).\nEach adjacent pair shares an edge with hp-grid's stroke-overlap\ncorrection so the strokes coincide into a single line.",
-          "values": [
-            {
-              "name": "HpToggleGroupLayout"
-            }
-          ]
-        },
-        {
-          "name": "disabled",
-          "description": "Disable the entire group."
+          "description": "Submitted value (with `name`) when on."
         }
       ]
     },
