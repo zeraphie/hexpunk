@@ -41,7 +41,9 @@ for (let i = 1; i < parts.length; i++) {
   const prevChunk = parts[i - 1] ?? "";
   const block = parts[i] ?? "";
   const commentMatches = [...prevChunk.matchAll(/\/\*\s*([^*]+?)\s*\*\//g)];
-  const subset = commentMatches.length ? commentMatches[commentMatches.length - 1]?.[1].trim() : "";
+  const subset = commentMatches.length
+    ? commentMatches[commentMatches.length - 1]?.[1]?.trim()
+    : "";
   if (subset !== "latin") {
     continue;
   }

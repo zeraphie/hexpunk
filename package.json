@@ -80,6 +80,7 @@
     "@custom-elements-manifest/analyzer": "^0.10.0",
     "@lit-labs/ssr": "^3.2.0",
     "@types/bun": "^1.1.0",
+    "@types/fontkit": "^2.0.9",
     "fontkit": "^2.0.4",
     "lucide-static": "^1.16.0",
     "oxfmt": "^0.45.0",

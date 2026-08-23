@@ -52,7 +52,7 @@ function dedent(code: string): string {
   const lines = trimmed.split("\n");
   const indents = lines
     .filter((l) => l.trim().length > 0)
-    .map((l) => /^(\s*)/.exec(l)?.[1].length ?? 0);
+    .map((l) => /^(\s*)/.exec(l)?.[1]?.length ?? 0);
   const min = indents.length > 0 ? Math.min(...indents) : 0;
   return lines.map((l) => l.slice(min)).join("\n");
 }

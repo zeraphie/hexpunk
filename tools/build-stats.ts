@@ -42,7 +42,7 @@ function costOf(paths: string[]): Cost {
   for (const path of paths) {
     const bytes = readFileSync(path);
     minified += bytes.byteLength;
-    gzipped += gzipSync(bytes).byteLength;
+    gzipped += gzipSync(new Uint8Array(bytes)).byteLength;
   }
   return { minifiedBytes: minified, gzippedBytes: gzipped };
 }

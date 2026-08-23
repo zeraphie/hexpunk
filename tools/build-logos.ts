@@ -18,7 +18,11 @@ import * as fontkit from "fontkit";
 await mkdir("assets", { recursive: true });
 
 const fontBytes = await readFile("assets/fonts/iceland-400.woff2");
-const font = fontkit.create(fontBytes);
+const opened = fontkit.create(fontBytes);
+if ("fonts" in opened) {
+  throw new Error("build-logos: expected a single font, got a collection");
+}
+const font = opened;
 
 /** Render `text` through the font, position the glyph run so that
  * (originX, originY) is the visual baseline-start at the requested

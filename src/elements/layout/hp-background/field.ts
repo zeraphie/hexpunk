@@ -130,7 +130,7 @@ export class EnergyField {
   private textures: [WebGLTexture | null, WebGLTexture | null] = [null, null];
   private fbos: [WebGLFramebuffer | null, WebGLFramebuffer | null] = [null, null];
   /** Index of the texture currently holding the latest field state. */
-  private readIndex = 0;
+  private readIndex: 0 | 1 = 0;
   /** True when R16F render targets are available; RGBA8 otherwise
    * (energy then clamps at 1.0 — visually equivalent, less headroom). */
   private halfFloat = false;
@@ -198,7 +198,7 @@ export class EnergyField {
     }
     this.width = w;
     this.height = h;
-    for (let i = 0; i < 2; i++) {
+    for (const i of [0, 1] as const) {
       if (!this.textures[i]) {
         this.textures[i] = gl.createTexture();
         this.fbos[i] = gl.createFramebuffer();
@@ -245,7 +245,7 @@ export class EnergyField {
     if (!this.program || !this.textures[0]) {
       return;
     }
-    const write = 1 - this.readIndex;
+    const write: 0 | 1 = this.readIndex === 0 ? 1 : 0;
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos[write]);
     gl.viewport(0, 0, this.width, this.height);
     gl.disable(gl.BLEND);
@@ -291,7 +291,7 @@ export class EnergyField {
    * @param gl - A live WebGL2 context.
    */
   clear(gl: WebGL2RenderingContext): void {
-    for (let i = 0; i < 2; i++) {
+    for (const i of [0, 1] as const) {
       if (this.fbos[i]) {
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos[i]);
         gl.clearColor(0, 0, 0, 0);
@@ -308,7 +308,7 @@ export class EnergyField {
    */
   release(gl: WebGL2RenderingContext | null): void {
     if (gl) {
-      for (let i = 0; i < 2; i++) {
+      for (const i of [0, 1] as const) {
         if (this.textures[i]) {
           gl.deleteTexture(this.textures[i]);
         }
