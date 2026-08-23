@@ -1,10 +1,13 @@
 ---
+import { ClientRouter } from "astro:transitions";
+
 import "../../../src/tokens/tokens.dark.css";
 import "../../../src/tokens/tokens.light.css";
 import "../../../src/styles/elements.css";
 import "../../../src/styles/hp-latex.css";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
+import fontsCssRaw from "../../../assets/fonts/fonts.css?raw";
 import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
 import {
   github as githubIcon,
@@ -29,6 +32,22 @@ interface Props {
 }
 const { title, fullWidth = false, prose = false } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+// Inline the @font-face rules so the browser discovers the woff2
+// URLs during HTML parse instead of after a fonts.css round-trip.
+// Paired with the preloads below, the real faces are usually in
+// before first paint — headings stop flashing the ui-sans-serif
+// fallback on cold loads. The generated fonts.css stays the source
+// of truth; its CSS-relative URLs are rebased onto the site's font
+// directory here.
+const fontFaceCss = fontsCssRaw.replaceAll('url("./', `url("${baseUrl}/fonts/`);
+
+// Only the faces above-the-fold text always uses: Chakra Petch 400
+// (body) and 700 (headline / label), Iceland (brand + display
+// headings). Mono and the remaining weights load lazily on the
+// pages that use them — preloading all eleven would crowd the
+// bandwidth the critical three need.
+const FONT_PRELOADS = ["chakra-petch-400.woff2", "chakra-petch-700.woff2", "iceland-400.woff2"];
 const fullPath = new URL(Astro.request.url).pathname.replace(/\/$/, "") || "/";
 const active = baseUrl && fullPath.startsWith(baseUrl)
   ? (fullPath.slice(baseUrl.length) || "/")
@@ -106,13 +125,15 @@ const searchIndex = flattenLeaves(SITEMAP, []).map((e) => ({
 // no attribute → :root defaults, which are dark).
 const themeInit = `(function(){try{var s=localStorage.getItem('hp-theme');var t=s||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`;
 
-// Apply --hp-unfold-peak from sessionStorage before the cross-document
-// view-transition keyframes resolve their var() refs. Forward
-// navigation through hp-unfold-page (or any data-hp-unfold link)
-// stashes the computed peak so the destination's
-// ::view-transition-old/new(hp-unfold-source) keyframes can hit the
-// right scale. Don't clear here — playReverseArrival on back-nav
-// arrival also reads it; the click handler / navigate path
+// Apply --hp-unfold-peak from sessionStorage before the unfold
+// keyframes resolve their var() refs. Forward navigation through
+// hp-unfold-page (or any data-hp-unfold link) stashes the computed
+// peak so the destination's ::view-transition-old(hp-unfold-source)
+// keyframes can hit the right scale. This inline copy covers real
+// document loads (deep links, external returns); router navigations
+// re-apply on astro:after-swap instead, since the swap resets
+// <html>'s style attribute. Don't clear here — playReverseArrival on
+// back-nav arrival also reads it; the click handler / navigate path
 // re-stamps on each forward.
 const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-peak');if(p)document.documentElement.style.setProperty('--hp-unfold-peak',p);}catch(e){}})();`;
 ---
@@ -124,7 +145,18 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | Hexpunk</title>
     <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
-    <link rel="stylesheet" href={`${baseUrl}/fonts/fonts.css`} />
+    {
+      FONT_PRELOADS.map((file) => (
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href={`${baseUrl}/fonts/${file}`}
+          crossorigin
+        />
+      ))
+    }
+    <style is:inline set:html={fontFaceCss}></style>
     <script is:inline set:html={themeInit}></script>
     <script is:inline set:html={unfoldPeakInit}></script>
     <style is:inline>
@@ -151,6 +183,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         min-height: 400px;
       }
     </style>
+    <ClientRouter />
   </head>
   <body class={fullWidth ? "page-full-width" : ""}>
     <div class="page">
@@ -242,7 +275,12 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         set:html={sidebarNavHtml}
       ></hp-sidebar>
       <main>
-        <hp-background page></hp-background>
+        {/* Persisted across router swaps: the canvas node (and the
+          frame it last drew) survives navigation, so the backdrop
+          never blanks. The element's own move handling re-inits GL
+          on reconnect — synchronously inside the swap, before the
+          next paint. */}
+        <hp-background page transition:persist="hp-background"></hp-background>
         {prose ? <div class="hp-prose"><slot /></div> : <slot />}
       </main>
       <hp-sidebar
@@ -295,7 +333,30 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
     <script>
       // Register every <hp-*> element on every page. Astro bundles
       // this so each page ships only what it actually needs.
-      import { HpCode, HpLatex } from "../../../src/index.ts";
+      //
+      // With <ClientRouter /> in the head, this document — and with
+      // it this module, the registrations below, and every
+      // custom-element definition — survives navigation. That is
+      // what removes the per-navigation upgrade flash. The trade:
+      // this module runs ONCE per session while the body is torn
+      // down and rebuilt per navigation, so page wiring below is
+      // either delegated (document/window listeners that resolve
+      // elements at event time) or re-run per arrival via the
+      // astro:page-load / astro:after-swap events at the bottom.
+      import { prefetch } from "astro:prefetch";
+      import { navigate, type TransitionBeforeSwapEvent } from "astro:transitions/client";
+
+      import {
+        beginUnfoldNavigation,
+        buildUnfoldOverlay,
+        computePeakScale,
+        HpCode,
+        HpLatex,
+        setNavigate,
+        unfoldSourceColor,
+        UNFOLD_STORAGE_PEAK,
+        UNFOLD_STORAGE_TARGET,
+      } from "../../../src/index.ts";
       import katex from "katex";
 
       // ── Math renderer (KaTeX) ─────────────────────────────────
@@ -353,54 +414,63 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         }
         return name === "light" ? "github-light" : "tokyo-night";
       }
-      const shikiHighlighter: Parameters<typeof HpCode.setHighlighter>[0] = async (
-        code,
-        lang,
-        el,
-      ) => {
+      // Once the singleton is warm the adapter answers SYNCHRONOUSLY:
+      // hp-code applies a sync result before its first render, so on
+      // every navigation after the first tokenisation of the session,
+      // code paints highlighted on the first frame instead of
+      // flashing plain monospace for a beat. Only the very first
+      // code block of a session takes the async path.
+      const SHIKI_THEMES = ["github-light", "tokyo-night"];
+      const SHIKI_LANGS = ["html", "css", "javascript", "typescript", "jsx", "tsx", "bash", "json"];
+      let shikiSingleton: {
+        codeToHtml(code: string, options: { lang: string; theme: string }): string;
+      } | null = null;
+
+      function tokenizeWarm(code: string, lang: string, theme: string): string | null {
+        try {
+          const html = shikiSingleton!.codeToHtml(code, { lang, theme });
+          return html.replace(/^<pre[^>]*><code[^>]*>/, "").replace(/<\/code><\/pre>$/, "");
+        } catch (err) {
+          // Unknown language, theme, or engine failure — surface the
+          // error so it's diagnosable, then fall back to plain
+          // monospaced text in hp-code.
+          console.warn(`[hp-code] Shiki failed for lang="${lang}" theme="${theme}":`, err);
+          return null;
+        }
+      }
+
+      const shikiHighlighter: Parameters<typeof HpCode.setHighlighter>[0] = (code, lang, el) => {
         if (!lang) {
           return null;
         }
         const theme = shikiThemeFor(el);
-        try {
-          const { getSingletonHighlighter } = await import("shiki");
-          const highlighter = await getSingletonHighlighter({
-            themes: ["github-light", "tokyo-night"],
-            langs: [
-              "html",
-              "css",
-              "javascript",
-              "typescript",
-              "jsx",
-              "tsx",
-              "bash",
-              "json",
-            ],
-          });
-          const html = highlighter.codeToHtml(code, {
-            lang: lang as never,
-            theme,
-          });
-          return html
-            .replace(/^<pre[^>]*><code[^>]*>/, "")
-            .replace(/<\/code><\/pre>$/, "");
-        } catch (err) {
-          // Unknown language, theme, or load failure — surface the
-          // error so it's diagnosable, then fall back to plain
-          // monospaced text in hp-code.
-          console.warn(
-            `[hp-code] Shiki failed for lang="${lang}" theme="${theme}":`,
-            err,
-          );
-          return null;
+        if (shikiSingleton) {
+          return tokenizeWarm(code, lang, theme);
         }
+        return (async () => {
+          try {
+            const { getSingletonHighlighter } = await import("shiki");
+            shikiSingleton = await getSingletonHighlighter({
+              themes: SHIKI_THEMES,
+              langs: SHIKI_LANGS,
+            });
+          } catch (err) {
+            console.warn(`[hp-code] Shiki failed to load:`, err);
+            return null;
+          }
+          return tokenizeWarm(code, lang, theme);
+        })();
       };
       HpCode.setHighlighter(shikiHighlighter);
 
       // ── Theme toggle ──────────────────────────────────────────
-      const root = document.documentElement;
-      const themeToggle = document.getElementById("theme-toggle");
-      themeToggle?.addEventListener("click", () => {
+      // Delegated: the header button is rebuilt on every router
+      // navigation, so a listener bound to one button dies with it.
+      document.addEventListener("click", (ev) => {
+        if (!(ev.target as Element | null)?.closest("#theme-toggle")) {
+          return;
+        }
+        const root = document.documentElement;
         const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
         const next = current === "light" ? "dark" : "light";
         root.setAttribute("data-theme", next);
@@ -416,6 +486,10 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       });
 
       // ── Search palette ────────────────────────────────────────
+      // Delegated at document level: the dialog and its inner
+      // elements are rebuilt on every router navigation, so
+      // handlers resolve the current elements by id at event time
+      // instead of capturing them once.
       interface SearchEntry {
         title: string;
         path: string;
@@ -423,14 +497,15 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         href: string;
       }
 
+      // The index is sitemap-derived and identical on every page —
+      // parsing the first document's copy once is enough.
       const indexEl = document.getElementById("search-index-data");
       const SEARCH_INDEX: SearchEntry[] = indexEl ? JSON.parse(indexEl.textContent ?? "[]") : [];
 
-      const palette = document.getElementById("search-palette") as HTMLDialogElement | null;
-      const trigger = document.getElementById("search-trigger");
-      const input = document.getElementById("search-input") as HTMLInputElement | null;
-      const resultsEl = document.getElementById("search-results");
-      const emptyEl = document.getElementById("search-empty");
+      const paletteEl = () =>
+        document.getElementById("search-palette") as HTMLDialogElement | null;
+      const searchInputEl = () =>
+        document.getElementById("search-input") as HTMLInputElement | null;
 
       let selected = 0;
       let current: SearchEntry[] = [];
@@ -456,6 +531,8 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       }
 
       function render(query: string): void {
+        const resultsEl = document.getElementById("search-results");
+        const emptyEl = document.getElementById("search-empty");
         const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
         const matches: { entry: SearchEntry; score: number }[] = [];
         for (const entry of SEARCH_INDEX) {
@@ -492,6 +569,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       }
 
       function highlight(): void {
+        const resultsEl = document.getElementById("search-results");
         if (!resultsEl) {
           return;
         }
@@ -505,10 +583,12 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       }
 
       function open(): void {
+        const palette = paletteEl();
         if (!palette) {
           return;
         }
         palette.showModal();
+        const input = searchInputEl();
         if (input) {
           input.value = "";
           input.focus();
@@ -517,19 +597,50 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       }
 
       function close(): void {
-        palette?.close();
+        paletteEl()?.close();
       }
 
       function activate(entry: SearchEntry): void {
         close();
-        window.location.href = entry.href;
+        void navigate(entry.href);
       }
 
-      trigger?.addEventListener("click", open);
+      document.addEventListener("click", (ev) => {
+        const target = ev.target as Element | null;
+        if (!target) {
+          return;
+        }
+        if (target.closest("#search-trigger")) {
+          open();
+          return;
+        }
+        const li = target.closest<HTMLLIElement>("#search-results li[data-href]");
+        if (li) {
+          const entry = current[Number(li.dataset.index)];
+          if (entry) {
+            activate(entry);
+          }
+          return;
+        }
+        // Clicking outside the inner panel closes — backdrop clicks
+        // land on the dialog element itself, and native <dialog>
+        // doesn't close on that by default.
+        if ((target as HTMLElement).id === "search-palette") {
+          close();
+        }
+      });
 
-      input?.addEventListener("input", () => render(input.value));
+      document.addEventListener("input", (ev) => {
+        const input = ev.target as HTMLInputElement | null;
+        if (input?.id === "search-input") {
+          render(input.value);
+        }
+      });
 
-      input?.addEventListener("keydown", (ev) => {
+      document.addEventListener("keydown", (ev) => {
+        if ((ev.target as HTMLElement | null)?.id !== "search-input") {
+          return;
+        }
         if (ev.key === "ArrowDown") {
           ev.preventDefault();
           if (current.length) {
@@ -551,35 +662,15 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         }
       });
 
-      resultsEl?.addEventListener("click", (ev) => {
-        const li = (ev.target as HTMLElement).closest<HTMLLIElement>("li[data-href]");
-        if (!li) {
-          return;
-        }
-        const idx = Number(li.dataset.index);
-        const entry = current[idx];
-        if (entry) {
-          activate(entry);
-        }
-      });
-
-      // Cmd/Ctrl-K opens the palette anywhere on the page; clicking
-      // outside the inner panel closes (native <dialog> doesn't do
-      // this by default — backdrop clicks land on the dialog itself).
+      // Cmd/Ctrl-K opens the palette anywhere on the page.
       window.addEventListener("keydown", (ev) => {
         if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") {
           ev.preventDefault();
-          if (palette?.open) {
+          if (paletteEl()?.open) {
             close();
           } else {
             open();
           }
-        }
-      });
-
-      palette?.addEventListener("click", (ev) => {
-        if (ev.target === palette) {
-          close();
         }
       });
 
@@ -595,10 +686,10 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       // Tabs route via `?tab=…` (route="query") now, leaving the hash
       // free for heading anchors — clicking a TOC item updates
       // location.hash without disturbing the active tab.
-      const tocAside = document.querySelector<HTMLElement>(".page-toc");
-      const tocList = document.getElementById("page-toc-list");
-      const pageEl = document.querySelector<HTMLElement>(".page");
-      const mainEl = document.querySelector<HTMLElement>("main");
+      //
+      // Element lookups live inside rebuildTOC so every run binds to
+      // the page the router has just put on screen; the initial build
+      // per arrival rides astro:page-load (bottom of this module).
       let tocObserver: IntersectionObserver | null = null;
       const tocItemById = new Map<string, HTMLElement>();
 
@@ -615,6 +706,10 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       }
 
       function rebuildTOC(): void {
+        const tocAside = document.querySelector<HTMLElement>(".page-toc");
+        const tocList = document.getElementById("page-toc-list");
+        const pageEl = document.querySelector<HTMLElement>(".page");
+        const mainEl = document.querySelector<HTMLElement>("main");
         if (!tocAside || !tocList || !mainEl) {
           return;
         }
@@ -724,66 +819,25 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         visible.forEach((h) => tocObserver?.observe(h));
       }
 
-      // Defer the initial build by a microtask so hp-tabs has run its
-      // own connectedCallback microtask first (which hides non-active
-      // panels). Otherwise the TOC sees every heading across every
-      // tab panel on first paint.
-      queueMicrotask(rebuildTOC);
       // Tab switch hides / reveals sections — the TOC has to follow.
       // hp-tabs dispatches `hp-tabs-change` after every value update
       // regardless of route mode; listen for that. Also listen for
       // hashchange so back/forward heading-anchor navigation refreshes
-      // the active highlight if needed.
+      // the active highlight if needed. The initial build per arrival
+      // rides astro:page-load, which fires after page scripts — by
+      // then hp-tabs' connectedCallback microtask has already hidden
+      // non-active panels, so the TOC never sees every heading across
+      // every tab panel.
       window.addEventListener("hp-tabs-change", rebuildTOC);
       window.addEventListener("hashchange", rebuildTOC);
 
       // ── hp-unfold-page for text links ──────────────────────────
-      // Any <a data-hp-unfold> link triggers the same view-transition
-      // expand animation as <hp-unfold-page>. The link's own CSS
-      // color becomes the overlay's fill so the brand colour floods
-      // the viewport at peak expansion. Created as a fixed-position
-      // hex-clipped div at the link's bbox with view-transition-name
-      // set to "hp-unfold-source" — the same name hp-unfold-page
-      // uses, so the existing ::view-transition-old keyframes
-      // (defined in global.css) drive the animation.
-      const HEX_CLIP =
-        "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-      const UNFOLD_TARGET_KEY = "hp-unfold-target";
-      const UNFOLD_PEAK_KEY = "hp-unfold-peak";
-      const MIN_PEAK = 25;
-
-      function computePeak(rect: { width: number }): number {
-        const target = 2 * Math.max(window.innerWidth, window.innerHeight);
-        const w = Math.max(rect.width, 1);
-        return Math.max(MIN_PEAK, target / w);
-      }
-
-      function buildOverlay(
-        rect: DOMRect,
-        color: string,
-      ): HTMLDivElement {
-        const seed = Math.max(rect.width, rect.height, 32);
-        const hexHeight = seed * 1.1547;
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const overlay = document.createElement("div");
-        overlay.setAttribute("aria-hidden", "true");
-        overlay.dataset.hpUnfoldOverlay = "";
-        Object.assign(overlay.style, {
-          position: "fixed",
-          left: `${cx - seed / 2}px`,
-          top: `${cy - hexHeight / 2}px`,
-          width: `${seed}px`,
-          height: `${hexHeight}px`,
-          background: color || "var(--hp-primary)",
-          clipPath: HEX_CLIP,
-          zIndex: "9999",
-          pointerEvents: "none",
-          willChange: "transform, opacity",
-        });
-        return overlay;
-      }
-
+      // Any <a data-hp-unfold> link rides the library's shared
+      // unfold departure — same overlay, keyframes, and storage
+      // handshake as <hp-unfold-page> and <hp-nav-item unfold>. The
+      // registered setNavigate (below) makes the expand run as a
+      // same-document view transition, so the destination arrives
+      // with every element already defined.
       document.addEventListener("click", (ev) => {
         const target = ev.target as Element | null;
         const link = target?.closest<HTMLAnchorElement>("a[data-hp-unfold]");
@@ -801,29 +855,7 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
           return;
         }
         ev.preventDefault();
-
-        const rect = link.getBoundingClientRect();
-        const color = window.getComputedStyle(link).color || "";
-        const overlay = buildOverlay(rect, color);
-        overlay.style.viewTransitionName = "hp-unfold-source";
-        document.body.appendChild(overlay);
-
-        const peak = computePeak(rect);
-        document.documentElement.style.setProperty(
-          "--hp-unfold-peak",
-          String(peak),
-        );
-
-        try {
-          const pathname = new URL(link.href, location.origin).pathname;
-          sessionStorage.setItem(UNFOLD_TARGET_KEY, pathname);
-          sessionStorage.setItem(UNFOLD_PEAK_KEY, String(peak));
-        } catch {
-          // sessionStorage unavailable — forward still works, back
-          // animation will just fall back to the default fade.
-        }
-
-        window.location.href = link.href;
+        beginUnfoldNavigation(link, link.href);
       });
 
       // ── Back-nav reverse animation ────────────────────────────
@@ -837,25 +869,27 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         sourceEl: HTMLElement;
         color: string;
       } | null {
-        const target = sessionStorage.getItem(UNFOLD_TARGET_KEY);
+        const target = sessionStorage.getItem(UNFOLD_STORAGE_TARGET);
         if (!target) {
           return null;
         }
-        // Only consume storage on a confirmed back/forward arrival
-        // — if this pageshow is the FORWARD nav landing, we want
-        // the target to persist so the eventual back nav can read
-        // it. Previously this was removed up-front, which cleared
-        // the marker on /B's forward pageshow and left /A with
-        // nothing to animate against on the way back.
+        // Only consume storage on a confirmed history-traversal
+        // arrival — if this is the FORWARD nav landing, we want the
+        // target to persist so the eventual back nav can read it.
+        // Three signals, one per arrival path: the router's own
+        // direction for same-document navigations; the Performance
+        // entry type for real document loads; pageshow's persisted
+        // flag for bfcache restores. The router direction wins when
+        // set — on a persistent document the Performance entry
+        // still describes the original load, not this navigation.
         const entries = performance.getEntriesByType(
           "navigation",
         ) as PerformanceNavigationTiming[];
         const navType = entries[0]?.type;
-        // pageshow's persisted flag also signals a bfcache restore,
-        // which we treat the same as back_forward — the user got
-        // here via history traversal either way.
         const isHistoryTraversal =
-          navType === "back_forward" || performanceNavPersistedHint();
+          routerNavDirection !== null
+            ? routerNavDirection === "back"
+            : navType === "back_forward" || performanceNavPersistedHint();
         if (!isHistoryTraversal) {
           return null;
         }
@@ -879,19 +913,30 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
             if (!source) {
               continue;
             }
-            const computed = window.getComputedStyle(source);
-            const color =
-              computed.getPropertyValue("--hp-stroke-color").trim() ||
-              computed.color ||
-              "var(--hp-primary)";
-            sessionStorage.removeItem(UNFOLD_TARGET_KEY);
-            return { sourceEl: source, color };
+            sessionStorage.removeItem(UNFOLD_STORAGE_TARGET);
+            return { sourceEl: source, color: unfoldSourceColor(source) };
           } catch {
             // Skip and continue searching.
           }
         }
 
-        // 2) Fall back to a data-hp-unfold link whose href matches.
+        // 2) An <hp-nav-item unfold> whose href matches — the item
+        //    itself is the source hexes shrink back onto.
+        const navItems = document.querySelectorAll<HTMLElement>("hp-nav-item[unfold][href]");
+        for (const item of navItems) {
+          try {
+            const itemHref = item.getAttribute("href");
+            if (!itemHref || new URL(itemHref, location.origin).pathname !== target) {
+              continue;
+            }
+            sessionStorage.removeItem(UNFOLD_STORAGE_TARGET);
+            return { sourceEl: item, color: unfoldSourceColor(item) };
+          } catch {
+            // Skip and continue searching.
+          }
+        }
+
+        // 3) Fall back to a data-hp-unfold link whose href matches.
         const links =
           document.querySelectorAll<HTMLAnchorElement>("a[data-hp-unfold]");
         for (const link of links) {
@@ -899,9 +944,8 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
             if (new URL(link.href, location.origin).pathname !== target) {
               continue;
             }
-            const color = window.getComputedStyle(link).color || "";
-            sessionStorage.removeItem(UNFOLD_TARGET_KEY);
-            return { sourceEl: link, color };
+            sessionStorage.removeItem(UNFOLD_STORAGE_TARGET);
+            return { sourceEl: link, color: unfoldSourceColor(link) };
           } catch {
             // Skip and continue searching.
           }
@@ -917,6 +961,12 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         return lastPageshowPersisted;
       }
 
+      // Direction of the most recent router navigation, captured at
+      // astro:before-swap and cleared once the arrival has been
+      // handled (astro:page-load) or superseded by a real document
+      // transition (pageshow).
+      let routerNavDirection: "forward" | "back" | null = null;
+
       function playReverseArrival(): void {
         const match = findReturningSource();
         if (!match) {
@@ -926,8 +976,11 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         if (rect.width === 0 || rect.height === 0) {
           return;
         }
-        const peak = computePeak(rect);
-        const overlay = buildOverlay(rect, match.color);
+        const peak = computePeakScale(rect);
+        const overlay = buildUnfoldOverlay(match.sourceEl, match.color);
+        if (!overlay) {
+          return;
+        }
         overlay.style.transform = `scale(${peak})`;
         document.body.appendChild(overlay);
         // Force the initial scale to commit before animating, so the
@@ -964,6 +1017,11 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
       // doesn't always re-report "back_forward" on restore).
       window.addEventListener("pageshow", (ev) => {
         lastPageshowPersisted = (ev as PageTransitionEvent).persisted === true;
+        // A pageshow means the latest transition was document-level
+        // (fresh load or bfcache restore) — a router direction left
+        // over from before the document went away must not decide
+        // this arrival.
+        routerNavDirection = null;
         if (document.body) {
           playReverseArrival();
         } else {
@@ -971,6 +1029,137 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
             once: true,
           });
         }
+      });
+
+      // ── Client-router lifecycle ───────────────────────────────
+      // Navigating hexpunk elements default to full document
+      // navigations; under the router that reload is exactly the
+      // flash this site avoids. One registration covers every
+      // element and sequence — hp-unfold-page, hp-nav-item, and the
+      // data-hp-unfold link handler above all route through it.
+      setNavigate((href) => void navigate(href));
+
+      document.addEventListener("astro:before-swap", (ev) => {
+        const swap = ev as TransitionBeforeSwapEvent;
+        routerNavDirection = swap.direction;
+        // Stamp the active theme onto the INCOMING document before
+        // the swap installs its <html> attributes. Elements connect
+        // — and hp-code tokenises — during the swap itself, so
+        // re-applying the theme afterwards would let a light-mode
+        // page tokenise against the dark default. The incoming
+        // document never carries data-theme; it's client-set.
+        swap.newDocument.documentElement.setAttribute(
+          "data-theme",
+          document.documentElement.getAttribute("data-theme") ?? "dark",
+        );
+      });
+
+      // The swap resets <html>'s style attribute to the incoming
+      // page's server-rendered (empty) one, which drops the
+      // --hp-unfold-peak custom property. Re-apply it after the
+      // swap, before the new state paints — the same-document
+      // mirror of the inline head init script.
+      document.addEventListener("astro:after-swap", () => {
+        try {
+          const peak = sessionStorage.getItem(UNFOLD_STORAGE_PEAK);
+          if (peak) {
+            document.documentElement.style.setProperty("--hp-unfold-peak", peak);
+          }
+        } catch {
+          // sessionStorage unavailable — the expand keyframes fall
+          // back to their default peak.
+        }
+        // Back/forward scroll restoration: the router calls a plain
+        // scrollTo at swap time, which (a) obeys the site's
+        // scroll-behavior: smooth — a multi-hundred-ms glide instead
+        // of a jump — and (b) runs before Lit elements have produced
+        // their first shadow render, so the still-collapsed page can
+        // clamp it. Re-apply the entry's stored position after the
+        // pending element updates flush (same microtask drain,
+        // still before first paint), instantly — which also cancels
+        // the router's in-flight glide. Forward navigations store
+        // 0/0 on their fresh entry, so this is a no-op for them.
+        const stored = history.state as { scrollX?: number; scrollY?: number } | null;
+        if (stored && typeof stored.scrollY === "number" && typeof stored.scrollX === "number") {
+          const { scrollX: left, scrollY: top } = stored;
+          queueMicrotask(() => {
+            if (window.scrollX !== left || window.scrollY !== top) {
+              scrollTo({ left, top, behavior: "instant" });
+            }
+          });
+        }
+      });
+
+      // ── Sidebar prefetch ──────────────────────────────────────
+      // Astro's prefetch strategies scan light-DOM anchors only
+      // (document.getElementsByTagName), so the sidebar's shadow-DOM
+      // links are invisible to them. Prefetch what the sidebar has
+      // actually revealed instead: every item outside a collapsed
+      // group on arrival, and each group's items the moment it
+      // expands — hp-sidebar-group reflects its <details> state onto
+      // the host's `open` attribute, which the mutation observer
+      // below watches. Attribute-driven rather than an
+      // IntersectionObserver: the collapse is a closed <details>,
+      // whose contents keep geometry, so intersection would
+      // misreport them as visible.
+      const prefetchedSidebar = new Set<string>();
+
+      function revealedItems(root: ParentNode): HTMLElement[] {
+        return [...root.querySelectorAll<HTMLElement>("hp-sidebar-item[href]")].filter((item) => {
+          for (let el = item.parentElement; el; el = el.parentElement) {
+            if (el.tagName.toLowerCase() === "hp-sidebar") {
+              break;
+            }
+            if (el.tagName.toLowerCase() === "hp-sidebar-group" && !el.hasAttribute("open")) {
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      function prefetchRevealed(root: ParentNode): void {
+        for (const item of revealedItems(root)) {
+          const itemHref = item.getAttribute("href");
+          if (!itemHref || item.hasAttribute("active") || prefetchedSidebar.has(itemHref)) {
+            continue;
+          }
+          prefetchedSidebar.add(itemHref);
+          prefetch(itemHref);
+        }
+      }
+
+      const sidebarExpansion = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          const group = mutation.target as HTMLElement;
+          if (group.hasAttribute("open")) {
+            prefetchRevealed(group);
+          }
+        }
+      });
+
+      function wireSidebarPrefetch(): void {
+        const sidebar = document.querySelector(".page-sidebar");
+        if (!sidebar) {
+          return;
+        }
+        // Fresh sidebar every navigation — re-attach wholesale.
+        sidebarExpansion.disconnect();
+        sidebarExpansion.observe(sidebar, {
+          attributes: true,
+          attributeFilter: ["open"],
+          subtree: true,
+        });
+        prefetchRevealed(sidebar);
+      }
+
+      // Fires on the initial load and after every router navigation,
+      // once the new page's scripts have run.
+      document.addEventListener("astro:page-load", () => {
+        rebuildTOC();
+        playReverseArrival();
+        wireSidebarPrefetch();
+        routerNavDirection = null;
       });
     </script>
   </body>

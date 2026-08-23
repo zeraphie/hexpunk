@@ -90,7 +90,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     go to palette
   </a>
 
-  <!-- Animation keyframes (global.css) -->
+  <!-- Animation keyframes. The cross-document opt-in applies to
+       vanilla multi-page sites; under a client-side router the same
+       keyframes run same-document instead (see Navigation). -->
   @view-transition {
     navigation: auto;
   }
@@ -130,7 +132,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         </hp-banner>
         <hp-banner tone="do">
           Mix freely with non-unfold navigation. Sidebar / nav-rail links that don't have
-          <code>data-hp-unfold</code> get the default cross-document fade — both feel like
+          <code>data-hp-unfold</code> get the site's plain navigation — both feel like
           Hexpunk, the unfold is the flourish.
         </hp-banner>
         <hp-banner tone="dont">
@@ -144,36 +146,34 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         </hp-banner>
       
 
-      <h2>Browser support</h2>
+      <h2>Navigation &amp; browser support</h2>
       <p>
-        Cross-document View Transitions are Chrome 126+ (stable). Firefox and Safari ship
-        same-document transitions but not cross-document yet (at the time of writing). On
-        unsupported browsers, the link still works — it just navigates without animation. The
-        showcase enables transitions globally via
-        <code>@view-transition: navigation: auto</code> in <code>global.css</code>.
+        By default the element navigates with <code>window.location.href</code>, pairing the
+        keyframes with a cross-document View Transition — Chrome/Edge and Safari ship those;
+        Firefox doesn't yet, and simply navigates without the animation. A site with a
+        client-side router registers it once via
+        <code>HpUnfoldPage.setNavigate(...)</code>; the same keyframes then run as a
+        same-document transition, which every evergreen engine supports. This showcase does
+        exactly that with Astro's <code>&lt;ClientRouter /&gt;</code>, so the unfold animates
+        in Firefox here too. Either way the link always works — no transition support just
+        means no animation.
       </p>
 
       <h2>Back navigation</h2>
       <p>
-        When the user returns to a page that was the source of a forward
-        <code>&lt;hp-unfold-page&gt;</code> nav, this element detects the
-        back-or-forward navigation (via the Performance Navigation Timing API) and the previous
-        URL (via the Navigation API entries, falling back to <code>document.referrer</code>). If
-        the previous URL matches this element's <code>href</code>, the source receives the
-        <code>view-transition-name</code> at page load — and the
-        <code>::view-transition-new</code> shrink animation plays automatically.
-      </p>
-      <p>
-        Text-link sources (<code>data-hp-unfold</code>) currently only animate the forward
-        direction. Back navigation falls back to the default cross-document fade. A future
-        iteration can persist the last-clicked link's identity in <code>sessionStorage</code>
-        and recreate the overlay on the back-target page.
+        The forward click stashes the target path (and the computed peak scale) in
+        <code>sessionStorage</code>. When the user then arrives back on the source page via
+        history traversal, the page shell finds the <code>hp-unfold-page</code> — or
+        <code>data-hp-unfold</code> link — whose <code>href</code> matches the stashed path
+        and replays the reverse with a Web Animations overlay: a viewport-covering hex in the
+        source's colour shrinks back onto its bounding box. See the wiring in the showcase's
+        <code>Layout.astro</code>.
       </p>
 
       <h2>Reduced motion</h2>
       <p>
         With <code>prefers-reduced-motion: reduce</code>, the expand and shrink keyframes are
-        suppressed — the user sees a default cross-fade between pages, no scale tween.
+        suppressed — navigation happens without the scale tween.
       </p>
     </Fragment>
   </ComponentDocs>

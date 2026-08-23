@@ -77,5 +77,17 @@ export { HpUnfoldList } from "./elements/unfold/hp-unfold-list.js";
 export { HpUnfoldOverlay } from "./elements/unfold/hp-unfold-overlay.js";
 export { HpUnfoldPage } from "./elements/unfold/hp-unfold-page.js";
 
+// Consumer hooks + shared sequences that aren't elements.
+export { setNavigate, type HpNavigate } from "./lib/navigate.js";
+export {
+  beginUnfoldNavigation,
+  buildUnfoldOverlay,
+  computePeakScale,
+  unfoldSourceColor,
+  UNFOLD_STORAGE_PEAK,
+  UNFOLD_STORAGE_TARGET,
+  UNFOLD_VIEW_TRANSITION_NAME,
+} from "./elements/unfold/departure.js";
+
 // Lucide icons mirrored locally — see tools/build-icons.ts.
 export * as icons from "./icons/index.js";

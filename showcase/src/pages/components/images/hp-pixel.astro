@@ -84,9 +84,24 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         interactive?: boolean;
       }
 
+      // Re-wires on every arrival at this page: the document persists
+      // across client-router navigations while the demo elements are
+      // swapped out and back in. The active flag stops a double run
+      // (module executes, then astro:page-load fires for the same
+      // visit), which would stack a second click listener on each
+      // toggle and make every click flip twice.
+      let active = false;
+
       function setup(): void {
+        if (active) {
+          return;
+        }
         const staticEl = document.getElementById("pixel-art-static") as PixelEl | null;
         const customEl = document.getElementById("pixel-states-custom") as PixelEl | null;
+        if (!staticEl && !customEl) {
+          return;
+        }
+        active = true;
         if (staticEl) {
           staticEl.art = "#.#.#\n#.#.#\n.....\n#.#.#\n#.#.#";
         }
@@ -112,11 +127,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
           });
         }
       }
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", setup);
-      } else {
-        setup();
-      }
+      document.addEventListener("astro:page-load", setup);
+      document.addEventListener("astro:before-swap", () => {
+        active = false;
+      });
+      setup();
     </script>
 
     <Fragment slot="intent">
