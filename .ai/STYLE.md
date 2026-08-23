@@ -124,8 +124,9 @@ The TypeScript + Lit adaptation of the shared style guide (root
   fails on any diff, so a changed element or token never ships
   without its regenerated files — commit what it regenerated
 - Generated files are never hand-edited: `src/tokens/*.css`,
-  `custom-elements.json`, `vscode.html-custom-data.json`,
-  `.ai/ELEMENTS.md`, generated icon modules
+  `src/styles/hex-controls.css`, `custom-elements.json`,
+  `vscode.html-custom-data.json`, `.ai/ELEMENTS.md`, generated
+  icon modules
 
 ## Showcase pages
 
