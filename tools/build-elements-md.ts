@@ -59,7 +59,8 @@ const cem = (await Bun.file(CEM_PATH).json()) as CEM;
 const elements = (cem.modules ?? [])
   .flatMap((m) => m.declarations ?? [])
   .filter((d): d is CEMDeclaration & { tagName: string } => Boolean(d.customElement && d.tagName))
-  .sort((a, b) => a.tagName.localeCompare(b.tagName));
+  // Code-unit order: identical on every platform and ICU build.
+  .sort((a, b) => (a.tagName < b.tagName ? -1 : a.tagName > b.tagName ? 1 : 0));
 
 // Collapse a multi-line manifest description into a single markdown-safe line.
 const oneLine = (s: string | undefined): string => (s ?? "").replace(/\s+/g, " ").trim();
