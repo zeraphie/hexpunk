@@ -40,13 +40,11 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Hex Core",
         children: [
-          { path: "/components/hex-core/hp-avatar", title: "hp-avatar" },
           { path: "/components/hex-core/hp-background", title: "hp-background" },
           { path: "/components/hex-core/hp-cell", title: "hp-cell" },
           { path: "/components/hex-core/hp-cluster", title: "hp-cluster" },
           { path: "/components/hex-core/hp-grid", title: "hp-grid" },
           { path: "/components/hex-core/hp-hex", title: "hp-hex" },
-          { path: "/components/hex-core/hp-icon", title: "hp-icon" },
           { path: "/components/hex-core/hp-layout", title: "hp-layout" },
           { path: "/components/hex-core/hp-pixel", title: "hp-pixel" },
           { path: "/components/hex-core/hp-tether", title: "hp-tether" },
