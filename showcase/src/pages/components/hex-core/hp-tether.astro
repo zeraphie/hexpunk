@@ -92,8 +92,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
           pulse dot travelling along the arc.
         </hp-banner>
         <hp-banner tone="dont">
-          Tether two atoms that are already axially adjacent. Use <code>&lt;hp-bond&gt;</code>
-          for shared-edge relationships and <code>&lt;hp-tether&gt;</code> for at-distance ones.
+          Tether two atoms that are already axially adjacent. Adjacency is a bond — the
+          surface (<code>&lt;hp-layout&gt;</code> / <code>&lt;hp-grid&gt;</code>) draws
+          shared-edge relationships; <code>&lt;hp-tether&gt;</code> is for at-distance ones.
         </hp-banner>
         <hp-banner tone="do">
           Inside an <code>&lt;hp-grid&gt;</code>, author <code>&lt;hp-tether&gt;</code> as a
