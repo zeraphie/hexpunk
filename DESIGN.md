@@ -915,7 +915,7 @@ Hexpunk ships **two icon families** that coexist on the same surface and serve d
 
 Both share sizing tokens (`icon-sm` `16px`, `icon-md` `20px`, `icon-lg` `24px`) and the `currentColor` convention so an icon inherits its parent's text colour by default.
 
-### Stroke icons — `<hp-icon>`
+### Stroke icons — inlined SVG
 
 Source: [Lucide](https://lucide.dev) — ~1300 MIT-licensed icons with a 1.5px stroke that matches hexpunk's wireframe ethos — mirrored into `@hexpunk/icons` at build time, pinned to a known version. Plus ~6-8 custom hex-themed additions: `hex-outline`, `hex-dot`, `hex-grid`, `bond`, `link-arc`, `unfold`, `module-handle`, `tether`.
 
@@ -927,14 +927,19 @@ export const deploy =
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">…</svg>` as const;
 ```
 
-Component:
+Usage: inline the string into an `<svg>` sized by the icon tokens —
+no wrapper element; the string is the API.
 
 ```html
-<!-- Property-based (idiomatic, tree-shakable): -->
-<hp-icon size="md" .svg="${deploy}"></hp-icon>
-
-<!-- Slotted (consumer-provided SVG): -->
-<hp-icon size="md"><svg>…</svg></hp-icon>
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  width="20"
+  height="20"
+  set:html="{deploy}"
+/>
 ```
 
 All custom hex-themed icons follow Lucide's conventions: `24×24` viewBox, `1.5px` stroke, all strokes use `currentColor`, line caps/joins are round.
@@ -1233,8 +1238,8 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
   - `variant="support"` (`hex-support`) — structural / decorative framing hex. Must not look interactive. `outline-faint` stroke at 0.6 opacity. Often `hex-cell-lg` and partially off-canvas. Auto `aria-hidden`.
   - `variant="slot"` (`hex-slot`) — empty available position, only shown when the surface advertises a permanent drop target. Soft `outline-variant` stroke with transparent interior. Auto `aria-hidden`.
 - `<hp-status tone="positive|warn|alert|error">` — semantic indicator. Stroke colour matches semantic; `active` boolean fills the hex with the tone-container colour.
-- `link-node` (`<hp-link-node>`) — the small dot at a hex anchor where arcs originate or terminate. Promotes to `link-node-bonded` once at least one arc is attached.
-- `bond-indicator` (`<hp-bond>`) — the small green marker on the shared edge of two bonded atoms.
+- `link-node` — the small dot at a hex anchor where arcs originate or terminate, drawn by the tether/surface rendering (not an element). Promotes to `link-node-bonded` once at least one arc is attached.
+- `bond-indicator` — the small green marker on the shared edge of two bonded atoms, drawn by the surface (hp-layout / hp-grid), not an element.
 - `module-handle` (`<hp-module-handle>`) — hex grip at a molecule's centroid; grabs the whole molecule.
 - `grid-overlay-dot` / `grid-overlay-slot` — the faint markers revealed during drag; not directly authored, rendered by `<hp-grid>`.
 - `tether-arc` (`<hp-tether>`) — the curved bezier connector between two `link-node` dots. Variants: `-idle`, `-hover`, `-active`. Pulsing dot travels along the arc to show liveness. Today it is mainly drawn by `<hp-grid>`. (`<hp-link>` is the inline text link, unrelated to tethers.)
@@ -1243,7 +1248,7 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 **Form atoms** (form-associated by default; see § Implementation Notes › Form association):
 
 - `hex-checkbox` (`<hp-checkbox>`) — small hex (`hex-cell-xs`). Hollow at rest; filled with `primary` when checked. The `formless` attribute opts out of form participation for CSS-only state-flip patterns.
-- `hex-radio` (`<hp-radio>`) — same visual as checkbox. Single-selection within an `<hp-radio-group>` enforced via roving tabindex; the group bonds the radios into a molecule.
+- `hex-radio` (`<hp-radio>`) — same visual as checkbox with a concentric filled hex when selected. Radios sharing a `name` are one native single-select group — arrow keys and roving focus come from the browser; no group element.
 - `hex-switch` (`<hp-switch>`) — bonded hex pair. The "on" hex fills with `primary`; toggling slides the fill between them (Snapping motion). On-brand because it physically demonstrates the bonding primitive.
 - `textarea-field` (`<hp-textarea>`) — rectangular content card with body typography. Same flanking-hex molecule pattern as `<hp-input>`. Resizable vertically.
 - `select-trigger` / `select-popover` (`<hp-select>`) — `hex-action`-shaped trigger opening a rectangular popover that contains a `<hp-scroll-list>` of options. Docking motion on open/close.
@@ -1264,14 +1269,14 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 
 - `skeleton-hex` / `skeleton-rect` (`<hp-skeleton shape="hex|rect">`) — placeholder for loading content. Hex variant matches the cell it replaces (hollow with `outline-faint` stroke); rect variant covers content-card prose with optional `lines` attribute for prose-shimmer. **Scanning** motion: a thin `secondary`-tinted line sweeps across the placeholder over ~1.5s. Reduced-motion fallback is a static `outline-faint` line.
 - `loader` (`<hp-loader>`) — radial loading indicator. Hollow cluster of small filled hexes, `size` attr `sm` / `md` / `lg`. Indeterminate (bare tag): per-hex scale pulse phased along a clockwise spiral — the **Charging** metaphor as a travelling wave. Determinate (`value` with `min` / `max`, hp-progress's contract): the same spiral order fills `round(fraction × N)` hexes lit, the rest faint so the silhouette reads as the track; the frontier hex keeps the pulse so parked progress stays alive, and a full cluster settles. Forward fill is a per-hex ripple, never a cut: each newly due hex plays one **ignite** — a one-way grow from faint into lit, never an oscillation, so lit-ness only ever increases — after the previous hex's animation completes, and the fill may trail the value (and the centre label) slightly; regressions and mode entry snap immediately. Catch-up pacing is the `timing` attr: `irregular` (default) clears any backlog inside a fixed ~⅓s budget, so bursts of progress visibly quicken the ripple — the honest jank of real loaders; `linear` locks the per-hex pace to the value's measured advance rate for a constant-speed ripple. Percentage label in the hollow centre at `md` / `lg` (`sm` has no hollow — fill only, value stays ARIA-only). `role="progressbar"`; `aria-valuenow` present only when determinate.
-- `progress-track` / `progress-fill` (`<hp-progress>`) — determinate or indeterminate progress bar. Linear hairline (2px), `outline-faint` track + `primary` fill. `value` 0–1 for determinate. `indeterminate` boolean → fill becomes a Scanning sweep with no terminus.
+- `progress-track` / `progress-fill` (native `<progress>`, styled by elements.css) — determinate or indeterminate progress bar. Linear hairline (2px), `outline-faint` track + `primary` fill. `value` 0–1 for determinate. `indeterminate` boolean → fill becomes a Scanning sweep with no terminus.
 
-**Loading-state rules.** Don't show multiple loaders simultaneously — pick one to represent the overall load. When progress is knowable, pass the actual `value` — `<hp-progress>` for linear surfaces, `<hp-loader value>` for radial — never an indeterminate wave over a knowable percent. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
+**Loading-state rules.** Don't show multiple loaders simultaneously — pick one to represent the overall load. When progress is knowable, pass the actual `value` — native `<progress>` for linear surfaces, `<hp-loader value>` for radial — never an indeterminate wave over a knowable percent. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
 
 **Empty-state atom:**
 
 - `empty-state-hex` / `empty-state-label` / `empty-state-icon` (`<hp-empty>`) — canonical "nothing here yet" composition. Faint ghost-hex outline (`outline-faint` stroke, 2–4px — much thinner than normal cells) with three optional pieces:
-  - **Icon slot** (`slot="icon"`) — centered inside the ghost hex. Accepts `<hp-icon>` (stroke) or `<hp-pixel>` (pixel art); sized via `empty-state-icon` token.
+  - **Icon slot** (`slot="icon"`) — centered inside the ghost hex. Accepts an inlined stroke-icon SVG or `<hp-pixel>` (pixel art); sized via `empty-state-icon` token.
   - **Label slot or `label` attribute** — `label-md` text rendered below the hex.
   - **Default slot** — for an optional `<hp-cell variant="action">` CTA below the label.
   - At least one of icon or label must be present; silence reads as broken.
@@ -1659,9 +1664,6 @@ Element catalogue (one custom element per atom or molecule):
                        variant="content|support|slot"
 <hp-status>          atom: semantic indicator hex
                        tone="positive|warn|alert|error", active?
-<hp-link-node>       atom: arc endpoint dot
-<hp-bond>            atom: edge-bond indicator between two atoms
-<hp-icon>            atom: lucide icon wrapper, sized to hex content area
 <hp-pixel>           atom: pixel-art shape inside a hex (states + morphing)
 <hp-trace>           overlay: external edge trace for high-emphasis cells
 
@@ -1673,7 +1675,8 @@ Element catalogue (one custom element per atom or molecule):
 <hp-grid>            surface primitive: the invisible slot lattice. Hosts modules,
                      reveals overlay during drag, computes valid drop targets.
                      One per surface; modules are slotted children.
-<hp-tether>          curve primitive: arc-link between two <hp-link-node> dots.
+<hp-tether>          curve primitive: arc-link between two hexes; endpoint
+                     dots are part of its rendering.
                      Hosts pulse animation, draw/unwind transitions.
 
 <hp-unfoldable>      wrapper: makes its host hex expandable into a detail molecule.
@@ -1688,7 +1691,7 @@ Element catalogue (one custom element per atom or molecule):
 - **`<hp-grid>`** owns the axial coordinate system, the slot occupancy map, and the drag-overlay rendering. Children placed inside it declare a `slot` attribute (`q,r`) and a `footprint` attribute (relative offsets). The grid is the source of truth for layout; modules don't position themselves.
   - **`layout="spiral"` / `layout="rows"`** opt-in modes for surfaces that don't author per-child `q`/`r`. On first render and on `pack()` calls, the grid sorts every direct child by mask size descending (FFD), then places each at the first free position the chosen strategy returns. `spiral` scans outward from the origin in honeycomb rings — the largest cluster anchors `(0, 0)`, smaller ones nest around it with ≥1-hex gaps, producing a tight roughly-square honeycomb. `rows` scans row-major within a viewport-width-capped q-window — the layout grows as left-to-right rows that wrap downward, ideal for full-page-width surfaces where `spiral`'s square shape leaves too much horizontal space unused. Children publish their actual filled hexes via `data-fill-cells="q,r q,r …"` (`<hp-cluster>` populates this on slotchange); children without it are treated as single-hex. The gap check uses hex-adjacency (the 6 axial-distance-1 neighbours) — not rectangular bbox padding — so non-symmetric clusters leave their empty corners available for neighbours to tuck into. The grid does not auto-repack on resize or slotchange — only on explicit `.pack()` or attribute toggle.
 - **`<hp-module>`** handles pointer / keyboard drag, asks the grid for valid drops, emits a `move` event on successful placement, and a `bond` / `unbond` event when its edges touch / separate from another module. It owns its own centroid handle.
-- **`<hp-tether>`** is a presentational SVG element; pass it source and target `<hp-link-node>` references (or coordinates) and it computes the bezier, draws the stroke + glow, and runs the pulse via Web Animations API (`element.animate(...)` on the dot, not CSS keyframes — easier to control mid-flight).
+- **`<hp-tether>`** is a presentational SVG element; pass it source and target selectors (or coordinates) and it computes the bezier, draws the stroke + glow (endpoint dots included), and runs the pulse via Web Animations API (`element.animate(...)` on the dot, not CSS keyframes — easier to control mid-flight).
 - **`<hp-unfoldable>`** is a host wrapper. Its `source` slot is rendered at rest; its other children are kept in a virtual detail molecule. On trigger it inserts the detail children into a transient `<hp-grid>` neighbourhood adjacent to the source, animates them in (using Web Animations API), and draws the tether via an internal `<hp-tether>`. Cooperates with the host grid to know which slots are free for the bloom.
 - They cooperate via small Lit reactive controllers (`ReactiveController`) rather than a heavy state library. No Redux, no Zustand, no MobX.
 
@@ -1747,7 +1750,7 @@ Hexpunk follows an **opt-in SSR** model. Static layout renders on the server via
 
 **SSR-friendly by default:**
 
-- All atoms — `<hp-hex>`, `<hp-cell>` (all variants), `<hp-deco>` (all variants), `<hp-status>`, `<hp-link-node>`, `<hp-bond>`, `<hp-module-handle>`, `<hp-icon>`, `<hp-pixel>`.
+- All atoms — `<hp-hex>`, `<hp-cell>` (all variants), `<hp-deco>` (all variants), `<hp-status>`, `<hp-module-handle>`, `<hp-pixel>`.
 - Spatial-primitive **layout** — `<hp-grid>` and `<hp-cluster>` with static children render fully positioned, because layout is expressed in CSS custom properties + transforms (see § Layout & Spacing). The grid's _behaviour_ (drag, snap, bond) hydrates on client.
 - `<hp-scroll-list>` — CSS scroll + linear-gradient mask. The visual ships static; key/wheel selection wires up on hydration.
 - `<hp-trace>` static state — the edge-trace overlay renders server-side; the animation runs on client.
