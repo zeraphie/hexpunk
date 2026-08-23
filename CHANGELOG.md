@@ -7,8 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-24
+
 ### Added
 
+- **`<hp-loader>` — the radial loader, absorbing `<hp-spinner>`.** One element, both modes: the familiar hollow-cluster spiral wave when indeterminate, and a determinate mode that fills the cluster in spiral order (inner ring → outer) with the frontier hex pulsing while progress is parked. `min` / `max` / `value` / `indeterminate` mirror the linear progress API; a percentage label renders in the hollow centre at `md` / `lg`. Newly due hexes ignite one at a time — a one-way faint→lit grow — with pacing that scales to the backlog; `timing="irregular"` (default) keeps the honest bumpy rhythm of real loads, `timing="linear"` locks the ripple to the value's measured advance rate. A bare `<hp-loader>` spins, making the spinner migration a pure rename.
+- **`.ai/ELEMENTS.md` is generated.** `tools/build-elements-md.ts` renders the per-element AI-briefing reference (tag, status, role, attributes, slots, events, CSS surface) from `custom-elements.json` as part of `bun run analyze` — the stale stub is gone and the reference cannot drift from the code.
 - **Component lifecycle statuses.** Every element carries `@status wip|experimental|done` in its JSDoc, flowing into `custom-elements.json` and everything generated from it. The barrel exports only done/experimental elements; wip ones render in the showcase (registered separately) but are not public API — a test pins the partition. Component pages open with an MDN-style status banner; the sidebar marks wip/experimental entries with the matching tone icon.
 - **Native HTML as first-class citizens.** `elements.css` grew: styled `<progress>`/`<meter>` (hex-point caps, tones, the sliding-ribbon indeterminate), styled `<dialog>` + `::backdrop`, `hr.hp-separator` (marks, vertical), `img.hp-hex` (stencil-masked images), `.hp-visually-hidden`, and token-tinted document scrollbars (square-cornered on WebKit/Blink). Native elements get their own showcase pages inside their categories, labelled by bare tag.
 - **Generated hex form-control patterns — `hex-controls.css`.** `tools/build-hex-controls.ts` bakes hp-hex's polygon tables (now shared via `src/lib/hex-geometry.ts`) into CSS masks, exposed as reusable custom properties (`--hp-mask-hex`, ring/glyph variants). The checkbox/radio/switch/slider patterns work with no JS at all.
@@ -16,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Token vocabulary: `--hp-link-arc-*` → `--hp-tether-arc-*`.** DESIGN.md's frontmatter and the generated tokens now agree with the element split — `<hp-tether>` is the arc, `<hp-link>` the inline text link. The token generator gained a duplicate guard, and `hex-cell-xs` collapsed to its single 50px value (the 32px shadow copy is gone; `hex-cell-xxs` 20px joined the spec).
 - **Showcase taxonomy.** Seven categories — Hex Core, Typography, Forms, Feedback, Layout, Navigation, Overlays — hosting native elements and hp-\* components together, natives first. The Elements/Prose getting-started pages dissolved into the categories and the install guide.
 - **hp-dialog** absorbed hp-alert-dialog (`alert` variant: role="alertdialog", backdrop never dismisses) and gained an `actions` slot.
 - **hp-dropdown-menu** absorbed hp-context-menu (`trigger="contextmenu"`: the host becomes a right-click region, the menu opens at the cursor).
@@ -23,9 +28,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **hp-badge** absorbed hp-tag (`dismissible` + `disabled`, firing `hp-badge-dismiss`).
 - **hp-code** draws its own gutter rule instead of composing a separator per line.
 
+### Fixed
+
+- **The library bundle builds again.** hp-demo's `?inline` CSS import (a Vite convention) broke `bun run build`; a small bundler plugin resolves it to the stylesheet text. The exports map's promises are now real too — `dist/grid.js` and the declaration paths (`dist/types/index.d.ts`, `grid.d.ts`) are actually produced, via explicit entrypoints and a build-scoped tsconfig.
+- **`<hp-hex>` xs ring inset matches the 50px geometry.** `RING_INSET.xs` still carried the old 32px-basis value, so hp-layout seams at the xs tier overlapped by 2.35px instead of 1.5px.
+- **Showcase page scripts survive the client router.** Live demos (first: the loader page) died on return visits under the persistent document; every page now wires per visit through a shared `onPageVisit` helper (arrival/departure lifecycle, abort signal, teardown), and the rule is part of the style guide.
+
 ### Removed
 
-- **Deleted outright (unreleased, no deprecation):** hp-bond, hp-link-node (superseded by surface rendering), hp-visually-hidden (→ class), hp-avatar (→ `img.hp-hex`), hp-icon (→ inlined SVG strings), hp-progress (→ styled native `<progress>`), hp-separator (→ `hr.hp-separator`), hp-label and hp-radio-group (→ native labels / `name` grouping), hp-toggle-group (→ toolbar + `aria-pressed` buttons), hp-tag, hp-alert-dialog, hp-context-menu, hp-hover-card (absorbed as variants). 60 tags → 46.
+- **Deleted outright (unreleased, no deprecation):** hp-spinner (→ `<hp-loader>`), hp-bond, hp-link-node (superseded by surface rendering), hp-visually-hidden (→ class), hp-avatar (→ `img.hp-hex`), hp-icon (→ inlined SVG strings), hp-progress (→ styled native `<progress>`), hp-separator (→ `hr.hp-separator`), hp-label and hp-radio-group (→ native labels / `name` grouping), hp-toggle-group (→ toolbar + `aria-pressed` buttons), hp-tag, hp-alert-dialog, hp-context-menu, hp-hover-card (absorbed as variants). 60 tags → 46.
+
+### Internal
+
+- **CI grew a spine: install → build → checks → deploy.** The library builds first (bundle + declaration emit as the CI typecheck, `dist` kept as an artifact) and gates lint / format / test / generated. `bun run check` now includes `tsc --noEmit` (the ~20 pre-existing errors are fixed — zero baseline) and `generate:check`, which regenerates tokens / hex-controls / manifest / editor data / ELEMENTS.md in place and fails on any diff — generated files can no longer drift from their sources.
+- **The element manifest is platform-stable.** Modules sort by path (code-unit order) via the analyzer config, so a regen is pure content diff on every OS — the ~2k-line Windows reorder churn is gone, and CI diffs the manifest meaningfully.
 
 ## [0.2.1] - 2026-08-18
 
