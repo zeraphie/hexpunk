@@ -52,7 +52,10 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   /* Token-tinted scrollbars, document-wide (thumb / track). The
-   * fully hexpunk scrollbar is hp-scroll-area's job. */
+   * fully hexpunk scrollbar is hp-scroll-area's job. Firefox path —
+   * WebKit/Blink get square-cornered ones below, and Chromium
+   * ignores the pseudos whenever the standard property is set, so
+   * the two paths are mutually exclusive per engine. */
   scrollbar-color: var(--hp-outline-variant) var(--hp-surface-container-low);
 }
 
@@ -803,6 +806,36 @@ meter:-moz-meter-sub-optimum::-moz-meter-bar {
 
 meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
   background: var(--hp-alert);
+}
+
+/* ── Scrollbars (WebKit / Blink) ───────────────────────────────── */
+
+/* Square-cornered, token-tinted. Gated so Firefox keeps the
+ * standard-property path above. */
+
+@supports selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: var(--hp-surface-container-low);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--hp-outline-variant);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--hp-outline);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: var(--hp-surface-container-low);
+  }
 }
 
 /* ── Focus ring (keyboard-only) ────────────────────────────────── */
