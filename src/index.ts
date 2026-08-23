@@ -30,6 +30,11 @@ export { HpLink } from "./elements/navigation/hp-link.js";
 export { HpLoader, type HpLoaderTiming, type HpLoaderTone } from "./elements/loading/hp-loader.js";
 export { HpNavigationMenu, HpNavItem } from "./elements/navigation/hp-navigation-menu.js";
 export { HpPixel, type HpPixelPosition, type HpPixelStates } from "./elements/images/hp-pixel.js";
+export {
+  HpSeparator,
+  type HpSeparatorOrientation,
+  type HpSeparatorMark,
+} from "./elements/layout/hp-separator.js";
 export { HpSidebar, type HpSidebarVariant } from "./elements/layout/hp-sidebar.js";
 export { HpSidebarGroup } from "./elements/layout/hp-sidebar-group.js";
 export { HpSidebarItem } from "./elements/layout/hp-sidebar-item.js";

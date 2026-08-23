@@ -6568,7 +6568,7 @@
             "name": "LitElement",
             "package": "lit"
           },
-          "status": "wip",
+          "status": "done",
           "tagName": "hp-separator",
           "customElement": true
         }
@@ -14486,6 +14486,30 @@
           "declaration": {
             "name": "HpPixelStates",
             "module": "./elements/images/hp-pixel.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpSeparator",
+          "declaration": {
+            "name": "HpSeparator",
+            "module": "./elements/layout/hp-separator.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpSeparatorOrientation",
+          "declaration": {
+            "name": "HpSeparatorOrientation",
+            "module": "./elements/layout/hp-separator.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpSeparatorMark",
+          "declaration": {
+            "name": "HpSeparatorMark",
+            "module": "./elements/layout/hp-separator.js"
           }
         },
         {

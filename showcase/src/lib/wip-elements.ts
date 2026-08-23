@@ -20,7 +20,6 @@ import "../../../src/elements/images/hp-avatar.ts";
 import "../../../src/elements/images/hp-icon.ts";
 import "../../../src/elements/layout/hp-cluster.ts";
 import "../../../src/elements/layout/hp-scroll-area.ts";
-import "../../../src/elements/layout/hp-separator.ts";
 import "../../../src/elements/layout/hp-toolbar.ts";
 import "../../../src/elements/loading/hp-progress.ts";
 import "../../../src/elements/messaging/hp-toast.ts";

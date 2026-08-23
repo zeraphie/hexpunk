@@ -26,7 +26,7 @@ export type HpSeparatorMark = "hex" | "dot" | "none";
  *
  * @csspart line - The line segments either side of the centre glyph
  * @csspart mark - The centre glyph element
- * @status wip
+ * @status done
  */
 @customElement("hp-separator")
 export class HpSeparator extends LitElement {
