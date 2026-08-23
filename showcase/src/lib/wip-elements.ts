@@ -7,7 +7,6 @@
 // src/index.test.ts checks this list covers exactly the manifest's
 // wip set — add or promote an element and the test walks you here.
 
-import "../../../src/elements/forms/hp-checkbox.ts";
 import "../../../src/elements/forms/hp-form.ts";
 import "../../../src/elements/forms/hp-label.ts";
 import "../../../src/elements/forms/hp-radio-group.ts";

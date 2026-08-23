@@ -15,6 +15,7 @@ export { HpBackground } from "./elements/layout/hp-background/index.js";
 export { HpBanner, type HpBannerTone } from "./elements/messaging/hp-banner.js";
 export { HpButton } from "./elements/forms/hp-button.js";
 export { HpCell, type HpCellVariant, type HpCellTone } from "./elements/primitives/hp-cell.js";
+export { HpCheckbox } from "./elements/forms/hp-checkbox.js";
 export { HpCode, type HpCodeHighlighter } from "./elements/primitives/hp-code.js";
 export { HpCollapsible } from "./elements/layout/hp-collapsible.js";
 export { HpCopy } from "./elements/primitives/hp-copy.js";

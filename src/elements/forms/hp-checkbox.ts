@@ -1,211 +1,134 @@
-// hp-checkbox.ts — Hex checkbox.
+// hp-checkbox.ts — Hex checkbox: a thin light-DOM alias over the
+// native input.
 //
-// Hollow hex at rest; filled with --hp-primary and stamped with a
-// check glyph when `checked`. Indeterminate state available via the
-// `indeterminate` property (stamped with a horizontal bar instead of
-// a check).
-// activated by Space, exposes role="checkbox" + aria-checked.
+// Renders the hex-controls.css pattern (label + visually-hidden
+// checkbox + masked hex span) into light DOM, so the browser owns
+// everything that matters: form participation (FormData, `name`
+// grouping), label association, constraint validation, keyboard,
+// and focus. The element exists for ergonomics and as the home for
+// field state — it forwards the native property surface and stamps
+// `data-dirty` / `data-touched` as the user interacts.
 //
-// State management is uncontrolled by default — clicking toggles
-// `checked` and fires a `change` event. Consumers can drive it
-// controlled by listening to the event and resetting `checked` to
-// the desired value.
+// Slotted children become the label text:
+//
+//   <hp-checkbox name="terms" required>Accept the terms</hp-checkbox>
 
-import { LitElement, css, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-
-import "../primitives/hp-hex.js";
-import { hpBase } from "../../styles/hp-base.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
- * Hex checkbox. role="checkbox", aria-checked reflects state
- * (true / false / mixed). Space toggles; disabled blocks.
+ * Hex checkbox — light-DOM alias over `<input type="checkbox">`.
+ * The inner input is the real control: it submits with the form,
+ * associates with wrapping or `for=` labels, validates (`required`),
+ * and toggles with Space natively. `change` events bubble through
+ * with the input as target. The host stamps `data-dirty` after the
+ * first user toggle and `data-touched` after the first blur.
  *
- * @fires change - When checked changes via user input. detail: { checked }
+ * @fires change - Native change, bubbled from the inner input
  *
- * @csspart box - The hex container wrapping hp-hex + the glyph
- * @csspart glyph - The check / dash glyph overlay
- * @status wip
+ * @slot - Label text, rendered inside the wrapping label
+ * @status experimental
  */
 @customElement("hp-checkbox")
 export class HpCheckbox extends LitElement {
-  /** Current checked state. Toggled on click / Space. */
-  @property({ reflect: true, type: Boolean })
+  /** Current checked state; mirrors the inner input. */
+  @property({ type: Boolean })
   checked = false;
 
-  /** Indeterminate (mixed) state — visual is a horizontal bar
-   * instead of a check. Sets aria-checked="mixed" for assistive
-   * tech. Cleared on next user toggle. */
-  @property({ reflect: true, type: Boolean })
+  /** Indeterminate (mixed) visual state; cleared by user toggle. */
+  @property({ type: Boolean })
   indeterminate = false;
 
-  /** Disabled — blocks toggle and removes from tab order. */
-  @property({ reflect: true, type: Boolean })
+  /** Disabled — the native input drops out of tab order and
+   * submission. */
+  @property({ type: Boolean, reflect: true })
   disabled = false;
 
-  /** Optional name for form integration (not yet wired to the form
-   * submission API; placeholder for forthcoming hp-form integration). */
+  /** Required — unchecked blocks form submission via constraint
+   * validation. */
+  @property({ type: Boolean })
+  required = false;
+
+  /** Form field name; present in FormData when checked. */
   @property()
   name?: string;
 
-  /** Optional value (paired with name) for form integration. */
+  /** Submitted value (with `name`) when checked. */
   @property()
   value = "on";
 
-  /** Cell size. `xs` (default, 32px) is the comfortable form-input
-   * size; `xxs` (20px) is dense / tabular; `sm` (100px) is the
-   * content-hex size — rarely useful here but available. */
+  /** Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense). */
   @property({ reflect: true })
-  size: "xxs" | "xs" | "sm" = "xs";
+  size: "xxs" | "xs" = "xs";
+
+  /** Author children captured before first render; re-rendered as
+   * the label text. */
+  private labelNodes: Node[] = [];
+
+  /** Light DOM on purpose — the pattern must be styleable by
+   * hex-controls.css and the input must participate in the form. */
+  protected override createRenderRoot(): HTMLElement {
+    return this;
+  }
 
   override connectedCallback(): void {
+    if (this.labelNodes.length === 0 && !this.querySelector(":scope > label")) {
+      this.labelNodes = [...this.childNodes];
+      this.replaceChildren();
+    }
     super.connectedCallback();
-    if (!this.hasAttribute("role")) {
-      this.setAttribute("role", "checkbox");
-    }
-    this.syncAria();
-    this.addEventListener("click", this.handleClick);
-    this.addEventListener("keydown", this.handleKeyDown);
   }
 
-  override updated(changed: Map<string, unknown>): void {
-    if (changed.has("checked") || changed.has("indeterminate") || changed.has("disabled")) {
-      this.syncAria();
-    }
+  private get input(): HTMLInputElement | null {
+    return this.querySelector(":scope > label > input");
   }
 
-  private syncAria(): void {
-    this.setAttribute(
-      "aria-checked",
-      this.indeterminate ? "mixed" : this.checked ? "true" : "false"
-    );
-    if (this.disabled) {
-      this.setAttribute("aria-disabled", "true");
-      this.setAttribute("tabindex", "-1");
-    } else {
-      this.removeAttribute("aria-disabled");
-      if (!this.hasAttribute("tabindex") || this.getAttribute("tabindex") === "-1") {
-        this.setAttribute("tabindex", "0");
-      }
-    }
+  /** Native constraint-validation surface, forwarded. */
+  get validity(): ValidityState | undefined {
+    return this.input?.validity;
   }
 
-  private handleClick = (event: MouseEvent): void => {
-    if (this.disabled) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      return;
-    }
-    this.toggle();
+  get validationMessage(): string {
+    return this.input?.validationMessage ?? "";
+  }
+
+  checkValidity(): boolean {
+    return this.input?.checkValidity() ?? true;
+  }
+
+  reportValidity(): boolean {
+    return this.input?.reportValidity() ?? true;
+  }
+
+  private handleChange = (event: Event): void => {
+    const input = event.target as HTMLInputElement;
+    this.checked = input.checked;
+    this.indeterminate = input.indeterminate;
+    this.toggleAttribute("data-dirty", true);
   };
 
-  private handleKeyDown = (event: KeyboardEvent): void => {
-    if (this.disabled) {
-      return;
-    }
-    if (event.key === " ") {
-      event.preventDefault();
-      this.toggle();
-    }
+  private handleFocusout = (): void => {
+    this.toggleAttribute("data-touched", true);
   };
-
-  private toggle(): void {
-    this.indeterminate = false;
-    this.checked = !this.checked;
-    this.dispatchEvent(
-      new CustomEvent("change", {
-        detail: { checked: this.checked },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  static override styles = [
-    hpBase,
-    css`
-      :host {
-        display: inline-block;
-        pointer-events: none;
-        cursor: var(--hp-cursor, pointer);
-        --hp-stroke-color: var(--hp-outline);
-      }
-
-      :host(:hover),
-      :host(:focus-visible) {
-        --hp-stroke-color: var(--hp-secondary);
-      }
-
-      :host([checked]),
-      :host([indeterminate]) {
-        --hp-stroke-color: var(--hp-primary);
-        --hp-hex-fill: var(--hp-primary);
-      }
-
-      :host([disabled]) {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      :host([disabled]) hp-hex {
-        pointer-events: none;
-      }
-
-      .box {
-        position: relative;
-        display: inline-block;
-        line-height: 0;
-      }
-
-      .glyph {
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        color: var(--hp-on-primary);
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity var(--hp-duration-medium) var(--hp-ease-default);
-      }
-
-      :host([checked]) .glyph,
-      :host([indeterminate]) .glyph {
-        opacity: 1;
-      }
-
-      .glyph svg {
-        width: 60%;
-        height: 60%;
-        stroke: currentColor;
-        stroke-width: 3;
-        /* Square caps + miter joins so the check / dash end on flat
- * angular ends instead of rounded ones — keeps the glyph in
- * the same hex aesthetic as the surrounding chrome. */
-        stroke-linecap: square;
-        stroke-linejoin: miter;
-        fill: none;
-      }
-    `,
-  ];
 
   override render() {
     return html`
-      <div class="box" part="box">
-        <hp-hex size=${this.size}></hp-hex>
-        <div class="glyph" part="glyph" aria-hidden="true">
-          ${this.indeterminate
-            ? html`
-                <svg viewBox="0 0 24 24">
-                  <line x1="6" y1="12" x2="18" y2="12"></line>
-                </svg>
-              `
-            : html`
-                <svg viewBox="0 0 24 24">
-                  <polyline points="5,12 10,17 19,7"></polyline>
-                </svg>
-              `}
-        </div>
-      </div>
+      <label class="hp-checkbox" data-size=${this.size === "xxs" ? "xxs" : nothing}>
+        <input
+          type="checkbox"
+          .checked=${this.checked}
+          .indeterminate=${this.indeterminate}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          name=${ifDefined(this.name)}
+          .value=${this.value}
+          @change=${this.handleChange}
+          @focusout=${this.handleFocusout}
+        />
+        <span class="hp-checkbox-hex" aria-hidden="true"></span>
+        ${this.labelNodes}
+      </label>
     `;
   }
 }
