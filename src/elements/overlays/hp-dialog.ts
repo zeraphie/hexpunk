@@ -5,7 +5,10 @@
 //
 // (`.open` / `.close()`), `open` boolean attribute reflection,
 // `hp-dialog-open` / `hp-dialog-close` events. Backdrop click
-// closes by default — set `noBackdropClose` to disable.
+// closes by default — set `no-backdrop-close` to disable, or set
+// `alert` for the confirm/destructive variant: role="alertdialog"
+// and no backdrop dismiss, so only an explicit action (or Escape)
+// closes it. The `actions` slot renders a right-aligned button row.
 //
 // For higher-level overlays with hex-clipped visuals + animation,
 // see hp-unfold-overlay. This element is the plain modal layer.
@@ -18,12 +21,15 @@ import { hpBase } from "../../styles/hp-base.js";
 /**
  * Modal dialog backed by the native <dialog> + showModal(). Browser
  * focus trap + Escape dismiss + aria-modal. Backdrop click closes
- * by default — `no-backdrop-close` opts out.
+ * by default — `no-backdrop-close` opts out, and `alert` makes it
+ * an alertdialog that never backdrop-dismisses (destructive
+ * confirmations, blocking errors).
  *
  * @fires hp-dialog-open - When the dialog opens (open transitions to true)
  * @fires hp-dialog-close - When the dialog closes (backdrop click, Escape, or .close())
  *
  * @slot - Dialog body content
+ * @slot actions - Action buttons, right-aligned (typically cancel + confirm)
  *
  * @csspart dialog - The native <dialog> element
  * @status wip
@@ -40,6 +46,11 @@ export class HpDialog extends LitElement {
    * action. */
   @property({ reflect: true, type: Boolean, attribute: "no-backdrop-close" })
   noBackdropClose = false;
+
+  /** Alert variant — role="alertdialog", and the backdrop never
+   * dismisses; an explicit action (or Escape) closes. */
+  @property({ reflect: true, type: Boolean })
+  alert = false;
 
   @query("dialog") private dialogEl!: HTMLDialogElement;
 
@@ -75,7 +86,7 @@ export class HpDialog extends LitElement {
   };
 
   private handleBackdropClick = (event: MouseEvent): void => {
-    if (this.noBackdropClose) {
+    if (this.noBackdropClose || this.alert) {
       return;
     }
     // Backdrop click hits the dialog element directly; clicks on
@@ -130,6 +141,18 @@ export class HpDialog extends LitElement {
           animation: none;
         }
       }
+
+      /* The slot itself is the action row; an empty slot renders
+       * nothing, and the top gap rides the slotted children. */
+      slot[name="actions"] {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--hp-md);
+      }
+
+      slot[name="actions"]::slotted(*) {
+        margin-top: var(--hp-lg);
+      }
     `,
   ];
 
@@ -137,11 +160,13 @@ export class HpDialog extends LitElement {
     return html`
       <dialog
         part="dialog"
+        role=${this.alert ? "alertdialog" : "dialog"}
         @close=${this.handleNativeClose}
         @cancel=${this.handleNativeClose}
         @click=${this.handleBackdropClick}
       >
         <slot></slot>
+        <slot name="actions"></slot>
       </dialog>
     `;
   }
