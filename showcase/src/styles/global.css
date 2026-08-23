@@ -695,17 +695,22 @@ pre code {
 
 .status-mark {
   display: inline-block;
-  width: 8px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   margin-left: var(--hp-xs);
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-  vertical-align: baseline;
+  vertical-align: -1px;
+}
+
+.status-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .status-mark[data-status="wip"] {
-  background: var(--hp-alert);
+  color: var(--hp-alert);
 }
 
 .status-mark[data-status="experimental"] {
-  background: var(--hp-warn);
+  color: var(--hp-warn);
 }

@@ -76,6 +76,14 @@ function containsActive(node: SitemapNode): boolean {
   return node.children.some(containsActive);
 }
 
+// Miniatures of hp-banner's wip / experimental tone icons (alert
+// diamond, warn triangle) so the sidebar mark and the page banner
+// carry the same signifier at both sizes.
+const STATUS_MARK_SVG: Record<string, string> = {
+  wip: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="8 1.5 14.5 8 8 14.5 1.5 8"></polygon><line x1="8" y1="5" x2="8" y2="9"></line><circle cx="8" cy="11" r="0.6" fill="currentColor" stroke="none"></circle></svg>`,
+  experimental: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" aria-hidden="true"><polygon points="8 2 14 13 2 13"></polygon><line x1="8" y1="6.5" x2="8" y2="10"></line><circle cx="8" cy="11.5" r="0.6" fill="currentColor" stroke="none"></circle></svg>`,
+};
+
 /** Recursively emit composable sidebar markup. Leaves become
  *  <hp-sidebar-item>, branches become <hp-sidebar-group>. */
 function sidebarNodeHtml(node: SitemapNode): string {
@@ -86,7 +94,7 @@ function sidebarNodeHtml(node: SitemapNode): string {
     const status = node.path.startsWith("/components/") ? getApiFor(node.title)?.status : undefined;
     const mark =
       status && status !== "done"
-        ? `<span class="status-mark" data-status="${status}" title="${status}"></span>`
+        ? `<span class="status-mark" data-status="${status}" title="${status}">${STATUS_MARK_SVG[status]}</span>`
         : "";
     return `<hp-sidebar-item href="${escapeHtml(href(node.path))}"${
       isActive ? " active" : ""
