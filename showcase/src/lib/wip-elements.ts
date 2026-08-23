@@ -7,14 +7,8 @@
 // src/index.test.ts checks this list covers exactly the manifest's
 // wip set — add or promote an element and the test walks you here.
 
-import "../../../src/elements/forms/hp-form.ts";
-import "../../../src/elements/forms/hp-label.ts";
-import "../../../src/elements/forms/hp-radio-group.ts";
-import "../../../src/elements/forms/hp-radio.ts";
 import "../../../src/elements/forms/hp-select.ts";
-import "../../../src/elements/forms/hp-slider.ts";
-import "../../../src/elements/forms/hp-toggle-group.ts";
-import "../../../src/elements/forms/hp-toggle.ts";
+import "../../../src/elements/forms/hp-form.ts";
 import "../../../src/elements/images/hp-avatar.ts";
 import "../../../src/elements/images/hp-icon.ts";
 import "../../../src/elements/layout/hp-cluster.ts";

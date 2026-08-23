@@ -388,7 +388,7 @@ export class HpCell extends LitElement {
       /* Inline-control tiers get the smaller label scale and tighter
        * padding — label-md overflows a 20-32px hex. Longer text still
        * belongs beside these sizes, not inside (the hp-checkbox +
-       * hp-label pattern). */
+       * wrapping-label pattern). */
       :host([size="xs"]) .label,
       :host([size="xxs"]) .label {
         padding: var(--hp-xxs, 2px);
