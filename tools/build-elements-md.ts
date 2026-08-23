@@ -38,6 +38,7 @@ interface CEMDeclaration {
   kind: string;
   customElement?: boolean;
   tagName?: string;
+  status?: string;
   description?: string;
   members?: CEMMember[];
   slots?: CEMNamed[];
@@ -56,11 +57,16 @@ interface CEM {
 
 const cem = (await Bun.file(CEM_PATH).json()) as CEM;
 
-const elements = (cem.modules ?? [])
+const all = (cem.modules ?? [])
   .flatMap((m) => m.declarations ?? [])
   .filter((d): d is CEMDeclaration & { tagName: string } => Boolean(d.customElement && d.tagName))
   // Code-unit order: identical on every platform and ICU build.
   .sort((a, b) => (a.tagName < b.tagName ? -1 : a.tagName > b.tagName ? 1 : 0));
+
+// wip elements are showcase-only, not public API — consumers (and the
+// agents this file briefs) should not reach for them.
+const elements = all.filter((d) => d.status !== "wip");
+const wipCount = all.length - elements.length;
 
 // Collapse a multi-line manifest description into a single markdown-safe line.
 const oneLine = (s: string | undefined): string => (s ?? "").replace(/\s+/g, " ").trim();
@@ -85,14 +91,16 @@ const lines: string[] = [
   "Auto-generated from `custom-elements.json` by `tools/build-elements-md.ts` — do not edit",
   "by hand. Regenerate with `bun run analyze`.",
   "",
-  `${elements.length} elements, alphabetical. Per element: tag, role, attributes / properties`,
-  "(type, default), slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md`",
-  "(style) and `.ai/PROMPTS.md` (prompt recipes) when briefing an agent.",
+  `${elements.length} elements, alphabetical (${wipCount} wip elements omitted — showcase-only,`,
+  "not exported). Per element: tag, status, role, attributes / properties (type, default),",
+  "slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md` (style) and",
+  "`.ai/PROMPTS.md` (prompt recipes) when briefing an agent.",
   "",
 ];
 
 for (const el of elements) {
   lines.push(`## \`<${el.tagName}>\``, "");
+  lines.push(`**Status:** ${el.status}`, "");
   const role = lead(el.description);
   if (role) {
     lines.push(role, "");
