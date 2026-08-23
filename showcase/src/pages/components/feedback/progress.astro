@@ -1,0 +1,126 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="<progress>">
+  <ComponentDocs title="<progress>" native>
+    <p slot="description">
+      The native progress bar, styled to the system: 6px track with hex-point end caps,
+      tone-coloured fill, and the sliding-ribbon indeterminate mode. Semantics — role,
+      value announcements, label association — are the element's own. <code>&lt;meter&gt;</code>
+      rides the same styling with the browser picking the band colour.
+    </p>
+
+    <hp-demo caption="Determinate + tones">
+      <div class="col">
+        <progress max="100" value="30"></progress>
+        <progress max="100" value="55" data-tone="positive"></progress>
+        <progress max="100" value="70" data-tone="warn"></progress>
+        <progress max="100" value="85" data-tone="error"></progress>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <progress max="100" value="30"></progress>
+  <progress max="100" value="55" data-tone="positive"></progress>
+  <progress max="100" value="70" data-tone="warn"></progress>
+  <progress max="100" value="85" data-tone="error"></progress>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Indeterminate ribbon">
+      <progress></progress>
+      <hp-code slot="code" language="html">{`<body>
+  <!-- No value attribute = indeterminate: the 30% ribbon slides. -->
+  <progress></progress>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Meter — the browser picks the band">
+      <div class="col">
+        <meter min="0" max="100" low="30" high="70" optimum="90" value="85"></meter>
+        <meter min="0" max="100" low="30" high="70" optimum="90" value="50"></meter>
+        <meter min="0" max="100" low="30" high="70" optimum="90" value="15"></meter>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <meter min="0" max="100" low="30" high="70" optimum="90" value="85"></meter>
+  <meter min="0" max="100" low="30" high="70" optimum="90" value="50"></meter>
+  <meter min="0" max="100" low="30" high="70" optimum="90" value="15"></meter>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <h2>Parity check — native vs hp-progress</h2>
+    <hp-banner tone="neutral">
+      The cull gate: if these read identically, <code>hp-progress</code> goes. Top row is
+      the native element above; bottom row is <code>hp-progress</code>. The driver walks
+      both determinate pairs through the same values.
+    </hp-banner>
+    <hp-demo caption="Side by side">
+      <div class="parity-grid">
+        <span class="row-label">native</span>
+        <progress id="parity-native" max="100" value="40"></progress>
+        <progress></progress>
+        <span class="row-label">hp-progress</span>
+        <hp-progress id="parity-hp" max="100" value="40"></hp-progress>
+        <hp-progress indeterminate></hp-progress>
+      </div>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>When to reach for what</h2>
+      <hp-banner tone="do">
+        Use <code>&lt;progress&gt;</code> for knowable linear progress and
+        <a href="/components/feedback/hp-loader"><code>hp-loader</code></a> for the hex-idiom
+        radial (both modes). <code>&lt;meter&gt;</code> is for a measurement within a known
+        range, not for progress.
+      </hp-banner>
+    </Fragment>
+  </ComponentDocs>
+
+  <style>
+    .col {
+      display: grid;
+      gap: var(--hp-md);
+      justify-items: start;
+    }
+
+    .parity-grid {
+      display: grid;
+      grid-template-columns: 7rem auto auto;
+      gap: var(--hp-md);
+      align-items: center;
+      justify-content: start;
+    }
+
+    .row-label {
+      font-family: var(--hp-typo-label-sm-font-family);
+      font-size: var(--hp-typo-label-sm-font-size);
+      letter-spacing: var(--hp-typo-label-sm-letter-spacing);
+      text-transform: uppercase;
+      color: var(--hp-on-surface-variant);
+    }
+  </style>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    onPageVisit((signal) => {
+      const native = document.getElementById("parity-native") as HTMLProgressElement | null;
+      const hp = document.getElementById("parity-hp") as (HTMLElement & { value: number }) | null;
+      if (!native || !hp) {
+        return;
+      }
+      // Walk both through the same values so easing differences show.
+      let value = 40;
+      const tick = (): void => {
+        if (signal.aborted) {
+          return;
+        }
+        value = value >= 100 ? 0 : Math.min(100, value + 7 + Math.floor(Math.random() * 12));
+        native.value = value;
+        hp.value = value;
+        window.setTimeout(tick, 900);
+      };
+      window.setTimeout(tick, 900);
+    });
+  </script>
+</Layout>

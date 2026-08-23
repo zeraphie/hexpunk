@@ -41,6 +41,20 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <hp-demo caption="Dismissible — the chip use">
+      <div id="badge-chips" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <hp-badge dismissible>filter: layout</hp-badge>
+        <hp-badge tone="positive" dismissible>filter: done</hp-badge>
+        <hp-badge tone="warn" dismissible disabled>locked</hp-badge>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-badge dismissible>filter: layout</hp-badge>
+  <script>
+    badge.addEventListener("hp-badge-dismiss", () => badge.remove());
+  </script>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>When to use</h2>
               <hp-banner tone="do">
@@ -58,4 +72,22 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       
     </Fragment>
   </ComponentDocs>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    onPageVisit((signal) => {
+      const chips = document.getElementById("badge-chips");
+      if (!chips) {
+        return;
+      }
+      chips.addEventListener(
+        "hp-badge-dismiss",
+        (e) => {
+          (e.target as HTMLElement).remove();
+        },
+        { signal }
+      );
+    });
+  </script>
 </Layout>
