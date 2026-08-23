@@ -128,21 +128,6 @@
       ]
     },
     {
-      "name": "hp-bond",
-      "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-      "attributes": [
-        {
-          "name": "state",
-          "description": "`forming` (default, full visibility) or `settled` (hairline).",
-          "values": [
-            {
-              "name": "HpBondState"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "hp-button",
       "description": "Button primitive — composes hp-cell variant=\"action\" with the\nsemantics consumers expect from a button: role=\"button\",\nauto-tabindex, Enter / Space activate, disabled blocks clicks,\ntype=\"submit\" drives form.requestSubmit() inside a form.",
       "attributes": [
@@ -729,16 +714,6 @@
               "name": "undefined"
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "hp-link-node",
-      "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-      "attributes": [
-        {
-          "name": "bonded",
-          "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`."
         }
       ]
     },

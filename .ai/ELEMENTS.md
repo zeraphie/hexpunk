@@ -3,53 +3,14 @@
 Auto-generated from `custom-elements.json` by `tools/build-elements-md.ts` — do not edit
 by hand. Regenerate with `bun run analyze`.
 
-60 elements, alphabetical. Per element: tag, role, attributes / properties
-(type, default), slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md`
-(style) and `.ai/PROMPTS.md` (prompt recipes) when briefing an agent.
-
-## `<hp-alert-dialog>`
-
-Alert dialog — role="alertdialog" variant of hp-dialog. Requires an explicit action; backdrop clicks don't dismiss. Use for destructive confirmations and blocking errors.
-
-**Attributes / properties**
-
-- `open`: `boolean` = `false` — Reflect open state. Setting `open` programmatically opens / closes.
-
-**Slots**
-
-- (default) — Dialog message body
-- `actions` — Action buttons (typically cancel + confirm)
-
-**Events**
-
-- `hp-alert-dialog-open` — When the dialog opens
-- `hp-alert-dialog-close` — When the dialog closes
-
-**CSS parts**
-
-- `dialog` — The native <dialog> element
-- `actions` — The action button container
-
-## `<hp-avatar>`
-
-Hex-shaped avatar. Image clips into the hex; falls back to the slotted content (typically initials) on load error or before src resolves.
-
-**Attributes / properties**
-
-- `src`: `string` = `""` — Image URL. When set, the image renders inside the hex. On load error or while pending, the slotted fallback shows instead.
-- `alt`: `string` = `""` — Alt text for the image. Required for non-decorative avatars.
-- `size`: `"sm" | "md" | "lg"` = `"md"` — Avatar size — matches hp-hex sizes.
-
-**Slots**
-
-- (default) — Fallback content shown when no src or on image load error
-
-**CSS parts**
-
-- `avatar` — The avatar wrapper
-- `fallback` — The fallback container holding the slotted initials
+25 elements, alphabetical (33 wip elements omitted — showcase-only,
+not exported). Per element: tag, status, role, attributes / properties (type, default),
+slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md` (style) and
+`.ai/PROMPTS.md` (prompt recipes) when briefing an agent.
 
 ## `<hp-background>`
+
+**Status:** done
 
 Pointer-aware hex grid backdrop. A faint hex pattern fills the host; pointer movement stirs a soft energy wake that brightens the strokes it passes through, then drifts and fades. Pressing on empty (non-interactive) space ignites a few glowing runners that crawl outward along the lattice edges, branching at random. Two layout modes: contained (default — absolute, fills a positioned parent) and `page` (fixed full-viewport backdrop behind page content).
 
@@ -76,20 +37,9 @@ Pointer-aware hex grid backdrop. A faint hex pattern fills the host; pointer mov
 - `--hp-bg-splat-radius` — Overrides the splat-radius attribute
 - `--hp-bg-z` — Stacking position in page mode (default -1)
 
-## `<hp-badge>`
-
-Small toned status / count badge. Thin shell over hp-cell content variant at sm size with an optional tone overlay.
-
-**Attributes / properties**
-
-- `tone`: `HpBadgeTone` = `"neutral"` — Semantic tone. Defaults to `neutral` (no tone overlay — uses the hp-cell content variant tokens).
-- `active`: `boolean` = `false` — Fills the badge with the tone-container colour when set. Reads as "this state is in effect" — see hp-cell's `active`.
-
-**Slots**
-
-- (default) — Badge label or count
-
 ## `<hp-banner>`
+
+**Status:** done
 
 Inline callout for notes, tips, warnings, and errors. The `tone` attribute drives both the accent colour and the leading icon; `label` adds an uppercase header above the slotted body.
 
@@ -108,15 +58,9 @@ Inline callout for notes, tips, warnings, and errors. The `tone` attribute drive
 - `icon` — The leading icon
 - `label` — The uppercase label header (when set)
 
-## `<hp-bond>`
-
-Shared-edge bond indicator between two axially-adjacent hexes. Small filled hex dot at the shared edge midpoint; fades to a hairline once the bond settles.
-
-**Attributes / properties**
-
-- `state`: `HpBondState` = `"forming"` — `forming` (default, full visibility) or `settled` (hairline).
-
 ## `<hp-button>`
+
+**Status:** done
 
 Button primitive — composes hp-cell variant="action" with the semantics consumers expect from a button: role="button", auto-tabindex, Enter / Space activate, disabled blocks clicks, type="submit" drives form.requestSubmit() inside a form.
 
@@ -132,6 +76,8 @@ Button primitive — composes hp-cell variant="action" with the semantics consum
 - (default) — Button label content
 
 ## `<hp-cell>`
+
+**Status:** done
 
 Universal labelled hex. Subsumes anchor / action / secondary / utility (interactive), content / support / slot (decorative), and positive / warn / alert / error (tone overlay) into one element.
 
@@ -160,47 +106,9 @@ Universal labelled hex. Subsumes anchor / action / secondary / utility (interact
 - `cell` — The wrapping cell element (positioned ancestor for label / trace)
 - `label` — The label container (when the variant has a label)
 
-## `<hp-checkbox>`
-
-Hex checkbox. role="checkbox", aria-checked reflects state (true / false / mixed). Space toggles; disabled blocks.
-
-**Attributes / properties**
-
-- `checked`: `boolean` = `false` — Current checked state. Toggled on click / Space.
-- `indeterminate`: `boolean` = `false` — Indeterminate (mixed) state — visual is a horizontal bar instead of a check. Sets aria-checked="mixed" for assistive tech. Cleared on next user toggle.
-- `disabled`: `boolean` = `false` — Disabled — blocks toggle and removes from tab order.
-- `name`: `string | undefined` — Optional name for form integration (not yet wired to the form submission API; placeholder for forthcoming hp-form integration).
-- `value`: `string` = `"on"` — Optional value (paired with name) for form integration.
-- `size`: `"xxs" | "xs" | "sm"` = `"xs"` — Cell size. `xs` (default, 32px) is the comfortable form-input size; `xxs` (20px) is dense / tabular; `sm` (100px) is the content-hex size — rarely useful here but available.
-
-**Events**
-
-- `change` — When checked changes via user input. detail: { checked }
-
-**CSS parts**
-
-- `box` — The hex container wrapping hp-hex + the glyph
-- `glyph` — The check / dash glyph overlay
-
-## `<hp-cluster>`
-
-Multi-hex group layout. `layout="rosette"` (default) preserves the canonical 5-hex navigation rosette via named slots; `layout="honeycomb"` accepts N default-slot children and packs them in honeycomb rings outward from the first child (the centre).
-
-**Attributes / properties**
-
-- `size`: `"sm" | "md" | "lg"` = `"sm"` — Cell size for the cluster — `sm` (default), `md`, or `lg`.
-- `layout`: `"rosette" | "honeycomb"` = `"rosette"` — Layout mode. `rosette` is the canonical 5-hex navigation rosette (named slots, current behaviour). `honeycomb` accepts N default-slot children packed into rings outward from the first child.
-
-**Slots**
-
-- (default) — Default slot — N children for honeycomb layout. First child is the centre.
-- `centre` — Rosette centre hex
-- `top` — Rosette top hex (north neighbour)
-- `middle-left` — Rosette west-of-centre
-- `middle-right` — Rosette east-of-centre
-- `bottom` — Rosette bottom hex (south neighbour)
-
 ## `<hp-code>`
+
+**Status:** done
 
 Monospaced code block with optional line numbers and per-line hover highlighting. Syntax highlighting is opt-in via `HpCode.setHighlighter(...)`.
 
@@ -224,6 +132,8 @@ Monospaced code block with optional line numbers and per-line hover highlighting
 
 ## `<hp-collapsible>`
 
+**Status:** done
+
 Disclosure: trigger + collapsible content. Trigger toggles `open`; content expands via a smooth grid-template-rows transition. aria-expanded + aria-controls wire automatically.
 
 **Attributes / properties**
@@ -246,30 +156,9 @@ Disclosure: trigger + collapsible content. Trigger toggles `open`; content expan
 - `trigger` — The trigger container
 - `content` — The collapsible content region
 
-## `<hp-context-menu>`
-
-Context menu — right-click on the target region opens the menu at the cursor.
-
-**Attributes / properties**
-
-- `open`: `boolean` = `false`
-
-**Slots**
-
-- (default) — Target region (everything not slotted into "content")
-- `content` — hp-menu-item children
-
-**Events**
-
-- `hp-context-menu-open` — When the menu opens
-- `hp-context-menu-close` — When the menu closes
-- `hp-menu-select` — When a menuitem is activated (bubbles from hp-menu-item)
-
-**CSS parts**
-
-- `menu` — The floating menu container
-
 ## `<hp-copy>`
+
+**Status:** done
 
 Copy-to-clipboard button.
 
@@ -294,6 +183,8 @@ Copy-to-clipboard button.
 
 ## `<hp-demo>`
 
+**Status:** done
+
 Documentation example envelope. Hex-pattern preview area + code area + Copy code button. Wraps each example on a component doc page.
 
 **Attributes / properties**
@@ -314,70 +205,9 @@ Documentation example envelope. Hex-pattern preview area + code area + Copy code
 - `actions` — The footer toolbar with the Copy button
 - `code` — The code area
 
-## `<hp-dialog>`
-
-Modal dialog backed by the native <dialog> + showModal(). Browser focus trap + Escape dismiss + aria-modal. Backdrop click closes by default — `no-backdrop-close` opts out.
-
-**Attributes / properties**
-
-- `open`: `boolean` = `false` — Reflect open state. Setting `open` programmatically calls showModal(); clearing it calls close().
-- `no-backdrop-close`: `boolean` = `false` — When set, clicking the backdrop doesn't close. Use for destructive / blocking dialogs that require an explicit action.
-
-**Slots**
-
-- (default) — Dialog body content
-
-**Events**
-
-- `hp-dialog-open` — When the dialog opens (open transitions to true)
-- `hp-dialog-close` — When the dialog closes (backdrop click, Escape, or .close())
-
-**CSS parts**
-
-- `dialog` — The native <dialog> element
-
-## `<hp-dropdown-menu>`
-
-Dropdown menu — click-triggered popover with menuitem semantics and arrow-key navigation.
-
-**Attributes / properties**
-
-- `side`: `FloatingSide` = `"bottom"`
-- `align`: `FloatingAlign` = `"start"`
-- `offset`: `number` = `6`
-- `open`: `boolean` = `false`
-
-**Slots**
-
-- (default) — Trigger element (first child)
-- `content` — hp-menu-item children
-
-**Events**
-
-- `hp-dropdown-open` — When the menu opens
-- `hp-dropdown-close` — When the menu closes
-- `hp-menu-select` — When a menuitem is activated. detail: { value, item }
-
-**CSS parts**
-
-- `menu` — The floating menu container
-
-## `<hp-form>`
-
-Form container — thin wrapper around the native <form> with consistent gap + label / input alignment. Stub.
-
-**Attributes / properties**
-
-- `method`: `"get" | "post" | "dialog"` = `"post"` — HTTP method for native submission. Default `post`.
-- `action`: `string` = `""` — Submission endpoint.
-- `name`: `string | undefined` — Optional form name.
-- `no-validate`: `boolean` = `false` — Skip browser native validation when set — let custom JS handle it.
-
-**Slots**
-
-- (default) — Form controls (hp-checkbox, hp-toggle, hp-button, etc.)
-
 ## `<hp-grid>`
+
+**Status:** done
 
 Canvas hex grid — a pannable, zoomable viewport onto the lattice. Slotted children with `q` / `r` attributes become camera-riding overlay cells; the field beneath is engine-rendered. Ships from `@hexpunk/core/grid`, and the rendering engine loads by dynamic import on first connect.
 
@@ -419,6 +249,8 @@ Canvas hex grid — a pannable, zoomable viewport onto the lattice. Slotted chil
 
 ## `<hp-hex>`
 
+**Status:** done
+
 SVG hex primitive. Every other hex-shaped atom composes this for its stencil; size is the only public knob.
 
 **Attributes / properties**
@@ -432,59 +264,9 @@ SVG hex primitive. Every other hex-shaped atom composes this for its stencil; si
 - `--hp-cell` — Cell width; usually set per size attribute
 - `--hp-hex-pointer-events` — pointer-events on the painted polygons
 
-## `<hp-hover-card>`
-
-Hover- / focus-triggered floating card. Larger and interactive than hp-tooltip; lighter than hp-popover (no outside-click).
-
-**Attributes / properties**
-
-- `side`: `FloatingSide` = `"bottom"` — Preferred side relative to the trigger.
-- `align`: `FloatingAlign` = `"center"` — Alignment along the chosen side.
-- `offset`: `number` = `8` — Pixel gap between trigger and card.
-- `open-delay`: `number` = `400` — Open delay (ms) before showing. Default 400 — long enough to avoid flashes while skimming, short enough to feel responsive on intent.
-- `close-delay`: `number` = `300` — Close delay (ms) before hiding after pointer leaves both the trigger and the card. Default 300 — gives users time to move the pointer from trigger to card.
-
-**Slots**
-
-- (default) — Trigger element (first child)
-- `content` — Card body
-
-**Events**
-
-- `hp-hover-card-open` — When the card opens
-- `hp-hover-card-close` — When the card closes
-
-**CSS parts**
-
-- `card` — The floating card element
-
-## `<hp-icon>`
-
-SVG icon wrapper — sized via `size` (sm / md / lg), strokes inherit `currentColor`.
-
-**Attributes / properties**
-
-- `size`: `"sm" | "md" | "lg"` = `"md"` — Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).
-
-**Slots**
-
-- (default) — SVG content (stroke-based icon)
-
-## `<hp-label>`
-
-Form label primitive — wraps a native <label> with consistent styling and the `for` forwarding, plus optional required / optional markers.
-
-**Attributes / properties**
-
-- `for`: `string` = `""` — ID of the input this label targets. Forwarded to the inner `<label>`'s `for` attribute — clicking the label focuses / toggles the linked input. Maps to the `for` HTML attribute.
-- `required`: `boolean` = `false` — Append a "\*" required marker after the label text. Stamps aria-required on the linked input is the consumer's job — this is the visual cue only.
-- `optional`: `boolean` = `false` — Append a muted "(optional)" hint after the label text.
-
-**Slots**
-
-- (default) — Label text
-
 ## `<hp-latex>`
+
+**Status:** done
 
 LaTeX math primitive. Render-only.
 
@@ -500,6 +282,8 @@ LaTeX math primitive. Render-only.
 - `render-error` — Bubbling CustomEvent when the renderer throws; detail = { error, latex }
 
 ## `<hp-layout>`
+
+**Status:** done
 
 Hex layout primitive — slotted children with `q` / `r` attributes are placed on the axial lattice, and the element sizes to the content it placed. No camera: the page scrolls it, the way it would any other block. `draggable` opts into drag-to-move with snap. Pure CSS, no rendering dependency.
 
@@ -530,6 +314,8 @@ Hex layout primitive — slotted children with `q` / `r` attributes are placed o
 
 ## `<hp-link>`
 
+**Status:** done
+
 Inline text link. Styled anchor with the hexpunk hue-swap.
 
 **Attributes / properties**
@@ -542,15 +328,9 @@ Inline text link. Styled anchor with the hexpunk hue-swap.
 
 - (default) — Link label
 
-## `<hp-link-node>`
-
-Endpoint dot for hp-tether arcs. Tiny filled marker.
-
-**Attributes / properties**
-
-- `bonded`: `boolean` = `false` — When set, the node is bonded to at least one arc-link and fills with `secondary`.
-
 ## `<hp-loader>`
+
+**Status:** done
 
 Hexagonal-cluster loader. A hollow cluster of small filled hexes — a clockwise spiral wave when indeterminate, a spiral progress fill when a `value` is set. role="progressbar" with aria-label="Loading" by default; aria-valuenow only when determinate.
 
@@ -564,44 +344,9 @@ Hexagonal-cluster loader. A hollow cluster of small filled hexes — a clockwise
 - `indeterminate`: `boolean` = `false` — Force the indeterminate wave even while a `value` is retained — for flipping back to "busy" without losing the number.
 - `timing`: `HpLoaderTiming` = `"irregular"` — Catch-up pacing. `irregular` (default) clears any backlog inside a fixed ~⅓s budget, so bursts of progress visibly quicken the ripple — the honest "this part loaded faster" jank real loaders have. `linear` locks the per-hex pace to the value's measured advance rate instead, so the ripple flows at constant speed.
 
-## `<hp-menu-item>`
-
-A single menu item inside hp-dropdown-menu / hp-context-menu. role="menuitem"; Enter / Space activate; emits hp-menu-select.
-
-**Attributes / properties**
-
-- `value`: `string` = `""` — Value emitted in hp-menu-select. Defaults to the trimmed text content if not provided.
-- `disabled`: `boolean` = `false` — Disabled — blocks activation and removes from focus order.
-
-**Slots**
-
-- (default) — Item label
-
-**Events**
-
-- `hp-menu-select` — When activated. detail: { value, item }
-
-## `<hp-menubar>`
-
-Menu bar — managed keyboard navigation across a row of dropdown triggers. role="menubar"; arrow keys move focus between triggers; Home / End jump.
-
-**Attributes / properties**
-
-- `orientation`: `"horizontal" | "vertical"` = `"horizontal"` — Layout direction — controls arrow-key axis.
-
-**Slots**
-
-- (default) — hp-dropdown-menu children (or any [role="menuitem"] triggers)
-
-## `<hp-module-handle>`
-
-Drag handle — a small filled hex used as the grip for moving an hp-cluster or hp-unfold-list. Pure visual indicator; the parent drives the actual drag interaction via drag-handle attribute.
-
-**Attributes / properties**
-
-- `active`: `boolean` = `false` — When set, the handle is currently grabbed — fills with `primary`.
-
 ## `<hp-nav-item>`
+
+**Status:** done
 
 Single item inside hp-navigation-menu. Plain link when no `content` slot, dropdown trigger when there is one.
 
@@ -622,31 +367,17 @@ Single item inside hp-navigation-menu. Plain link when no `content` slot, dropdo
 
 ## `<hp-navigation-menu>`
 
+**Status:** done
+
 Top-nav menu with optional hover-revealed submenus.
 
 **Slots**
 
 - (default) — hp-nav-item children
 
-## `<hp-option>`
-
-Single option inside hp-select. role="option"; Enter / Space activate; emits hp-option-select.
-
-**Attributes / properties**
-
-- `value`: `string` = `""` — Value emitted to the parent hp-select.
-- `selected`: `boolean` = `false` — Selected — auto-set by parent hp-select.
-- `disabled`: `boolean` = `false` — Disabled — blocks activation.
-
-**Slots**
-
-- (default) — Option label
-
-**Events**
-
-- `hp-option-select` — When activated. detail: { value }
-
 ## `<hp-pixel>`
+
+**Status:** done
 
 Pixel-art renderer. Draws a sequence of states (each a list of [x, y, paletteIndex] pixels) on a fixed hex-clipped canvas; configurable palette and per-state delay drive a sprite-like animation loop.
 
@@ -660,147 +391,9 @@ Pixel-art renderer. Draws a sequence of states (each a list of [x, y, paletteInd
 - `pixel-size`: `number` = `3` — Pixel size in CSS px. Default `3`.
 - `interactive`: `boolean` = `false` — Auto-swap to `hover` / `focus` / `active` named states on the matching pseudo-classes. No JS state-flip required.
 
-## `<hp-popover>`
-
-Anchored floating panel. Click-triggered; click-outside / Escape dismiss; focus restoration to the trigger on close.
-
-**Attributes / properties**
-
-- `side`: `FloatingSide` = `"bottom"` — Preferred side relative to the trigger.
-- `align`: `FloatingAlign` = `"center"` — Alignment along the chosen side.
-- `offset`: `number` = `8` — Pixel gap between trigger and panel. Default 8.
-- `open`: `boolean` = `false` — Reflect open state. Setting `open` programmatically opens / closes.
-
-**Slots**
-
-- (default) — Trigger element (first child)
-- `content` — Panel body
-
-**Events**
-
-- `hp-popover-open` — When the panel opens
-- `hp-popover-close` — When the panel closes
-
-**CSS parts**
-
-- `panel` — The floating panel element
-
-## `<hp-progress>`
-
-Determinate progress indicator. role="progressbar"; aria-valuemin / max / now reflect state. `indeterminate` mode animates a sliding ribbon when the percent isn't known.
-
-**Attributes / properties**
-
-- `min`: `number` = `0` — Lower bound. Default 0.
-- `max`: `number` = `100` — Upper bound. Default 100.
-- `value`: `number` = `0` — Current value. Clamped to [min, max]. Ignored when `indeterminate` is set.
-- `indeterminate`: `boolean` = `false` — Indeterminate mode — animates a sliding ribbon, hides the numeric value from assistive tech. Use when progress is knowable but a specific number isn't available.
-- `tone`: `HpProgressTone` = `"neutral"` — Semantic tone for the fill — neutral (primary), positive, warn, alert, error.
-
-**CSS parts**
-
-- `track` — The track that the fill sits inside
-- `fill` — The filled portion (or sliding ribbon when indeterminate)
-
-## `<hp-radio>`
-
-Single radio option. Pairs with hp-radio-group as a parent. role="radio", aria-checked reflects state; emits hp-radio-select on click / Space / Enter for the group to track.
-
-**Attributes / properties**
-
-- `value`: `string` = `""` — Value emitted when this radio is selected. Required for the parent hp-radio-group to track selection.
-- `checked`: `boolean` = `false` — Selected state. Set by the parent hp-radio-group; consumers shouldn't write directly — use the group's `value` instead.
-- `disabled`: `boolean` = `false` — Disabled — blocks selection, removes from tab order.
-- `size`: `"xxs" | "xs" | "sm"` = `"xs"` — Cell size. `xs` (default, 32px) is the comfortable form-input size; `xxs` (20px) is dense / tabular; `sm` (100px) is the content-hex size — rarely useful here but available.
-
-**Events**
-
-- `hp-radio-select` — When this radio is activated. detail: { value }
-
-**CSS parts**
-
-- `radio` — The radio container wrapping hp-hex + inner dot
-- `dot` — The inner filled hex shown when checked
-
-## `<hp-radio-group>`
-
-Radio group container. Manages selection across slotted hp-radio children — arrow keys move focus + selection between siblings, Home / End jump to first / last, only one child checked at a time. role="radiogroup".
-
-**Attributes / properties**
-
-- `value`: `string` = `""` — Currently selected radio value. Setting this checks the matching child; clearing it unchecks all.
-- `disabled`: `boolean` = `false` — Disable the entire group — every child reads as disabled.
-- `orientation`: `"horizontal" | "vertical"` = `"vertical"` — Orientation — controls arrow-key direction. `horizontal` moves with ArrowLeft/Right; `vertical` (default) with ArrowUp/Down.
-- `name`: `string | undefined` — Optional form name (placeholder for forthcoming hp-form wiring).
-
-**Slots**
-
-- (default) — One or more <hp-radio> children
-
-**Events**
-
-- `change` — When selection changes via click or arrow keys. detail: { value }
-
-## `<hp-scroll-area>`
-
-Custom-scrollbar wrapper. Hides the native scrollbar inside and paints a themed one on top. Native scroll model preserved.
-
-**Attributes / properties**
-
-- `visibility`: `HpScrollVisibility` = `"auto"` — Scrollbar visibility: - `auto` (default): visible whenever the content overflows - `always`: persistently visible - `hover`: only visible while the area is hovered
-
-**Slots**
-
-- (default) — Scrollable content
-
-**CSS parts**
-
-- `viewport` — The scroll viewport (the element that actually scrolls)
-- `scrollbar` — The vertical scrollbar track
-- `thumb` — The scrollbar thumb
-
-## `<hp-select>`
-
-Custom listbox select — trigger button + popover list of options. role="combobox" on the trigger, role="listbox" on the popover, role="option" on each child.
-
-**Attributes / properties**
-
-- `value`: `string` = `""` — Currently selected value. Setting programmatically activates the matching option (or empty when no match).
-- `placeholder`: `string` = `"Select…"` — Placeholder shown on the trigger when no value is selected.
-- `disabled`: `boolean` = `false` — Disabled — blocks toggle and removes from tab order.
-- `name`: `string | undefined` — Optional form name.
-
-**Slots**
-
-- (default) — hp-option children
-
-**Events**
-
-- `hp-select-open` — When the listbox opens
-- `hp-select-close` — When the listbox closes
-- `change` — When the value changes via user input. detail: { value }
-
-**CSS parts**
-
-- `trigger` — The trigger button
-- `listbox` — The popover listbox
-
-## `<hp-separator>`
-
-Visual + semantic divider. Horizontal (default) or vertical; optional centre glyph (hex / dot / none). `decorative` switches between role=separator and role=presentation.
-
-**Attributes / properties**
-
-- `orientation`: `HpSeparatorOrientation` = `"horizontal"` — Layout direction. Horizontal is a row divider; vertical is a column divider.
-- `decorative`: `boolean` = `false` — When set, the separator is purely visual (role=presentation, invisible to assistive tech). Default unset = role=separator.
-- `mark`: `HpSeparatorMark` = `"hex"` — Centre glyph. `hex` (default) reads as a small node on the divider; `dot` is a tighter filled dot; `none` is a clean line.
-
-**CSS parts**
-
-- `line` — The line segments either side of the centre glyph
-- `mark` — The centre glyph element
-
 ## `<hp-sidebar>`
+
+**Status:** done
 
 Navigation sidebar chrome. Compose with `<hp-sidebar-item>` leaves and `<hp-sidebar-group>` collapsible sections.
 
@@ -813,6 +406,8 @@ Navigation sidebar chrome. Compose with `<hp-sidebar-item>` leaves and `<hp-side
 - (default) — Nav tree (hp-sidebar-item + hp-sidebar-group children)
 
 ## `<hp-sidebar-group>`
+
+**Status:** done
 
 Collapsible nav section inside `<hp-sidebar>`. Children (typically `<hp-sidebar-item>` and other `<hp-sidebar-group>`) are slotted into the expanded panel.
 
@@ -831,6 +426,8 @@ Collapsible nav section inside `<hp-sidebar>`. Children (typically `<hp-sidebar-
 
 ## `<hp-sidebar-item>`
 
+**Status:** done
+
 Leaf navigation entry inside `<hp-sidebar>`. The slotted text content is the visible label.
 
 **Attributes / properties**
@@ -846,31 +443,9 @@ Leaf navigation entry inside `<hp-sidebar>`. The slotted text content is the vis
 
 - `link` — The internal anchor element
 
-## `<hp-slider>`
-
-Single-thumb continuous-value slider. role="slider"; aria-valuemin / max / now reflect state. Arrow keys step by `step`, PageUp/PageDown by 10×, Home/End jump to min/max. Pointer drag with capture.
-
-**Attributes / properties**
-
-- `min`: `number` = `0` — Lower bound (default 0).
-- `max`: `number` = `100` — Upper bound (default 100).
-- `step`: `number` = `1` — Step size for arrow keys / pointer drag (default 1).
-- `value`: `number` = `0` — Current value. Clamped to [min, max] on set.
-- `disabled`: `boolean` = `false` — Disabled — no input, removed from tab order.
-- `name`: `string | undefined` — Optional form name (placeholder for hp-form).
-
-**Events**
-
-- `change` — When the value changes (keyboard or pointer). detail: { value }
-
-**CSS parts**
-
-- `slider` — The slider container
-- `track` — The track that the fill sits on
-- `fill` — The progress fill (left edge → thumb)
-- `thumb` — The hex thumb
-
 ## `<hp-tab>`
+
+**Status:** done
 
 Single tab inside hp-tabs. role="tab"; auto-slotted into the tablist via slot="tab" in connectedCallback.
 
@@ -890,6 +465,8 @@ Single tab inside hp-tabs. role="tab"; auto-slotted into the tablist via slot="t
 
 ## `<hp-tab-panel>`
 
+**Status:** done
+
 Panel body inside hp-tabs. role="tabpanel"; visibility driven by the parent hp-tabs via the `hidden` attribute.
 
 **Attributes / properties**
@@ -901,6 +478,8 @@ Panel body inside hp-tabs. role="tabpanel"; visibility driven by the parent hp-t
 - (default) — Panel content
 
 ## `<hp-tabs>`
+
+**Status:** done
 
 Tabbed content container. Slotted hp-tab children render the tab list; hp-tab-panel children render the panels. Arrow keys cycle tabs; Home / End jump; roving tabindex. `route="hash"` syncs value to URL hash.
 
@@ -926,29 +505,9 @@ Tabbed content container. Slotted hp-tab children render the tab list; hp-tab-pa
 - `list` — The tablist row / column
 - `panels` — The panels container
 
-## `<hp-tag>`
-
-Dismissable tag / chip. hp-cell content variant + optional × close button.
-
-**Attributes / properties**
-
-- `tone`: `HpTagTone` = `"neutral"` — Semantic tone — same set as hp-cell.
-- `removable`: `boolean` = `false` — Show the dismiss button. Fires `hp-tag-remove` on click / Enter / Space.
-- `disabled`: `boolean` = `false` — Disabled — blocks dismiss action and dims the visual.
-
-**Slots**
-
-- (default) — Tag label
-
-**Events**
-
-- `hp-tag-remove` — When the dismiss × is activated (click / Enter / Space)
-
-**CSS parts**
-
-- `remove` — The dismiss button (when removable)
-
 ## `<hp-tether>`
+
+**Status:** done
 
 Arc-tether between two distant molecules — curved SVG bezier connecting two hexes referenced by CSS selector (`from` / `to`). Reroutes around obstacles, re-settles after drags.
 
@@ -969,139 +528,9 @@ Arc-tether between two distant molecules — curved SVG bezier connecting two he
 - `--hp-tether-arc-glow` — Glow filter blur radius
 - `--hp-tether-arc-pulse-dot` — Diameter of the pulse dot
 
-## `<hp-toast>`
-
-Transient notification toast. Slides in, auto-dismisses after `duration` ms (0 = sticky). `alert` / `error` tones upgrade aria-live to assertive.
-
-**Attributes / properties**
-
-- `open`: `boolean` = `false` — Open state — drives the slide-in animation.
-- `tone`: `HpToastTone` = `"neutral"` — Semantic tone. `alert` / `error` upgrade role to "alert" for assertive screen-reader announcement.
-- `duration`: `number` = `4000` — Auto-dismiss after this many ms. 0 = sticky (manual close only). Default 4000.
-
-**Slots**
-
-- (default) — Toast message body
-
-**Events**
-
-- `hp-toast-open` — When the toast becomes visible
-- `hp-toast-close` — When the toast closes (auto or via .close())
-
-**CSS parts**
-
-- `toast` — The wrapping toast element
-- `content` — The content container
-
-## `<hp-toggle>`
-
-Two-state on/off switch. role="switch", aria-checked reflects state; Space / Enter activate; disabled blocks.
-
-**Attributes / properties**
-
-- `checked`: `boolean` = `false` — On (checked) state.
-- `disabled`: `boolean` = `false` — Disabled — no activation, removed from tab order.
-- `name`: `string | undefined` — Optional form name (placeholder for forthcoming hp-form wiring).
-- `value`: `string` = `"on"` — Submitted value when checked.
-
-**Events**
-
-- `change` — When the switch flips via user input. detail: { checked }
-
-**CSS parts**
-
-- `track` — The pill-shaped track element
-- `thumb` — The sliding hex thumb
-
-## `<hp-toggle-group>`
-
-Group of toggle buttons with single or multi-select semantics. Slotted children carry `value` attributes; the group tracks `value` (string for single, space-separated for multiple) and stamps aria-pressed on each pressed child.
-
-**Attributes / properties**
-
-- `type`: `HpToggleGroupType` = `"single"` — Selection model. `single` allows one button pressed at a time (toggling on a different button unpresses the previous one). `multiple` allows any combination.
-- `value`: `string` = `""` — Current selection. Single mode: the chosen value as a string; empty string = nothing selected. Multiple mode: space-separated values.
-- `orientation`: `"horizontal" | "vertical"` = `"horizontal"` — Layout direction — also drives the honeycomb zigzag direction when `layout="honeycomb"`.
-- `layout`: `HpToggleGroupLayout` = `"flex"` — Visual arrangement. - `flex` (default) — children laid out as inline-flex with a standard row / column. - `honeycomb` — children positioned in a hex-grid zigzag. Subsequent items add to the right (orientation=horizontal) or alternate bottom-right / bottom-left (orientation=vertical). Each adjacent pair shares an edge with hp-grid's stroke-overlap correction so the strokes coincide into a single line.
-- `disabled`: `boolean` = `false` — Disable the entire group.
-
-**Slots**
-
-- (default) — hp-button or hp-cell children with `value` attributes
-
-**Events**
-
-- `change` — When selection changes. detail: { value }
-
-## `<hp-toolbar>`
-
-Toolbar container with managed keyboard navigation. Roving tabindex over slotted focusable children; arrow keys move between them; Home / End jump to first / last; Tab leaves the toolbar.
-
-**Attributes / properties**
-
-- `orientation`: `"horizontal" | "vertical"` = `"horizontal"` — Layout direction — controls which arrow keys move focus.
-
-**Slots**
-
-- (default) — Toolbar controls (hp-button, hp-toggle, hp-checkbox, hp-separator, etc.)
-
-## `<hp-tooltip>`
-
-Lightweight tooltip — wraps a trigger element and shows the slotted `content` on hover / focus. role="tooltip", auto aria-describedby on the trigger while visible, Escape dismisses.
-
-**Attributes / properties**
-
-- `side`: `HpTooltipSide` = `"top"` — Tooltip side relative to the trigger.
-- `open-delay`: `number` = `300` — Delay before showing on hover (ms). Default 300. Reduces flickering when the cursor passes over a trigger.
-- `close-delay`: `number` = `100` — Delay before hiding on mouseleave (ms). Default 100.
-
-**Slots**
-
-- (default) — Trigger element (first child)
-- `content` — Tooltip body
-
-**CSS parts**
-
-- `tooltip` — The tooltip body element
-
-## `<hp-unfold-list>`
-
-Ring-expanding list primitive — click the source to fan slotted children into a 6-slot ring around it; click outside to close.
-
-**Attributes / properties**
-
-- `open`: `boolean` = `false` — Reflected open / closed state. Drives the bloom CSS + the `aria-pressed` mirror on the source.
-- `unordered`: `boolean` = `false` — When set, children land at a randomly-shuffled subset of the 6 ring positions and stagger in random order (both keyed off the same permutation). Without it, children land in clockwise spiral order and stagger in that same order. Mirrors the ordered / unordered semantics of `<ol>` vs `<ul>`.
-
-**Slots**
-
-- `source` — The trigger hex (always visible)
-- (default) — Children fanned into the ring when open
-
-**Events**
-
-- `hp-unfold-open` — When the list opens
-- `hp-unfold-close` — When the list closes
-
-## `<hp-unfold-overlay>`
-
-Hex-clipped lightbox / modal. Native <dialog> + showModal() under the hood; the slotted body is clipped to a hex shape with an animated open / close.
-
-**Attributes / properties**
-
-- `open`: `boolean` = `false` — Reflected open / closed state. Setting it imperatively calls showModal / close on the inner <dialog>.
-
-**Slots**
-
-- `source` — The trigger element (always visible)
-- (default) — The overlay body content
-
-**Events**
-
-- `hp-unfold-open` — When the overlay opens
-- `hp-unfold-close` — When the overlay closes (backdrop or .close())
-
 ## `<hp-unfold-page>`
+
+**Status:** experimental
 
 Camera-zoom navigation primitive. Click the source hex (or any <a data-hp-unfold>) and its colour rapidly expands to cover the viewport, then the destination page is revealed. The View Transitions API drives the animation — cross-document by default, same-document when a client router registers the library-wide `setNavigate`.
 
@@ -1113,11 +542,3 @@ Camera-zoom navigation primitive. Click the source hex (or any <a data-hp-unfold
 **Slots**
 
 - `source` — The hex / element that triggers the expand
-
-## `<hp-visually-hidden>`
-
-Visually hidden but accessible — content is read by assistive tech but doesn't render on screen.
-
-**Slots**
-
-- (default) — Content for screen readers only

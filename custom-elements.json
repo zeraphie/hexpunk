@@ -124,6 +124,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-button",
           "customElement": true
         }
@@ -328,6 +329,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-checkbox",
           "customElement": true
         }
@@ -448,6 +450,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-form",
           "customElement": true
         }
@@ -552,6 +555,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-label",
           "customElement": true
         }
@@ -710,6 +714,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-radio-group",
           "customElement": true
         }
@@ -877,6 +882,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-radio",
           "customElement": true
         }
@@ -1184,6 +1190,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-select",
           "customElement": true
         },
@@ -1303,6 +1310,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-option",
           "customElement": true
         }
@@ -1601,6 +1609,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-slider",
           "customElement": true
         }
@@ -1798,6 +1807,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-toggle-group",
           "customElement": true
         }
@@ -1962,6 +1972,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-toggle",
           "customElement": true
         }
@@ -1981,126 +1992,6 @@
           "declaration": {
             "name": "HpToggle",
             "module": "src/elements/forms/hp-toggle.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-bond.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Shared-edge bond indicator between two axially-adjacent hexes.\nSmall filled hex dot at the shared edge midpoint; fades to a\nhairline once the bond settles.",
-          "name": "HpBond",
-          "members": [
-            {
-              "kind": "field",
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "attribute": "state",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "state",
-              "type": {
-                "text": "HpBondState"
-              },
-              "default": "\"forming\"",
-              "description": "`forming` (default, full visibility) or `settled` (hairline).",
-              "fieldName": "state"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Slated for consolidation into hp-cell. Stays for now so hp-grid can paint shared-edge markers.",
-          "tagName": "hp-bond",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-bond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "src/elements/hp-bond.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/hp-link-node.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Endpoint dot for hp-tether arcs. Tiny filled marker.",
-          "name": "HpLinkNode",
-          "members": [
-            {
-              "kind": "field",
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "attribute": "bonded",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "bonded",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the node is bonded to at least one arc-link and fills with `secondary`.",
-              "fieldName": "bonded"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "deprecated": "Will be folded into hp-tether's internal rendering.",
-          "tagName": "hp-link-node",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-link-node",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "src/elements/hp-link-node.ts"
           }
         }
       ]
@@ -2215,6 +2106,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-avatar",
           "customElement": true
         }
@@ -2280,6 +2172,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-icon",
           "customElement": true
         }
@@ -2516,6 +2409,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-pixel",
           "customElement": true
         }
@@ -4086,6 +3980,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-background",
           "customElement": true
         }
@@ -4711,6 +4606,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-cluster",
           "customElement": true
         }
@@ -4873,6 +4769,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-collapsible",
           "customElement": true
         }
@@ -5045,6 +4942,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-demo",
           "customElement": true
         }
@@ -5707,6 +5605,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-grid",
           "customElement": true
         }
@@ -6364,6 +6263,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-layout",
           "customElement": true
         }
@@ -6558,6 +6458,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-scroll-area",
           "customElement": true
         }
@@ -6667,6 +6568,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-separator",
           "customElement": true
         }
@@ -6770,6 +6672,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-sidebar-group",
           "customElement": true
         }
@@ -6860,6 +6763,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-sidebar-item",
           "customElement": true
         }
@@ -6925,6 +6829,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-sidebar",
           "customElement": true
         }
@@ -7021,6 +6926,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-toolbar",
           "customElement": true
         }
@@ -7341,6 +7247,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-loader",
           "customElement": true
         }
@@ -7498,6 +7405,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-progress",
           "customElement": true
         }
@@ -7604,6 +7512,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-banner",
           "customElement": true
         }
@@ -7790,6 +7699,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-toast",
           "customElement": true
         }
@@ -7888,6 +7798,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-link",
           "customElement": true
         }
@@ -7978,6 +7889,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-menubar",
           "customElement": true
         }
@@ -8036,6 +7948,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-navigation-menu",
           "customElement": true
         },
@@ -8190,6 +8103,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-nav-item",
           "customElement": true
         }
@@ -8530,6 +8444,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-tabs",
           "customElement": true
         },
@@ -8625,6 +8540,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-tab",
           "customElement": true
         },
@@ -8663,6 +8579,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-tab-panel",
           "customElement": true
         }
@@ -8825,6 +8742,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-alert-dialog",
           "customElement": true
         }
@@ -9023,6 +8941,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-context-menu",
           "customElement": true
         }
@@ -9169,6 +9088,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-dialog",
           "customElement": true
         }
@@ -9440,6 +9360,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-dropdown-menu",
           "customElement": true
         },
@@ -9539,6 +9460,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-menu-item",
           "customElement": true
         }
@@ -9857,6 +9779,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-hover-card",
           "customElement": true
         }
@@ -10145,6 +10068,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-popover",
           "customElement": true
         }
@@ -10375,6 +10299,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-tooltip",
           "customElement": true
         }
@@ -10558,6 +10483,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-cell",
           "customElement": true
         }
@@ -10714,6 +10640,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-code",
           "customElement": true
         }
@@ -10858,6 +10785,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-copy",
           "customElement": true
         }
@@ -10969,6 +10897,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-hex",
           "customElement": true
         }
@@ -11125,6 +11054,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-latex",
           "customElement": true
         }
@@ -11167,6 +11097,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-visually-hidden",
           "customElement": true
         }
@@ -11252,6 +11183,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-badge",
           "customElement": true
         }
@@ -11379,6 +11311,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-tag",
           "customElement": true
         }
@@ -11996,6 +11929,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "done",
           "tagName": "hp-tether",
           "customElement": true
         }
@@ -12231,6 +12165,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-module-handle",
           "customElement": true
         }
@@ -12440,6 +12375,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-unfold-list",
           "customElement": true
         }
@@ -12596,6 +12532,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "wip",
           "tagName": "hp-unfold-overlay",
           "customElement": true
         }
@@ -12738,6 +12675,7 @@
             "name": "LitElement",
             "package": "lit"
           },
+          "status": "experimental",
           "tagName": "hp-unfold-page",
           "customElement": true
         }
@@ -14379,22 +14317,6 @@
       "exports": [
         {
           "kind": "js",
-          "name": "HpAlertDialog",
-          "declaration": {
-            "name": "HpAlertDialog",
-            "module": "./elements/overlays/hp-alert-dialog.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpAvatar",
-          "declaration": {
-            "name": "HpAvatar",
-            "module": "./elements/images/hp-avatar.js"
-          }
-        },
-        {
-          "kind": "js",
           "name": "HpBackground",
           "declaration": {
             "name": "HpBackground",
@@ -14403,34 +14325,18 @@
         },
         {
           "kind": "js",
-          "name": "HpBadge",
+          "name": "HpBanner",
           "declaration": {
-            "name": "HpBadge",
-            "module": "./elements/status/hp-badge.js"
+            "name": "HpBanner",
+            "module": "./elements/messaging/hp-banner.js"
           }
         },
         {
           "kind": "js",
-          "name": "HpBadgeTone",
+          "name": "HpBannerTone",
           "declaration": {
-            "name": "HpBadgeTone",
-            "module": "./elements/status/hp-badge.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpBond",
-          "declaration": {
-            "name": "HpBond",
-            "module": "./elements/hp-bond.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpBondState",
-          "declaration": {
-            "name": "HpBondState",
-            "module": "./elements/hp-bond.js"
+            "name": "HpBannerTone",
+            "module": "./elements/messaging/hp-banner.js"
           }
         },
         {
@@ -14467,30 +14373,6 @@
         },
         {
           "kind": "js",
-          "name": "HpCheckbox",
-          "declaration": {
-            "name": "HpCheckbox",
-            "module": "./elements/forms/hp-checkbox.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "./elements/messaging/hp-banner.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpBannerTone",
-          "declaration": {
-            "name": "HpBannerTone",
-            "module": "./elements/messaging/hp-banner.js"
-          }
-        },
-        {
-          "kind": "js",
           "name": "HpCode",
           "declaration": {
             "name": "HpCode",
@@ -14507,10 +14389,50 @@
         },
         {
           "kind": "js",
-          "name": "HpCluster",
+          "name": "HpCollapsible",
           "declaration": {
-            "name": "HpCluster",
-            "module": "./elements/layout/hp-cluster.js"
+            "name": "HpCollapsible",
+            "module": "./elements/layout/hp-collapsible.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpCopy",
+          "declaration": {
+            "name": "HpCopy",
+            "module": "./elements/primitives/hp-copy.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpDemo",
+          "declaration": {
+            "name": "HpDemo",
+            "module": "./elements/layout/hp-demo.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHex",
+          "declaration": {
+            "name": "HpHex",
+            "module": "./elements/primitives/hp-hex.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpLatex",
+          "declaration": {
+            "name": "HpLatex",
+            "module": "./elements/primitives/hp-latex.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpLatexRenderer",
+          "declaration": {
+            "name": "HpLatexRenderer",
+            "module": "./elements/primitives/hp-latex.js"
           }
         },
         {
@@ -14539,130 +14461,10 @@
         },
         {
           "kind": "js",
-          "name": "HpCollapsible",
-          "declaration": {
-            "name": "HpCollapsible",
-            "module": "./elements/layout/hp-collapsible.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpContextMenu",
-          "declaration": {
-            "name": "HpContextMenu",
-            "module": "./elements/overlays/hp-context-menu.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpCopy",
-          "declaration": {
-            "name": "HpCopy",
-            "module": "./elements/primitives/hp-copy.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpDemo",
-          "declaration": {
-            "name": "HpDemo",
-            "module": "./elements/layout/hp-demo.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpDialog",
-          "declaration": {
-            "name": "HpDialog",
-            "module": "./elements/overlays/hp-dialog.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpDropdownMenu",
-          "declaration": {
-            "name": "HpDropdownMenu",
-            "module": "./elements/overlays/hp-dropdown-menu.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpMenuItem",
-          "declaration": {
-            "name": "HpMenuItem",
-            "module": "./elements/overlays/hp-dropdown-menu.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpForm",
-          "declaration": {
-            "name": "HpForm",
-            "module": "./elements/forms/hp-form.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpHex",
-          "declaration": {
-            "name": "HpHex",
-            "module": "./elements/primitives/hp-hex.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpHoverCard",
-          "declaration": {
-            "name": "HpHoverCard",
-            "module": "./elements/overlays/hp-hover-card.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpIcon",
-          "declaration": {
-            "name": "HpIcon",
-            "module": "./elements/images/hp-icon.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpLabel",
-          "declaration": {
-            "name": "HpLabel",
-            "module": "./elements/forms/hp-label.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpLatex",
-          "declaration": {
-            "name": "HpLatex",
-            "module": "./elements/primitives/hp-latex.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpLatexRenderer",
-          "declaration": {
-            "name": "HpLatexRenderer",
-            "module": "./elements/primitives/hp-latex.js"
-          }
-        },
-        {
-          "kind": "js",
           "name": "HpLink",
           "declaration": {
             "name": "HpLink",
             "module": "./elements/navigation/hp-link.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpLinkNode",
-          "declaration": {
-            "name": "HpLinkNode",
-            "module": "./elements/hp-link-node.js"
           }
         },
         {
@@ -14691,14 +14493,6 @@
         },
         {
           "kind": "js",
-          "name": "HpMenubar",
-          "declaration": {
-            "name": "HpMenubar",
-            "module": "./elements/navigation/hp-menubar.js"
-          }
-        },
-        {
-          "kind": "js",
           "name": "HpNavigationMenu",
           "declaration": {
             "name": "HpNavigationMenu",
@@ -14711,30 +14505,6 @@
           "declaration": {
             "name": "HpNavItem",
             "module": "./elements/navigation/hp-navigation-menu.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpOption",
-          "declaration": {
-            "name": "HpOption",
-            "module": "./elements/forms/hp-select.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSelect",
-          "declaration": {
-            "name": "HpSelect",
-            "module": "./elements/forms/hp-select.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpModuleHandle",
-          "declaration": {
-            "name": "HpModuleHandle",
-            "module": "./elements/unfold/hp-module-handle.js"
           }
         },
         {
@@ -14759,86 +14529,6 @@
           "declaration": {
             "name": "HpPixelStates",
             "module": "./elements/images/hp-pixel.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpPopover",
-          "declaration": {
-            "name": "HpPopover",
-            "module": "./elements/overlays/hp-popover.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpProgress",
-          "declaration": {
-            "name": "HpProgress",
-            "module": "./elements/loading/hp-progress.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpProgressTone",
-          "declaration": {
-            "name": "HpProgressTone",
-            "module": "./elements/loading/hp-progress.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpRadio",
-          "declaration": {
-            "name": "HpRadio",
-            "module": "./elements/forms/hp-radio.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpRadioGroup",
-          "declaration": {
-            "name": "HpRadioGroup",
-            "module": "./elements/forms/hp-radio-group.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpScrollArea",
-          "declaration": {
-            "name": "HpScrollArea",
-            "module": "./elements/layout/hp-scroll-area.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpScrollVisibility",
-          "declaration": {
-            "name": "HpScrollVisibility",
-            "module": "./elements/layout/hp-scroll-area.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSeparator",
-          "declaration": {
-            "name": "HpSeparator",
-            "module": "./elements/layout/hp-separator.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSeparatorOrientation",
-          "declaration": {
-            "name": "HpSeparatorOrientation",
-            "module": "./elements/layout/hp-separator.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSeparatorMark",
-          "declaration": {
-            "name": "HpSeparatorMark",
-            "module": "./elements/layout/hp-separator.js"
           }
         },
         {
@@ -14875,14 +14565,6 @@
         },
         {
           "kind": "js",
-          "name": "HpSlider",
-          "declaration": {
-            "name": "HpSlider",
-            "module": "./elements/forms/hp-slider.js"
-          }
-        },
-        {
-          "kind": "js",
           "name": "HpTab",
           "declaration": {
             "name": "HpTab",
@@ -14907,22 +14589,6 @@
         },
         {
           "kind": "js",
-          "name": "HpTag",
-          "declaration": {
-            "name": "HpTag",
-            "module": "./elements/status/hp-tag.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpTagTone",
-          "declaration": {
-            "name": "HpTagTone",
-            "module": "./elements/status/hp-tag.js"
-          }
-        },
-        {
-          "kind": "js",
           "name": "HpTether",
           "declaration": {
             "name": "HpTether",
@@ -14935,102 +14601,6 @@
           "declaration": {
             "name": "HpTetherSettleEventDetail",
             "module": "./elements/tether/hp-tether.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "./elements/messaging/hp-toast.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToastTone",
-          "declaration": {
-            "name": "HpToastTone",
-            "module": "./elements/messaging/hp-toast.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToggle",
-          "declaration": {
-            "name": "HpToggle",
-            "module": "./elements/forms/hp-toggle.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToggleGroup",
-          "declaration": {
-            "name": "HpToggleGroup",
-            "module": "./elements/forms/hp-toggle-group.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToggleGroupType",
-          "declaration": {
-            "name": "HpToggleGroupType",
-            "module": "./elements/forms/hp-toggle-group.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToggleGroupLayout",
-          "declaration": {
-            "name": "HpToggleGroupLayout",
-            "module": "./elements/forms/hp-toggle-group.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpToolbar",
-          "declaration": {
-            "name": "HpToolbar",
-            "module": "./elements/layout/hp-toolbar.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpTooltip",
-          "declaration": {
-            "name": "HpTooltip",
-            "module": "./elements/overlays/hp-tooltip.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpTooltipSide",
-          "declaration": {
-            "name": "HpTooltipSide",
-            "module": "./elements/overlays/hp-tooltip.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpVisuallyHidden",
-          "declaration": {
-            "name": "HpVisuallyHidden",
-            "module": "./elements/primitives/hp-visually-hidden.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpUnfoldList",
-          "declaration": {
-            "name": "HpUnfoldList",
-            "module": "./elements/unfold/hp-unfold-list.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpUnfoldOverlay",
-          "declaration": {
-            "name": "HpUnfoldOverlay",
-            "module": "./elements/unfold/hp-unfold-overlay.js"
           }
         },
         {
