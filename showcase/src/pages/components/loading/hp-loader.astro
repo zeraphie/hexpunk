@@ -73,7 +73,17 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </hp-demo>
 
     <script>
+      // Re-wires on every arrival at this page: the document persists
+      // across client-router navigations while the demo elements are
+      // swapped out and back in. The active flag stops a double run
+      // (module executes, then astro:page-load fires for the same
+      // visit), which would put two drivers on the same loaders.
+      let active = false;
+
       function setup(): void {
+        if (active) {
+          return;
+        }
         const live = [
           document.getElementById("loader-live"),
           document.getElementById("loader-live-linear"),
@@ -81,6 +91,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         if (!live.length) {
           return;
         }
+        active = true;
         // Real-loader rhythm: a pause, then a bump of a few percent
         // — stalls where the frontier parks, bursts where the two
         // timing modes visibly diverge. A lap lands around 12s,
@@ -102,11 +113,11 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         };
         schedule();
       }
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", setup);
-      } else {
-        setup();
-      }
+      document.addEventListener("astro:page-load", setup);
+      document.addEventListener("astro:before-swap", () => {
+        active = false;
+      });
+      setup();
     </script>
 
     <Fragment slot="intent">
