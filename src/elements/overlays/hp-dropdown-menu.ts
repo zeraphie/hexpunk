@@ -3,7 +3,9 @@
 // Click a trigger; a menu opens with role="menu" and slotted
 // hp-menu-item children with role="menuitem". Arrow keys move focus
 // between items, Home / End jump to first / last, Enter / Space
-// activate, Escape dismiss.
+// activate, Escape dismiss. trigger="contextmenu" turns the whole
+// host into a right-click region instead: the menu opens at the
+// cursor (shift+right-click falls through to the browser's own).
 // variant — opens above other content, traps focus inside the menu
 // until close).
 //
@@ -30,8 +32,10 @@ import {
 import { hpBase } from "../../styles/hp-base.js";
 
 /**
- * Dropdown menu — click-triggered popover with menuitem semantics
- * and arrow-key navigation.
+ * Dropdown menu — menu popover with menuitem semantics and
+ * arrow-key navigation. trigger="click" (default) opens from the
+ * slotted trigger element; trigger="contextmenu" opens at the
+ * cursor from a right-click anywhere in the host region.
  *
  * @fires hp-dropdown-open - When the menu opens
  * @fires hp-dropdown-close - When the menu closes
@@ -45,6 +49,11 @@ import { hpBase } from "../../styles/hp-base.js";
  */
 @customElement("hp-dropdown-menu")
 export class HpDropdownMenu extends LitElement {
+  /** How the menu opens: from the slotted trigger's click, or at
+   * the cursor on right-click anywhere in the host region. */
+  @property({ reflect: true })
+  trigger: "click" | "contextmenu" = "click";
+
   @property({ reflect: true })
   side: FloatingSide = "bottom";
 
@@ -59,7 +68,9 @@ export class HpDropdownMenu extends LitElement {
 
   @state() private positionStyle = "";
 
-  private trigger: HTMLElement | null = null;
+  /** Cursor anchor for the contextmenu trigger mode. */
+  private pointAnchor: { x: number; y: number } | null = null;
+  private triggerEl: HTMLElement | null = null;
   private disposeOutside: (() => void) | null = null;
   private disposeEscape: (() => void) | null = null;
   private lastFocused: HTMLElement | null = null;
@@ -67,6 +78,7 @@ export class HpDropdownMenu extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     queueMicrotask(() => this.wireTrigger());
+    this.addEventListener("contextmenu", this.handleContextMenu);
     this.addEventListener("hp-menu-select", this.handleSelect as EventListener);
     this.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("resize", this.handleViewportChange);
@@ -96,13 +108,18 @@ export class HpDropdownMenu extends LitElement {
   }
 
   private wireTrigger(): void {
+    // In contextmenu mode the whole host is the target region — no
+    // trigger button to wire or stamp.
+    if (this.trigger === "contextmenu") {
+      return;
+    }
     const candidate = Array.from(this.children).find((el): el is HTMLElement => {
       return el instanceof HTMLElement && el.getAttribute("slot") !== "content";
     });
-    if (!candidate || candidate === this.trigger) {
+    if (!candidate || candidate === this.triggerEl) {
       return;
     }
-    this.trigger = candidate;
+    this.triggerEl = candidate;
     candidate.addEventListener("click", this.handleTriggerClick);
     if (!candidate.hasAttribute("aria-haspopup")) {
       candidate.setAttribute("aria-haspopup", "menu");
@@ -111,11 +128,11 @@ export class HpDropdownMenu extends LitElement {
   }
 
   private unwireTrigger(): void {
-    if (!this.trigger) {
+    if (!this.triggerEl) {
       return;
     }
-    this.trigger.removeEventListener("click", this.handleTriggerClick);
-    this.trigger = null;
+    this.triggerEl.removeEventListener("click", this.handleTriggerClick);
+    this.triggerEl = null;
   }
 
   private getItems(): HTMLElement[] {
@@ -124,6 +141,30 @@ export class HpDropdownMenu extends LitElement {
 
   private handleTriggerClick = (): void => {
     this.open = !this.open;
+  };
+
+  private handleContextMenu = (event: MouseEvent): void => {
+    if (this.trigger !== "contextmenu") {
+      return;
+    }
+    // Shift+right-click falls through to the native browser menu so
+    // power users can still inspect.
+    if (event.shiftKey) {
+      return;
+    }
+    // Don't re-fire from inside an open menu's items.
+    const path = event.composedPath();
+    if (path.some((n) => n instanceof HTMLElement && n.tagName.toLowerCase() === "hp-menu-item")) {
+      return;
+    }
+    event.preventDefault();
+    this.pointAnchor = { x: event.clientX, y: event.clientY };
+    const alreadyOpen = this.open;
+    this.open = true;
+    if (alreadyOpen) {
+      // Re-anchor when already open (right-click elsewhere).
+      this.reposition();
+    }
   };
 
   private handleViewportChange = (): void => {
@@ -178,8 +219,8 @@ export class HpDropdownMenu extends LitElement {
     this.disposeEscape = onEscape(() => {
       this.open = false;
     });
-    if (this.trigger) {
-      this.trigger.setAttribute("aria-expanded", "true");
+    if (this.triggerEl) {
+      this.triggerEl.setAttribute("aria-expanded", "true");
     }
     this.dispatchEvent(new CustomEvent("hp-dropdown-open", { bubbles: true, composed: true }));
     requestAnimationFrame(() => {
@@ -195,8 +236,8 @@ export class HpDropdownMenu extends LitElement {
     this.disposeOutside = null;
     this.disposeEscape?.();
     this.disposeEscape = null;
-    if (this.trigger) {
-      this.trigger.setAttribute("aria-expanded", "false");
+    if (this.triggerEl) {
+      this.triggerEl.setAttribute("aria-expanded", "false");
     }
     if (this.lastFocused) {
       this.lastFocused.focus();
@@ -205,20 +246,40 @@ export class HpDropdownMenu extends LitElement {
   }
 
   private reposition(): void {
-    if (!this.trigger) {
-      return;
-    }
     const menu = this.renderRoot.querySelector<HTMLElement>(".menu");
     if (!menu) {
       return;
     }
-    const anchorRect = this.trigger.getBoundingClientRect();
+    // Cursor-point anchor in contextmenu mode; the trigger's rect
+    // otherwise.
+    let anchorRect: {
+      left: number;
+      top: number;
+      right: number;
+      bottom: number;
+      width: number;
+      height: number;
+    };
+    let placement = { side: this.side, align: this.align, offset: this.offset };
+    if (this.trigger === "contextmenu") {
+      if (!this.pointAnchor) {
+        return;
+      }
+      const { x, y } = this.pointAnchor;
+      anchorRect = { left: x, top: y, right: x, bottom: y, width: 0, height: 0 };
+      placement = { side: "bottom", align: "start", offset: 2 };
+    } else {
+      if (!this.triggerEl) {
+        return;
+      }
+      anchorRect = this.triggerEl.getBoundingClientRect();
+    }
     const floatingRect = menu.getBoundingClientRect();
     const result = positionFloating(
       anchorRect,
       { width: floatingRect.width, height: floatingRect.height },
       { width: window.innerWidth, height: window.innerHeight },
-      { side: this.side, align: this.align, offset: this.offset }
+      placement
     );
     this.positionStyle = `left: ${result.x}px; top: ${result.y}px;`;
   }
@@ -266,7 +327,7 @@ export class HpDropdownMenu extends LitElement {
 }
 
 /**
- * A single menu item inside hp-dropdown-menu / hp-context-menu.
+ * A single menu item inside hp-dropdown-menu (either trigger mode).
  * role="menuitem"; Enter / Space activate; emits hp-menu-select.
  *
  * @fires hp-menu-select - When activated. detail: { value, item }
