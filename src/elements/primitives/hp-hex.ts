@@ -33,6 +33,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { hpBase } from "../../styles/hp-base.js";
+import { INNER_POINTS, OUTER_POINTS, RING_INSET } from "../../lib/hex-geometry.js";
 
 /**
  * SVG hex primitive. Every other hex-shaped atom composes this for
@@ -123,80 +124,25 @@ export class HpHex extends LitElement {
     `,
   ];
 
-  /** Inner-polygon points per size — uniform scale of the outer hex
-   * around its centre. Pre-computed because CSS transform: scale()
-   * on SVG polygons doesn't apply reliably across engines, and
-   * display:none on per-size variants didn't hide them as expected
-   * either. Rendering exactly one polygon avoids both pitfalls.
-   *
-   * Stroke widths are 2 / 4 / 6 px for sm / md / lg so the visual
-   * weight scales with the cell instead of staying a flat 6 px.
-   * Scale factors land on sm 0.95, md 0.923, lg 0.925.
-   *
-   * sm and lg use the pointy-top geometry (viewBox 100 × 115.47;
-   * apothem 50 in viewBox units). md is the flat-top variant
-   * (viewBox 100 × 86.6; apothem 43.3) — its scale factor differs
-   * from the pointy-top sizes because the same 4 px stroke is a
-   * larger fraction of the smaller flat-top apothem. */
-  /** Inner-polygon points per size — uniform scale of the outer hex
-   * around its centre (pointy-top: centre 50,57.735; flat-top: 50,43.3).
-   * Each entry was computed as `outer * scale + (1 - scale) * centre`
-   * to keep the stroke ring proportional to the cell. Scale factors:
-   *
-   * xxs (cell 20px, stroke 1px display ≈ 5 viewBox units) → 0.90
-   * xs (cell 50px, stroke 1.5px ≈ 3 viewBox units) → 0.94
-   * sm (cell 100px, stroke 2px) → 0.95
-   * md (cell 180px flat-top, stroke 4px scaled) → 0.923
-   * lg (cell 320px, stroke 6px scaled) → 0.925
-   *
-   * Without per-size points the polygon renders empty (no points
-   * attribute), the outer paints the entire hex, and the cell reads
-   * as fully filled — which is exactly the bug that surfaced for
-   * xs / xxs after the inline-form-input tier was added. */
   /**
-   * Half-width of the visible ring as a fraction of the cell, i.e.
-   * `1 - scale` from the table above. Published as `--hp-hex-inset`
-   * so a layout can overlap neighbours by exactly the ring and merge
-   * two outlines into one shared edge. It is deliberately *not*
-   * `--hp-hex-stroke`: the ring comes from a uniform polygon scale,
-   * and for sm that is 2.5px where the stroke token says 2px — a
-   * half-pixel of daylight, which reads as a doubled line.
+   * Half-width of the visible ring as a fraction of the cell —
+   * re-exposed from the shared geometry tables (src/lib/
+   * hex-geometry.ts, which also documents the per-size scale
+   * factors). Published as `--hp-hex-inset` so a layout can overlap
+   * neighbours by exactly the ring and merge two outlines into one
+   * shared edge. Deliberately *not* `--hp-hex-stroke`: the ring
+   * comes from a uniform polygon scale, and for sm that is 2.5px
+   * where the stroke token says 2px — a half-pixel of daylight,
+   * which reads as a doubled line.
    */
-  static readonly RING_INSET: Record<"xxs" | "xs" | "sm" | "md" | "lg", number> = {
-    xxs: 0.1,
-    xs: 0.06,
-    sm: 0.05,
-    md: 0.077,
-    lg: 0.075,
-  };
-
-  private static readonly INNER_POINTS: Record<"xxs" | "xs" | "sm" | "md" | "lg", string> = {
-    xxs: "50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76",
-    xs: "50,3.46 97,30.6 97,84.87 50,112.01 3,84.87 3,30.6",
-    sm: "50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31",
-    md: "96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33",
-    lg: "50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04",
-  };
-
-  /** Outer-polygon points + viewBox per orientation. Keyed by
-   * whether the hex renders pointy-top (sm / lg) or flat-top (md). */
-  private static readonly OUTER_POINTS = {
-    pointy: {
-      viewBox: "0 0 100 115.47",
-      points: "50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87",
-    },
-    flat: {
-      viewBox: "0 0 100 86.6",
-      points: "100,43.3 75,86.6 25,86.6 0,43.3 25,0 75,0",
-    },
-  } as const;
+  static readonly RING_INSET = RING_INSET;
 
   override render() {
-    const outer = this.size === "md" ? HpHex.OUTER_POINTS.flat : HpHex.OUTER_POINTS.pointy;
+    const outer = this.size === "md" ? OUTER_POINTS.flat : OUTER_POINTS.pointy;
     return html`
       <svg viewBox=${outer.viewBox} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <polygon class="outer" points=${outer.points}></polygon>
-        <polygon class="inner" points=${HpHex.INNER_POINTS[this.size]}></polygon>
+        <polygon class="inner" points=${INNER_POINTS[this.size]}></polygon>
       </svg>
     `;
   }
