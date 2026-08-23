@@ -55,7 +55,7 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Typography",
         children: [
-          { path: "/components/typography/text", title: "text & prose" },
+          { path: "/components/typography/text", title: "HTML text" },
           { path: "/components/typography/hp-code", title: "hp-code" },
           { path: "/components/typography/hp-copy", title: "hp-copy" },
           { path: "/components/typography/hp-latex", title: "hp-latex" },
