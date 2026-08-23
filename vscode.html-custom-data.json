@@ -12,35 +12,6 @@
       ]
     },
     {
-      "name": "hp-avatar",
-      "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
-      "attributes": [
-        {
-          "name": "src",
-          "description": "Image URL. When set, the image renders inside the hex. On load\nerror or while pending, the slotted fallback shows instead."
-        },
-        {
-          "name": "alt",
-          "description": "Alt text for the image. Required for non-decorative avatars."
-        },
-        {
-          "name": "size",
-          "description": "Avatar size — matches hp-hex sizes.",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "hp-background",
       "description": "Pointer-aware hex grid backdrop. A faint hex pattern fills the\nhost; pointer movement stirs a soft energy wake that brightens\nthe strokes it passes through, then drifts and fades. Pressing on\nempty (non-interactive) space ignites a few glowing runners that\ncrawl outward along the lattice edges, branching at random. Two\nlayout modes: contained\n(default — absolute, fills a positioned parent) and `page` (fixed\nfull-viewport backdrop behind page content).",
       "attributes": [
@@ -588,27 +559,6 @@
         {
           "name": "close-delay",
           "description": "Close delay (ms) before hiding after pointer leaves both the\ntrigger and the card. Default 300 — gives users time to move\nthe pointer from trigger to card."
-        }
-      ]
-    },
-    {
-      "name": "hp-icon",
-      "description": "SVG icon wrapper — sized via `size` (sm / md / lg), strokes inherit\n`currentColor`.",
-      "attributes": [
-        {
-          "name": "size",
-          "description": "Icon size — `sm` (16px), `md` (default, 20px), or `lg` (24px).",
-          "values": [
-            {
-              "name": "sm"
-            },
-            {
-              "name": "md"
-            },
-            {
-              "name": "lg"
-            }
-          ]
         }
       ]
     },
