@@ -32,6 +32,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart trigger - The trigger container
  * @csspart content - The collapsible content region
+ * @status done
  */
 @customElement("hp-collapsible")
 export class HpCollapsible extends LitElement {

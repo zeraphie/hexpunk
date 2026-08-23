@@ -16,6 +16,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @slot - Label text
  * @csspart link - The internal anchor element
+ * @status done
  */
 @customElement("hp-sidebar-item")
 export class HpSidebarItem extends LitElement {

@@ -38,6 +38,23 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <hp-demo caption='trigger="contextmenu" — right-click the region'>
+      <hp-dropdown-menu trigger="contextmenu">
+        <div class="ctx-region">Right-click anywhere in here (shift+right-click keeps the browser menu)</div>
+        <hp-menu-item value="cut">cut</hp-menu-item>
+        <hp-menu-item value="copy">copy</hp-menu-item>
+        <hp-menu-item value="paste">paste</hp-menu-item>
+      </hp-dropdown-menu>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-dropdown-menu trigger="contextmenu">
+    <div>Right-click anywhere in here</div>
+    <hp-menu-item value="cut">cut</hp-menu-item>
+    <hp-menu-item value="copy">copy</hp-menu-item>
+    <hp-menu-item value="paste">paste</hp-menu-item>
+  </hp-dropdown-menu>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>Accessibility</h2>
       <p>
@@ -48,4 +65,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
+  <style>
+    .ctx-region {
+      border: 1px dashed var(--hp-outline-variant);
+      padding: var(--hp-xl);
+      color: var(--hp-on-surface-variant);
+      user-select: none;
+    }
+  </style>
 </Layout>

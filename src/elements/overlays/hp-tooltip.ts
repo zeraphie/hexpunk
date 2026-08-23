@@ -23,6 +23,7 @@ export type HpTooltipSide = "top" | "right" | "bottom" | "left";
  * @slot content - Tooltip body
  *
  * @csspart tooltip - The tooltip body element
+ * @status wip
  */
 @customElement("hp-tooltip")
 export class HpTooltip extends LitElement {

@@ -1,4 +1,4 @@
-/* tokens.dark.css — Generated from DESIGN.md frontmatter.
+/* tokens.dark.css — Generated from DESIGN.md frontmatter. Do not edit.
  *
  * The selector is `:root, [data-theme="dark"]` so the dark token set
  * is both the default at the document root AND an explicit opt-in
@@ -146,7 +146,7 @@
   --hp-gutter: 12px;
   --hp-margin: 24px;
   --hp-hex-cell-xxs: 20px;
-  --hp-hex-cell-xs: 32px;
+  --hp-hex-cell-xs: 50px;
   --hp-hex-cell-sm: 100px;
   --hp-hex-cell-md: 180px;
   --hp-hex-cell-lg: 320px;
@@ -161,7 +161,6 @@
   --hp-icon-sm: 16px;
   --hp-icon-md: 20px;
   --hp-icon-lg: 24px;
-  --hp-hex-cell-xs: 50px;
   --hp-tether-width: 1px;
   --hp-target-min: 44px;
   --hp-grid-snap-tolerance: 0.35;
@@ -563,14 +562,14 @@
   --hp-comp-surface-ramp-mid-text-color: var(--hp-surface-variant);
   --hp-comp-outline-rule-background-color: var(--hp-outline);
   --hp-comp-outline-rule-text-color: var(--hp-outline-variant);
-  --hp-comp-link-arc-background-color: var(--hp-secondary);
-  --hp-comp-link-arc-text-color: var(--hp-on-surface-variant);
-  --hp-comp-link-arc-idle-background-color: var(--hp-secondary-container);
-  --hp-comp-link-arc-idle-text-color: var(--hp-on-surface-variant);
-  --hp-comp-link-arc-hover-background-color: var(--hp-secondary);
-  --hp-comp-link-arc-hover-text-color: var(--hp-on-surface);
-  --hp-comp-link-arc-active-background-color: var(--hp-primary-bright);
-  --hp-comp-link-arc-active-text-color: var(--hp-on-primary);
+  --hp-comp-tether-arc-background-color: var(--hp-secondary);
+  --hp-comp-tether-arc-text-color: var(--hp-on-surface-variant);
+  --hp-comp-tether-arc-idle-background-color: var(--hp-secondary-container);
+  --hp-comp-tether-arc-idle-text-color: var(--hp-on-surface-variant);
+  --hp-comp-tether-arc-hover-background-color: var(--hp-secondary);
+  --hp-comp-tether-arc-hover-text-color: var(--hp-on-surface);
+  --hp-comp-tether-arc-active-background-color: var(--hp-primary-bright);
+  --hp-comp-tether-arc-active-text-color: var(--hp-on-primary);
   --hp-comp-link-node-background-color: var(--hp-surface);
   --hp-comp-link-node-text-color: var(--hp-primary);
   --hp-comp-link-node-size: var(--hp-xs);

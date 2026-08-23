@@ -52,9 +52,13 @@ export interface ApiCssPart {
   description?: string;
 }
 
+export type ElementStatus = "wip" | "experimental" | "done";
+
 export interface Api {
   tagName: string;
   className: string;
+  /** Lifecycle status from the class's `@status` JSDoc tag. */
+  status: ElementStatus;
   description?: string;
   properties: ApiField[];
   events: ApiEvent[];
@@ -101,6 +105,7 @@ interface ManifestDeclaration {
   name: string;
   tagName?: string;
   customElement?: boolean;
+  status?: string;
   description?: string;
   members?: ManifestField[];
   events?: ManifestEvent[];
@@ -138,6 +143,7 @@ function load(): Map<string, Api> {
         map.set(decl.tagName, {
           tagName: decl.tagName,
           className: decl.name,
+          status: (decl.status ?? "wip") as ElementStatus,
           description: decl.description,
           properties: fields.map((f) => ({
             name: f.name,

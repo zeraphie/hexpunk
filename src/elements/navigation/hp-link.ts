@@ -18,6 +18,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * Inline text link. Styled anchor with the hexpunk hue-swap.
  *
  * @slot - Link label
+ * @status done
  */
 @customElement("hp-link")
 export class HpLink extends LitElement {

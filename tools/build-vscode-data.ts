@@ -43,6 +43,8 @@ const PRIMITIVE_TYPES = new Set(["string", "number", "boolean"]);
 const tags = (cem.modules ?? [])
   .flatMap((m) => m.declarations ?? [])
   .filter((d): d is CEMDeclaration & { tagName: string } => Boolean(d.customElement && d.tagName))
+  // Code-unit order: identical on every platform and ICU build.
+  .sort((a, b) => (a.tagName < b.tagName ? -1 : a.tagName > b.tagName ? 1 : 0))
   .map((d) => ({
     name: d.tagName,
     description: d.description ?? "",

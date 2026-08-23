@@ -6,18 +6,21 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 <Layout title="hp-checkbox">
   <ComponentDocs title="hp-checkbox">
     <p slot="description">
-      Hex checkbox — hollow at rest, primary-filled with a check glyph when <code>checked</code>.
-      <code>indeterminate</code> stamps a horizontal bar for mixed state. Click or Space toggles;
-      focus-ring on keyboard focus.
+      Hex checkbox — a thin light-DOM alias over <code>&lt;input type="checkbox"&gt;</code>.
+      The inner input is the real control: it submits with the form, associates with labels,
+      validates, and toggles with Space natively; the hex chrome is the same polygon set
+      <code>hp-hex</code> draws, painted by the generated <code>hex-controls.css</code>.
+      Slotted children become the label.
     </p>
 
     <hp-demo caption="States">
-      <hp-checkbox></hp-checkbox>
-      <hp-checkbox checked></hp-checkbox>
-      <hp-checkbox indeterminate></hp-checkbox>
-      <hp-checkbox disabled></hp-checkbox>
-      <hp-checkbox checked disabled></hp-checkbox>
-
+      <div class="row">
+        <hp-checkbox></hp-checkbox>
+        <hp-checkbox checked></hp-checkbox>
+        <hp-checkbox indeterminate></hp-checkbox>
+        <hp-checkbox disabled></hp-checkbox>
+        <hp-checkbox checked disabled></hp-checkbox>
+      </div>
       <hp-code slot="code" language="html">{`<body>
   <hp-checkbox></hp-checkbox>
   <hp-checkbox checked></hp-checkbox>
@@ -27,24 +30,135 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
-    <hp-demo caption="With label">
-      <hp-checkbox id="terms"></hp-checkbox>
-      <hp-label for="terms">accept terms</hp-label>
-
+    <hp-demo caption="Slotted label — click the text">
+      <div class="col">
+        <hp-checkbox>Subscribe to the changelog</hp-checkbox>
+        <hp-checkbox checked>Show focus rings</hp-checkbox>
+        <hp-checkbox size="xxs">Dense tier (xxs)</hp-checkbox>
+      </div>
       <hp-code slot="code" language="html">{`<body>
-  <hp-checkbox id="terms"></hp-checkbox>
-  <hp-label for="terms">Accept terms</hp-label>
+  <hp-checkbox>Subscribe to the changelog</hp-checkbox>
+  <hp-checkbox checked>Show focus rings</hp-checkbox>
+  <hp-checkbox size="xxs">Dense tier (xxs)</hp-checkbox>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Form participation">
+      <form id="cb-form" onsubmit="event.preventDefault()">
+        <div class="col">
+          <hp-checkbox name="updates" checked>Product updates</hp-checkbox>
+          <hp-checkbox name="digest">Weekly digest</hp-checkbox>
+          <hp-button size="sm" id="cb-read">Read FormData</hp-button>
+          <pre id="cb-out" class="cb-out">–</pre>
+        </div>
+      </form>
+      <hp-code slot="code" language="html">{`<body>
+  <form>
+    <hp-checkbox name="updates" checked>Product updates</hp-checkbox>
+    <hp-checkbox name="digest">Weekly digest</hp-checkbox>
+  </form>
+  <script>
+    new FormData(form); // updates=on — checked boxes serialise natively
+  </script>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Validation — required blocks submission">
+      <form id="cb-validate">
+        <div class="col">
+          <hp-checkbox name="terms" required>Accept the terms</hp-checkbox>
+          <hp-button size="sm" id="cb-submit">Submit</hp-button>
+        </div>
+      </form>
+      <hp-code slot="code" language="html">{`<body>
+  <form>
+    <hp-checkbox name="terms" required>Accept the terms</hp-checkbox>
+    <button>Submit</button>
+  </form>
 </body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
       <h2>Accessibility</h2>
       <p>
-        <code>role="checkbox"</code>, <code>aria-checked</code> reflects state
-        (<code>true</code> / <code>false</code> / <code>mixed</code> for indeterminate). Space
-        toggles. <code>disabled</code> blocks the toggle and removes from tab order with
-        <code>aria-disabled="true"</code> + <code>tabindex="-1"</code>.
+        The native input carries everything: checkbox semantics, <code>aria-checked</code>
+        (including <code>mixed</code>), Space toggling, label activation, and the focus ring
+        on keyboard focus. <code>disabled</code> removes it from the tab order and from
+        submission — all browser behaviour, none of it reimplemented.
       </p>
+      <h2>Field state</h2>
+      <p>
+        The host stamps <code>data-dirty</code> after the first user toggle and
+        <code>data-touched</code> after the first blur — hooks for form-level validation
+        modes and error display. <code>checkValidity()</code> / <code>reportValidity()</code>
+        / <code>validationMessage</code> forward to the input.
+      </p>
+      <hp-banner tone="do">
+        Write the label as children — the wrapping label association comes for free. For a
+        no-JS surface, the same look is available as raw markup: see the pattern in
+        <code>hex-controls.css</code>.
+      </hp-banner>
     </Fragment>
   </ComponentDocs>
+
+  <style>
+    .row {
+      display: flex;
+      gap: var(--hp-md);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      display: grid;
+      gap: var(--hp-sm);
+      justify-items: start;
+    }
+
+    .cb-out {
+      font-size: var(--hp-typo-body-sm-font-size);
+      color: var(--hp-on-surface-variant);
+      background: var(--hp-surface-container-low);
+      border: 1px solid var(--hp-outline-variant);
+      padding: var(--hp-sm);
+      margin: 0;
+    }
+  </style>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    onPageVisit((signal) => {
+      const form = document.getElementById("cb-form") as HTMLFormElement | null;
+      if (!form) {
+        return;
+      }
+      const out = document.getElementById("cb-out")!;
+      document.getElementById("cb-read")!.addEventListener(
+        "click",
+        () => {
+          const entries = [...new FormData(form).entries()]
+            .map(([k, v]) => `${k}=${String(v)}`)
+            .join("  ");
+          out.textContent = entries || "(no entries)";
+        },
+        { signal }
+      );
+      const vForm = document.getElementById("cb-validate") as HTMLFormElement;
+      vForm.addEventListener(
+        "submit",
+        (e) => {
+          e.preventDefault();
+        },
+        { signal }
+      );
+      document.getElementById("cb-submit")!.addEventListener(
+        "click",
+        () => {
+          vForm.reportValidity();
+        },
+        { signal }
+      );
+    });
+  </script>
 </Layout>

@@ -59,6 +59,7 @@ previewThemeSheet.replaceSync(`${lightTokens}\n${darkTokens}`);
  * @csspart preview - The preview area with backdrop
  * @csspart actions - The footer toolbar with the Copy button
  * @csspart code - The code area
+ * @status done
  */
 @customElement("hp-demo")
 export class HpDemo extends LitElement {

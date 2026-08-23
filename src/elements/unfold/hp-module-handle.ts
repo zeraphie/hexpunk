@@ -19,6 +19,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * Drag handle — a small filled hex used as the grip for moving an
  * hp-cluster or hp-unfold-list. Pure visual indicator; the parent
  * drives the actual drag interaction via drag-handle attribute.
+ * @status wip
  */
 @customElement("hp-module-handle")
 export class HpModuleHandle extends LitElement {

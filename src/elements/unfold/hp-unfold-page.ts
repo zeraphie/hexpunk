@@ -80,6 +80,7 @@ const EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
  * `setNavigate`.
  *
  * @slot source - The hex / element that triggers the expand
+ * @status experimental
  */
 @customElement("hp-unfold-page")
 export class HpUnfoldPage extends LitElement {

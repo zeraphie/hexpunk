@@ -25,6 +25,7 @@ import { hpBase } from "../../styles/hp-base.js";
  * type="submit" drives form.requestSubmit() inside a form.
  *
  * @slot - Button label content
+ * @status done
  */
 @customElement("hp-button")
 export class HpButton extends LitElement {
@@ -49,7 +50,7 @@ export class HpButton extends LitElement {
    * - `xxs` (20px) — dense / tabular controls (e.g. inline icon
    * buttons in a table row)
    * - `xs` (32px) — comfortable form-control sized buttons (e.g.
-   * hp-toggle-group, segmented controls)
+   * toolbars of aria-pressed buttons, segmented controls)
    * - `sm` (100px, default) — full content / CTA size
    * - `md` (180px) — feature-tile button
    * - `lg` (320px) — hero / landing tile */

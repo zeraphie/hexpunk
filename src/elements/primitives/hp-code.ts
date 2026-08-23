@@ -17,9 +17,6 @@ import { customElement, property, state } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 import { hpBase } from "../../styles/hp-base.js";
-// Side-effect import — guarantees hp-separator is registered
-// whenever hp-code is loaded, since the gutter divider uses it.
-import "../layout/hp-separator.js";
 
 /** Signature for a consumer-registered tokeniser. Return an HTML
  * string (with token-class spans), null to skip highlighting for
@@ -52,7 +49,7 @@ function dedent(code: string): string {
   const lines = trimmed.split("\n");
   const indents = lines
     .filter((l) => l.trim().length > 0)
-    .map((l) => /^(\s*)/.exec(l)?.[1].length ?? 0);
+    .map((l) => /^(\s*)/.exec(l)?.[1]?.length ?? 0);
   const min = indents.length > 0 ? Math.min(...indents) : 0;
   return lines.map((l) => l.slice(min)).join("\n");
 }
@@ -66,6 +63,7 @@ function dedent(code: string): string {
  * @cssproperty --hp-code-background - Override the block background
  * @csspart pre - The internal <pre> element
  * @csspart code - The internal <code> element
+ * @status done
  */
 @customElement("hp-code")
 export class HpCode extends LitElement {
@@ -167,8 +165,14 @@ export class HpCode extends LitElement {
       }
 
       :host([no-line-numbers]) .ln,
-      :host([no-line-numbers]) hp-separator {
+      :host([no-line-numbers]) .gutter-rule {
         display: none;
+      }
+
+      .gutter-rule {
+        width: 1px;
+        align-self: stretch;
+        background: var(--hp-outline-faint);
       }
 
       .ln {
@@ -243,7 +247,7 @@ export class HpCode extends LitElement {
       (line, i) =>
         html`<span class="row"
           ><span class="ln" aria-hidden="true">${i + 1}</span
-          ><hp-separator orientation="vertical" mark="none" decorative></hp-separator
+          ><span class="gutter-rule" aria-hidden="true"></span
           ><span class="content">${unsafeHTML(line || "&nbsp;")}</span></span
         >`
     )}</code></pre>`;

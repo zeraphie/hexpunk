@@ -27,17 +27,52 @@
 // hand-written histories.
 
 import { getChangelogFor, renderInline, titleCase } from "../lib/changelog.ts";
+import { getApiFor, type ElementStatus } from "../lib/api.ts";
 import ComponentApi from "./ComponentApi.astro";
 
 interface Props {
   title: string;
+  /** Native-element page: the subject is styled HTML, not an hp-*
+   * component — the banner says so and the API tab swaps the JS
+   * install for the elements.css imports. */
+  native?: boolean;
 }
-const { title } = Astro.props;
+const { title, native = false } = Astro.props;
 const changelog = getChangelogFor(title);
+
+// MDN-style lifecycle banner (like MDN's Baseline box): every element
+// carries `@status` in its JSDoc; the manifest is the source of truth.
+const status: ElementStatus | "native" = native ? "native" : (getApiFor(title)?.status ?? "wip");
+const STATUS_BANNER: Record<ElementStatus | "native", { tone: string; label: string; text: string }> = {
+  native: {
+    tone: "neutral",
+    label: "native",
+    text: "Native HTML, styled by elements.css — no component required.",
+  },
+  done: {
+    tone: "positive",
+    label: "done",
+    text: "Stable API with a real consumer — safe to build on.",
+  },
+  experimental: {
+    tone: "warn",
+    label: "experimental",
+    text: "Exported and usable; the API may still change between releases.",
+  },
+  wip: {
+    tone: "alert",
+    label: "wip",
+    text: "Showcase-only: not exported from the package, and may change or vanish.",
+  },
+};
+const banner = STATUS_BANNER[status];
 ---
 
 <header class="component-header">
   <h1>{title}</h1>
+  <hp-banner class="status-banner" tone={banner.tone} label={banner.label} data-status={status}>
+    {banner.text}
+  </hp-banner>
   <div class="component-description">
     <slot name="description" />
   </div>
@@ -56,12 +91,23 @@ const changelog = getChangelogFor(title);
   </hp-tab-panel>
 
   <hp-tab-panel value="api" id="api" data-tab-panel="api">
-    <section class="code-install">
-      <h3>Install</h3>
-      <pre><code>bun add @hexpunk/core lit</code></pre>
-      <pre><code>{`import "@hexpunk/core";`}</code></pre>
-    </section>
-    <ComponentApi tagName={title} />
+    {
+      native ? (
+        <section class="code-install">
+          <h3>Install</h3>
+          <pre><code>{`import "@hexpunk/core/tokens.dark.css";
+import "@hexpunk/core/tokens.light.css";
+import "@hexpunk/core/elements.css";`}</code></pre>
+        </section>
+      ) : (
+        <section class="code-install">
+          <h3>Install</h3>
+          <pre><code>bun add @hexpunk/core lit</code></pre>
+          <pre><code>{`import "@hexpunk/core";`}</code></pre>
+        </section>
+      )
+    }
+    {!native && <ComponentApi tagName={title} />}
     <slot name="api" />
   </hp-tab-panel>
 

@@ -6,77 +6,113 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 <Layout title="hp-radio">
   <ComponentDocs title="hp-radio">
     <p slot="description">
-      Single radio button — pairs with <code>&lt;hp-radio-group&gt;</code> as a parent. The
-      group manages selection, arrow-key navigation, and dispatches the <code>change</code>
-      event. Individual <code>hp-radio</code> renders the hex chrome (hollow at rest, primary-
-      filled with a concentric dot when checked) and emits <code>hp-radio-select</code> on
-      activation.
+      Hex radio — a thin light-DOM alias over <code>&lt;input type="radio"&gt;</code>.
+      Radios sharing a <code>name</code> are one single-select group with arrow-key
+      movement and roving focus, all native — there is no group element to manage.
+      Selected shows a concentric filled hex inside the ring.
     </p>
 
-    <hp-demo caption="Group">
-      <hp-radio-group value="medium" style="gap: 12px;">
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <hp-radio value="small"></hp-radio>
-          <span>small</span>
-        </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <hp-radio value="medium"></hp-radio>
-          <span>medium</span>
-        </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <hp-radio value="large"></hp-radio>
-          <span>large</span>
-        </div>
-      </hp-radio-group>
-
+    <hp-demo caption="A group is just a shared name">
+      <div class="col" role="radiogroup" aria-label="Density">
+        <hp-radio name="density" value="compact">Compact</hp-radio>
+        <hp-radio name="density" value="default" checked>Default</hp-radio>
+        <hp-radio name="density" value="comfortable">Comfortable</hp-radio>
+        <hp-radio name="density" value="off" disabled>Disabled option</hp-radio>
+      </div>
       <hp-code slot="code" language="html">{`<body>
-  <hp-radio-group value="medium">
-    <hp-radio value="small"></hp-radio>
-    <hp-radio value="medium"></hp-radio>
-    <hp-radio value="large"></hp-radio>
-  </hp-radio-group>
-
-  document
-    .querySelector("hp-radio-group")
-    .addEventListener("change", (ev) => {
-      console.log(ev.detail.value);
-    });
+  <div role="radiogroup" aria-label="Density">
+    <hp-radio name="density" value="compact">Compact</hp-radio>
+    <hp-radio name="density" value="default" checked>Default</hp-radio>
+    <hp-radio name="density" value="comfortable">Comfortable</hp-radio>
+  </div>
 </body>`}</hp-code>
     </hp-demo>
 
-    <hp-demo caption="Disabled">
-      <hp-radio-group value="b" style="gap: 12px;">
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <hp-radio value="a"></hp-radio>
-          <span>a</span>
-        </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <hp-radio value="b"></hp-radio>
-          <span>b</span>
-        </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <hp-radio value="c" disabled></hp-radio>
-          <span style="opacity: 0.5">c (disabled)</span>
-        </div>
-      </hp-radio-group>
-
+    <hp-demo caption="Dense tier">
+      <div class="col" role="radiogroup" aria-label="Dense example">
+        <hp-radio size="xxs" name="dense" checked>Option A</hp-radio>
+        <hp-radio size="xxs" name="dense">Option B</hp-radio>
+      </div>
       <hp-code slot="code" language="html">{`<body>
-  <hp-radio-group value="b">
-    <hp-radio value="a"></hp-radio>
-    <hp-radio value="b"></hp-radio>
-    <hp-radio value="c" disabled></hp-radio>
-  </hp-radio-group>
+  <hp-radio size="xxs" name="dense" checked>Option A</hp-radio>
+  <hp-radio size="xxs" name="dense">Option B</hp-radio>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Form participation">
+      <form id="radio-form" onsubmit="event.preventDefault()">
+        <div class="col" role="radiogroup" aria-label="Tier">
+          <hp-radio name="tier" value="xs" checked>Comfortable</hp-radio>
+          <hp-radio name="tier" value="xxs">Dense</hp-radio>
+          <hp-button size="sm" id="radio-read">Read FormData</hp-button>
+          <pre id="radio-out" class="radio-out">–</pre>
+        </div>
+      </form>
+      <hp-code slot="code" language="html">{`<body>
+  <form>
+    <hp-radio name="tier" value="xs" checked>Comfortable</hp-radio>
+    <hp-radio name="tier" value="xxs">Dense</hp-radio>
+  </form>
+  <script>
+    new FormData(form); // tier=xs — the selected value serialises
+  </script>
 </body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
       <h2>Accessibility</h2>
       <p>
-        Group exposes <code>role="radiogroup"</code>; each child <code>role="radio"</code> with
-        <code>aria-checked</code>. Arrow keys move focus + selection between children
-        (ArrowDown / ArrowUp for vertical, ArrowLeft / ArrowRight for horizontal); Home / End
-        jump to first / last. Only one radio is tabbable at a time (roving tabindex pattern).
+        The native inputs carry radio semantics, group arrow-key movement, label
+        activation, and the focus ring. Wrap a group in <code>role="radiogroup"</code>
+        with a label so the set announces as one control.
       </p>
+      <hp-banner tone="do">
+        Group by <code>name</code>; read the selection from FormData or the group's
+        <code>change</code> events (target is the inner input).
+      </hp-banner>
+      <hp-banner tone="dont">
+        Reach for a group-management element — single-select and arrow keys are what the
+        browser already does with a shared <code>name</code>.
+      </hp-banner>
     </Fragment>
   </ComponentDocs>
+
+  <style>
+    .col {
+      display: grid;
+      gap: var(--hp-sm);
+      justify-items: start;
+    }
+
+    .radio-out {
+      font-size: var(--hp-typo-body-sm-font-size);
+      color: var(--hp-on-surface-variant);
+      background: var(--hp-surface-container-low);
+      border: 1px solid var(--hp-outline-variant);
+      padding: var(--hp-sm);
+      margin: 0;
+    }
+  </style>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    onPageVisit((signal) => {
+      const form = document.getElementById("radio-form") as HTMLFormElement | null;
+      if (!form) {
+        return;
+      }
+      const out = document.getElementById("radio-out")!;
+      document.getElementById("radio-read")!.addEventListener(
+        "click",
+        () => {
+          const entries = [...new FormData(form).entries()]
+            .map(([k, v]) => `${k}=${String(v)}`)
+            .join("  ");
+          out.textContent = entries || "(no entries)";
+        },
+        { signal }
+      );
+    });
+  </script>
 </Layout>

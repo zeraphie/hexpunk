@@ -51,6 +51,12 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Token-tinted scrollbars, document-wide (thumb / track). The
+   * fully hexpunk scrollbar is hp-scroll-area's job. Firefox path —
+   * WebKit/Blink get square-cornered ones below, and Chromium
+   * ignores the pseudos whenever the standard property is set, so
+   * the two paths are mutually exclusive per engine. */
+  scrollbar-color: var(--hp-outline-variant) var(--hp-surface-container-low);
 }
 
 body {
@@ -363,6 +369,85 @@ hr {
   color: inherit;
 }
 
+/* hr.hp-separator — the divider with a centre glyph, matching
+ * hp-separator: 1px segments in outline-faint with an --hp-sm gap
+ * around a small hex (default), dot, or nothing. Vertical via
+ * data-orientation (add aria-orientation="vertical" yourself);
+ * decorative dividers take aria-hidden="true". */
+
+hr.hp-separator {
+  position: relative;
+  height: 12px;
+  border: 0;
+  color: var(--hp-outline-faint);
+  background-image:
+    linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size:
+    calc(50% - (var(--hp-sm) + 4px)) 1px,
+    calc(50% - (var(--hp-sm) + 4px)) 1px;
+  background-position:
+    left center,
+    right center;
+}
+
+hr.hp-separator::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 9.24px;
+  transform: translate(-50%, -50%);
+  background: currentColor;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+hr.hp-separator[data-mark="dot"] {
+  background-size:
+    calc(50% - (var(--hp-sm) + 2px)) 1px,
+    calc(50% - (var(--hp-sm) + 2px)) 1px;
+}
+
+hr.hp-separator[data-mark="dot"]::after {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  clip-path: none;
+}
+
+hr.hp-separator[data-mark="none"] {
+  background-size: 100% 1px;
+  background-position: center;
+}
+
+hr.hp-separator[data-mark="none"]::after {
+  content: none;
+}
+
+hr.hp-separator[data-orientation="vertical"] {
+  width: 12px;
+  height: auto;
+  align-self: stretch;
+  background-size:
+    1px calc(50% - (var(--hp-sm) + 4.62px)),
+    1px calc(50% - (var(--hp-sm) + 4.62px));
+  background-position:
+    center top,
+    center bottom;
+}
+
+hr.hp-separator[data-orientation="vertical"][data-mark="dot"] {
+  background-size:
+    1px calc(50% - (var(--hp-sm) + 2px)),
+    1px calc(50% - (var(--hp-sm) + 2px));
+}
+
+hr.hp-separator[data-orientation="vertical"][data-mark="none"] {
+  background-size: 1px 100%;
+  background-position: center;
+}
+
 /* ── Tables ────────────────────────────────────────────────────── */
 
 table {
@@ -604,8 +689,192 @@ label {
   color: var(--hp-on-surface);
 }
 
+/* ── Progress + meter ──────────────────────────────────────────── */
+
+/* The linear progress primitives, styled to the system: 6px track in
+ * outline-variant with hex-point end caps (cap width = height / √3),
+ * tone-coloured fill via --hp-progress-fill, and a sliding 30%
+ * ribbon when indeterminate. Tones opt in with data-tone. */
+
+progress,
+meter {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 200px;
+  height: 6px;
+  border: 0;
+  vertical-align: middle;
+  background: var(--hp-outline-variant);
+  clip-path: polygon(
+    0 50%,
+    3.464px 0,
+    calc(100% - 3.464px) 0,
+    100% 50%,
+    calc(100% - 3.464px) 100%,
+    3.464px 100%
+  );
+}
+
 progress {
-  accent-color: var(--hp-secondary);
+  --hp-progress-fill: var(--hp-primary);
+}
+
+progress[data-tone="positive"] {
+  --hp-progress-fill: var(--hp-secondary);
+}
+
+progress[data-tone="warn"] {
+  --hp-progress-fill: var(--hp-warn);
+}
+
+progress[data-tone="alert"] {
+  --hp-progress-fill: var(--hp-alert);
+}
+
+progress[data-tone="error"] {
+  --hp-progress-fill: var(--hp-error);
+}
+
+/* The track paints on the element itself so determinate and
+ * indeterminate share one surface; the engine pseudos carry only
+ * the fill. */
+progress::-webkit-progress-bar {
+  background: transparent;
+}
+
+progress::-webkit-progress-value {
+  background: var(--hp-progress-fill);
+  transition: inline-size var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+progress::-moz-progress-bar {
+  background: var(--hp-progress-fill);
+}
+
+/* Indeterminate: the same 30% ribbon hp-loader's linear sibling
+ * used — slides -30% → 100% of the element width in 1.4s. The
+ * background-position endpoints are those offsets mapped through
+ * the 70% travel a 30%-wide layer has. */
+progress:indeterminate {
+  background-image: linear-gradient(var(--hp-progress-fill), var(--hp-progress-fill));
+  background-size: 30% 100%;
+  background-repeat: no-repeat;
+  animation: hp-progress-slide 1.4s ease-in-out infinite;
+}
+
+progress:indeterminate::-moz-progress-bar {
+  background: transparent;
+}
+
+@keyframes hp-progress-slide {
+  0% {
+    background-position-x: -42.857%;
+  }
+
+  100% {
+    background-position-x: 142.857%;
+  }
+}
+
+/* Meter: the browser picks the band; the bands map to the tone
+ * ramp (optimum → positive, suboptimum → warn, critical → alert). */
+meter::-webkit-meter-bar {
+  background: var(--hp-outline-variant);
+  border: 0;
+  height: 6px;
+}
+
+meter::-webkit-meter-optimum-value {
+  background: var(--hp-secondary);
+}
+
+meter::-webkit-meter-suboptimum-value {
+  background: var(--hp-warn);
+}
+
+meter::-webkit-meter-even-less-good-value {
+  background: var(--hp-alert);
+}
+
+meter:-moz-meter-optimum::-moz-meter-bar {
+  background: var(--hp-secondary);
+}
+
+meter:-moz-meter-sub-optimum::-moz-meter-bar {
+  background: var(--hp-warn);
+}
+
+meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+  background: var(--hp-alert);
+}
+
+/* ── Dialog ────────────────────────────────────────────────────── */
+
+/* The native modal, styled to the system. showModal() brings the
+ * focus trap, Escape dismiss, aria-modal, and top-layer for free.
+ * Backdrop-click dismissal is not native — <hp-dialog> adds it (and
+ * an `alert` variant); a raw dialog closes via its own buttons. */
+
+dialog {
+  background: var(--hp-surface-container);
+  color: var(--hp-on-surface);
+  border: 1px solid var(--hp-outline-variant);
+  padding: var(--hp-lg);
+  max-width: min(90vw, 480px);
+  font-family: var(--hp-typo-body-md-font-family);
+  font-size: var(--hp-typo-body-md-font-size);
+  line-height: var(--hp-typo-body-md-line-height);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+dialog[open] {
+  animation: hp-dialog-in var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+@keyframes hp-dialog-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Scrollbars (WebKit / Blink) ───────────────────────────────── */
+
+/* Square-cornered, token-tinted. Gated so Firefox keeps the
+ * standard-property path above. */
+
+@supports selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: var(--hp-surface-container-low);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--hp-outline-variant);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--hp-outline);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: var(--hp-surface-container-low);
+  }
 }
 
 /* ── Focus ring (keyboard-only) ────────────────────────────────── */
@@ -615,6 +884,39 @@ progress {
 :focus-visible {
   outline: 2px solid var(--hp-focus-ring);
   outline-offset: 2px;
+}
+
+/* ── .hp-visually-hidden ───────────────────────────────────────── */
+
+/* Screen-reader-only content: invisible on screen, read by assistive
+ * tech. For icon-only controls that need an accessible name, live
+ * announcements, skip links. Standard clip technique; absolute
+ * positioning keeps it out of layout so it works inside any flow,
+ * including content slotted into hp-* elements. */
+
+.hp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── img.hp-hex ────────────────────────────────────────────────── */
+
+/* Hex-clipped image — the stencil as CSS. The mask variable is
+ * generated from hp-hex's polygon tables (hex-controls.css), so the
+ * clip is the exact stencil. For a framed avatar, compose: place an
+ * <hp-hex> behind and inset the image by the ring. */
+
+img.hp-hex {
+  aspect-ratio: 100 / 115.47;
+  object-fit: cover;
+  mask: var(--hp-mask-hex) center / contain no-repeat;
 }
 
 /* ── .hp-prose — long-form content rhythm ──────────────────────── */
@@ -721,6 +1023,14 @@ progress {
 /* ── Reduced motion ────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
+  progress:indeterminate {
+    animation-duration: 5s;
+  }
+
+  dialog[open] {
+    animation: none;
+  }
+
   html {
     scroll-behavior: auto;
   }

@@ -35,7 +35,7 @@ const { rows } = Astro.props as { rows: Row[] };
       <span class="when-open">hide stats</span>
     </span>
   </button>
-  <hp-separator></hp-separator>
+  <hr class="hp-separator" />
   <table class="perf-status">
     <thead>
       <tr>
@@ -56,7 +56,7 @@ const { rows } = Astro.props as { rows: Row[] };
       }
     </tbody>
   </table>
-  <hp-separator></hp-separator>
+  <hr class="hp-separator" />
 </hp-collapsible>
 
 <style>
@@ -74,11 +74,11 @@ const { rows } = Astro.props as { rows: Row[] };
     color: var(--hp-on-surface-variant);
   }
 
-  .perf-collapsible hp-separator:first-of-type {
+  .perf-collapsible hr.hp-separator:first-of-type {
     margin-bottom: 32px;
   }
 
-  .perf-collapsible hp-separator:last-of-type {
+  .perf-collapsible hr.hp-separator:last-of-type {
     margin-block: 32px;
   }
 

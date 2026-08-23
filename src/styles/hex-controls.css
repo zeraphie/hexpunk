@@ -1,0 +1,440 @@
+/* hex-controls.css — Generated from src/lib/hex-geometry.ts by
+ * tools/build-hex-controls.ts. Do not edit.
+ *
+ * The native hex form-control pattern. Works with no JS:
+ *
+ *   <label class="hp-checkbox">
+ *     <input type="checkbox" name="…" />
+ *     <span class="hp-checkbox-hex" aria-hidden="true"></span>
+ *     Label text
+ *   </label>
+ *
+ * <hp-checkbox> renders this exact markup for you (and forwards the
+ * native property surface). The hex outline is the same polygon set
+ * hp-hex draws — the masks below are baked from those tables.
+ * Requires the token stylesheets (tokens.*.css) for the variables. */
+
+/* The stencil masks, reusable anywhere (mask: var(--hp-mask-hex)
+ * center / contain no-repeat; background paints the colour). */
+:root {
+  --hp-mask-hex: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20115.47%27%3E%3Cpath%20d%3D%27M50%200L100%2028.87L100%2086.6L50%20115.47L0%2086.6L0%2028.87Z%27%2F%3E%3C%2Fsvg%3E");
+  --hp-mask-hex-ring-xs: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20115.47%27%3E%3Cpath%20fill-rule%3D%27evenodd%27%20d%3D%27M50%200L100%2028.87L100%2086.6L50%20115.47L0%2086.6L0%2028.87Z%20M50%203.46L97%2030.6L97%2084.87L50%20112.01L3%2084.87L3%2030.6Z%27%2F%3E%3C%2Fsvg%3E");
+  --hp-mask-hex-ring-xxs: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20115.47%27%3E%3Cpath%20fill-rule%3D%27evenodd%27%20d%3D%27M50%200L100%2028.87L100%2086.6L50%20115.47L0%2086.6L0%2028.87Z%20M50%205.77L95%2031.76L95%2083.71L50%20109.7L5%2083.71L5%2031.76Z%27%2F%3E%3C%2Fsvg%3E");
+  --hp-mask-check: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpolyline%20points%3D%275%2C12%2010%2C17%2019%2C7%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%273%27%20stroke-linecap%3D%27square%27%20stroke-linejoin%3D%27miter%27%2F%3E%3C%2Fsvg%3E");
+  --hp-mask-dash: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cline%20x1%3D%276%27%20y1%3D%2712%27%20x2%3D%2718%27%20y2%3D%2712%27%20stroke%3D%27black%27%20stroke-width%3D%273%27%20stroke-linecap%3D%27square%27%2F%3E%3C%2Fsvg%3E");
+}
+
+/* The alias host — inline like the native control it wraps. */
+hp-checkbox {
+  display: inline-block;
+}
+
+.hp-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  cursor: pointer;
+  position: relative;
+}
+
+/* The real control: visually hidden, still focusable + labelable. */
+.hp-checkbox input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.hp-checkbox-hex {
+  display: inline-block;
+  width: var(--hp-hex-cell-xs);
+  aspect-ratio: 100 / 115.47;
+  position: relative;
+  flex: none;
+}
+
+.hp-checkbox[data-size="xxs"] .hp-checkbox-hex {
+  width: var(--hp-hex-cell-xxs);
+}
+
+/* Ring at rest; hover / keyboard focus swap to secondary — the same
+ * state ladder as hp-hex's --hp-stroke-color. */
+.hp-checkbox-hex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hp-outline);
+  mask: var(--hp-mask-hex-ring-xs) center / contain no-repeat;
+  transition: background-color var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+.hp-checkbox[data-size="xxs"] .hp-checkbox-hex::before {
+  mask: var(--hp-mask-hex-ring-xxs) center / contain no-repeat;
+}
+
+.hp-checkbox:hover input:not(:disabled) + .hp-checkbox-hex::before,
+.hp-checkbox input:focus-visible + .hp-checkbox-hex::before {
+  background: var(--hp-secondary);
+}
+
+.hp-checkbox input:checked + .hp-checkbox-hex::before,
+.hp-checkbox input:indeterminate + .hp-checkbox-hex::before {
+  background: var(--hp-primary);
+  mask: var(--hp-mask-hex) center / contain no-repeat;
+}
+
+/* Glyph: check when checked, dash when indeterminate. */
+.hp-checkbox-hex::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  background: var(--hp-on-primary);
+  mask: var(--hp-mask-check) center / contain no-repeat;
+  opacity: 0;
+  transition: opacity var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+.hp-checkbox input:checked + .hp-checkbox-hex::after {
+  opacity: 1;
+}
+
+.hp-checkbox input:indeterminate + .hp-checkbox-hex::after {
+  opacity: 1;
+  mask: var(--hp-mask-dash) center / contain no-repeat;
+}
+
+.hp-checkbox input:focus-visible + .hp-checkbox-hex {
+  outline: 2px solid var(--hp-focus-ring);
+  outline-offset: 2px;
+}
+
+.hp-checkbox:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Constraint validation: after the user has interacted, an invalid
+ * control's ring reads as the error tone. */
+.hp-checkbox input:user-invalid + .hp-checkbox-hex::before {
+  background: var(--hp-error);
+}
+
+/* ── Radio ─────────────────────────────────────────────────────── */
+/* Same recipe as the checkbox; native name grouping supplies
+ * single-select and arrow-key movement. Checked shows a concentric
+ * filled hex instead of a glyph.
+ *
+ *   <label class="hp-radio">
+ *     <input type="radio" name="tier" value="xs" />
+ *     <span class="hp-radio-hex" aria-hidden="true"></span>
+ *     Comfortable
+ *   </label> */
+
+hp-radio {
+  display: inline-block;
+}
+
+.hp-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  cursor: pointer;
+  position: relative;
+}
+
+.hp-radio input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.hp-radio-hex {
+  display: inline-block;
+  width: var(--hp-hex-cell-xs);
+  aspect-ratio: 100 / 115.47;
+  position: relative;
+  flex: none;
+}
+
+.hp-radio[data-size="xxs"] .hp-radio-hex {
+  width: var(--hp-hex-cell-xxs);
+}
+
+.hp-radio-hex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hp-outline);
+  mask: var(--hp-mask-hex-ring-xs) center / contain no-repeat;
+  transition: background-color var(--hp-duration-fast) var(--hp-ease-default);
+}
+
+.hp-radio[data-size="xxs"] .hp-radio-hex::before {
+  mask: var(--hp-mask-hex-ring-xxs) center / contain no-repeat;
+}
+
+.hp-radio:hover input:not(:disabled) + .hp-radio-hex::before,
+.hp-radio input:focus-visible + .hp-radio-hex::before {
+  background: var(--hp-secondary);
+}
+
+.hp-radio input:checked + .hp-radio-hex::before {
+  background: var(--hp-primary);
+}
+
+/* Concentric filled hex when selected. */
+.hp-radio-hex::after {
+  content: "";
+  position: absolute;
+  inset: 30%;
+  background: var(--hp-primary);
+  mask: var(--hp-mask-hex) center / contain no-repeat;
+  opacity: 0;
+  transition: opacity var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+.hp-radio input:checked + .hp-radio-hex::after {
+  opacity: 1;
+}
+
+.hp-radio input:focus-visible + .hp-radio-hex {
+  outline: 2px solid var(--hp-focus-ring);
+  outline-offset: 2px;
+}
+
+.hp-radio:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hp-radio input:user-invalid + .hp-radio-hex::before {
+  background: var(--hp-error);
+}
+
+/* ── Switch ────────────────────────────────────────────────────── */
+/* Native checkbox with role="switch"; the track is a stretched
+ * octagon whose corner cuts match the hex thumb's angles exactly, so
+ * the thumb sits flush at either end (geometry from the xxs cell:
+ * thumb = xxs wide, track = 2.5 x xxs, corner cuts 20% / 25%).
+ *
+ *   <label class="hp-toggle">
+ *     <input type="checkbox" role="switch" />
+ *     <span class="hp-toggle-track" aria-hidden="true"></span>
+ *     Reduce motion
+ *   </label> */
+
+hp-toggle {
+  display: inline-block;
+}
+
+.hp-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  cursor: pointer;
+  position: relative;
+}
+
+.hp-toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.hp-toggle-track {
+  position: relative;
+  display: inline-block;
+  width: calc(var(--hp-hex-cell-xxs) * 2.5);
+  height: calc(var(--hp-hex-cell-xxs) * 1.1547);
+  flex: none;
+  background: var(--hp-surface-container);
+  clip-path: polygon(20% 0%, 80% 0%, 100% 25%, 100% 75%, 80% 100%, 20% 100%, 0 75%, 0 25%);
+  transition: background var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+.hp-toggle input:checked + .hp-toggle-track {
+  background: var(--hp-primary-container);
+}
+
+/* The sliding hex thumb. */
+.hp-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--hp-hex-cell-xxs);
+  height: calc(var(--hp-hex-cell-xxs) * 1.1547);
+  transform: translate(0, -50%);
+  background: var(--hp-outline);
+  mask: var(--hp-mask-hex) center / contain no-repeat;
+  transition:
+    transform var(--hp-duration-medium) var(--hp-ease-default),
+    background var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+.hp-toggle:hover input:not(:disabled) + .hp-toggle-track::after,
+.hp-toggle input:focus-visible + .hp-toggle-track::after {
+  background: var(--hp-secondary);
+}
+
+.hp-toggle input:checked + .hp-toggle-track::after {
+  /* slide = track - thumb = 1.5 x xxs */
+  transform: translate(calc(var(--hp-hex-cell-xxs) * 1.5), -50%);
+  background: var(--hp-primary);
+}
+
+.hp-toggle:hover input:checked:not(:disabled) + .hp-toggle-track::after,
+.hp-toggle input:checked:focus-visible + .hp-toggle-track::after {
+  background: var(--hp-primary-bright);
+}
+
+.hp-toggle input:focus-visible + .hp-toggle-track {
+  outline: 2px solid var(--hp-focus-ring);
+  outline-offset: 2px;
+}
+
+.hp-toggle:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Slider ────────────────────────────────────────────────────── */
+/* Restyled native range input: hairline track, hex thumb. The
+ * filled portion left of the thumb needs --hp-slider-fill (0-100%)
+ * kept current — <hp-slider> does that; raw usage gets Firefox's
+ * native ::-moz-range-progress and an unfilled track elsewhere.
+ *
+ *   <label class="hp-slider">
+ *     <input type="range" min="0" max="100" />
+ *   </label> */
+
+hp-slider {
+  display: block;
+}
+
+.hp-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--hp-sm);
+  min-width: 10rem;
+}
+
+.hp-slider input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1;
+  height: calc(var(--hp-hex-cell-xxs) * 1.1547);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hp-slider input[type="range"]:focus-visible {
+  outline: 2px solid var(--hp-focus-ring);
+  outline-offset: 2px;
+}
+
+.hp-slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background:
+    linear-gradient(var(--hp-primary), var(--hp-primary)) 0 / var(--hp-slider-fill, 0%) 100%
+      no-repeat,
+    var(--hp-outline-variant);
+}
+
+.hp-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--hp-hex-cell-xxs);
+  height: calc(var(--hp-hex-cell-xxs) * 1.1547);
+  margin-top: calc((4px - var(--hp-hex-cell-xxs) * 1.1547) / 2);
+  background: var(--hp-primary);
+  mask: var(--hp-mask-hex) center / contain no-repeat;
+  transition: background var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+.hp-slider input[type="range"]:focus-visible::-webkit-slider-thumb,
+.hp-slider input[type="range"]:hover:not(:disabled)::-webkit-slider-thumb {
+  background: var(--hp-primary-bright);
+}
+
+.hp-slider input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hp-outline-variant);
+}
+
+.hp-slider input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hp-primary);
+}
+
+.hp-slider input[type="range"]::-moz-range-thumb {
+  width: var(--hp-hex-cell-xxs);
+  height: calc(var(--hp-hex-cell-xxs) * 1.1547);
+  border: 0;
+  border-radius: 0;
+  background: var(--hp-primary);
+  mask: var(--hp-mask-hex) center / contain no-repeat;
+}
+
+.hp-slider input[type="range"]:focus-visible::-moz-range-thumb,
+.hp-slider input[type="range"]:hover:not(:disabled)::-moz-range-thumb {
+  background: var(--hp-primary-bright);
+}
+
+.hp-slider:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-checkbox-hex::before,
+  .hp-checkbox-hex::after,
+  .hp-radio-hex::before,
+  .hp-radio-hex::after,
+  .hp-toggle-track,
+  .hp-toggle-track::after {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .hp-checkbox-hex::before,
+  .hp-radio-hex::before,
+  .hp-toggle-track::after {
+    background: CanvasText;
+  }
+
+  .hp-checkbox input:checked + .hp-checkbox-hex::before,
+  .hp-checkbox input:indeterminate + .hp-checkbox-hex::before,
+  .hp-radio input:checked + .hp-radio-hex::before,
+  .hp-radio-hex::after,
+  .hp-toggle input:checked + .hp-toggle-track::after {
+    background: Highlight;
+  }
+
+  .hp-checkbox-hex::after {
+    background: HighlightText;
+  }
+}

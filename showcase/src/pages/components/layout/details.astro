@@ -1,0 +1,74 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="<details>">
+  <ComponentDocs title="<details>" native>
+    <p slot="description">
+      The native disclosure, styled to the system: a custom triangle marker that rotates
+      on open, tokenised chrome, and sibling spacing. Toggling, keyboard, and semantics
+      are the element's own. For a smoothly animating height, reach for
+      <a href="/components/layout/hp-collapsible"><code>hp-collapsible</code></a> — the
+      native animation isn't cross-engine yet, which is exactly why that component
+      survives.
+    </p>
+
+    <hp-demo caption="Native disclosure">
+      <div>
+        <details>
+          <summary>Why hexagons?</summary>
+          <p>
+            Hexagons are the densest regular tiling of the plane — six neighbours per cell,
+            uniform distance, and a directionality that maps cleanly to a six-state colour
+            system. Every Hexpunk component starts from that geometry.
+          </p>
+        </details>
+        <details>
+          <summary>What's the difference between hp-cell and hp-hex?</summary>
+          <p>
+            <code>&lt;hp-hex&gt;</code> is the stencil — pure geometry, compose me.
+            <code>&lt;hp-cell&gt;</code> is the box built on top — the
+            <code>&lt;div&gt;</code> of hexpunk.
+          </p>
+        </details>
+        <details open>
+          <summary>Open by default</summary>
+          <p>The <code>open</code> attribute starts the disclosure expanded.</p>
+        </details>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <details>
+    <summary>Why hexagons?</summary>
+    <p>Hexagons are the densest regular tiling of the plane...</p>
+  </details>
+  <details open>
+    <summary>Open by default</summary>
+    <p>The <code>open</code> attribute starts expanded.</p>
+  </details>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Exclusive accordion — a shared name">
+      <div>
+        <details name="faq">
+          <summary>One at a time</summary>
+          <p>Details sharing a <code>name</code> close each other — no JS.</p>
+        </details>
+        <details name="faq">
+          <summary>Open me</summary>
+          <p>The previous one closes.</p>
+        </details>
+        <details name="faq">
+          <summary>Or me</summary>
+          <p>Same group, same behaviour.</p>
+        </details>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <details name="faq"><summary>One at a time</summary>…</details>
+  <details name="faq"><summary>Open me</summary>…</details>
+  <details name="faq"><summary>Or me</summary>…</details>
+</body>`}</hp-code>
+    </hp-demo>
+  </ComponentDocs>
+</Layout>

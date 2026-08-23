@@ -22,6 +22,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @slot - Group contents (items + nested groups)
  * @csspart summary - The summary row (label + chevron)
+ * @status done
  */
 @customElement("hp-sidebar-group")
 export class HpSidebarGroup extends LitElement {

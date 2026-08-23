@@ -97,6 +97,7 @@ const PROXIMITY_MARGIN = 120;
  * @cssproperty --hp-bg-splat-strength - Overrides the splat-strength attribute
  * @cssproperty --hp-bg-splat-radius - Overrides the splat-radius attribute
  * @cssproperty --hp-bg-z - Stacking position in page mode (default -1)
+ * @status done
  */
 @customElement("hp-background")
 export class HpBackground extends LitElement {

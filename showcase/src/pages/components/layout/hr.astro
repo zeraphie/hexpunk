@@ -1,0 +1,82 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="<hr>">
+  <ComponentDocs title="<hr>" native>
+    <p slot="description">
+      The native rule. Bare <code>&lt;hr&gt;</code> is a 1px hairline;
+      <code>class="hp-separator"</code> upgrades it to the system divider — segments with a
+      centred hex glyph (or <code>data-mark="dot"</code> / <code>"none"</code>), and a
+      vertical orientation via <code>data-orientation</code>. The glyph is the same clip
+      polygon the stencil uses. Purely decorative dividers take
+      <code>aria-hidden="true"</code>; vertical ones add
+      <code>aria-orientation="vertical"</code>.
+    </p>
+
+    <hp-demo caption="Bare rule">
+      <div>
+        <p>Above the rule.</p>
+        <hr />
+        <p>Below the rule.</p>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <p>Above the rule.</p>
+  <hr />
+  <p>Below the rule.</p>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="hp-separator marks">
+      <div class="hr-col">
+        <hr class="hp-separator" />
+        <hr class="hp-separator" data-mark="dot" />
+        <hr class="hp-separator" data-mark="none" />
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <hr class="hp-separator" />
+  <hr class="hp-separator" data-mark="dot" />
+  <hr class="hp-separator" data-mark="none" />
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="Vertical">
+      <div class="hr-row">
+        <span>panels</span>
+        <hr class="hp-separator" data-orientation="vertical" aria-orientation="vertical" />
+        <span>either side</span>
+        <hr
+          class="hp-separator"
+          data-orientation="vertical"
+          data-mark="dot"
+          aria-orientation="vertical"
+        />
+        <span>of a divider</span>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <hr class="hp-separator" data-orientation="vertical" aria-orientation="vertical" />
+</body>`}</hp-code>
+    </hp-demo>
+  </ComponentDocs>
+
+  <style>
+    .hr-col {
+      display: grid;
+      gap: var(--hp-md);
+      width: 100%;
+    }
+
+    .hr-row {
+      display: flex;
+      gap: var(--hp-lg);
+      align-items: stretch;
+      height: 96px;
+    }
+
+    .hr-row span {
+      align-self: center;
+      color: var(--hp-on-surface-variant);
+    }
+  </style>
+</Layout>

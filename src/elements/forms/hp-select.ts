@@ -33,6 +33,7 @@ import { hpBase } from "../../styles/hp-base.js";
  *
  * @csspart trigger - The trigger button
  * @csspart listbox - The popover listbox
+ * @status wip
  */
 @customElement("hp-select")
 export class HpSelect extends LitElement {
@@ -380,6 +381,7 @@ export class HpSelect extends LitElement {
  * @fires hp-option-select - When activated. detail: { value }
  *
  * @slot - Option label
+ * @status wip
  */
 @customElement("hp-option")
 export class HpOption extends LitElement {

@@ -41,6 +41,27 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <hp-demo caption="Alert variant — explicit action required">
+      <div>
+        <hp-button id="open-alert">Delete project…</hp-button>
+        <hp-dialog alert id="alert-demo">
+          <h3>Delete project?</h3>
+          <p>This can't be undone. 47 files will be removed.</p>
+          <hp-button slot="actions" id="alert-cancel">cancel</hp-button>
+          <hp-button slot="actions" filled id="alert-confirm">delete</hp-button>
+        </hp-dialog>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <!-- alert = role="alertdialog" + the backdrop never dismisses. -->
+  <hp-dialog alert id="confirm">
+    <h3>Delete project?</h3>
+    <p>This can't be undone.</p>
+    <hp-button slot="actions">cancel</hp-button>
+    <hp-button slot="actions" filled>delete</hp-button>
+  </hp-dialog>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>Accessibility</h2>
       <p>
@@ -51,4 +72,26 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       </p>
     </Fragment>
   </ComponentDocs>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+    import type { HpDialog } from "../../../../../src/elements/overlays/hp-dialog.ts";
+
+    onPageVisit((signal) => {
+      const alertDemo = document.getElementById("alert-demo") as HpDialog | null;
+      if (!alertDemo) {
+        return;
+      }
+      document.getElementById("open-alert")?.addEventListener(
+        "click",
+        () => alertDemo.show(),
+        { signal }
+      );
+      for (const id of ["alert-cancel", "alert-confirm"]) {
+        document.getElementById(id)?.addEventListener("click", () => alertDemo.close(), {
+          signal,
+        });
+      }
+    });
+  </script>
 </Layout>

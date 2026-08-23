@@ -70,6 +70,7 @@ const HONEYCOMB_POSITIONS: ReadonlyArray<{ q: number; r: number }> = [
  * @slot middle-left - Rosette west-of-centre
  * @slot middle-right - Rosette east-of-centre
  * @slot bottom - Rosette bottom hex (south neighbour)
+ * @status wip
  */
 @customElement("hp-cluster")
 export class HpCluster extends LitElement {

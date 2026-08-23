@@ -4,11 +4,13 @@ import { ClientRouter } from "astro:transitions";
 import "../../../src/tokens/tokens.dark.css";
 import "../../../src/tokens/tokens.light.css";
 import "../../../src/styles/elements.css";
+import "../../../src/styles/hex-controls.css";
 import "../../../src/styles/hp-latex.css";
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
 import fontsCssRaw from "../../../assets/fonts/fonts.css?raw";
 import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
+import { getApiFor } from "../lib/api.ts";
 import {
   github as githubIcon,
   moon,
@@ -75,14 +77,29 @@ function containsActive(node: SitemapNode): boolean {
   return node.children.some(containsActive);
 }
 
+// Miniatures of hp-banner's wip / experimental tone icons (alert
+// diamond, warn triangle) so the sidebar mark and the page banner
+// carry the same signifier at both sizes.
+const STATUS_MARK_SVG: Record<string, string> = {
+  wip: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="8 1.5 14.5 8 8 14.5 1.5 8"></polygon><line x1="8" y1="5" x2="8" y2="9"></line><circle cx="8" cy="11" r="0.6" fill="currentColor" stroke="none"></circle></svg>`,
+  experimental: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" aria-hidden="true"><polygon points="8 2 14 13 2 13"></polygon><line x1="8" y1="6.5" x2="8" y2="10"></line><circle cx="8" cy="11.5" r="0.6" fill="currentColor" stroke="none"></circle></svg>`,
+};
+
 /** Recursively emit composable sidebar markup. Leaves become
  *  <hp-sidebar-item>, branches become <hp-sidebar-group>. */
 function sidebarNodeHtml(node: SitemapNode): string {
   if (isLeaf(node)) {
     const isActive = node.path === active;
+    // Component leaves carry their lifecycle status as a small mark;
+    // `done` is the unmarked default so the sidebar stays quiet.
+    const status = node.path.startsWith("/components/") ? getApiFor(node.title)?.status : undefined;
+    const mark =
+      status && status !== "done"
+        ? `<span class="status-mark" data-status="${status}" title="${status}">${STATUS_MARK_SVG[status]}</span>`
+        : "";
     return `<hp-sidebar-item href="${escapeHtml(href(node.path))}"${
       isActive ? " active" : ""
-    }>${escapeHtml(node.title)}</hp-sidebar-item>`;
+    }>${escapeHtml(node.title)}${mark}</hp-sidebar-item>`;
   }
   const inner = node.children.map(sidebarNodeHtml).join("");
   const open = containsActive(node) ? " open" : "";
@@ -357,6 +374,8 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         UNFOLD_STORAGE_PEAK,
         UNFOLD_STORAGE_TARGET,
       } from "../../../src/index.ts";
+      // wip elements register for the showcase without being public API.
+      import "../lib/wip-elements.ts";
       import katex from "katex";
 
       // ── Math renderer (KaTeX) ─────────────────────────────────

@@ -6,51 +6,88 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 <Layout title="hp-slider">
   <ComponentDocs title="hp-slider">
     <p slot="description">
-      Single-thumb continuous-value slider. Track + hex thumb; arrow keys step by
-      <code>step</code> (PageUp / PageDown step by 10×; Home / End jump to min / max), drag the
-      thumb with the pointer. <code>role="slider"</code>, <code>aria-valuenow / min / max</code>
-      reflect state.
+      Hex slider — a thin light-DOM alias over <code>&lt;input type="range"&gt;</code>.
+      Dragging, keyboard stepping (arrows, PageUp/PageDown, Home/End), focus, and form
+      participation are all the browser's; the element paints the hex thumb and keeps the
+      track's fill in sync with the value.
     </p>
 
-    <hp-demo caption="Default (0–100)">
-      <hp-slider value="30"></hp-slider>
-      <hp-slider value="65"></hp-slider>
-
+    <hp-demo caption="Basic">
+      <div class="col">
+        <hp-slider value="42">Volume</hp-slider>
+        <hp-slider min="0" max="10" step="1" value="7">Zoom (0–10)</hp-slider>
+        <hp-slider value="30" disabled>Disabled</hp-slider>
+      </div>
       <hp-code slot="code" language="html">{`<body>
-  <hp-slider min="0" max="100" step="1" value="30"></hp-slider>
-  <hp-slider value="65"></hp-slider>
+  <hp-slider value="42">Volume</hp-slider>
+  <hp-slider min="0" max="10" step="1" value="7">Zoom (0–10)</hp-slider>
+  <hp-slider value="30" disabled>Disabled</hp-slider>
+</body>`}</hp-code>
+    </hp-demo>
 
-  document
-    .querySelector("hp-slider")
-    .addEventListener("change", (ev) => {
-      console.log(ev.detail.value);
+    <hp-demo caption="Live value">
+      <div class="col">
+        <hp-slider id="live-slider" name="level" value="50">Level</hp-slider>
+        <pre id="slider-out" class="slider-out">level=50</pre>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <hp-slider name="level" value="50">Level</hp-slider>
+  <script>
+    slider.addEventListener("input", (e) => {
+      console.log(e.target.value); // the inner range input
     });
-</body>`}</hp-code>
-    </hp-demo>
-
-    <hp-demo caption="Stepped (0–10, step 2)">
-      <hp-slider min="0" max="10" step="2" value="4"></hp-slider>
-
-      <hp-code slot="code" language="html">{`<body>
-  <hp-slider min="0" max="10" step="2" value="4"></hp-slider>
-</body>`}</hp-code>
-    </hp-demo>
-
-    <hp-demo caption="Disabled">
-      <hp-slider value="50" disabled></hp-slider>
-
-      <hp-code slot="code" language="html">{`<body>
-  <hp-slider value="50" disabled></hp-slider>
+  </script>
 </body>`}</hp-code>
     </hp-demo>
 
     <Fragment slot="intent">
       <h2>Accessibility</h2>
       <p>
-        Full keyboard support: Arrow keys (±step), PageUp / PageDown (±10× step), Home / End
-        (min / max). <code>aria-valuenow</code> updates on every change so screen readers
-        announce the new value.
+        The native range input announces as a slider with min / max / now, steps with the
+        keyboard, and activates from its wrapping label. <code>input</code> fires while
+        dragging, <code>change</code> on release — both bubble with the input as target.
       </p>
+      <hp-banner tone="do">
+        Put the label in the default slot — it lands inside the wrapping label, so
+        clicking it focuses the slider.
+      </hp-banner>
     </Fragment>
   </ComponentDocs>
+
+  <style>
+    .col {
+      display: grid;
+      gap: var(--hp-md);
+      justify-items: stretch;
+      max-width: 24rem;
+    }
+
+    .slider-out {
+      font-size: var(--hp-typo-body-sm-font-size);
+      color: var(--hp-on-surface-variant);
+      background: var(--hp-surface-container-low);
+      border: 1px solid var(--hp-outline-variant);
+      padding: var(--hp-sm);
+      margin: 0;
+    }
+  </style>
+
+  <script>
+    import { onPageVisit } from "../../../lib/visit.ts";
+
+    onPageVisit((signal) => {
+      const slider = document.getElementById("live-slider");
+      if (!slider) {
+        return;
+      }
+      const out = document.getElementById("slider-out")!;
+      slider.addEventListener(
+        "input",
+        (e) => {
+          out.textContent = `level=${(e.target as HTMLInputElement).value}`;
+        },
+        { signal }
+      );
+    });
+  </script>
 </Layout>

@@ -142,6 +142,12 @@ typography:
     fontWeight: "400"
     lineHeight: 1.05
     letterSpacing: -0.04em
+  display-md:
+    fontFamily: "Iceland, Chakra Petch, Orbitron, ui-sans-serif, system-ui, sans-serif"
+    fontSize: 28px
+    fontWeight: "400"
+    lineHeight: 1.1
+    letterSpacing: 0.02em
   headline-lg:
     fontFamily: "Chakra Petch, Orbitron, ui-sans-serif, system-ui, sans-serif"
     fontSize: 32px
@@ -224,21 +230,22 @@ spacing:
   xxl: 64px
   gutter: 12px
   margin: 24px
+  hex-cell-xxs: 20px
+  hex-cell-xs: 50px
   hex-cell-sm: 100px
   hex-cell-md: 180px
   hex-cell-lg: 320px
   hex-stroke: 6px
   edge-trace-gap: 4px
   edge-trace-width: 2px
-  link-arc-width: 1.2px
-  link-arc-glow: 13px
-  link-arc-pulse-dot: 4px
+  tether-arc-width: 1.2px
+  tether-arc-glow: 13px
+  tether-arc-pulse-dot: 4px
   bond-indicator-size: 12px
   module-handle-size: 36px
   icon-sm: 16px
   icon-md: 20px
   icon-lg: 24px
-  hex-cell-xs: 50px
   tether-width: 1px
   target-min: 44px
   grid-snap-tolerance: 0.35
@@ -721,16 +728,16 @@ components:
     backgroundColor: "{colors.outline}"
     textColor: "{colors.outline-variant}"
 
-  link-arc:
+  tether-arc:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.on-surface-variant}"
-  link-arc-idle:
+  tether-arc-idle:
     backgroundColor: "{colors.secondary-container}"
     textColor: "{colors.on-surface-variant}"
-  link-arc-hover:
+  tether-arc-hover:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.on-surface}"
-  link-arc-active:
+  tether-arc-active:
     backgroundColor: "{colors.primary-bright}"
     textColor: "{colors.on-primary}"
 
@@ -908,7 +915,7 @@ Hexpunk ships **two icon families** that coexist on the same surface and serve d
 
 Both share sizing tokens (`icon-sm` `16px`, `icon-md` `20px`, `icon-lg` `24px`) and the `currentColor` convention so an icon inherits its parent's text colour by default.
 
-### Stroke icons — `<hp-icon>`
+### Stroke icons — inlined SVG
 
 Source: [Lucide](https://lucide.dev) — ~1300 MIT-licensed icons with a 1.5px stroke that matches hexpunk's wireframe ethos — mirrored into `@hexpunk/icons` at build time, pinned to a known version. Plus ~6-8 custom hex-themed additions: `hex-outline`, `hex-dot`, `hex-grid`, `bond`, `link-arc`, `unfold`, `module-handle`, `tether`.
 
@@ -920,14 +927,19 @@ export const deploy =
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">…</svg>` as const;
 ```
 
-Component:
+Usage: inline the string into an `<svg>` sized by the icon tokens —
+no wrapper element; the string is the API.
 
 ```html
-<!-- Property-based (idiomatic, tree-shakable): -->
-<hp-icon size="md" .svg="${deploy}"></hp-icon>
-
-<!-- Slotted (consumer-provided SVG): -->
-<hp-icon size="md"><svg>…</svg></hp-icon>
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  width="20"
+  height="20"
+  set:html="{deploy}"
+/>
 ```
 
 All custom hex-themed icons follow Lucide's conventions: `24×24` viewBox, `1.5px` stroke, all strokes use `currentColor`, line caps/joins are round.
@@ -1015,6 +1027,11 @@ Hexpunk lays out on a **sparse hex grid** of pointy-top cells with three canonic
 - `hex-cell-md` (180px) — content cells, scroll-list containers.
 - `hex-cell-lg` (320px and up) — hero / framing hexes, often partially off-canvas.
 
+Below the grid scale sit two **form-control tiers** — inline atoms (checkbox, radio, toggle, slider thumb, breadcrumb / pagination segments) that never occupy grid slots:
+
+- `hex-cell-xxs` (20px) — dense / tabular form controls, close to a browser-default checkbox. Deliberately below the touch floor; hit areas extend to `target-min`.
+- `hex-cell-xs` (50px) — comfortable / touch-friendly form controls; meets `target-min` (44px) at every density.
+
 A pointy-top hex's bounding box is `width = w` by `height = w · 2/√3`. Axial coordinates `(q, r)` project to pixels as:
 
 - `x = w · (q + r / 2)`
@@ -1052,11 +1069,12 @@ The three modes:
 | `hex-cell-sm` | 80px    | 100px   | 120px       |
 | `hex-cell-md` | 144px   | 180px   | 216px       |
 | `hex-cell-lg` | 256px   | 320px   | 380px       |
+| `hex-cell-xs` | 44px    | 50px    | 60px        |
 | `hex-stroke`  | 6px     | 6px     | 12px        |
 | `gutter`      | 8px     | 12px    | 16px        |
 | `margin`      | 16px    | 24px    | 32px        |
 
-Everything else stays fixed regardless of density — spacing rhythm (`unit`, `xs`–`xxl`), motion timing, layer scale, accessibility floors (`target-min: 44px`), icon sizes, signature visuals (`edge-trace-*`, `link-arc-pulse-dot`), and interactive sizing (`bond-indicator-size`, `module-handle-size`, `tether-width`). Scaling these would either break the system's signal layer or violate a11y minimums.
+Everything else stays fixed regardless of density — spacing rhythm (`unit`, `xs`–`xxl`), motion timing, layer scale, accessibility floors (`target-min: 44px`), icon sizes, signature visuals (`edge-trace-*`, `tether-arc-pulse-dot`), and interactive sizing (`bond-indicator-size`, `module-handle-size`, `tether-width`, and the dense form tier `hex-cell-xxs`). Scaling these would either break the system's signal layer or violate a11y minimums.
 
 **Surface defaults** (consumer-overridable, but these are the canonical pairings):
 
@@ -1220,17 +1238,17 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
   - `variant="support"` (`hex-support`) — structural / decorative framing hex. Must not look interactive. `outline-faint` stroke at 0.6 opacity. Often `hex-cell-lg` and partially off-canvas. Auto `aria-hidden`.
   - `variant="slot"` (`hex-slot`) — empty available position, only shown when the surface advertises a permanent drop target. Soft `outline-variant` stroke with transparent interior. Auto `aria-hidden`.
 - `<hp-status tone="positive|warn|alert|error">` — semantic indicator. Stroke colour matches semantic; `active` boolean fills the hex with the tone-container colour.
-- `link-node` (`<hp-link-node>`) — the small dot at a hex anchor where arcs originate or terminate. Promotes to `link-node-bonded` once at least one arc is attached.
-- `bond-indicator` (`<hp-bond>`) — the small green marker on the shared edge of two bonded atoms.
+- `link-node` — the small dot at a hex anchor where arcs originate or terminate, drawn by the tether/surface rendering (not an element). Promotes to `link-node-bonded` once at least one arc is attached.
+- `bond-indicator` — the small green marker on the shared edge of two bonded atoms, drawn by the surface (hp-layout / hp-grid), not an element.
 - `module-handle` (`<hp-module-handle>`) — hex grip at a molecule's centroid; grabs the whole molecule.
 - `grid-overlay-dot` / `grid-overlay-slot` — the faint markers revealed during drag; not directly authored, rendered by `<hp-grid>`.
-- `link-arc` (`<hp-link>`) — the curved bezier connector between two `link-node` dots. Variants: `-idle`, `-hover`, `-active`. Pulsing dot travels along the arc to show liveness.
+- `tether-arc` (`<hp-tether>`) — the curved bezier connector between two `link-node` dots. Variants: `-idle`, `-hover`, `-active`. Pulsing dot travels along the arc to show liveness. Today it is mainly drawn by `<hp-grid>`. (`<hp-link>` is the inline text link, unrelated to tethers.)
 - `unfold-source` / `unfold-child` / `unfold-tether` / `unfold-overlay` — the pieces of the unfold pattern. Authored via the `<hp-unfoldable>` wrapper; consumers rarely instantiate them directly.
 
 **Form atoms** (form-associated by default; see § Implementation Notes › Form association):
 
 - `hex-checkbox` (`<hp-checkbox>`) — small hex (`hex-cell-xs`). Hollow at rest; filled with `primary` when checked. The `formless` attribute opts out of form participation for CSS-only state-flip patterns.
-- `hex-radio` (`<hp-radio>`) — same visual as checkbox. Single-selection within an `<hp-radio-group>` enforced via roving tabindex; the group bonds the radios into a molecule.
+- `hex-radio` (`<hp-radio>`) — same visual as checkbox with a concentric filled hex when selected. Radios sharing a `name` are one native single-select group — arrow keys and roving focus come from the browser; no group element.
 - `hex-switch` (`<hp-switch>`) — bonded hex pair. The "on" hex fills with `primary`; toggling slides the fill between them (Snapping motion). On-brand because it physically demonstrates the bonding primitive.
 - `textarea-field` (`<hp-textarea>`) — rectangular content card with body typography. Same flanking-hex molecule pattern as `<hp-input>`. Resizable vertically.
 - `select-trigger` / `select-popover` (`<hp-select>`) — `hex-action`-shaped trigger opening a rectangular popover that contains a `<hp-scroll-list>` of options. Docking motion on open/close.
@@ -1250,15 +1268,15 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 **Loading atoms:**
 
 - `skeleton-hex` / `skeleton-rect` (`<hp-skeleton shape="hex|rect">`) — placeholder for loading content. Hex variant matches the cell it replaces (hollow with `outline-faint` stroke); rect variant covers content-card prose with optional `lines` attribute for prose-shimmer. **Scanning** motion: a thin `secondary`-tinted line sweeps across the placeholder over ~1.5s. Reduced-motion fallback is a static `outline-faint` line.
-- `spinner` (`<hp-spinner>`) — indeterminate progress. Hex with one edge highlighted in `primary`, advancing one edge-position per `duration-medium`. Six edges → ~1.68s per full rotation. Repeated **Charging** metaphor. `size` attr: `sm` / `md` / `lg`; `inline` variant fits inside an `<hp-cell variant="action">` for button loading.
-- `progress-track` / `progress-fill` (`<hp-progress>`) — determinate or indeterminate progress bar. Linear hairline (2px), `outline-faint` track + `primary` fill. `value` 0–1 for determinate. `indeterminate` boolean → fill becomes a Scanning sweep with no terminus.
+- `loader` (`<hp-loader>`) — radial loading indicator. Hollow cluster of small filled hexes, `size` attr `sm` / `md` / `lg`. Indeterminate (bare tag): per-hex scale pulse phased along a clockwise spiral — the **Charging** metaphor as a travelling wave. Determinate (`value` with `min` / `max`, hp-progress's contract): the same spiral order fills `round(fraction × N)` hexes lit, the rest faint so the silhouette reads as the track; the frontier hex keeps the pulse so parked progress stays alive, and a full cluster settles. Forward fill is a per-hex ripple, never a cut: each newly due hex plays one **ignite** — a one-way grow from faint into lit, never an oscillation, so lit-ness only ever increases — after the previous hex's animation completes, and the fill may trail the value (and the centre label) slightly; regressions and mode entry snap immediately. Catch-up pacing is the `timing` attr: `irregular` (default) clears any backlog inside a fixed ~⅓s budget, so bursts of progress visibly quicken the ripple — the honest jank of real loaders; `linear` locks the per-hex pace to the value's measured advance rate for a constant-speed ripple. Percentage label in the hollow centre at `md` / `lg` (`sm` has no hollow — fill only, value stays ARIA-only). `role="progressbar"`; `aria-valuenow` present only when determinate.
+- `progress-track` / `progress-fill` (native `<progress>`, styled by elements.css) — determinate or indeterminate progress bar. Linear hairline (2px), `outline-faint` track + `primary` fill. `value` 0–1 for determinate. `indeterminate` boolean → fill becomes a Scanning sweep with no terminus.
 
-**Loading-state rules.** Don't show multiple spinners simultaneously — pick one to represent the overall load. Don't use `<hp-spinner>` for determinate operations — use `<hp-progress>` with the actual value. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
+**Loading-state rules.** Don't show multiple loaders simultaneously — pick one to represent the overall load. When progress is knowable, pass the actual `value` — native `<progress>` for linear surfaces, `<hp-loader value>` for radial — never an indeterminate wave over a knowable percent. Don't flash skeletons under ~200ms — debounce so skeletons only appear when the wait is perceptible.
 
 **Empty-state atom:**
 
 - `empty-state-hex` / `empty-state-label` / `empty-state-icon` (`<hp-empty>`) — canonical "nothing here yet" composition. Faint ghost-hex outline (`outline-faint` stroke, 2–4px — much thinner than normal cells) with three optional pieces:
-  - **Icon slot** (`slot="icon"`) — centered inside the ghost hex. Accepts `<hp-icon>` (stroke) or `<hp-pixel>` (pixel art); sized via `empty-state-icon` token.
+  - **Icon slot** (`slot="icon"`) — centered inside the ghost hex. Accepts an inlined stroke-icon SVG or `<hp-pixel>` (pixel art); sized via `empty-state-icon` token.
   - **Label slot or `label` attribute** — `label-md` text rendered below the hex.
   - **Default slot** — for an optional `<hp-cell variant="action">` CTA below the label.
   - At least one of icon or label must be present; silence reads as broken.
@@ -1345,7 +1363,6 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 - **Login screen** — single centred organism, sparse outer slots, animated edge trace on focus.
 - **Admin dashboard** — hex nav rail (anchors + utilities) + rectangular content area with hex anchors at section corners. Optional `<hp-grid>` enabled for drag-rearrangeable widgets.
 - **Game HUD** — hex clusters at all four corners; centre reserved for the play surface. Huge framing `hex-support` cells off-canvas.
-- **Node editor (`<hp-node-editor>`)** — full-canvas graph editor. Invisible grid, draggable molecule nodes, arc-link edges with pulse, side cluster of `hex-utility` controls for arc colour / width / glow / density / pulse-speed. The flagship demonstration of all three Hexpunk spatial primitives at once (grid + bonding + linking).
 
 ### Component property notes
 
@@ -1375,7 +1392,7 @@ hp-focus         focus-ring overlay
 
 **Every motion in Hexpunk communicates.** Animation is a signal layer, not a decoration layer — each transition confirms an action, shows where data flows, or indicates where the user just was. Motion that doesn't signal something specific is forbidden.
 
-The idle state is still. Hexpunk has no ambient drift, no decorative bouncing, no pulse-just-because. The single ambient motion permitted is the arc pulse along **live** `<hp-link>` arcs — and that pulse is itself a signal ("this connection is alive"). When the arc goes idle, the pulse stops.
+The idle state is still. Hexpunk has no ambient drift, no decorative bouncing, no pulse-just-because. The single ambient motion permitted is the arc pulse along **live** `<hp-tether>` arcs — and that pulse is itself a signal ("this connection is alive"). When the arc goes idle, the pulse stops.
 
 The system speaks in six motion metaphors. Together they are the entire animation vocabulary; anything outside them is noise.
 
@@ -1412,18 +1429,18 @@ Hexpunk's third spatial primitive — after the **invisible grid** and **molecul
 
 ### Arc link visual
 
-The arc is a cubic-bezier curve drawn in SVG, layered over the hex canvas. It is inspired by network-globe visualizations (think flight-path overlays) and uses the same teal/green family that signals engagement everywhere else in Hexpunk.
+The arc is a cubic-bezier curve drawn in SVG (`<hp-tether>`), layered over the hex canvas. It is inspired by network-globe visualizations (think flight-path overlays) and uses the same teal/green family that signals engagement everywhere else in Hexpunk.
 
 - **Stroke colour:** `secondary` (`green-500`, `#00CC88`) at full opacity for active links, `secondary-container` (`green-800`) for idle / inactive links. Hover brightens to `secondary` plus a glow lift.
-- **Stroke width:** `link-arc-width` (1.2px default). Adjustable per-density: tighter graphs may drop to 0.6px, hero connections may raise to 2px.
-- **Glow:** outer SVG filter `feGaussianBlur` of `link-arc-glow` (13px default) on a duplicated stroke, opacity 25–40%. Always tinted with the stroke colour, never neutral.
+- **Stroke width:** `tether-arc-width` (1.2px default). Adjustable per-density: tighter graphs may drop to 0.6px, hero connections may raise to 2px.
+- **Glow:** outer SVG filter `feGaussianBlur` of `tether-arc-glow` (13px default) on a duplicated stroke, opacity 25–40%. Always tinted with the stroke colour, never neutral.
 - **Endpoint dots:** a small filled circle (`link-node`, `spacing.xs` = 4px) at the geometric centre of each connected hex's edge or anchor point. Idle dots are `primary`-coloured; once an arc connects, the dot promotes to `link-node-bonded` (`secondary` filled).
 - **Path shape:** cubic bezier with control points pulled toward the midpoint above the chord. Bulge magnitude is proportional to chord length — short links are nearly straight, long links arc gracefully. For curved screens or globes, the path projects onto the sphere; for flat canvases it's a 2D bezier.
 - **Direction (optional):** a small arrowhead at the target end indicates directed graphs. Omit for undirected.
 
 ### Arc pulse — the signal-on-the-wire
 
-A small `link-arc-pulse-dot` (4px circle) travels along the arc from source to target with `pulse-period` (3.4s) by default (matching the Claude design demo's `Pulse speed`). The dot uses `primary-bright` (`cyan-400`) for high contrast against the green stroke, and fades in over the first 10% of the path and out over the last 10%.
+A small `tether-arc-pulse-dot` (4px circle) travels along the arc from source to target with `pulse-period` (3.4s) by default (matching the Claude design demo's `Pulse speed`). The dot uses `primary-bright` (`cyan-400`) for high contrast against the green stroke, and fades in over the first 10% of the path and out over the last 10%.
 
 - Pulses run **continuously** on active arcs to show "data is flowing" / "this connection is live."
 - Pulses **stop** on inactive arcs; the arc remains drawn but quiet.
@@ -1457,7 +1474,7 @@ Combine the three primitives — invisible grid, molecule bonding, arc links —
 - **Highlighting:** hovering a node fades all other arcs to 30% opacity and accelerates the pulse on its own arcs. This is how a user explores a graph.
 - **Layout:** moving a node animates connected arcs in real time. Bezier control points are recomputed every frame so the curves stay graceful. Modules with many connections feel "spring-loaded."
 
-The node editor is its own template (`<hp-node-editor>`) but the primitives compose anywhere — admin dashboards can render a small relationship graph in a sidebar, game HUDs can use arcs for ability dependencies (skill trees), web onboarding can use arcs to visualize "step A leads to step B."
+The primitives compose anywhere — admin dashboards can render a small relationship graph in a sidebar, game HUDs can use arcs for ability dependencies (skill trees), web onboarding can use arcs to visualize "step A leads to step B."
 
 ### Use cases
 
@@ -1481,7 +1498,7 @@ The unfold is not a new visual language — it composes the existing three primi
 
 ### Tether arc
 
-A hairline (`tether-width`, 1px) `secondary-container`-coloured arc, drawn from the expanded hex's edge to its origin slot using the same SVG bezier primitive as `<hp-link>`. The tether:
+A hairline (`tether-width`, 1px) `secondary-container`-coloured arc, drawn from the expanded hex's edge to its origin slot using the same SVG bezier primitive (`<hp-tether>`) as arc links. The tether:
 
 - is always visible while unfolded
 - pulses subtly when the user hovers the close button or presses `esc`, signalling "click here to return"
@@ -1622,7 +1639,7 @@ Explicit handling required:
 - **Focus rings.** Inside `@media (forced-colors: active)`, `:focus-visible` uses `outline: 2px solid CanvasText` (or `Highlight` where appropriate). Never `outline: none` on focus.
 - **Status hexes.** Lose their semantic colour. The mandatory icon + accessible label carry the meaning.
 - **Edge-trace and glow.** Simplify to a static `CanvasText` outline. No animated trace, no tinted glow.
-- **`<hp-link>` arcs.** Draw in `currentColor` (system-substituted), pulse becomes a static halo at the midpoint — the same fallback used for `prefers-reduced-motion`.
+- **`<hp-tether>` arcs.** Draw in `currentColor` (system-substituted), pulse becomes a static halo at the midpoint — the same fallback used for `prefers-reduced-motion`.
 
 ## Implementation Notes
 
@@ -1647,9 +1664,6 @@ Element catalogue (one custom element per atom or molecule):
                        variant="content|support|slot"
 <hp-status>          atom: semantic indicator hex
                        tone="positive|warn|alert|error", active?
-<hp-link-node>       atom: arc endpoint dot
-<hp-bond>            atom: edge-bond indicator between two atoms
-<hp-icon>            atom: lucide icon wrapper, sized to hex content area
 <hp-pixel>           atom: pixel-art shape inside a hex (states + morphing)
 <hp-trace>           overlay: external edge trace for high-emphasis cells
 
@@ -1661,12 +1675,9 @@ Element catalogue (one custom element per atom or molecule):
 <hp-grid>            surface primitive: the invisible slot lattice. Hosts modules,
                      reveals overlay during drag, computes valid drop targets.
                      One per surface; modules are slotted children.
-<hp-link>            curve primitive: arc-link between two <hp-link-node> dots.
+<hp-tether>          curve primitive: arc-link between two hexes; endpoint
+                     dots are part of its rendering.
                      Hosts pulse animation, draw/unwind transitions.
-<hp-graph>           container primitive: manages a set of <hp-link>s, exposes
-                     selection, hover propagation, density / pulse-speed knobs.
-<hp-node-editor>     template: full graph-editor surface (grid + graph + utility
-                     cluster).
 
 <hp-unfoldable>      wrapper: makes its host hex expandable into a detail molecule.
                      Modes: "in-place" | "spotlight" | "camera-zoom". Manages
@@ -1680,10 +1691,9 @@ Element catalogue (one custom element per atom or molecule):
 - **`<hp-grid>`** owns the axial coordinate system, the slot occupancy map, and the drag-overlay rendering. Children placed inside it declare a `slot` attribute (`q,r`) and a `footprint` attribute (relative offsets). The grid is the source of truth for layout; modules don't position themselves.
   - **`layout="spiral"` / `layout="rows"`** opt-in modes for surfaces that don't author per-child `q`/`r`. On first render and on `pack()` calls, the grid sorts every direct child by mask size descending (FFD), then places each at the first free position the chosen strategy returns. `spiral` scans outward from the origin in honeycomb rings — the largest cluster anchors `(0, 0)`, smaller ones nest around it with ≥1-hex gaps, producing a tight roughly-square honeycomb. `rows` scans row-major within a viewport-width-capped q-window — the layout grows as left-to-right rows that wrap downward, ideal for full-page-width surfaces where `spiral`'s square shape leaves too much horizontal space unused. Children publish their actual filled hexes via `data-fill-cells="q,r q,r …"` (`<hp-cluster>` populates this on slotchange); children without it are treated as single-hex. The gap check uses hex-adjacency (the 6 axial-distance-1 neighbours) — not rectangular bbox padding — so non-symmetric clusters leave their empty corners available for neighbours to tuck into. The grid does not auto-repack on resize or slotchange — only on explicit `.pack()` or attribute toggle.
 - **`<hp-module>`** handles pointer / keyboard drag, asks the grid for valid drops, emits a `move` event on successful placement, and a `bond` / `unbond` event when its edges touch / separate from another module. It owns its own centroid handle.
-- **`<hp-link>`** is a presentational SVG element; pass it source and target `<hp-link-node>` references (or coordinates) and it computes the bezier, draws the stroke + glow, and runs the pulse via Web Animations API (`element.animate(...)` on the dot, not CSS keyframes — easier to control mid-flight).
-- **`<hp-graph>`** owns the set of links and the hover-propagation logic (hovering a node dims unrelated arcs).
-- **`<hp-unfoldable>`** is a host wrapper. Its `source` slot is rendered at rest; its other children are kept in a virtual detail molecule. On trigger it inserts the detail children into a transient `<hp-grid>` neighbourhood adjacent to the source, animates them in (using Web Animations API), and draws the tether via an internal `<hp-link>`. Cooperates with the host grid to know which slots are free for the bloom.
-- All five cooperate via small Lit reactive controllers (`ReactiveController`) rather than a heavy state library. No Redux, no Zustand, no MobX.
+- **`<hp-tether>`** is a presentational SVG element; pass it source and target selectors (or coordinates) and it computes the bezier, draws the stroke + glow (endpoint dots included), and runs the pulse via Web Animations API (`element.animate(...)` on the dot, not CSS keyframes — easier to control mid-flight).
+- **`<hp-unfoldable>`** is a host wrapper. Its `source` slot is rendered at rest; its other children are kept in a virtual detail molecule. On trigger it inserts the detail children into a transient `<hp-grid>` neighbourhood adjacent to the source, animates them in (using Web Animations API), and draws the tether via an internal `<hp-tether>`. Cooperates with the host grid to know which slots are free for the bloom.
+- They cooperate via small Lit reactive controllers (`ReactiveController`) rather than a heavy state library. No Redux, no Zustand, no MobX.
 
 ### CSS strategy
 
@@ -1740,17 +1750,15 @@ Hexpunk follows an **opt-in SSR** model. Static layout renders on the server via
 
 **SSR-friendly by default:**
 
-- All atoms — `<hp-hex>`, `<hp-cell>` (all variants), `<hp-deco>` (all variants), `<hp-status>`, `<hp-link-node>`, `<hp-bond>`, `<hp-module-handle>`, `<hp-icon>`, `<hp-pixel>`.
+- All atoms — `<hp-hex>`, `<hp-cell>` (all variants), `<hp-deco>` (all variants), `<hp-status>`, `<hp-module-handle>`, `<hp-pixel>`.
 - Spatial-primitive **layout** — `<hp-grid>` and `<hp-cluster>` with static children render fully positioned, because layout is expressed in CSS custom properties + transforms (see § Layout & Spacing). The grid's _behaviour_ (drag, snap, bond) hydrates on client.
 - `<hp-scroll-list>` — CSS scroll + linear-gradient mask. The visual ships static; key/wheel selection wires up on hydration.
 - `<hp-trace>` static state — the edge-trace overlay renders server-side; the animation runs on client.
 
 **Client-only (renders an empty host server-side, hydrates fully on connect):**
 
-- `<hp-link>` — SVG bezier curve drawing requires runtime coordinate math.
-- `<hp-graph>` — arc layout, hover propagation, density toggling.
+- `<hp-tether>` — SVG bezier curve drawing requires runtime coordinate math.
 - `<hp-unfoldable>` — choreography, child stagger, tether wiring.
-- `<hp-node-editor>` — composes the above.
 
 **Authoring rules for SSR-friendly elements:**
 

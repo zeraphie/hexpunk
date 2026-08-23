@@ -1,162 +1,148 @@
-// hp-radio.ts — Single radio option.
+// hp-radio.ts — Hex radio: a thin light-DOM alias over the native
+// input.
 //
-// Pairs with hp-radio-group as a parent — group manages selection,
-// arrow-key navigation, and dispatches the change event. Individual
-// hp-radio renders the hex chrome and emits hp-radio-select on
-// click / Space when the value should change.
+// Renders the hex-controls.css radio pattern (label +
+// visually-hidden radio + masked hex ring with a concentric filled
+// hex when selected). The browser owns the group: radios sharing a
+// `name` are single-select with arrow-key movement and roving focus
+// — no group element required.
 //
-// Visual: hollow hex at rest; concentric small filled hex inside
-// when checked. role="radio", aria-checked, focusable.
+//   <hp-radio name="tier" value="xs" checked>Comfortable</hp-radio>
+//   <hp-radio name="tier" value="xxs">Dense</hp-radio>
 
-import { LitElement, css, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-
-import "../primitives/hp-hex.js";
-import { hpBase } from "../../styles/hp-base.js";
+import { ifDefined } from "lit/directives/if-defined.js";
 
 /**
- * Single radio option. Pairs with hp-radio-group as a parent.
- * role="radio", aria-checked reflects state; emits hp-radio-select
- * on click / Space / Enter for the group to track.
+ * Hex radio — light-DOM alias over `<input type="radio">`. Group
+ * behaviour (single-select, arrow keys) comes from the shared
+ * `name`, natively. `change` bubbles from the inner input; the host
+ * keeps `checked` in sync even when a sibling steals the selection,
+ * and stamps `data-dirty` / `data-touched` on interaction.
  *
- * @fires hp-radio-select - When this radio is activated. detail: { value }
+ * @fires change - Native change, bubbled from the inner input
  *
- * @csspart radio - The radio container wrapping hp-hex + inner dot
- * @csspart dot - The inner filled hex shown when checked
+ * @slot - Label text, rendered inside the wrapping label
+ * @status experimental
  */
 @customElement("hp-radio")
 export class HpRadio extends LitElement {
-  /** Value emitted when this radio is selected. Required for the
-   * parent hp-radio-group to track selection. */
-  @property()
-  value = "";
-
-  /** Selected state. Set by the parent hp-radio-group; consumers
-   * shouldn't write directly — use the group's `value` instead. */
-  @property({ reflect: true, type: Boolean })
+  /** Current checked state; mirrors the inner input. */
+  @property({ type: Boolean })
   checked = false;
 
-  /** Disabled — blocks selection, removes from tab order. */
-  @property({ reflect: true, type: Boolean })
+  /** Disabled — out of tab order and submission. */
+  @property({ type: Boolean, reflect: true })
   disabled = false;
 
-  /** Cell size. `xs` (default, 32px) is the comfortable form-input
-   * size; `xxs` (20px) is dense / tabular; `sm` (100px) is the
-   * content-hex size — rarely useful here but available. */
+  /** Required — the group must have a selection to submit. */
+  @property({ type: Boolean })
+  required = false;
+
+  /** Group name; radios sharing it are one single-select group. */
+  @property()
+  name?: string;
+
+  /** Submitted value when this radio is the group's selection. */
+  @property()
+  value = "on";
+
+  /** Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense). */
   @property({ reflect: true })
-  size: "xxs" | "xs" | "sm" = "xs";
+  size: "xxs" | "xs" = "xs";
+
+  private labelNodes: Node[] = [];
+
+  /** Light DOM on purpose — hex-controls.css styles the pattern and
+   * the input participates in the form and its radio group. */
+  protected override createRenderRoot(): HTMLElement {
+    return this;
+  }
 
   override connectedCallback(): void {
+    if (this.labelNodes.length === 0 && !this.querySelector(":scope > label")) {
+      this.labelNodes = [...this.childNodes];
+      this.replaceChildren();
+    }
     super.connectedCallback();
-    if (!this.hasAttribute("role")) {
-      this.setAttribute("role", "radio");
-    }
-    this.syncAria();
-    this.addEventListener("click", this.handleClick);
-    this.addEventListener("keydown", this.handleKeyDown);
-  }
-
-  override updated(changed: Map<string, unknown>): void {
-    if (changed.has("checked") || changed.has("disabled")) {
-      this.syncAria();
-    }
-  }
-
-  private syncAria(): void {
-    this.setAttribute("aria-checked", this.checked ? "true" : "false");
-    if (this.disabled) {
-      this.setAttribute("aria-disabled", "true");
-      this.setAttribute("tabindex", "-1");
-    } else {
-      this.removeAttribute("aria-disabled");
-      if (!this.hasAttribute("tabindex") || this.getAttribute("tabindex") === "-1") {
-        // Only one radio in a group should be focusable via Tab; the
-        // group's keyboard handler shifts focus between them via
-        // arrow keys. Default: focusable unless explicitly opted out.
-        this.setAttribute("tabindex", this.checked ? "0" : "-1");
-      }
-    }
-  }
-
-  private handleClick = (event: MouseEvent): void => {
-    if (this.disabled || this.checked) {
-      return;
-    }
-    event.preventDefault();
-    this.emitSelect();
-  };
-
-  private handleKeyDown = (event: KeyboardEvent): void => {
-    if (this.disabled) {
-      return;
-    }
-    if ((event.key === " " || event.key === "Enter") && !this.checked) {
-      event.preventDefault();
-      this.emitSelect();
-    }
-  };
-
-  private emitSelect(): void {
-    this.dispatchEvent(
-      new CustomEvent("hp-radio-select", {
-        detail: { value: this.value },
-        bubbles: true,
-        composed: true,
-      })
+    // A sibling radio taking the selection unchecks this input with
+    // no event here — sync from the group's change at the root.
+    (this.getRootNode() as Document | ShadowRoot).addEventListener(
+      "change",
+      this.syncFromGroup,
+      true
     );
   }
 
-  static override styles = [
-    hpBase,
-    css`
-      :host {
-        display: inline-block;
-        cursor: var(--hp-cursor, pointer);
-        --hp-stroke-color: var(--hp-outline);
-      }
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    (this.getRootNode() as Document | ShadowRoot).removeEventListener(
+      "change",
+      this.syncFromGroup,
+      true
+    );
+  }
 
-      :host(:hover),
-      :host(:focus-visible) {
-        --hp-stroke-color: var(--hp-secondary);
-      }
+  private get input(): HTMLInputElement | null {
+    return this.querySelector(":scope > label > input");
+  }
 
-      :host([checked]) {
-        --hp-stroke-color: var(--hp-primary);
-      }
+  /** Native constraint-validation surface, forwarded. */
+  get validity(): ValidityState | undefined {
+    return this.input?.validity;
+  }
 
-      :host([disabled]) {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
+  get validationMessage(): string {
+    return this.input?.validationMessage ?? "";
+  }
 
-      .radio {
-        position: relative;
-        display: inline-block;
-        line-height: 0;
-      }
+  checkValidity(): boolean {
+    return this.input?.checkValidity() ?? true;
+  }
 
-      .dot {
-        position: absolute;
-        inset: 25%;
-        clip-path: var(--hp-hex-clip);
-        background: var(--hp-stroke-color);
-        opacity: 0;
-        transition: opacity var(--hp-duration-medium) var(--hp-ease-default);
-        pointer-events: none;
-      }
+  reportValidity(): boolean {
+    return this.input?.reportValidity() ?? true;
+  }
 
-      :host([checked]) .dot {
-        opacity: 1;
-      }
-    `,
-  ];
+  private syncFromGroup = (event: Event): void => {
+    const target = event.target;
+    if (
+      target instanceof HTMLInputElement &&
+      target.type === "radio" &&
+      target.name === this.name &&
+      this.input &&
+      this.checked !== this.input.checked
+    ) {
+      this.checked = this.input.checked;
+    }
+  };
+
+  private handleChange = (event: Event): void => {
+    this.checked = (event.target as HTMLInputElement).checked;
+    this.toggleAttribute("data-dirty", true);
+  };
+
+  private handleFocusout = (): void => {
+    this.toggleAttribute("data-touched", true);
+  };
 
   override render() {
     return html`
-      <div class="radio" part="radio">
-        <hp-hex size=${this.size}></hp-hex>
-        <div class="dot" part="dot" aria-hidden="true"></div>
-      </div>
+      <label class="hp-radio" data-size=${this.size === "xxs" ? "xxs" : nothing}>
+        <input
+          type="radio"
+          .checked=${this.checked}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          name=${ifDefined(this.name)}
+          .value=${this.value}
+          @change=${this.handleChange}
+          @focusout=${this.handleFocusout}
+        />
+        <span class="hp-radio-hex" aria-hidden="true"></span>
+        ${this.labelNodes}
+      </label>
     `;
   }
 }

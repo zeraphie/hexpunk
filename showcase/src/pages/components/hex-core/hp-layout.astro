@@ -1,0 +1,284 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-layout">
+  <ComponentDocs title="hp-layout">
+    <p slot="description">
+      Hex layout primitive — what <code>display: flex</code> is for rows, this is for the
+      axial lattice. Slotted children carrying <code>q</code> / <code>r</code> attributes
+      are placed on the lattice, and the element sizes to the content it placed, so it sits
+      in normal document flow and the page scrolls it. There is no camera: no pan, no zoom,
+      no inertia. Reach for <a href="/hexpunk/components/hex-core/hp-grid">
+      <code>&lt;hp-grid&gt;</code></a> when the surface should behave like a viewport
+      instead.
+    </p>
+
+    <hp-demo caption="free — children keep their authored q / r">
+      <hp-layout>
+        <hp-cell variant="anchor" q="0" r="0">0,0</hp-cell>
+        <hp-cell variant="action" q="1" r="0">1,0</hp-cell>
+        <hp-cell variant="secondary" q="0" r="1">0,1</hp-cell>
+        <hp-cell variant="utility" q="-1" r="1">-1,1</hp-cell>
+      </hp-layout>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-layout>
+    <hp-cell variant="anchor"    q="0"  r="0">0,0</hp-cell>
+    <hp-cell variant="action"    q="1"  r="0">1,0</hp-cell>
+    <hp-cell variant="secondary" q="0"  r="1">0,1</hp-cell>
+    <hp-cell variant="utility"   q="-1" r="1">-1,1</hp-cell>
+  </hp-layout>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <h2>Sizing to content</h2>
+    <p>
+      The element measures the hexes it placed and takes that size, so it occupies real
+      space in normal flow: content before it sits above, content after sits below, and its
+      height is exactly the height of the hexes. Nothing is clipped and no explicit height
+      is needed.
+    </p>
+
+    <hp-demo caption="In flow — no fixed height, no clipping">
+      <div class="layout-flow-demo">
+        <p>Text above the layout.</p>
+        <hp-layout>
+          <hp-cell variant="anchor" q="0" r="0">a</hp-cell>
+          <hp-cell variant="action" q="1" r="0">b</hp-cell>
+          <hp-cell variant="secondary" q="2" r="0">c</hp-cell>
+        </hp-layout>
+        <p>Text below it, pushed down by the measured height.</p>
+      </div>
+
+      <hp-code slot="code" language="html">{`<body>
+  <p>Text above the layout.</p>
+
+  <!-- No height needed: the element takes the size of the hexes it
+       placed, reported as --hp-layout-width / --hp-layout-height. -->
+  <hp-layout>
+    <hp-cell variant="anchor" q="0" r="0">a</hp-cell>
+    <hp-cell variant="action" q="1" r="0">b</hp-cell>
+    <hp-cell variant="secondary" q="2" r="0">c</hp-cell>
+  </hp-layout>
+
+  <p>Text below it, pushed down by the measured height.</p>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <h2>Sizing the lattice</h2>
+    <p>
+      <code>size</code> scales the whole surface — <code>xxs</code>, <code>xs</code>,
+      <code>sm</code> (default), <code>md</code> or <code>lg</code>. It is written onto the
+      children as their own <code>size</code>, because a tier is more than a width: the
+      stroke weight and the proportion of the hex the outline occupies come with it. The
+      lattice then follows what the children actually render at, so the hexes keep sharing
+      one edge at every tier.
+    </p>
+    <p>
+      Leave it off and nothing is touched — each child keeps the size it was authored with,
+      which is how a surface of deliberately mixed sizes stays expressible. Note that
+      <code>md</code> is the flat-top hex, and a flat-top hex does not tessellate on a
+      pointy-top lattice: an <code>md</code> surface spaces its cells correctly but they
+      won't share edges.
+    </p>
+
+    <hp-demo caption="size — the same markup at two tiers">
+      <hp-layout size="xs" layout="spiral">
+        <hp-cell variant="anchor" filled></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+      </hp-layout>
+      <hp-layout size="sm" layout="spiral">
+        <hp-cell variant="anchor" filled></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="action"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="secondary"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+        <hp-cell variant="utility"></hp-cell>
+      </hp-layout>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- One tier for the surface; the children are written to match. -->
+  <hp-layout size="xs" layout="spiral">
+    <hp-cell variant="anchor" filled></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+  </hp-layout>
+
+  <!-- Same markup, one tier up. -->
+  <hp-layout size="sm" layout="spiral">
+    <hp-cell variant="anchor" filled></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+    <hp-cell variant="action"></hp-cell>
+  </hp-layout>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <h2>Packing</h2>
+    <p>
+      <code>spiral</code> and <code>rows</code> run the same first-fit-decreasing packer
+      <code>&lt;hp-grid&gt;</code> uses — largest shape first, then the first free position
+      the scan offers. Children publish the cells they occupy via
+      <code>data-fill-cells</code> (<code>&lt;hp-cluster&gt;</code> does this
+      automatically); anything without it counts as a single hex.
+    </p>
+    <p>
+      <code>rows</code> is responsive by default: the element fills the width it's given,
+      the way a flex container does, and the hexes wrap to that width — re-packing (with the
+      settle animation) whenever it changes, including when <code>size</code> changes the
+      cell tier. A shape wider than the element overflows visibly, like an unbreakable flex
+      item. Set <code>row-width</code> to pin a fixed count per row instead;
+      <code>spiral</code> is radial and ignores width entirely.
+    </p>
+
+    <hp-demo caption="spiral — rings outward from the origin">
+      <hp-layout layout="spiral">
+        <hp-cell variant="anchor" filled>1</hp-cell>
+        <hp-cell variant="action">2</hp-cell>
+        <hp-cell variant="action">3</hp-cell>
+        <hp-cell variant="secondary">4</hp-cell>
+        <hp-cell variant="secondary">5</hp-cell>
+        <hp-cell variant="utility">6</hp-cell>
+        <hp-cell variant="utility">7</hp-cell>
+      </hp-layout>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- q / r are assigned by the packer; authored values are ignored. -->
+  <hp-layout layout="spiral">
+    <hp-cell variant="anchor" filled>1</hp-cell>
+    <hp-cell variant="action">2</hp-cell>
+    <hp-cell variant="action">3</hp-cell>
+  </hp-layout>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <hp-demo caption="rows — wraps to the element's width; drag the corner handle">
+      <div class="rows-resize-demo">
+        <hp-layout layout="rows">
+          <hp-cell variant="anchor" filled>1</hp-cell>
+          <hp-cell variant="action">2</hp-cell>
+          <hp-cell variant="action">3</hp-cell>
+          <hp-cell variant="secondary">4</hp-cell>
+          <hp-cell variant="secondary">5</hp-cell>
+          <hp-cell variant="utility">6</hp-cell>
+          <hp-cell variant="utility">7</hp-cell>
+          <hp-cell variant="utility">8</hp-cell>
+        </hp-layout>
+      </div>
+
+      <hp-code slot="code" language="html">{`<body>
+  <!-- No row-width: the rows wrap to the element's own width and
+       re-pack when it resizes, like flex items. row-width="4" would
+       pin a fixed four per row instead. -->
+  <hp-layout layout="rows">
+    <hp-cell variant="anchor" filled>1</hp-cell>
+    <hp-cell variant="action">2</hp-cell>
+    <hp-cell variant="action">3</hp-cell>
+  </hp-layout>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <h2>Dragging</h2>
+    <p>
+      <code>draggable</code> opts the surface into drag-to-move. A cell dropped on an
+      occupied neighbour snaps to the nearest free one — the same nearest-free search
+      <code>&lt;hp-grid&gt;</code> runs, so a given drag lands in the same place on either
+      surface. Individual cells opt out with <code>draggable="false"</code>. Because there
+      is no camera, dragging empty space does nothing and the page keeps its scroll, and a
+      drag is held inside the surface so it can't be pulled out of shape.
+    </p>
+
+    <hp-demo caption="draggable — drag a cell; PIN refuses">
+      <hp-layout draggable>
+        <hp-cell variant="anchor" q="0" r="0">drag</hp-cell>
+        <hp-cell variant="action" q="1" r="0">drag</hp-cell>
+        <hp-cell variant="utility" q="0" r="1" draggable="false">pin</hp-cell>
+      </hp-layout>
+
+      <hp-code slot="code" language="html">{`<body>
+  <hp-layout draggable>
+    <hp-cell variant="anchor" q="0" r="0">drag</hp-cell>
+    <hp-cell variant="action" q="1" r="0">drag</hp-cell>
+
+    <!-- Opts this one cell out of an otherwise draggable surface. -->
+    <hp-cell variant="utility" q="0" r="1" draggable="false">pin</hp-cell>
+  </hp-layout>
+
+  <script type="module">
+    document.querySelector("hp-layout").addEventListener("hp-layout-drop", (event) => {
+      console.log(event.detail.element, "settled at", event.detail.at);
+    });
+  <\/script>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>hp-layout or hp-grid?</h2>
+      <p>
+        Both place hexes on the same lattice and share the same placement code, so they
+        never disagree about where a cell belongs. They differ in what surrounds that
+        placement.
+      </p>
+      <hp-banner tone="do">
+        Use <code>&lt;hp-layout&gt;</code> when the hexes are part of a page: a toolbar, a
+        set of status cells, a small navigation cluster, anything you would otherwise reach
+        for flexbox to arrange. It costs nothing beyond the element itself.
+      </hp-banner>
+      <hp-banner tone="do">
+        Use <code>&lt;hp-grid&gt;</code> when the hexes are a world you move through —
+        camera pan and zoom, a rendered hex field, content that reveals itself as cells
+        grow, diving into a cell, tethers between cells. That surface is canvas-rendered
+        and carries a rendering dependency, so it is a deliberate choice rather than a
+        default.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Don't wrap <code>&lt;hp-layout&gt;</code> in a fixed-height box and expect to pan
+        inside it. It has no camera by design; a scrollable region should scroll, and a
+        pannable one should be an <code>&lt;hp-grid&gt;</code>.
+      </hp-banner>
+
+      <h2>Accessibility</h2>
+      <p>
+        The element only positions its children — it adds no roles and takes no focus, so
+        the accessible structure is whatever you slot into it. Cells that do something
+        should be focusable in their own right. Placement is visual only: the DOM order you
+        author is the order assistive technology and keyboard navigation follow, which is
+        worth keeping deliberate when a packer decides the visual arrangement.
+      </p>
+      <p>
+        Drag-to-move is pointer-only today; a keyboard alternative is still outstanding, so
+        don't make a drag the only way to complete a task.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+
+  <style is:global>
+    /* hp-demo lays its preview out as a flex row, which would put
+       these siblings beside the hexes instead of above and below. */
+    .layout-flow-demo {
+      display: block;
+      width: 100%;
+    }
+
+    /* A drag-to-resize window onto the rows demo, so the wrap point
+       can be moved without resizing the browser. min-width keeps a
+       column visible; the outline marks the edge the hexes wrap at. */
+    .rows-resize-demo {
+      resize: horizontal;
+      overflow: hidden;
+      width: 100%;
+      max-width: 100%;
+      min-width: 140px;
+      padding-block-end: var(--hp-sm);
+      outline: 1px dashed var(--hp-outline-variant);
+      outline-offset: 4px;
+    }
+  </style>
+</Layout>
