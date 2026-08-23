@@ -85,10 +85,42 @@ jobs:
       - run: tar --zstd -xf node_modules.tar.zst
       - run: bun run test
 
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/download-artifact@v8
+        with:
+          name: node-modules-${{ github.sha }}
+      - run: tar --zstd -xf node_modules.tar.zst
+      - run: bun run typecheck
+
+  generated:
+    name: Generated
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/download-artifact@v8
+        with:
+          name: node-modules-${{ github.sha }}
+      - run: tar --zstd -xf node_modules.tar.zst
+      - run: bun run generate:check
+
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    needs: [lint, format, test]
+    needs: [lint, format, test, typecheck, generated]
     if: github.ref == 'refs/heads/main'
     permissions:
       pages: write
