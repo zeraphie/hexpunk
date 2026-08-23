@@ -808,6 +808,45 @@ meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
   background: var(--hp-alert);
 }
 
+/* ── Dialog ────────────────────────────────────────────────────── */
+
+/* The native modal, styled to the system. showModal() brings the
+ * focus trap, Escape dismiss, aria-modal, and top-layer for free.
+ * Backdrop-click dismissal is not native — <hp-dialog> adds it (and
+ * an `alert` variant); a raw dialog closes via its own buttons. */
+
+dialog {
+  background: var(--hp-surface-container);
+  color: var(--hp-on-surface);
+  border: 1px solid var(--hp-outline-variant);
+  padding: var(--hp-lg);
+  max-width: min(90vw, 480px);
+  font-family: var(--hp-typo-body-md-font-family);
+  font-size: var(--hp-typo-body-md-font-size);
+  line-height: var(--hp-typo-body-md-line-height);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+dialog[open] {
+  animation: hp-dialog-in var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+@keyframes hp-dialog-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* ── Scrollbars (WebKit / Blink) ───────────────────────────────── */
 
 /* Square-cornered, token-tinted. Gated so Firefox keeps the
@@ -986,6 +1025,10 @@ img.hp-hex {
 @media (prefers-reduced-motion: reduce) {
   progress:indeterminate {
     animation-duration: 5s;
+  }
+
+  dialog[open] {
+    animation: none;
   }
 
   html {
