@@ -604,8 +604,123 @@ label {
   color: var(--hp-on-surface);
 }
 
+/* ── Progress + meter ──────────────────────────────────────────── */
+
+/* The linear progress primitives, styled to the system: 6px track in
+ * outline-variant with hex-point end caps (cap width = height / √3),
+ * tone-coloured fill via --hp-progress-fill, and a sliding 30%
+ * ribbon when indeterminate. Tones opt in with data-tone. */
+
+progress,
+meter {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 200px;
+  height: 6px;
+  border: 0;
+  vertical-align: middle;
+  background: var(--hp-outline-variant);
+  clip-path: polygon(
+    0 50%,
+    3.464px 0,
+    calc(100% - 3.464px) 0,
+    100% 50%,
+    calc(100% - 3.464px) 100%,
+    3.464px 100%
+  );
+}
+
 progress {
-  accent-color: var(--hp-secondary);
+  --hp-progress-fill: var(--hp-primary);
+}
+
+progress[data-tone="positive"] {
+  --hp-progress-fill: var(--hp-secondary);
+}
+
+progress[data-tone="warn"] {
+  --hp-progress-fill: var(--hp-warn);
+}
+
+progress[data-tone="alert"] {
+  --hp-progress-fill: var(--hp-alert);
+}
+
+progress[data-tone="error"] {
+  --hp-progress-fill: var(--hp-error);
+}
+
+/* The track paints on the element itself so determinate and
+ * indeterminate share one surface; the engine pseudos carry only
+ * the fill. */
+progress::-webkit-progress-bar {
+  background: transparent;
+}
+
+progress::-webkit-progress-value {
+  background: var(--hp-progress-fill);
+  transition: inline-size var(--hp-duration-medium) var(--hp-ease-default);
+}
+
+progress::-moz-progress-bar {
+  background: var(--hp-progress-fill);
+}
+
+/* Indeterminate: the same 30% ribbon hp-loader's linear sibling
+ * used — slides -30% → 100% of the element width in 1.4s. The
+ * background-position endpoints are those offsets mapped through
+ * the 70% travel a 30%-wide layer has. */
+progress:indeterminate {
+  background-image: linear-gradient(var(--hp-progress-fill), var(--hp-progress-fill));
+  background-size: 30% 100%;
+  background-repeat: no-repeat;
+  animation: hp-progress-slide 1.4s ease-in-out infinite;
+}
+
+progress:indeterminate::-moz-progress-bar {
+  background: transparent;
+}
+
+@keyframes hp-progress-slide {
+  0% {
+    background-position-x: -42.857%;
+  }
+
+  100% {
+    background-position-x: 142.857%;
+  }
+}
+
+/* Meter: the browser picks the band; the bands map to the tone
+ * ramp (optimum → positive, suboptimum → warn, critical → alert). */
+meter::-webkit-meter-bar {
+  background: var(--hp-outline-variant);
+  border: 0;
+  height: 6px;
+}
+
+meter::-webkit-meter-optimum-value {
+  background: var(--hp-secondary);
+}
+
+meter::-webkit-meter-suboptimum-value {
+  background: var(--hp-warn);
+}
+
+meter::-webkit-meter-even-less-good-value {
+  background: var(--hp-alert);
+}
+
+meter:-moz-meter-optimum::-moz-meter-bar {
+  background: var(--hp-secondary);
+}
+
+meter:-moz-meter-sub-optimum::-moz-meter-bar {
+  background: var(--hp-warn);
+}
+
+meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+  background: var(--hp-alert);
 }
 
 /* ── Focus ring (keyboard-only) ────────────────────────────────── */
@@ -741,6 +856,10 @@ progress {
 /* ── Reduced motion ────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
+  progress:indeterminate {
+    animation-duration: 5s;
+  }
+
   html {
     scroll-behavior: auto;
   }
