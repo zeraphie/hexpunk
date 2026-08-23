@@ -398,6 +398,53 @@
       ]
     },
     {
+      "name": "hp-banner",
+      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+      "attributes": [
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpBannerTone"
+            }
+          ]
+        },
+        {
+          "name": "label",
+          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hp-toast",
+      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "Open state — drives the slide-in animation."
+        },
+        {
+          "name": "tone",
+          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+          "values": [
+            {
+              "name": "HpToastTone"
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
+        }
+      ]
+    },
+    {
       "name": "hp-avatar",
       "description": "Hex-shaped avatar. Image clips into the hex; falls back to the\nslotted content (typically initials) on load error or before src\nresolves.",
       "attributes": [
@@ -672,53 +719,6 @@
       ]
     },
     {
-      "name": "hp-banner",
-      "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-      "attributes": [
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpBannerTone"
-            }
-          ]
-        },
-        {
-          "name": "label",
-          "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "hp-toast",
-      "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-      "attributes": [
-        {
-          "name": "open",
-          "description": "Open state — drives the slide-in animation."
-        },
-        {
-          "name": "tone",
-          "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-          "values": [
-            {
-              "name": "HpToastTone"
-            }
-          ]
-        },
-        {
-          "name": "duration",
-          "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000."
-        }
-      ]
-    },
-    {
       "name": "hp-loader",
       "description": "Hexagonal-cluster loader. A hollow cluster of small filled hexes —\na clockwise spiral wave when indeterminate, a spiral progress fill\nwhen a `value` is set. role=\"progressbar\" with\naria-label=\"Loading\" by default; aria-valuenow only when\ndeterminate.",
       "attributes": [
@@ -872,6 +872,10 @@
               "name": "undefined"
             }
           ]
+        },
+        {
+          "name": "unfold",
+          "description": "Navigate with the camera-zoom unfold instead of a plain jump:\nthe item's colour expands to cover the viewport before the\ndestination is revealed, riding the same departure sequence as\nhp-unfold-page. Reserve it for destination-defining links — the\nexpand reads as \"you're going somewhere important\"."
         }
       ]
     },
@@ -1206,7 +1210,7 @@
       "attributes": [
         {
           "name": "size",
-          "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (32px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
+          "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (50px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
           "values": [
             {
               "name": "xxs"
@@ -1255,46 +1259,6 @@
       "attributes": []
     },
     {
-      "name": "hp-tether",
-      "description": "Arc-tether between two distant molecules — curved SVG bezier\nconnecting two hexes referenced by CSS selector (`from` / `to`).\nReroutes around obstacles, re-settles after drags.",
-      "attributes": [
-        {
-          "name": "from",
-          "description": "CSS selector for the source molecule. Resolved against document.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "to",
-          "description": "CSS selector for the target molecule. Resolved against document.",
-          "values": [
-            {
-              "name": "undefined"
-            }
-          ]
-        },
-        {
-          "name": "state",
-          "description": "`active` (default) shows full-opacity stroke + travelling pulse;\n`idle` drops to the container shade and silences the pulse.",
-          "values": [
-            {
-              "name": "idle"
-            },
-            {
-              "name": "active"
-            }
-          ]
-        },
-        {
-          "name": "directed",
-          "description": "Render an arrowhead at the target end for directed graphs."
-        }
-      ]
-    },
-    {
       "name": "hp-badge",
       "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
       "attributes": [
@@ -1337,6 +1301,46 @@
       ]
     },
     {
+      "name": "hp-tether",
+      "description": "Arc-tether between two distant molecules — curved SVG bezier\nconnecting two hexes referenced by CSS selector (`from` / `to`).\nReroutes around obstacles, re-settles after drags.",
+      "attributes": [
+        {
+          "name": "from",
+          "description": "CSS selector for the source molecule. Resolved against document.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "to",
+          "description": "CSS selector for the target molecule. Resolved against document.",
+          "values": [
+            {
+              "name": "undefined"
+            }
+          ]
+        },
+        {
+          "name": "state",
+          "description": "`active` (default) shows full-opacity stroke + travelling pulse;\n`idle` drops to the container shade and silences the pulse.",
+          "values": [
+            {
+              "name": "idle"
+            },
+            {
+              "name": "active"
+            }
+          ]
+        },
+        {
+          "name": "directed",
+          "description": "Render an arrowhead at the target end for directed graphs."
+        }
+      ]
+    },
+    {
       "name": "hp-module-handle",
       "description": "Drag handle — a small filled hex used as the grip for moving an\nhp-cluster or hp-unfold-list. Pure visual indicator; the parent\ndrives the actual drag interaction via drag-handle attribute.",
       "attributes": [
@@ -1372,7 +1376,7 @@
     },
     {
       "name": "hp-unfold-page",
-      "description": "Camera-zoom navigation primitive. Click the source hex (or any\n<a data-hp-unfold>) and its colour rapidly expands to cover the\nviewport, then the destination page is revealed. View Transitions\nAPI drive the cross-document animation.",
+      "description": "Camera-zoom navigation primitive. Click the source hex (or any\n<a data-hp-unfold>) and its colour rapidly expands to cover the\nviewport, then the destination page is revealed. The View\nTransitions API drives the animation — cross-document by default,\nsame-document when a client router registers the library-wide\n`setNavigate`.",
       "attributes": [
         {
           "name": "href",

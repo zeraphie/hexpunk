@@ -728,6 +728,78 @@
         },
         {
           "kind": "js",
+          "name": "setNavigate",
+          "declaration": {
+            "name": "setNavigate",
+            "module": "./lib/navigate.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpNavigate",
+          "declaration": {
+            "name": "HpNavigate",
+            "module": "./lib/navigate.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "beginUnfoldNavigation",
+          "declaration": {
+            "name": "beginUnfoldNavigation",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildUnfoldOverlay",
+          "declaration": {
+            "name": "buildUnfoldOverlay",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "computePeakScale",
+          "declaration": {
+            "name": "computePeakScale",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "unfoldSourceColor",
+          "declaration": {
+            "name": "unfoldSourceColor",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "UNFOLD_STORAGE_PEAK",
+          "declaration": {
+            "name": "UNFOLD_STORAGE_PEAK",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "UNFOLD_STORAGE_TARGET",
+          "declaration": {
+            "name": "UNFOLD_STORAGE_TARGET",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "UNFOLD_VIEW_TRANSITION_NAME",
+          "declaration": {
+            "name": "UNFOLD_VIEW_TRANSITION_NAME",
+            "module": "./elements/unfold/departure.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "*",
           "declaration": {
             "name": "icons",
@@ -2560,6 +2632,66 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/lib/navigate.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "setNavigate",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "fn",
+              "type": {
+                "text": "HpNavigate | null"
+              }
+            }
+          ],
+          "description": "Register a navigation delegate for every navigating hexpunk\nelement. Pass null to restore the default full-document\nnavigation (`window.location.href`)."
+        },
+        {
+          "kind": "function",
+          "name": "hpNavigate",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "href",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Navigate via the registered delegate, or the default full\ndocument navigation when none is registered."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "setNavigate",
+          "declaration": {
+            "name": "setNavigate",
+            "module": "src/lib/navigate.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hpNavigate",
+          "declaration": {
+            "name": "hpNavigate",
+            "module": "src/lib/navigate.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/pixel-icons/dropside.ts",
       "declarations": [
         {
@@ -2887,7 +3019,7 @@
         {
           "kind": "variable",
           "name": "hpBase",
-          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (32px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
+          "default": "css` :host { display: block; box-sizing: border-box; /* Kill inline-block baseline descender. Atoms that use * display: inline-block on :host (most of them) would otherwise * pick up ~5px of descender space below the hex content, so * their host bbox is taller than the visible hex. That's * invisible in clusters where every child is the same atom * type (they're all offset by the same amount), but the * moment two different atoms share a cluster — e.g., hp-cell * anchor centre + hp-hex swatch in palette — their visible hexes sit * a couple px apart. Forcing line-height: 0 makes host bbox * equal hex bbox everywhere. */ line-height: 0; --hp-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); --hp-cell: var(--hp-hex-cell-sm); /* Stroke width scales with hex size — a 6px stroke that looks * right on lg (160px) reads as a chunky 7.5% of the cell on sm * (80px). 2 / 4 / 6 px keeps the visual weight roughly * proportional. hp-cluster reads --hp-hex-stroke to compute * col_step so adjacent atoms share strokes cleanly — moving * the value with size keeps that math right across sizes. */ --hp-hex-stroke: 2px; --hp-stroke-color: var(--hp-outline); --hp-stroke-hover: var(--hp-secondary); /* --hp-canvas is intentionally NOT set here so a containing * surface (e.g. hp-demo preview, hp-grid, an alt-toned panel) * can communicate its surface tone down through the cascade. * Each consumer uses var(--hp-canvas, var(--hp-background)) to * fall back to the page background when no ancestor set it. */ } /* xxs / xs are the inline-form-input tiers — keep hp-checkbox / * hp-radio / hp-toggle at standard form-control proportions * instead of the 100px sm default that's right for content hexes * but huge for inline controls. * * xs (50px) is the comfortable / touch-friendly form size. * xxs (20px) is the dense / tabular form size, closer to a * browser-default checkbox. Stroke widths step down so the * wireframe stays balanced against the cell. */ :host([size=\"xxs\"]) { --hp-hex-stroke: 1px; --hp-cell: var(--hp-hex-cell-xxs); } :host([size=\"xs\"]) { --hp-hex-stroke: 1.5px; --hp-cell: var(--hp-hex-cell-xs); } :host([size=\"md\"]) { --hp-hex-stroke: 4px; /* Flat-top clip-path for md, paired with hp-hex's aspect-ratio * flip. Composing atoms (hp-cell / hp-deco / hp-status) read * --hp-hex-clip for their host's clip-path, so this single line * keeps every md atom rotated consistently without each one * needing per-size overrides. */ --hp-hex-clip: polygon(100% 50%, 75% 100%, 25% 100%, 0% 50%, 25% 0%, 75% 0%); } :host([size=\"lg\"]) { --hp-hex-stroke: 6px; } :host([hidden]) { display: none; } *, *::before, *::after { box-sizing: inherit; } /* Engaged-state lift on :host so the whole atom rises above siblings * without raising the inner stencil above the label inside the same * stacking context. */ :host(:hover), :host(:focus-visible), :host([aria-pressed=\"true\"]) { z-index: var(--hp-layer-hover); } /* Drag-to-tether drop target highlight. hp-grid in tetherable mode * stamps data-hp-tether-target on the [q][r] sibling the dragged * hex is currently overlapping, so the user can see which hex * the tether will connect to on release. Stroke flips to secondary * (the system's engaged hue) and the atom lifts above its * neighbours. The attribute is cleared the moment the cursor * leaves that hex or the drag ends. */ :host([data-hp-tether-target]) { --hp-stroke-color: var(--hp-secondary); z-index: var(--hp-layer-hover); } :host(:focus-visible), :focus-visible { outline: 2px solid var(--hp-focus-ring); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; animation-iteration-count: 1 !important; } } @media (forced-colors: active) { :host(:focus-visible), :focus-visible { outline-color: CanvasText; } } `"
         }
       ],
       "exports": [
@@ -4886,6 +5018,298 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-banner.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
+          "name": "HpBanner",
+          "cssParts": [
+            {
+              "description": "The wrapping container",
+              "name": "banner"
+            },
+            {
+              "description": "The leading icon",
+              "name": "icon"
+            },
+            {
+              "description": "The uppercase label header (when set)",
+              "name": "label"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Banner body content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "renderIcon",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "renderPrefix",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBannerTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-banner",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBanner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-banner",
+          "declaration": {
+            "name": "HpBanner",
+            "module": "src/elements/messaging/hp-banner.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/messaging/hp-toast.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
+          "name": "HpToast",
+          "cssParts": [
+            {
+              "description": "The wrapping toast element",
+              "name": "toast"
+            },
+            {
+              "description": "The content container",
+              "name": "content"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Toast message body",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "attribute": "duration"
+            },
+            {
+              "kind": "field",
+              "name": "dismissTimer",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "syncRole",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "scheduleDismiss",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "show",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
+            },
+            {
+              "kind": "method",
+              "name": "close",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Close the toast (slides out)."
+            },
+            {
+              "kind": "field",
+              "name": "handleClose",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "name": "hp-toast-open",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast becomes visible"
+            },
+            {
+              "name": "hp-toast-close",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "When the toast closes (auto or via .close())"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Open state — drives the slide-in animation.",
+              "fieldName": "open"
+            },
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpToastTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "duration",
+              "type": {
+                "text": "number"
+              },
+              "default": "4000",
+              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
+              "fieldName": "duration"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-toast",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpToast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-toast",
+          "declaration": {
+            "name": "HpToast",
+            "module": "src/elements/messaging/hp-toast.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/images/hp-avatar.ts",
       "declarations": [
         {
@@ -6432,298 +6856,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-banner.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Inline callout for notes, tips, warnings, and errors. The `tone`\nattribute drives both the accent colour and the leading icon;\n`label` adds an uppercase header above the slotted body.",
-          "name": "HpBanner",
-          "cssParts": [
-            {
-              "description": "The wrapping container",
-              "name": "banner"
-            },
-            {
-              "description": "The leading icon",
-              "name": "icon"
-            },
-            {
-              "description": "The uppercase label header (when set)",
-              "name": "label"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Banner body content",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "renderIcon",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "renderPrefix",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBannerTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional uppercase header label (e.g. \"Note\", \"Warning\").",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-banner",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpBanner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-banner",
-          "declaration": {
-            "name": "HpBanner",
-            "module": "src/elements/messaging/hp-banner.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/messaging/hp-toast.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Transient notification toast. Slides in, auto-dismisses after\n`duration` ms (0 = sticky). `alert` / `error` tones upgrade\naria-live to assertive.",
-          "name": "HpToast",
-          "cssParts": [
-            {
-              "description": "The wrapping toast element",
-              "name": "toast"
-            },
-            {
-              "description": "The content container",
-              "name": "content"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Toast message body",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "attribute": "open",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "attribute": "duration"
-            },
-            {
-              "kind": "field",
-              "name": "dismissTimer",
-              "type": {
-                "text": "number | null"
-              },
-              "privacy": "private",
-              "default": "null"
-            },
-            {
-              "kind": "method",
-              "name": "syncRole",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "scheduleDismiss",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "show",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Show the toast (slides in, starts the auto-dismiss timer)."
-            },
-            {
-              "kind": "method",
-              "name": "close",
-              "privacy": "public",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Close the toast (slides out)."
-            },
-            {
-              "kind": "field",
-              "name": "handleClose",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "name": "hp-toast-open",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast becomes visible"
-            },
-            {
-              "name": "hp-toast-close",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When the toast closes (auto or via .close())"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "open",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Open state — drives the slide-in animation.",
-              "fieldName": "open"
-            },
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpToastTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. `alert` / `error` upgrade role to \"alert\" for\nassertive screen-reader announcement.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "duration",
-              "type": {
-                "text": "number"
-              },
-              "default": "4000",
-              "description": "Auto-dismiss after this many ms. 0 = sticky (manual close\nonly). Default 4000.",
-              "fieldName": "duration"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-toast",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpToast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-toast",
-          "declaration": {
-            "name": "HpToast",
-            "module": "src/elements/messaging/hp-toast.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/loading/hp-loader.ts",
       "declarations": [
         {
@@ -7461,6 +7593,17 @@
             },
             {
               "kind": "field",
+              "name": "unfold",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Navigate with the camera-zoom unfold instead of a plain jump:\nthe item's colour expands to cover the viewport before the\ndestination is revealed, riding the same departure sequence as\nhp-unfold-page. Reserve it for destination-defining links — the\nexpand reads as \"you're going somewhere important\".",
+              "attribute": "unfold",
+              "reflects": true
+            },
+            {
+              "kind": "field",
               "name": "hasContent",
               "type": {
                 "text": "boolean"
@@ -7521,6 +7664,17 @@
               "privacy": "private"
             },
             {
+              "kind": "method",
+              "name": "navigateToHref",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Plain jump or camera-zoom unfold, per the `unfold` attribute.\nBoth paths go through the library navigation delegate, so a\nregistered client router keeps navigations same-document."
+            },
+            {
               "kind": "field",
               "name": "handleClick",
               "privacy": "private"
@@ -7539,6 +7693,15 @@
               },
               "description": "Destination URL when no submenu is provided — turns the\ntrigger into a plain link.",
               "fieldName": "href"
+            },
+            {
+              "name": "unfold",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Navigate with the camera-zoom unfold instead of a plain jump:\nthe item's colour expands to cover the viewport before the\ndestination is revealed, riding the same departure sequence as\nhp-unfold-page. Reserve it for destination-defining links — the\nexpand reads as \"you're going somewhere important\".",
+              "fieldName": "unfold"
             }
           ],
           "superclass": {
@@ -10270,7 +10433,7 @@
                 "text": "\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\""
               },
               "default": "\"sm\"",
-              "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (32px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
+              "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (50px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
               "attribute": "size",
               "reflects": true
             },
@@ -10282,7 +10445,7 @@
               },
               "static": true,
               "readonly": true,
-              "default": "{ xxs: 0.1, xs: 0.094, sm: 0.05, md: 0.077, lg: 0.075, }",
+              "default": "{ xxs: 0.1, xs: 0.06, sm: 0.05, md: 0.077, lg: 0.075, }",
               "description": "Half-width of the visible ring as a fraction of the cell, i.e.\n`1 - scale` from the table above. Published as `--hp-hex-inset`\nso a layout can overlap neighbours by exactly the ring and merge\ntwo outlines into one shared edge. It is deliberately *not*\n`--hp-hex-stroke`: the ring comes from a uniform polygon scale,\nand for sm that is 2.5px where the stroke token says 2px — a\nhalf-pixel of daylight, which reads as a doubled line."
             },
             {
@@ -10294,7 +10457,7 @@
               "privacy": "private",
               "static": true,
               "readonly": true,
-              "default": "{ xxs: \"50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76\", xs: \"50,5.43 95.3,31.58 95.3,83.89 50,110.04 4.7,83.89 4.7,31.58\", sm: \"50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31\", md: \"96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33\", lg: \"50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04\", }"
+              "default": "{ xxs: \"50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76\", xs: \"50,3.46 97,30.6 97,84.87 50,112.01 3,84.87 3,30.6\", sm: \"50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31\", md: \"96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33\", lg: \"50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04\", }"
             },
             {
               "kind": "field",
@@ -10316,7 +10479,7 @@
                 "text": "\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\""
               },
               "default": "\"sm\"",
-              "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (32px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
+              "description": "Cell size.\n\n- `xxs` (20px) — dense inline form controls\n- `xs` (50px) — comfortable inline form controls\n- `sm` (100px) — content-hex default\n- `md` (180px) — flat-top content hex\n- `lg` (320px) — large content hex",
               "fieldName": "size"
             }
           ],
@@ -10541,6 +10704,218 @@
           "declaration": {
             "name": "HpVisuallyHidden",
             "module": "src/elements/primitives/hp-visually-hidden.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/status/hp-badge.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
+          "name": "HpBadge",
+          "slots": [
+            {
+              "description": "Badge label or count",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "attribute": "active",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpBadgeTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
+              "fieldName": "tone"
+            },
+            {
+              "name": "active",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
+              "fieldName": "active"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-badge",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpBadge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-badge",
+          "declaration": {
+            "name": "HpBadge",
+            "module": "src/elements/status/hp-badge.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/status/hp-tag.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
+          "name": "HpTag",
+          "cssParts": [
+            {
+              "description": "The dismiss button (when removable)",
+              "name": "remove"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Tag label",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "attribute": "tone",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "attribute": "removable",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "handleRemove",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "handleRemoveKey",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "description": "When the dismiss × is activated (click / Enter / Space)",
+              "name": "hp-tag-remove"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "tone",
+              "type": {
+                "text": "HpTagTone"
+              },
+              "default": "\"neutral\"",
+              "description": "Semantic tone — same set as hp-cell.",
+              "fieldName": "tone"
+            },
+            {
+              "name": "removable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
+              "fieldName": "removable"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disabled — blocks dismiss action and dims the visual.",
+              "fieldName": "disabled"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "hp-tag",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpTag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-tag",
+          "declaration": {
+            "name": "HpTag",
+            "module": "src/elements/status/hp-tag.ts"
           }
         }
       ]
@@ -11164,212 +11539,176 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/status/hp-badge.ts",
+      "path": "src/elements/unfold/departure.ts",
       "declarations": [
         {
-          "kind": "class",
-          "description": "Small toned status / count badge. Thin shell over hp-cell content\nvariant at sm size with an optional tone overlay.",
-          "name": "HpBadge",
-          "slots": [
-            {
-              "description": "Badge label or count",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "attribute": "active",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpBadgeTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone. Defaults to `neutral` (no tone overlay — uses the\nhp-cell content variant tokens).",
-              "fieldName": "tone"
-            },
-            {
-              "name": "active",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Fills the badge with the tone-container colour when set.\nReads as \"this state is in effect\" — see hp-cell's `active`.",
-              "fieldName": "active"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
+          "kind": "variable",
+          "name": "UNFOLD_VIEW_TRANSITION_NAME",
+          "type": {
+            "text": "string"
           },
-          "tagName": "hp-badge",
-          "customElement": true
+          "default": "\"hp-unfold-source\"",
+          "description": "view-transition-name stamped on the departure overlay; the\nconsumer's ::view-transition-old(hp-unfold-source) keyframes\ndrive the expand."
+        },
+        {
+          "kind": "variable",
+          "name": "UNFOLD_STORAGE_TARGET",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"hp-unfold-target\"",
+          "description": "sessionStorage key holding the destination pathname — the\nback-navigation reversal matches it against unfold sources on the\narrival page."
+        },
+        {
+          "kind": "variable",
+          "name": "UNFOLD_STORAGE_PEAK",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"hp-unfold-peak\"",
+          "description": "sessionStorage key holding the computed peak scale, applied to\n--hp-unfold-peak on the destination so the keyframes hit the same\nscale the departure computed."
+        },
+        {
+          "kind": "function",
+          "name": "computePeakScale",
+          "return": {
+            "type": {
+              "text": "number"
+            }
+          },
+          "parameters": [
+            {
+              "name": "rect",
+              "type": {
+                "text": "{ width: number }"
+              }
+            }
+          ],
+          "description": "Peak scale that gets the hex bbox to at least 2× the longer\nviewport axis, so the hex's inscribed area covers the viewport\nfrom any starting position. At least MIN_PEAK_SCALE so very small\nsources still get a meaningful expansion (and divide-by-zero is\nimpossible)."
+        },
+        {
+          "kind": "function",
+          "name": "unfoldSourceColor",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "sourceEl",
+              "type": {
+                "text": "HTMLElement"
+              }
+            }
+          ],
+          "description": "Resolve the source's intended \"main\" colour: --hp-stroke-color\n(a hex's outline / fill token) when set, else the computed text\ncolour (what a text link's expand should flood with), else the\nbrand primary."
+        },
+        {
+          "kind": "function",
+          "name": "buildUnfoldOverlay",
+          "return": {
+            "type": {
+              "text": "HTMLDivElement | null"
+            }
+          },
+          "parameters": [
+            {
+              "name": "sourceEl",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "name": "color",
+              "default": "unfoldSourceColor(sourceEl)",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Build the colour-only hex overlay at the source's current bbox.\nThe overlay carries no content — it's the source's \"skin\" — so\nwhen it scales, only the colour expands while the original source\n(with its label) stays on the page. Returns null when the source\nhas no usable bbox."
+        },
+        {
+          "kind": "function",
+          "name": "beginUnfoldNavigation",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "sourceEl",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "name": "href",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "The full departure: overlay + keyframe peak + sessionStorage\nhandshake, then navigation through the registered delegate. When\nthe source has no usable bbox the animation is skipped but the\nnavigation still happens."
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "HpBadge",
+          "name": "UNFOLD_VIEW_TRANSITION_NAME",
           "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
+            "name": "UNFOLD_VIEW_TRANSITION_NAME",
+            "module": "src/elements/unfold/departure.ts"
           }
         },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-badge",
-          "declaration": {
-            "name": "HpBadge",
-            "module": "src/elements/status/hp-badge.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/status/hp-tag.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Dismissable tag / chip. hp-cell content variant + optional × close\nbutton.",
-          "name": "HpTag",
-          "cssParts": [
-            {
-              "description": "The dismiss button (when removable)",
-              "name": "remove"
-            }
-          ],
-          "slots": [
-            {
-              "description": "Tag label",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "attribute": "tone",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "attribute": "removable",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "handleRemove",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "handleRemoveKey",
-              "privacy": "private"
-            }
-          ],
-          "events": [
-            {
-              "description": "When the dismiss × is activated (click / Enter / Space)",
-              "name": "hp-tag-remove"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "tone",
-              "type": {
-                "text": "HpTagTone"
-              },
-              "default": "\"neutral\"",
-              "description": "Semantic tone — same set as hp-cell.",
-              "fieldName": "tone"
-            },
-            {
-              "name": "removable",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Show the dismiss button. Fires `hp-tag-remove` on click /\nEnter / Space.",
-              "fieldName": "removable"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disabled — blocks dismiss action and dims the visual.",
-              "fieldName": "disabled"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "hp-tag",
-          "customElement": true
-        }
-      ],
-      "exports": [
         {
           "kind": "js",
-          "name": "HpTag",
+          "name": "UNFOLD_STORAGE_TARGET",
           "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
+            "name": "UNFOLD_STORAGE_TARGET",
+            "module": "src/elements/unfold/departure.ts"
           }
         },
         {
-          "kind": "custom-element-definition",
-          "name": "hp-tag",
+          "kind": "js",
+          "name": "UNFOLD_STORAGE_PEAK",
           "declaration": {
-            "name": "HpTag",
-            "module": "src/elements/status/hp-tag.ts"
+            "name": "UNFOLD_STORAGE_PEAK",
+            "module": "src/elements/unfold/departure.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "computePeakScale",
+          "declaration": {
+            "name": "computePeakScale",
+            "module": "src/elements/unfold/departure.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "unfoldSourceColor",
+          "declaration": {
+            "name": "unfoldSourceColor",
+            "module": "src/elements/unfold/departure.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildUnfoldOverlay",
+          "declaration": {
+            "name": "buildUnfoldOverlay",
+            "module": "src/elements/unfold/departure.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "beginUnfoldNavigation",
+          "declaration": {
+            "name": "beginUnfoldNavigation",
+            "module": "src/elements/unfold/departure.ts"
           }
         }
       ]
@@ -11804,7 +12143,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Camera-zoom navigation primitive. Click the source hex (or any\n<a data-hp-unfold>) and its colour rapidly expands to cover the\nviewport, then the destination page is revealed. View Transitions\nAPI drive the cross-document animation.",
+          "description": "Camera-zoom navigation primitive. Click the source hex (or any\n<a data-hp-unfold>) and its colour rapidly expands to cover the\nviewport, then the destination page is revealed. The View\nTransitions API drives the animation — cross-document by default,\nsame-document when a client router registers the library-wide\n`setNavigate`.",
           "name": "HpUnfoldPage",
           "slots": [
             {
@@ -11872,14 +12211,14 @@
             },
             {
               "kind": "method",
-              "name": "navigate",
+              "name": "startNavigation",
               "privacy": "private",
               "return": {
                 "type": {
                   "text": "void"
                 }
               },
-              "description": "Forward navigation. Creates an overlay at the source's bbox,\nnames it for the cross-document VT, stashes the target URL\nfor back-nav arrival detection, then navigates."
+              "description": "Forward navigation — the shared departure sequence: overlay at\nthe source's bbox, keyframe peak, sessionStorage handshake,\nthen the library navigation delegate."
             },
             {
               "kind": "method",
@@ -11891,28 +12230,6 @@
                 }
               },
               "description": "Preview animation — no navigation, just plays the expand /\nhold / shrink cycle so consumers can demo the visual."
-            },
-            {
-              "kind": "method",
-              "name": "createOverlay",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLDivElement | null"
-                }
-              },
-              "description": "Build the colour-only hex overlay at the source's current\nbbox. The overlay carries no label / content — it's just the\nsource's \"skin\" — so when the snapshot scales, only the colour\nexpands. The original source (with its label) stays on the\npage until the destination swaps in."
-            },
-            {
-              "kind": "method",
-              "name": "getSourceColor",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              },
-              "description": "Resolve the source's intended \"main\" colour. Prefers\n`--hp-stroke-color` (the hex's outline / fill token), falls\nback to the element's computed colour, then to currentColor."
             }
           ],
           "attributes": [
