@@ -32,7 +32,6 @@ import "../../../src/elements/overlays/hp-dropdown-menu.ts";
 import "../../../src/elements/overlays/hp-hover-card.ts";
 import "../../../src/elements/overlays/hp-popover.ts";
 import "../../../src/elements/overlays/hp-tooltip.ts";
-import "../../../src/elements/primitives/hp-visually-hidden.ts";
 import "../../../src/elements/status/hp-badge.ts";
 import "../../../src/elements/status/hp-tag.ts";
 import "../../../src/elements/unfold/hp-module-handle.ts";

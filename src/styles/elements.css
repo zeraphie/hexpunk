@@ -617,6 +617,26 @@ progress {
   outline-offset: 2px;
 }
 
+/* ── .hp-visually-hidden ───────────────────────────────────────── */
+
+/* Screen-reader-only content: invisible on screen, read by assistive
+ * tech. For icon-only controls that need an accessible name, live
+ * announcements, skip links. Standard clip technique; absolute
+ * positioning keeps it out of layout so it works inside any flow,
+ * including content slotted into hp-* elements. */
+
+.hp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ── .hp-prose — long-form content rhythm ──────────────────────── */
 
 /* Opt-in by adding `class="hp-prose"` to a wrapper. Adds vertical
