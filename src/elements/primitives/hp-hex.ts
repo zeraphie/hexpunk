@@ -163,7 +163,7 @@ export class HpHex extends LitElement {
    */
   static readonly RING_INSET: Record<"xxs" | "xs" | "sm" | "md" | "lg", number> = {
     xxs: 0.1,
-    xs: 0.094,
+    xs: 0.06,
     sm: 0.05,
     md: 0.077,
     lg: 0.075,
