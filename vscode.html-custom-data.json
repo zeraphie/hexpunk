@@ -970,34 +970,6 @@
       ]
     },
     {
-      "name": "hp-separator",
-      "description": "Visual + semantic divider. Horizontal (default) or vertical;\noptional centre glyph (hex / dot / none). `decorative` switches\nbetween role=separator and role=presentation.",
-      "attributes": [
-        {
-          "name": "orientation",
-          "description": "Layout direction. Horizontal is a row divider; vertical is a\ncolumn divider.",
-          "values": [
-            {
-              "name": "HpSeparatorOrientation"
-            }
-          ]
-        },
-        {
-          "name": "decorative",
-          "description": "When set, the separator is purely visual (role=presentation,\ninvisible to assistive tech). Default unset = role=separator."
-        },
-        {
-          "name": "mark",
-          "description": "Centre glyph. `hex` (default) reads as a small node on the\ndivider; `dot` is a tighter filled dot; `none` is a clean line.",
-          "values": [
-            {
-              "name": "HpSeparatorMark"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "hp-sidebar",
       "description": "Navigation sidebar chrome. Compose with `<hp-sidebar-item>` leaves\nand `<hp-sidebar-group>` collapsible sections.",
       "attributes": [

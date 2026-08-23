@@ -5900,116 +5900,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/layout/hp-separator.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Visual + semantic divider. Horizontal (default) or vertical;\noptional centre glyph (hex / dot / none). `decorative` switches\nbetween role=separator and role=presentation.",
-          "name": "HpSeparator",
-          "cssParts": [
-            {
-              "description": "The line segments either side of the centre glyph",
-              "name": "line"
-            },
-            {
-              "description": "The centre glyph element",
-              "name": "mark"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "orientation",
-              "type": {
-                "text": "HpSeparatorOrientation"
-              },
-              "default": "\"horizontal\"",
-              "description": "Layout direction. Horizontal is a row divider; vertical is a\ncolumn divider.",
-              "attribute": "orientation",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "decorative",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the separator is purely visual (role=presentation,\ninvisible to assistive tech). Default unset = role=separator.",
-              "attribute": "decorative",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "mark",
-              "type": {
-                "text": "HpSeparatorMark"
-              },
-              "default": "\"hex\"",
-              "description": "Centre glyph. `hex` (default) reads as a small node on the\ndivider; `dot` is a tighter filled dot; `none` is a clean line.",
-              "attribute": "mark",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "orientation",
-              "type": {
-                "text": "HpSeparatorOrientation"
-              },
-              "default": "\"horizontal\"",
-              "description": "Layout direction. Horizontal is a row divider; vertical is a\ncolumn divider.",
-              "fieldName": "orientation"
-            },
-            {
-              "name": "decorative",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "When set, the separator is purely visual (role=presentation,\ninvisible to assistive tech). Default unset = role=separator.",
-              "fieldName": "decorative"
-            },
-            {
-              "name": "mark",
-              "type": {
-                "text": "HpSeparatorMark"
-              },
-              "default": "\"hex\"",
-              "description": "Centre glyph. `hex` (default) reads as a small node on the\ndivider; `dot` is a tighter filled dot; `none` is a clean line.",
-              "fieldName": "mark"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "status": "done",
-          "tagName": "hp-separator",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "HpSeparator",
-          "declaration": {
-            "name": "HpSeparator",
-            "module": "src/elements/layout/hp-separator.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "hp-separator",
-          "declaration": {
-            "name": "HpSeparator",
-            "module": "src/elements/layout/hp-separator.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/layout/hp-sidebar-group.ts",
       "declarations": [
         {
@@ -6279,7 +6169,7 @@
           "name": "HpToolbar",
           "slots": [
             {
-              "description": "Toolbar controls (hp-button, hp-toggle, hp-checkbox, hp-separator, etc.)",
+              "description": "Toolbar controls (hp-button, hp-toggle, hp-checkbox, hr.hp-separator, etc.)",
               "name": ""
             }
           ],
@@ -13676,30 +13566,6 @@
           "declaration": {
             "name": "HpSlider",
             "module": "./elements/forms/hp-slider.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSeparator",
-          "declaration": {
-            "name": "HpSeparator",
-            "module": "./elements/layout/hp-separator.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSeparatorOrientation",
-          "declaration": {
-            "name": "HpSeparatorOrientation",
-            "module": "./elements/layout/hp-separator.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "HpSeparatorMark",
-          "declaration": {
-            "name": "HpSeparatorMark",
-            "module": "./elements/layout/hp-separator.js"
           }
         },
         {

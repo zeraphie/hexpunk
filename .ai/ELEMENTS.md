@@ -3,7 +3,7 @@
 Auto-generated from `custom-elements.json` by `tools/build-elements-md.ts` — do not edit
 by hand. Regenerate with `bun run analyze`.
 
-30 elements, alphabetical (20 wip elements omitted — showcase-only,
+29 elements, alphabetical (20 wip elements omitted — showcase-only,
 not exported). Per element: tag, status, role, attributes / properties (type, default),
 slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md` (style) and
 `.ai/PROMPTS.md` (prompt recipes) when briefing an agent.
@@ -441,23 +441,6 @@ Hex radio — light-DOM alias over `<input type="radio">`. Group behaviour (sing
 **Events**
 
 - `change` — Native change, bubbled from the inner input
-
-## `<hp-separator>`
-
-**Status:** done
-
-Visual + semantic divider. Horizontal (default) or vertical; optional centre glyph (hex / dot / none). `decorative` switches between role=separator and role=presentation.
-
-**Attributes / properties**
-
-- `orientation`: `HpSeparatorOrientation` = `"horizontal"` — Layout direction. Horizontal is a row divider; vertical is a column divider.
-- `decorative`: `boolean` = `false` — When set, the separator is purely visual (role=presentation, invisible to assistive tech). Default unset = role=separator.
-- `mark`: `HpSeparatorMark` = `"hex"` — Centre glyph. `hex` (default) reads as a small node on the divider; `dot` is a tighter filled dot; `none` is a clean line.
-
-**CSS parts**
-
-- `line` — The line segments either side of the centre glyph
-- `mark` — The centre glyph element
 
 ## `<hp-sidebar>`
 
