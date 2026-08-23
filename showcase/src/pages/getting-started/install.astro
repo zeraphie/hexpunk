@@ -26,4 +26,22 @@ import Layout from "../../layouts/Layout.astro";
     The dark-theme token set ships as <code>@hexpunk/core/tokens.dark.css</code>. Link or import it
     once at the app root.
   </p>
+
+  <h2>Native HTML baseline</h2>
+  <p>
+    <code>@hexpunk/core/elements.css</code> grounds raw HTML — prose, links, tables, form
+    fields — in the design system, and <code>@hexpunk/core/hex-controls.css</code> carries
+    the generated hex form-control patterns. Import both after the tokens:
+  </p>
+  <pre><code>{`import "@hexpunk/core/tokens.dark.css";
+import "@hexpunk/core/tokens.light.css";
+import "@hexpunk/core/elements.css";
+import "@hexpunk/core/hex-controls.css";`}</code></pre>
+  <p>
+    What elements.css deliberately does <em>not</em> do: restyle <code>&lt;hp-*&gt;</code>
+    elements (shadow DOM owns its chrome), repaint native controls as full component
+    lookalikes (hex geometry stays with the patterns and components), or force a page-level
+    max-width — the shell is yours. Each native element documents its styling on its own
+    page inside the component categories.
+  </p>
 </Layout>
