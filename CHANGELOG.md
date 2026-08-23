@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Component lifecycle statuses.** Every element carries `@status wip|experimental|done` in its JSDoc, flowing into `custom-elements.json` and everything generated from it. The barrel exports only done/experimental elements; wip ones render in the showcase (registered separately) but are not public API — a test pins the partition. Component pages open with an MDN-style status banner; the sidebar marks wip/experimental entries with the matching tone icon.
+- **Native HTML as first-class citizens.** `elements.css` grew: styled `<progress>`/`<meter>` (hex-point caps, tones, the sliding-ribbon indeterminate), styled `<dialog>` + `::backdrop`, `hr.hp-separator` (marks, vertical), `img.hp-hex` (stencil-masked images), `.hp-visually-hidden`, and token-tinted document scrollbars (square-cornered on WebKit/Blink). Native elements get their own showcase pages inside their categories, labelled by bare tag.
+- **Generated hex form-control patterns — `hex-controls.css`.** `tools/build-hex-controls.ts` bakes hp-hex's polygon tables (now shared via `src/lib/hex-geometry.ts`) into CSS masks, exposed as reusable custom properties (`--hp-mask-hex`, ring/glyph variants). The checkbox/radio/switch/slider patterns work with no JS at all.
+- **Form controls as light-DOM aliases.** `hp-checkbox`, `hp-radio`, `hp-toggle`, `hp-slider` rebuilt over native inputs: FormData participation, label association, constraint validation, and keyboard come from the browser; the elements add ergonomics, the delegated property/validity surface, and `data-dirty`/`data-touched` field-state stamps. Radio groups are just a shared `name`.
+
+### Changed
+
+- **Showcase taxonomy.** Seven categories — Hex Core, Typography, Forms, Feedback, Layout, Navigation, Overlays — hosting native elements and hp-\* components together, natives first. The Elements/Prose getting-started pages dissolved into the categories and the install guide.
+- **hp-dialog** absorbed hp-alert-dialog (`alert` variant: role="alertdialog", backdrop never dismisses) and gained an `actions` slot.
+- **hp-dropdown-menu** absorbed hp-context-menu (`trigger="contextmenu"`: the host becomes a right-click region, the menu opens at the cursor).
+- **hp-popover** absorbed hp-hover-card (`trigger="hover"` with `open-delay`/`close-delay`; the panel stays open while hovered).
+- **hp-badge** absorbed hp-tag (`dismissible` + `disabled`, firing `hp-badge-dismiss`).
+- **hp-code** draws its own gutter rule instead of composing a separator per line.
+
+### Removed
+
+- **Deleted outright (unreleased, no deprecation):** hp-bond, hp-link-node (superseded by surface rendering), hp-visually-hidden (→ class), hp-avatar (→ `img.hp-hex`), hp-icon (→ inlined SVG strings), hp-progress (→ styled native `<progress>`), hp-separator (→ `hr.hp-separator`), hp-label and hp-radio-group (→ native labels / `name` grouping), hp-toggle-group (→ toolbar + `aria-pressed` buttons), hp-tag, hp-alert-dialog, hp-context-menu, hp-hover-card (absorbed as variants). 60 tags → 46.
+
 ## [0.2.1] - 2026-08-18
 
 ### Added
