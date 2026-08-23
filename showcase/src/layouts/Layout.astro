@@ -9,6 +9,7 @@ import "katex/dist/katex.min.css";
 import "../styles/global.css";
 import fontsCssRaw from "../../../assets/fonts/fonts.css?raw";
 import { SITEMAP, isLeaf, type SitemapNode } from "../sitemap.ts";
+import { getApiFor } from "../lib/api.ts";
 import {
   github as githubIcon,
   moon,
@@ -80,9 +81,16 @@ function containsActive(node: SitemapNode): boolean {
 function sidebarNodeHtml(node: SitemapNode): string {
   if (isLeaf(node)) {
     const isActive = node.path === active;
+    // Component leaves carry their lifecycle status as a small mark;
+    // `done` is the unmarked default so the sidebar stays quiet.
+    const status = node.path.startsWith("/components/") ? getApiFor(node.title)?.status : undefined;
+    const mark =
+      status && status !== "done"
+        ? `<span class="status-mark" data-status="${status}" title="${status}"></span>`
+        : "";
     return `<hp-sidebar-item href="${escapeHtml(href(node.path))}"${
       isActive ? " active" : ""
-    }>${escapeHtml(node.title)}</hp-sidebar-item>`;
+    }>${escapeHtml(node.title)}${mark}</hp-sidebar-item>`;
   }
   const inner = node.children.map(sidebarNodeHtml).join("");
   const open = containsActive(node) ? " open" : "";
@@ -357,6 +365,8 @@ const unfoldPeakInit = `(function(){try{var p=sessionStorage.getItem('hp-unfold-
         UNFOLD_STORAGE_PEAK,
         UNFOLD_STORAGE_TARGET,
       } from "../../../src/index.ts";
+      // wip elements register for the showcase without being public API.
+      import "../lib/wip-elements.ts";
       import katex from "katex";
 
       // ── Math renderer (KaTeX) ─────────────────────────────────

@@ -687,3 +687,25 @@ pre code {
   padding-left: calc(var(--hp-sm) + var(--hp-md));
   font-size: calc(var(--hp-typo-body-sm-font-size) * 0.95);
 }
+
+/* ── Lifecycle status marks ─────────────────────────────────────── */
+/* Tiny hex beside wip / experimental entries in the sidebar; `done`
+ * is the unmarked default so the list stays quiet. The component
+ * page itself carries the full hp-banner explanation. */
+
+.status-mark {
+  display: inline-block;
+  width: 8px;
+  height: 9px;
+  margin-left: var(--hp-xs);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  vertical-align: baseline;
+}
+
+.status-mark[data-status="wip"] {
+  background: var(--hp-alert);
+}
+
+.status-mark[data-status="experimental"] {
+  background: var(--hp-warn);
+}

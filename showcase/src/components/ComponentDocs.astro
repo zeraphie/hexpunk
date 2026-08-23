@@ -27,6 +27,7 @@
 // hand-written histories.
 
 import { getChangelogFor, renderInline, titleCase } from "../lib/changelog.ts";
+import { getApiFor, type ElementStatus } from "../lib/api.ts";
 import ComponentApi from "./ComponentApi.astro";
 
 interface Props {
@@ -34,10 +35,35 @@ interface Props {
 }
 const { title } = Astro.props;
 const changelog = getChangelogFor(title);
+
+// MDN-style lifecycle banner (like MDN's Baseline box): every element
+// carries `@status` in its JSDoc; the manifest is the source of truth.
+const status: ElementStatus = getApiFor(title)?.status ?? "wip";
+const STATUS_BANNER: Record<ElementStatus, { tone: string; label: string; text: string }> = {
+  done: {
+    tone: "positive",
+    label: "done",
+    text: "Stable API with a real consumer — safe to build on.",
+  },
+  experimental: {
+    tone: "warn",
+    label: "experimental",
+    text: "Exported and usable; the API may still change between releases.",
+  },
+  wip: {
+    tone: "alert",
+    label: "wip",
+    text: "Showcase-only: not exported from the package, and may change or vanish.",
+  },
+};
+const banner = STATUS_BANNER[status];
 ---
 
 <header class="component-header">
   <h1>{title}</h1>
+  <hp-banner class="status-banner" tone={banner.tone} label={banner.label} data-status={status}>
+    {banner.text}
+  </hp-banner>
   <div class="component-description">
     <slot name="description" />
   </div>
