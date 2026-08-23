@@ -31,7 +31,6 @@ export const SITEMAP: SitemapNode[] = [
     children: [
       { path: "/getting-started/install", title: "Install" },
       { path: "/getting-started/concepts", title: "Concepts" },
-      { path: "/getting-started/elements", title: "Elements" },
     ],
   },
   {
@@ -86,6 +85,8 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Layout",
         children: [
+          { path: "/components/layout/details", title: "<details>" },
+          { path: "/components/layout/table", title: "<table>" },
           { path: "/components/layout/hp-collapsible", title: "hp-collapsible" },
           { path: "/components/layout/hp-demo", title: "hp-demo" },
           { path: "/components/layout/hp-scroll-area", title: "hp-scroll-area" },

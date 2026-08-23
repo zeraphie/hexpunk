@@ -1,0 +1,59 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="<table>">
+  <ComponentDocs title="<table>" native>
+    <p slot="description">
+      The native table, styled to the system: uppercase label-scale headers, hairline row
+      rules in outline tokens, a caption in the variant colour. Semantics, keyboard, and
+      screen-reader navigation are the element's own — there is no hp-table, on purpose.
+    </p>
+
+    <hp-demo caption="Caption, header, cells">
+      <table>
+        <caption>Density modes</caption>
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>Cell sm</th>
+            <th>Cell md</th>
+            <th>Cell lg</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>compact</td><td>44</td><td>80</td><td>140</td></tr>
+          <tr><td>default</td><td>50</td><td>100</td><td>180</td></tr>
+          <tr><td>comfortable</td><td>60</td><td>120</td><td>220</td></tr>
+        </tbody>
+      </table>
+      <hp-code slot="code" language="html">{`<body>
+  <table>
+    <caption>Density modes</caption>
+    <thead>
+      <tr>
+        <th>Mode</th>
+        <th>Cell sm</th>
+        <th>Cell md</th>
+        <th>Cell lg</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>compact</td><td>44</td><td>80</td><td>140</td></tr>
+      <tr><td>default</td><td>50</td><td>100</td><td>180</td></tr>
+    </tbody>
+  </table>
+</body>`}</hp-code>
+    </hp-demo>
+
+    <Fragment slot="intent">
+      <h2>Wide tables</h2>
+      <hp-banner tone="do">
+        Wrap a wide table in an <code>overflow-x: auto</code> container so the table
+        scrolls inside its own box instead of the page — the tinted scrollbars pick up the
+        tokens document-wide.
+      </hp-banner>
+    </Fragment>
+  </ComponentDocs>
+</Layout>
