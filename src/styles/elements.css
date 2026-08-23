@@ -752,6 +752,19 @@ meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
   white-space: nowrap;
 }
 
+/* ── img.hp-hex ────────────────────────────────────────────────── */
+
+/* Hex-clipped image — the stencil as CSS. The mask variable is
+ * generated from hp-hex's polygon tables (hex-controls.css), so the
+ * clip is the exact stencil. For a framed avatar, compose: place an
+ * <hp-hex> behind and inset the image by the ring. */
+
+img.hp-hex {
+  aspect-ratio: 100 / 115.47;
+  object-fit: cover;
+  mask: var(--hp-mask-hex) center / contain no-repeat;
+}
+
 /* ── .hp-prose — long-form content rhythm ──────────────────────── */
 
 /* Opt-in by adding `class="hp-prose"` to a wrapper. Adds vertical

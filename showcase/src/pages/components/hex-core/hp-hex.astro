@@ -54,6 +54,44 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 </body>`}</hp-code>
     </hp-demo>
 
+    <h2>The stencil as CSS</h2>
+    <p>
+      The same polygon tables generate mask variables
+      (<code>--hp-mask-hex</code>, <code>--hp-mask-hex-ring-xs/xxs</code>), so the stencil
+      works on things that aren't elements. <code>img.hp-hex</code> clips an image to the
+      hex; compose an <code>&lt;hp-hex&gt;</code> behind it for a framed avatar.
+    </p>
+    <hp-demo caption="Hex-clipped image + framed avatar">
+      <div style="display: flex; gap: var(--hp-xl); align-items: center;">
+        <img
+          class="hp-hex"
+          width="100"
+          alt="Hex-clipped sample"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23143a52'/%3E%3Ccircle cx='50' cy='42' r='18' fill='%2300cc88'/%3E%3Crect x='22' y='64' width='56' height='30' rx='14' fill='%230088cc'/%3E%3C/svg%3E"
+        />
+        <span style="position: relative; display: inline-block; line-height: 0;">
+          <hp-hex size="sm"></hp-hex>
+          <img
+            class="hp-hex"
+            alt="Framed sample"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23143a52'/%3E%3Ccircle cx='50' cy='42' r='18' fill='%2300cc88'/%3E%3Crect x='22' y='64' width='56' height='30' rx='14' fill='%230088cc'/%3E%3C/svg%3E"
+            style="position: absolute; inset: 5%; width: 90%;"
+          />
+        </span>
+      </div>
+      <hp-code slot="code" language="html">{`<body>
+  <!-- Clipped image: just the class. -->
+  <img class="hp-hex" width="100" src="portrait.jpg" alt="…" />
+
+  <!-- Framed avatar: hp-hex behind, image inset by the ring. -->
+  <span style="position: relative; display: inline-block; line-height: 0;">
+    <hp-hex size="sm"></hp-hex>
+    <img class="hp-hex" src="portrait.jpg" alt="…"
+         style="position: absolute; inset: 5%; width: 90%;" />
+  </span>
+</body>`}</hp-code>
+    </hp-demo>
+
     <Fragment slot="intent">
       <h2>When to use</h2>
               <hp-banner tone="do">
