@@ -51,6 +51,9 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Token-tinted scrollbars, document-wide (thumb / track). The
+   * fully hexpunk scrollbar is hp-scroll-area's job. */
+  scrollbar-color: var(--hp-outline-variant) var(--hp-surface-container-low);
 }
 
 body {
@@ -361,6 +364,85 @@ hr {
   border: 0;
   border-top: 1px solid var(--hp-outline-faint);
   color: inherit;
+}
+
+/* hr.hp-separator — the divider with a centre glyph, matching
+ * hp-separator: 1px segments in outline-faint with an --hp-sm gap
+ * around a small hex (default), dot, or nothing. Vertical via
+ * data-orientation (add aria-orientation="vertical" yourself);
+ * decorative dividers take aria-hidden="true". */
+
+hr.hp-separator {
+  position: relative;
+  height: 12px;
+  border: 0;
+  color: var(--hp-outline-faint);
+  background-image:
+    linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size:
+    calc(50% - (var(--hp-sm) + 4px)) 1px,
+    calc(50% - (var(--hp-sm) + 4px)) 1px;
+  background-position:
+    left center,
+    right center;
+}
+
+hr.hp-separator::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 9.24px;
+  transform: translate(-50%, -50%);
+  background: currentColor;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+hr.hp-separator[data-mark="dot"] {
+  background-size:
+    calc(50% - (var(--hp-sm) + 2px)) 1px,
+    calc(50% - (var(--hp-sm) + 2px)) 1px;
+}
+
+hr.hp-separator[data-mark="dot"]::after {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  clip-path: none;
+}
+
+hr.hp-separator[data-mark="none"] {
+  background-size: 100% 1px;
+  background-position: center;
+}
+
+hr.hp-separator[data-mark="none"]::after {
+  content: none;
+}
+
+hr.hp-separator[data-orientation="vertical"] {
+  width: 12px;
+  height: auto;
+  align-self: stretch;
+  background-size:
+    1px calc(50% - (var(--hp-sm) + 4.62px)),
+    1px calc(50% - (var(--hp-sm) + 4.62px));
+  background-position:
+    center top,
+    center bottom;
+}
+
+hr.hp-separator[data-orientation="vertical"][data-mark="dot"] {
+  background-size:
+    1px calc(50% - (var(--hp-sm) + 2px)),
+    1px calc(50% - (var(--hp-sm) + 2px));
+}
+
+hr.hp-separator[data-orientation="vertical"][data-mark="none"] {
+  background-size: 1px 100%;
+  background-position: center;
 }
 
 /* ── Tables ────────────────────────────────────────────────────── */
