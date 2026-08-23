@@ -232,23 +232,27 @@
     },
     {
       "name": "hp-checkbox",
-      "description": "Hex checkbox. role=\"checkbox\", aria-checked reflects state\n(true / false / mixed). Space toggles; disabled blocks.",
+      "description": "Hex checkbox — light-DOM alias over `<input type=\"checkbox\">`.\nThe inner input is the real control: it submits with the form,\nassociates with wrapping or `for=` labels, validates (`required`),\nand toggles with Space natively. `change` events bubble through\nwith the input as target. The host stamps `data-dirty` after the\nfirst user toggle and `data-touched` after the first blur.",
       "attributes": [
         {
           "name": "checked",
-          "description": "Current checked state. Toggled on click / Space."
+          "description": "Current checked state; mirrors the inner input."
         },
         {
           "name": "indeterminate",
-          "description": "Indeterminate (mixed) state — visual is a horizontal bar\ninstead of a check. Sets aria-checked=\"mixed\" for assistive\ntech. Cleared on next user toggle."
+          "description": "Indeterminate (mixed) visual state; cleared by user toggle."
         },
         {
           "name": "disabled",
-          "description": "Disabled — blocks toggle and removes from tab order."
+          "description": "Disabled — the native input drops out of tab order and\nsubmission."
+        },
+        {
+          "name": "required",
+          "description": "Required — unchecked blocks form submission via constraint\nvalidation."
         },
         {
           "name": "name",
-          "description": "Optional name for form integration (not yet wired to the form\nsubmission API; placeholder for forthcoming hp-form integration).",
+          "description": "Form field name; present in FormData when checked.",
           "values": [
             {
               "name": "undefined"
@@ -257,20 +261,17 @@
         },
         {
           "name": "value",
-          "description": "Optional value (paired with name) for form integration."
+          "description": "Submitted value (with `name`) when checked."
         },
         {
           "name": "size",
-          "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+          "description": "Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).",
           "values": [
             {
               "name": "xxs"
             },
             {
               "name": "xs"
-            },
-            {
-              "name": "sm"
             }
           ]
         }

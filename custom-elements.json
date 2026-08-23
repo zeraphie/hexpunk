@@ -154,16 +154,12 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Hex checkbox. role=\"checkbox\", aria-checked reflects state\n(true / false / mixed). Space toggles; disabled blocks.",
+          "description": "Hex checkbox — light-DOM alias over `<input type=\"checkbox\">`.\nThe inner input is the real control: it submits with the form,\nassociates with wrapping or `for=` labels, validates (`required`),\nand toggles with Space natively. `change` events bubble through\nwith the input as target. The host stamps `data-dirty` after the\nfirst user toggle and `data-touched` after the first blur.",
           "name": "HpCheckbox",
-          "cssParts": [
+          "slots": [
             {
-              "description": "The hex container wrapping hp-hex + the glyph",
-              "name": "box"
-            },
-            {
-              "description": "The check / dash glyph overlay",
-              "name": "glyph"
+              "description": "Label text, rendered inside the wrapping label",
+              "name": ""
             }
           ],
           "members": [
@@ -174,9 +170,8 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Current checked state. Toggled on click / Space.",
-              "attribute": "checked",
-              "reflects": true
+              "description": "Current checked state; mirrors the inner input.",
+              "attribute": "checked"
             },
             {
               "kind": "field",
@@ -185,9 +180,8 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Indeterminate (mixed) state — visual is a horizontal bar\ninstead of a check. Sets aria-checked=\"mixed\" for assistive\ntech. Cleared on next user toggle.",
-              "attribute": "indeterminate",
-              "reflects": true
+              "description": "Indeterminate (mixed) visual state; cleared by user toggle.",
+              "attribute": "indeterminate"
             },
             {
               "kind": "field",
@@ -196,9 +190,19 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — blocks toggle and removes from tab order.",
+              "description": "Disabled — the native input drops out of tab order and\nsubmission.",
               "attribute": "disabled",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Required — unchecked blocks form submission via constraint\nvalidation.",
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -206,7 +210,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Optional name for form integration (not yet wired to the form\nsubmission API; placeholder for forthcoming hp-form integration).",
+              "description": "Form field name; present in FormData when checked.",
               "attribute": "name"
             },
             {
@@ -216,58 +220,89 @@
                 "text": "string"
               },
               "default": "\"on\"",
-              "description": "Optional value (paired with name) for form integration.",
+              "description": "Submitted value (with `name`) when checked.",
               "attribute": "value"
             },
             {
               "kind": "field",
               "name": "size",
               "type": {
-                "text": "\"xxs\" | \"xs\" | \"sm\""
+                "text": "\"xxs\" | \"xs\""
               },
               "default": "\"xs\"",
-              "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+              "description": "Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).",
               "attribute": "size",
               "reflects": true
             },
             {
-              "kind": "method",
-              "name": "syncAria",
+              "kind": "field",
+              "name": "labelNodes",
+              "type": {
+                "text": "Node[]"
+              },
               "privacy": "private",
+              "default": "[]",
+              "description": "Author children captured before first render; re-rendered as\nthe label text."
+            },
+            {
+              "kind": "field",
+              "name": "input",
+              "type": {
+                "text": "HTMLInputElement | null"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState | undefined"
+              },
+              "description": "Native constraint-validation surface, forwarded.",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
               "return": {
                 "type": {
-                  "text": "void"
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "return": {
+                "type": {
+                  "text": "boolean"
                 }
               }
             },
             {
               "kind": "field",
-              "name": "handleClick",
+              "name": "handleChange",
               "privacy": "private"
             },
             {
               "kind": "field",
-              "name": "handleKeyDown",
+              "name": "handleFocusout",
               "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "toggle",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
             }
           ],
           "events": [
             {
-              "name": "change",
-              "type": {
-                "text": "CustomEvent"
-              },
-              "description": "When checked changes via user input. detail: { checked }"
+              "description": "Native change, bubbled from the inner input",
+              "name": "change"
             }
           ],
           "attributes": [
@@ -277,7 +312,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Current checked state. Toggled on click / Space.",
+              "description": "Current checked state; mirrors the inner input.",
               "fieldName": "checked"
             },
             {
@@ -286,7 +321,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Indeterminate (mixed) state — visual is a horizontal bar\ninstead of a check. Sets aria-checked=\"mixed\" for assistive\ntech. Cleared on next user toggle.",
+              "description": "Indeterminate (mixed) visual state; cleared by user toggle.",
               "fieldName": "indeterminate"
             },
             {
@@ -295,15 +330,24 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Disabled — blocks toggle and removes from tab order.",
+              "description": "Disabled — the native input drops out of tab order and\nsubmission.",
               "fieldName": "disabled"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Required — unchecked blocks form submission via constraint\nvalidation.",
+              "fieldName": "required"
             },
             {
               "name": "name",
               "type": {
                 "text": "string | undefined"
               },
-              "description": "Optional name for form integration (not yet wired to the form\nsubmission API; placeholder for forthcoming hp-form integration).",
+              "description": "Form field name; present in FormData when checked.",
               "fieldName": "name"
             },
             {
@@ -312,16 +356,16 @@
                 "text": "string"
               },
               "default": "\"on\"",
-              "description": "Optional value (paired with name) for form integration.",
+              "description": "Submitted value (with `name`) when checked.",
               "fieldName": "value"
             },
             {
               "name": "size",
               "type": {
-                "text": "\"xxs\" | \"xs\" | \"sm\""
+                "text": "\"xxs\" | \"xs\""
               },
               "default": "\"xs\"",
-              "description": "Cell size. `xs` (default, 32px) is the comfortable form-input\nsize; `xxs` (20px) is dense / tabular; `sm` (100px) is the\ncontent-hex size — rarely useful here but available.",
+              "description": "Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).",
               "fieldName": "size"
             }
           ],
@@ -329,7 +373,7 @@
             "name": "LitElement",
             "package": "lit"
           },
-          "status": "wip",
+          "status": "experimental",
           "tagName": "hp-checkbox",
           "customElement": true
         }
@@ -10850,36 +10894,10 @@
             {
               "kind": "field",
               "name": "RING_INSET",
-              "type": {
-                "text": "Record<\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\", number>"
-              },
               "static": true,
               "readonly": true,
-              "default": "{ xxs: 0.1, xs: 0.06, sm: 0.05, md: 0.077, lg: 0.075, }",
-              "description": "Half-width of the visible ring as a fraction of the cell, i.e.\n`1 - scale` from the table above. Published as `--hp-hex-inset`\nso a layout can overlap neighbours by exactly the ring and merge\ntwo outlines into one shared edge. It is deliberately *not*\n`--hp-hex-stroke`: the ring comes from a uniform polygon scale,\nand for sm that is 2.5px where the stroke token says 2px — a\nhalf-pixel of daylight, which reads as a doubled line."
-            },
-            {
-              "kind": "field",
-              "name": "INNER_POINTS",
-              "type": {
-                "text": "Record<\"xxs\" | \"xs\" | \"sm\" | \"md\" | \"lg\", string>"
-              },
-              "privacy": "private",
-              "static": true,
-              "readonly": true,
-              "default": "{ xxs: \"50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76\", xs: \"50,3.46 97,30.6 97,84.87 50,112.01 3,84.87 3,30.6\", sm: \"50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31\", md: \"96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33\", lg: \"50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04\", }"
-            },
-            {
-              "kind": "field",
-              "name": "OUTER_POINTS",
-              "privacy": "private",
-              "static": true,
-              "readonly": true,
-              "default": "{ pointy: { viewBox: \"0 0 100 115.47\", points: \"50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87\", }, flat: { viewBox: \"0 0 100 86.6\", points: \"100,43.3 75,86.6 25,86.6 0,43.3 25,0 75,0\", }, }",
-              "type": {
-                "text": "{\n    pointy: {\n      viewBox: \"0 0 100 115.47\",\n      points: \"50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87\",\n    },\n    flat: {\n      viewBox: \"0 0 100 86.6\",\n      points: \"100,43.3 75,86.6 25,86.6 0,43.3 25,0 75,0\",\n    },\n  }"
-              },
-              "description": "Outer-polygon points + viewBox per orientation. Keyed by\nwhether the hex renders pointy-top (sm / lg) or flat-top (md)."
+              "default": "RING_INSET",
+              "description": "Half-width of the visible ring as a fraction of the cell —\nre-exposed from the shared geometry tables (src/lib/\nhex-geometry.ts, which also documents the per-size scale\nfactors). Published as `--hp-hex-inset` so a layout can overlap\nneighbours by exactly the ring and merge two outlines into one\nshared edge. Deliberately *not* `--hp-hex-stroke`: the ring\ncomes from a uniform polygon scale, and for sm that is 2.5px\nwhere the stroke token says 2px — a half-pixel of daylight,\nwhich reads as a doubled line."
             }
           ],
           "attributes": [
@@ -14330,6 +14348,14 @@
         },
         {
           "kind": "js",
+          "name": "HpCheckbox",
+          "declaration": {
+            "name": "HpCheckbox",
+            "module": "./elements/forms/hp-checkbox.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "HpCode",
           "declaration": {
             "name": "HpCode",
@@ -14816,6 +14842,65 @@
           "declaration": {
             "name": "onEscape",
             "module": "src/lib/floating.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lib/hex-geometry.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "OUTER_POINTS",
+          "type": {
+            "text": "{\n  pointy: {\n    viewBox: \"0 0 100 115.47\",\n    points: \"50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87\",\n  },\n  flat: {\n    viewBox: \"0 0 100 86.6\",\n    points: \"100,43.3 75,86.6 25,86.6 0,43.3 25,0 75,0\",\n  },\n}"
+          },
+          "default": "{ pointy: { viewBox: \"0 0 100 115.47\", points: \"50,0 100,28.87 100,86.6 50,115.47 0,86.6 0,28.87\", }, flat: { viewBox: \"0 0 100 86.6\", points: \"100,43.3 75,86.6 25,86.6 0,43.3 25,0 75,0\", }, }",
+          "description": "Outer-polygon points + viewBox per orientation. Keyed by whether\nthe hex renders pointy-top (default) or flat-top (md)."
+        },
+        {
+          "kind": "variable",
+          "name": "INNER_POINTS",
+          "type": {
+            "text": "Record<HexSize, string>"
+          },
+          "default": "{ xxs: \"50,5.77 95,31.76 95,83.71 50,109.7 5,83.71 5,31.76\", xs: \"50,3.46 97,30.6 97,84.87 50,112.01 3,84.87 3,30.6\", sm: \"50,2.89 97.5,30.31 97.5,85.16 50,112.58 2.5,85.16 2.5,30.31\", md: \"96.15,43.3 73.08,83.27 26.92,83.27 3.85,43.3 26.92,3.33 73.08,3.33\", lg: \"50,4.33 96.25,31.04 96.25,84.43 50,111.14 3.75,84.43 3.75,31.04\", }",
+          "description": "Inner-polygon points per size — uniform scale of the outer hex\naround its centre (pointy-top: centre 50,57.735; flat-top:\n50,43.3). Pre-computed because CSS transform: scale() on SVG\npolygons doesn't apply reliably across engines. Each entry was\ncomputed as\n`outer * scale + (1 - scale) * centre` to keep the stroke ring\nproportional to the cell. Scale factors:\n\nxxs (cell 20px, stroke 1px display ≈ 5 viewBox units) → 0.90\nxs (cell 50px, stroke 1.5px ≈ 3 viewBox units) → 0.94\nsm (cell 100px, stroke 2px) → 0.95\nmd (cell 180px flat-top, stroke 4px scaled) → 0.923\nlg (cell 320px, stroke 6px scaled) → 0.925"
+        },
+        {
+          "kind": "variable",
+          "name": "RING_INSET",
+          "type": {
+            "text": "Record<HexSize, number>"
+          },
+          "default": "{ xxs: 0.1, xs: 0.06, sm: 0.05, md: 0.077, lg: 0.075, }",
+          "description": "Half-width of the visible ring as a fraction of the cell, i.e.\n`1 - scale` from the table above. hp-hex publishes it as\n`--hp-hex-inset`; hp-layout / hp-grid overlap neighbours by\nexactly this so two outlines merge into one shared edge."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "OUTER_POINTS",
+          "declaration": {
+            "name": "OUTER_POINTS",
+            "module": "src/lib/hex-geometry.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "INNER_POINTS",
+          "declaration": {
+            "name": "INNER_POINTS",
+            "module": "src/lib/hex-geometry.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RING_INSET",
+          "declaration": {
+            "name": "RING_INSET",
+            "module": "src/lib/hex-geometry.ts"
           }
         }
       ]

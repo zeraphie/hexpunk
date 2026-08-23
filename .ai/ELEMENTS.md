@@ -3,7 +3,7 @@
 Auto-generated from `custom-elements.json` by `tools/build-elements-md.ts` — do not edit
 by hand. Regenerate with `bun run analyze`.
 
-26 elements, alphabetical (31 wip elements omitted — showcase-only,
+27 elements, alphabetical (30 wip elements omitted — showcase-only,
 not exported). Per element: tag, status, role, attributes / properties (type, default),
 slots, events, CSS custom properties, CSS parts. Pair with `DESIGN.md` (style) and
 `.ai/PROMPTS.md` (prompt recipes) when briefing an agent.
@@ -105,6 +105,32 @@ Universal labelled hex. Subsumes anchor / action / secondary / utility (interact
 
 - `cell` — The wrapping cell element (positioned ancestor for label / trace)
 - `label` — The label container (when the variant has a label)
+
+## `<hp-checkbox>`
+
+**Status:** experimental
+
+Hex checkbox — light-DOM alias over `<input type="checkbox">`. The inner input is the real control: it submits with the form, associates with wrapping or `for=` labels, validates (`required`), and toggles with Space natively. `change` events bubble through with the input as target. The host stamps `data-dirty` after the first user toggle and `data-touched` after the first blur.
+
+**Attributes / properties**
+
+- `checked`: `boolean` = `false` — Current checked state; mirrors the inner input.
+- `indeterminate`: `boolean` = `false` — Indeterminate (mixed) visual state; cleared by user toggle.
+- `disabled`: `boolean` = `false` — Disabled — the native input drops out of tab order and submission.
+- `required`: `boolean` = `false` — Required — unchecked blocks form submission via constraint validation.
+- `name`: `string | undefined` — Form field name; present in FormData when checked.
+- `value`: `string` = `"on"` — Submitted value (with `name`) when checked.
+- `size`: `"xxs" | "xs"` = `"xs"` — Form tier: `xs` (default, 50px cell) or `xxs` (20px, dense).
+- `validity (property)`: `ValidityState | undefined` — Native constraint-validation surface, forwarded.
+- `validationMessage (property)`: `string`
+
+**Slots**
+
+- (default) — Label text, rendered inside the wrapping label
+
+**Events**
+
+- `change` — Native change, bubbled from the inner input
 
 ## `<hp-code>`
 
