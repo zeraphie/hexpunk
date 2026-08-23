@@ -40,8 +40,9 @@ oxlint's — style review is about what tools can't check.
 - `.ai/STYLE.md` — code style rules
 - `.ai/ANTI-PATTERNS.md` / `.ai/PROMPTS.md` / `.ai/ELEMENTS.md` —
   consumer-facing docs for briefing AI tools that _generate_ hexpunk
-  UIs (ELEMENTS.md is a stale stub pending regeneration from
-  `custom-elements.json`)
+  UIs (ELEMENTS.md is generated from `custom-elements.json` by
+  `tools/build-elements-md.ts` as part of `bun run analyze`; never
+  hand-edited)
 - `src/elements/` — Lit elements by category; components that
   outgrow one file become by-concern folders (see `hp-grid/`)
 - `src/tokens/` — generated from DESIGN.md frontmatter by

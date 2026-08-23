@@ -115,8 +115,8 @@ The TypeScript + Lit adaptation of the shared style guide (root
   drift)
 - `check` = format:check + lint + test + analyze
 - Generated files are never hand-edited: `src/tokens/*.css`,
-  `custom-elements.json`, `vscode.html-custom-data.json`, generated
-  icon modules
+  `custom-elements.json`, `vscode.html-custom-data.json`,
+  `.ai/ELEMENTS.md`, generated icon modules
 
 ## Showcase pages
 
