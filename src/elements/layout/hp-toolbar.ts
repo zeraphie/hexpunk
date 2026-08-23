@@ -3,7 +3,7 @@
 //
 // / toggles / separators with managed keyboard navigation. Arrow
 // keys move focus between focusable children (skipping disabled
-// ones), Home / End jump to first / last. Slotted hp-separator
+// ones), Home / End jump to first / last. Slotted hr.hp-separator
 // children act as visual + a11y dividers between groups of controls.
 //
 // Children that should participate in the toolbar's roving tabindex
@@ -26,7 +26,7 @@ const FOCUSABLE_SELECTOR =
  * them; Home / End jump to first / last; Tab leaves the toolbar.
  *
  * @slot - Toolbar controls (hp-button, hp-toggle, hp-checkbox,
- * hp-separator, etc.)
+ * hr.hp-separator, etc.)
  * @status wip
  */
 @customElement("hp-toolbar")

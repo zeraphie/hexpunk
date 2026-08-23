@@ -10,7 +10,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       (<code>hp-button</code>, <code>hp-toggle</code>, <code>hp-checkbox</code>,
       <code>hp-link</code>, etc.) participate in a roving tabindex — Tab enters at the
       currently-active child, arrow keys move between siblings, Home / End jump to first /
-      last. <code>hp-separator</code> children break the visual flow without consuming a
+      last. <code>hr.hp-separator</code> children break the visual flow without consuming a
       tab stop.
     </p>
 
@@ -18,9 +18,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
       <hp-toolbar>
         <hp-button size="sm">save</hp-button>
         <hp-button size="sm">share</hp-button>
-        <hp-separator orientation="vertical"></hp-separator>
+        <hr class="hp-separator" data-orientation="vertical" aria-orientation="vertical" />
         <hp-toggle></hp-toggle>
-        <hp-separator orientation="vertical"></hp-separator>
+        <hr class="hp-separator" data-orientation="vertical" aria-orientation="vertical" />
         <hp-button size="sm">settings</hp-button>
       </hp-toolbar>
 
@@ -28,7 +28,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
   <hp-toolbar>
     <hp-button>save</hp-button>
     <hp-button>share</hp-button>
-    <hp-separator orientation="vertical"></hp-separator>
+    <hr class="hp-separator" data-orientation="vertical" aria-orientation="vertical" />
     <hp-toggle></hp-toggle>
   </hp-toolbar>
 </body>`}</hp-code>

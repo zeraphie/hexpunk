@@ -33,11 +33,6 @@ export { HpNavigationMenu, HpNavItem } from "./elements/navigation/hp-navigation
 export { HpRadio } from "./elements/forms/hp-radio.js";
 export { HpPixel, type HpPixelPosition, type HpPixelStates } from "./elements/images/hp-pixel.js";
 export { HpSlider } from "./elements/forms/hp-slider.js";
-export {
-  HpSeparator,
-  type HpSeparatorOrientation,
-  type HpSeparatorMark,
-} from "./elements/layout/hp-separator.js";
 export { HpSidebar, type HpSidebarVariant } from "./elements/layout/hp-sidebar.js";
 export { HpSidebarGroup } from "./elements/layout/hp-sidebar-group.js";
 export { HpSidebarItem } from "./elements/layout/hp-sidebar-item.js";

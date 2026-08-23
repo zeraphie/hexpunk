@@ -90,7 +90,7 @@ export const SITEMAP: SitemapNode[] = [
           { path: "/components/layout/hp-collapsible", title: "hp-collapsible" },
           { path: "/components/layout/hp-demo", title: "hp-demo" },
           { path: "/components/layout/hp-scroll-area", title: "hp-scroll-area" },
-          { path: "/components/layout/hp-separator", title: "hp-separator" },
+          { path: "/components/layout/hr", title: "<hr>" },
           { path: "/components/layout/hp-toolbar", title: "hp-toolbar" },
         ],
       },
