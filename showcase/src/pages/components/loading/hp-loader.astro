@@ -73,17 +73,9 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     </hp-demo>
 
     <script>
-      // Re-wires on every arrival at this page: the document persists
-      // across client-router navigations while the demo elements are
-      // swapped out and back in. The active flag stops a double run
-      // (module executes, then astro:page-load fires for the same
-      // visit), which would put two drivers on the same loaders.
-      let active = false;
+      import { onPageVisit } from "../../../lib/visit.ts";
 
-      function setup(): void {
-        if (active) {
-          return;
-        }
+      onPageVisit((signal) => {
         const live = [
           document.getElementById("loader-live"),
           document.getElementById("loader-live-linear"),
@@ -91,17 +83,16 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         if (!live.length) {
           return;
         }
-        active = true;
         // Real-loader rhythm: a pause, then a bump of a few percent
         // — stalls where the frontier parks, bursts where the two
         // timing modes visibly diverge. A lap lands around 12s,
-        // holds at 100% for a beat, then loops. Self-terminates
-        // when the demo leaves the page (no reschedule).
+        // holds at 100% for a beat, then loops. Stops with the
+        // visit (no reschedule).
         let value = 0;
         const schedule = (): void => {
           const delay = value >= 100 ? 2600 : 250 + Math.random() * 1250;
           window.setTimeout(() => {
-            if (!live[0].isConnected) {
+            if (signal.aborted) {
               return;
             }
             value = value >= 100 ? 0 : Math.min(100, value + 2 + Math.floor(Math.random() * 11));
@@ -112,12 +103,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
           }, delay);
         };
         schedule();
-      }
-      document.addEventListener("astro:page-load", setup);
-      document.addEventListener("astro:before-swap", () => {
-        active = false;
       });
-      setup();
     </script>
 
     <Fragment slot="intent">

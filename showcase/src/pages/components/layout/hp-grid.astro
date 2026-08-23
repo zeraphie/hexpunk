@@ -904,6 +904,7 @@ const STATS = [
     type EngineSkin,
     type WorldRect,
   } from "../../../../../src/engine/index.ts";
+  import { onPageVisit } from "../../../lib/visit.ts";
   const TIER_THRESHOLDS = [100, 240, 520];
   const REDIVE_COOLDOWN_MS = 600;
   /** Hex side the cell typography is designed against; other sizes
@@ -1278,7 +1279,7 @@ const STATS = [
   /** Rebuild cells + engine from the current settings. Size and
    * motion changes come through here — the canvas is replaced so
    * the fresh renderer never inherits a dead GL context. */
-  async function boot(): Promise<void> {
+  async function boot(visit: AbortSignal): Promise<void> {
       engine?.destroy();
       engine = null;
       divedNode = null;
@@ -1396,9 +1397,9 @@ const STATS = [
         },
       });
 
-      if (!active) {
-        // Torn down while the engine was still initialising — the
-        // visitor already left this page; discard the newborn.
+      if (visit.aborted) {
+        // The visitor left while the engine was still initialising;
+        // discard the newborn.
         engine.destroy();
         engine = null;
         return;
@@ -1425,8 +1426,8 @@ const STATS = [
   /** Boots run one after another: every click lands, and the last
    * one wins because each boot reads the current settings. */
   let bootChain: Promise<void> = Promise.resolve();
-  function scheduleBoot(): void {
-    bootChain = bootChain.then(() => boot()).catch((error) => {
+  function scheduleBoot(visit: AbortSignal): void {
+    bootChain = bootChain.then(() => boot(visit)).catch((error) => {
       console.error("[playground] boot failed", error);
     });
   }
@@ -1530,18 +1531,16 @@ const STATS = [
   }
 
   let themeWatcher: ThemeWatcher | null = null;
-  let active = false;
 
-  /** Query this visit's DOM and wire every control. Runs on every
-   * arrival at this page and no-ops elsewhere — astro:page-load
-   * fires on every navigation once the client router owns the
-   * document. */
-  function setup(): void {
+  // Query this visit's DOM and wire every control; the teardown stops
+  // everything that would outlive it — the engine's render loop and
+  // the theme watcher hold on to a canvas the next page no longer
+  // contains.
+  onPageVisit((visit) => {
     const nextStage = document.getElementById("pg-stage");
-    if (active || !nextStage) {
+    if (!nextStage) {
       return;
     }
-    active = true;
     stage = nextStage;
     overlay = document.getElementById("pg-overlay")!;
     hud = {
@@ -1588,7 +1587,7 @@ const STATS = [
     wireGroup("pg-motion", (value) => {
       settings.instant = value === "instant" || prefersReduced;
       stage.dataset.pgMotion = settings.instant ? "instant" : "animated";
-      scheduleBoot();
+      scheduleBoot(visit);
     });
     wireGroup("pg-tetherable", (value) => {
       settings.tetherable = value === "on";
@@ -1679,33 +1678,17 @@ const STATS = [
       engine?.setSkin(buildSkin());
     });
 
-    scheduleBoot();
+    scheduleBoot(visit);
     // Fit after fonts arrive — widths measured against the real face.
     void bootChain.then(() => document.fonts.ready).then(fitPanelLabels);
-  }
 
-  /** Stop everything that would outlive this visit's DOM: the
-   * engine's render loop and the theme watcher hold on to a canvas
-   * the next page no longer contains. Runs before the router swaps
-   * the body, and on pagehide for real unloads. */
-  function teardown(): void {
-    if (!active) {
-      return;
-    }
-    active = false;
-    window.clearTimeout(hudSettle);
-    themeWatcher?.dispose();
-    themeWatcher = null;
-    engine?.destroy();
-    engine = null;
-    divedNode = null;
-  }
-
-  document.addEventListener("astro:page-load", setup);
-  document.addEventListener("astro:before-swap", teardown);
-  window.addEventListener("pagehide", teardown);
-  // First execution happens with this page's DOM already parsed —
-  // module scripts run post-parse on a full load, and the router
-  // executes incoming scripts only after the swap.
-  setup();
+    return () => {
+      window.clearTimeout(hudSettle);
+      themeWatcher?.dispose();
+      themeWatcher = null;
+      engine?.destroy();
+      engine = null;
+      divedNode = null;
+    };
+  });
 </script>

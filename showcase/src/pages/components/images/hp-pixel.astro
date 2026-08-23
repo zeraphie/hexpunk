@@ -77,6 +77,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 
     <script>
       import { menu } from "../../../../../src/pixel-icons/menu.ts";
+      import { onPageVisit } from "../../../lib/visit.ts";
 
       interface PixelEl extends HTMLElement {
         art?: string;
@@ -84,24 +85,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
         interactive?: boolean;
       }
 
-      // Re-wires on every arrival at this page: the document persists
-      // across client-router navigations while the demo elements are
-      // swapped out and back in. The active flag stops a double run
-      // (module executes, then astro:page-load fires for the same
-      // visit), which would stack a second click listener on each
-      // toggle and make every click flip twice.
-      let active = false;
-
-      function setup(): void {
-        if (active) {
-          return;
-        }
+      onPageVisit((signal) => {
         const staticEl = document.getElementById("pixel-art-static") as PixelEl | null;
         const customEl = document.getElementById("pixel-states-custom") as PixelEl | null;
         if (!staticEl && !customEl) {
           return;
         }
-        active = true;
         if (staticEl) {
           staticEl.art = "#.#.#\n#.#.#\n.....\n#.#.#\n#.#.#";
         }
@@ -118,20 +107,19 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
               "aria-pressed",
               el.getAttribute("aria-pressed") === "true" ? "false" : "true"
             );
-          el.addEventListener("click", flip);
-          el.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              flip();
-            }
-          });
+          el.addEventListener("click", flip, { signal });
+          el.addEventListener(
+            "keydown",
+            (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                flip();
+              }
+            },
+            { signal }
+          );
         }
-      }
-      document.addEventListener("astro:page-load", setup);
-      document.addEventListener("astro:before-swap", () => {
-        active = false;
       });
-      setup();
     </script>
 
     <Fragment slot="intent">
