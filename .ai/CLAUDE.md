@@ -46,5 +46,6 @@ oxlint's — style review is about what tools can't check.
   `tools/build-tokens.ts`; never hand-edited
 - `src/styles/` — hp-base + shared CSS · `src/lib/` — shared helpers
 - `showcase/` — Astro docs site (Bun workspace; imports library
-  source directly)
+  source directly; persistent-document router — page scripts wire
+  per visit, see STYLE.md § Showcase pages)
 - `tools/` — Bun build scripts (tokens, icons, CEM → editor data)

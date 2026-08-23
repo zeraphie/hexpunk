@@ -118,6 +118,43 @@ The TypeScript + Lit adaptation of the shared style guide (root
   `custom-elements.json`, `vscode.html-custom-data.json`, generated
   icon modules
 
+## Showcase pages
+
+- The layout installs Astro's `<ClientRouter />`, so the document
+  outlives any one page: a page's module script runs once per
+  document while the DOM it wired is swapped out and back in on
+  every navigation. A script that wires DOM (lookups, listeners,
+  timers, engines) wires it **per visit** through `onPageVisit`
+  (`showcase/src/lib/visit.ts`):
+
+  ```ts
+  import { onPageVisit } from "../../lib/visit.ts";
+
+  onPageVisit((signal) => {
+    const el = document.getElementById("demo");
+    if (!el) {
+      return; // page-load fires on every page, not just this one
+    }
+    el.addEventListener("click", onClick, { signal });
+    const engine = start(el);
+    return () => engine.destroy();
+  });
+  ```
+
+  The signal aborts on departure — pass it to listeners, check it
+  after any await; the returned teardown releases what a signal
+  can't. Never `DOMContentLoaded`, `readyState` or module-level
+  run-once wiring: they work on a full load and leave every return
+  visit dead. Import-only scripts (`import "…/grid.ts"`) are fine
+  as they are.
+
+- The library side of the same contract: elements navigate through
+  `hpNavigate` (`src/lib/navigate.ts`), never `window.location`,
+  so a consumer's router can take over; URL writes carry the
+  existing `history.state` forward, as hp-tabs does with
+  `replaceState(history.state, …)`, because routers keep their
+  own state there.
+
 ## Commits
 
 - `type(scope): short description` — scope is the component or
