@@ -32,7 +32,6 @@ export const SITEMAP: SitemapNode[] = [
       { path: "/getting-started/install", title: "Install" },
       { path: "/getting-started/concepts", title: "Concepts" },
       { path: "/getting-started/elements", title: "Elements" },
-      { path: "/getting-started/prose", title: "Prose" },
     ],
   },
   {
@@ -56,11 +55,11 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Typography",
         children: [
+          { path: "/components/typography/text", title: "text & prose" },
           { path: "/components/typography/hp-code", title: "hp-code" },
           { path: "/components/typography/hp-copy", title: "hp-copy" },
           { path: "/components/typography/hp-latex", title: "hp-latex" },
           { path: "/components/typography/hp-link", title: "hp-link" },
-          { path: "/components/typography/hp-visually-hidden", title: "hp-visually-hidden" },
         ],
       },
       {

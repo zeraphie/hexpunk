@@ -14,7 +14,10 @@ import Layout from "../../layouts/Layout.astro";
   <hp-banner tone="neutral">
     Two layers in one file. The <strong>bare reset</strong> auto-applies to every native
     element. The <strong>.hp-prose</strong> class is an opt-in rhythm scope for long-form
-    content — see the <a href="/getting-started/prose">Prose</a> page.
+    content. The flowing-text set — headings, inline marks, links, lists, blockquote,
+    rules, and the prose rhythm — now lives on
+    <a href="/components/typography/text">text &amp; prose</a>; tables, details, and the
+    form baseline below move into their categories as those pages land.
   </hp-banner>
 
   <h2>Installation</h2>
@@ -33,176 +36,6 @@ import Layout from "../../layouts/Layout.astro";
   <hp-code language="javascript">{`import "@hexpunk/core/tokens.dark.css";
 import "@hexpunk/core/tokens.light.css";
 import "@hexpunk/core/elements.css";`}</hp-code>
-
-  <h2>Headings</h2>
-  <hp-demo caption="h1 through h6">
-    <div>
-      <h1>Heading 1 — display lg</h1>
-      <h2>Heading 2 — headline lg</h2>
-      <h3>Heading 3 — headline md</h3>
-      <h4>Heading 4 — title md</h4>
-      <h5>Heading 5 — label md (uppercase)</h5>
-      <h6>Heading 6 — label sm (uppercase)</h6>
-    </div>
-    <hp-code slot="code" language="html">{`<body>
-  <h1>Heading 1 — display lg</h1>
-  <h2>Heading 2 — headline lg</h2>
-  <h3>Heading 3 — headline md</h3>
-  <h4>Heading 4 — title md</h4>
-  <h5>Heading 5 — label md (uppercase)</h5>
-  <h6>Heading 6 — label sm (uppercase)</h6>
-</body>`}</hp-code>
-  </hp-demo>
-  <p>
-    Headings carry zero default margin so they compose freely. Use <code>.hp-prose</code>
-    on a wrapping element to opt into vertical rhythm.
-  </p>
-
-  <h2>Inline text</h2>
-  <hp-demo caption="Emphasis, marks, abbreviations">
-    <div>
-      <p>
-        Paragraphs default to <code>--hp-on-surface</code>. <strong>Strong</strong> and
-        <b>b</b> tighten weight; <em>emphasis</em> and <i>i</i> italicise.
-        <small>Small text drops to body-sm.</small>
-      </p>
-      <p>
-        <mark>Marked text</mark> uses the warn container tokens.
-        <del>Deleted</del> strikes through; <ins>inserted</ins> underlines with the
-        secondary hue. Press <kbd>Ctrl</kbd> + <kbd>K</kbd> for command palettes —
-        <abbr title="Keyboard">kbd</abbr> reads as a key cap.
-      </p>
-      <p>
-        H<sub>2</sub>O and E = mc<sup>2</sup>. Variables read as <var>x</var>, samples as
-        <samp>OK</samp>.
-      </p>
-    </div>
-    <hp-code slot="code" language="html">{`<body>
-  <p>
-    <strong>Strong</strong> / <b>b</b>, <em>emphasis</em> / <i>i</i>,
-    <small>small text</small>, <mark>marked</mark>, <del>del</del>,
-    <ins>ins</ins>, <kbd>Ctrl</kbd>, <abbr title="Keyboard">kbd</abbr>.
-  </p>
-  <p>H<sub>2</sub>O — E = mc<sup>2</sup>. <var>x</var> / <samp>OK</samp>.</p>
-</body>`}</hp-code>
-  </hp-demo>
-
-  <h2>Links</h2>
-  <hp-demo caption="Anchor as text">
-    <p>
-      Raw <code>&lt;a&gt;</code> is the *anchor-as-text* primitive — for in-sentence
-      references like a <a href="#">link to elsewhere</a>. For *anchor-as-affordance*
-      (hover trace, hex geometry), reach for
-      <a href="/components/typography/hp-link"><code>&lt;hp-link&gt;</code></a> or
-      <a href="/components/hex-core/hp-cell"><code>&lt;hp-cell variant="anchor"&gt;</code></a>.
-    </p>
-    <hp-code slot="code" language="html">{`<body>
-  <p>
-    Visit <a href="https://example.com">example.com</a> for details.
-  </p>
-</body>`}</hp-code>
-  </hp-demo>
-
-  <h2>Code</h2>
-  <hp-banner tone="neutral">
-    For syntax-highlighted code with line numbers, per-line hover, and a copy button,
-    reach for <a href="/components/typography/hp-code"><code>&lt;hp-code&gt;</code></a> —
-    it accepts a consumer-registered highlighter (Shiki, highlight.js, Prism). The raw
-    primitives below are the right call for short inline snippets and unhighlighted
-    block samples.
-  </hp-banner>
-  <hp-demo caption="Inline and block">
-    <div>
-      <p>
-        Inline <code>const x = 1</code> renders as a chip. Block-level code uses
-        <code>&lt;pre&gt;&lt;code&gt;</code>:
-      </p>
-      <pre><code>function hex(q, r) &#123;
-  return [q * (3 / 2), r * Math.sqrt(3) + q * Math.sqrt(3) / 2];
-&#125;</code></pre>
-    </div>
-    <hp-code slot="code" language="html">{`<body>
-  <p>Inline <code>const x = 1</code> reads as a chip.</p>
-  <pre>
-    <code>
-      function hex(q, r) {
-        return [q * (3 / 2), r * Math.sqrt(3) + q * Math.sqrt(3) / 2];
-      }
-    </code>
-  </pre>
-</body>`}</hp-code>
-  </hp-demo>
-  <h2>Blockquote</h2>
-  <hp-demo caption="Citation with attribution">
-    <blockquote>
-      <p>The system is the source of truth — the chrome is just the surface.</p>
-      <cite>— Hexpunk DESIGN.md</cite>
-    </blockquote>
-    <hp-code slot="code" language="html">{`<body>
-  <blockquote>
-    <p>The system is the source of truth — the chrome is just the surface.</p>
-    <cite>— Hexpunk DESIGN.md</cite>
-  </blockquote>
-</body>`}</hp-code>
-  </hp-demo>
-
-  <h2>Lists</h2>
-  <hp-demo caption="Unordered, ordered, and definition lists">
-    <div class="hp-prose">
-      <ul>
-        <li>Atoms — single-hex elements (<code>hp-cell</code>, <code>hp-icon</code>)</li>
-        <li>Molecules — composed structures (<code>hp-grid</code>, <code>hp-cluster</code>)</li>
-        <li>
-          Primitives — the bigger ideas
-          <ul>
-            <li>Bonding (adjacency)</li>
-            <li>Linking (arcs at distance)</li>
-            <li>Unfolding (in-place / overlay / camera-zoom)</li>
-          </ul>
-        </li>
-      </ul>
-      <ol>
-        <li>Read DESIGN.md</li>
-        <li>Read PLAN.md</li>
-        <li>Pick a step, propose, confirm, ship</li>
-      </ol>
-      <dl>
-        <dt>Cell</dt>
-        <dd>Universal labelled hex element with interactive variants.</dd>
-        <dt>Cluster</dt>
-        <dd>Canonical 5-hex rosette layout.</dd>
-        <dt>Tether</dt>
-        <dd>Curved arc between two anchors.</dd>
-      </dl>
-    </div>
-    <hp-code slot="code" language="html">{`<body>
-  <div class="hp-prose">
-    <ul>
-      <li>Atoms — single-hex elements</li>
-      <li>
-        Molecules — composed structures
-        <ul>
-          <li>Bonding (adjacency)</li>
-          <li>Linking (arcs at distance)</li>
-        </ul>
-      </li>
-    </ul>
-    <ol>
-      <li>Read DESIGN.md</li>
-      <li>Pick a step, propose, confirm, ship</li>
-    </ol>
-    <dl>
-      <dt>Cell</dt>
-      <dd>Universal labelled hex element.</dd>
-    </dl>
-  </div>
-</body>`}</hp-code>
-  </hp-demo>
-  <p>
-    Bullet glyphs use the secondary hue via <code>::marker</code>. Padding shown here comes
-    from the <code>.hp-prose</code> wrapper — bare-reset lists ship with zero padding so
-    consumers control list indentation per-surface.
-  </p>
 
   <h2>Tables</h2>
   <hp-demo caption="Caption, header, cells">
@@ -275,26 +108,6 @@ import "@hexpunk/core/elements.css";`}</hp-code>
     <summary>Open by default</summary>
     <p>The <code>open</code> attribute starts expanded.</p>
   </details>
-</body>`}</hp-code>
-  </hp-demo>
-
-  <h2>Horizontal rule</h2>
-  <hp-banner tone="neutral">
-    For dividers with orientation (horizontal / vertical), tone, and optional centred
-    marks, use <a href="/components/layout/hp-separator"><code>&lt;hp-separator&gt;</code></a>.
-    Raw <code>&lt;hr&gt;</code> stays useful for inline section breaks inside long-form
-    content.
-  </hp-banner>
-  <hp-demo caption="Section divider">
-    <div>
-      <p>Above the rule.</p>
-      <hr>
-      <p>Below the rule.</p>
-    </div>
-    <hp-code slot="code" language="html">{`<body>
-  <p>Above the rule.</p>
-  <hr />
-  <p>Below the rule.</p>
 </body>`}</hp-code>
   </hp-demo>
 
