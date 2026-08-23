@@ -15,7 +15,9 @@ Research → design doc → plan → execute, step by step.
 2. Plans derive from those as checkbox steps — `PLAN.md` is the
    canonical roadmap; ADRs carry their own step lists.
 3. Execute one step at a time. After each step:
-   - tick the checkbox, run `bun run check`
+   - tick the checkbox, run `bun run check` — it typechecks and
+     regenerates tokens / manifest / ELEMENTS.md, failing while any
+     is stale; commit what it regenerated
    - **explain what was implemented, how it works, and why this
      approach over alternatives** — the explanation is part of the
      deliverable, not a courtesy

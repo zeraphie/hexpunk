@@ -113,7 +113,12 @@ The TypeScript + Lit adaptation of the shared style guide (root
 
 - Bun only — `bun add` / `bun run`; never npm or yarn (lockfile
   drift)
-- `check` = format:check + lint + test + analyze
+- `check` = format:check + lint + typecheck + test + generate:check;
+  CI runs the same five as parallel jobs ahead of deploy
+- `generate` (tokens, manifest, editor data, ELEMENTS.md) is what
+  must track `src/` and DESIGN.md. `check` regenerates in place and
+  fails on any diff, so a changed element or token never ships
+  without its regenerated files — commit what it regenerated
 - Generated files are never hand-edited: `src/tokens/*.css`,
   `custom-elements.json`, `vscode.html-custom-data.json`,
   `.ai/ELEMENTS.md`, generated icon modules
