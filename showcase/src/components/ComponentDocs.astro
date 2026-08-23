@@ -32,14 +32,23 @@ import ComponentApi from "./ComponentApi.astro";
 
 interface Props {
   title: string;
+  /** Native-element page: the subject is styled HTML, not an hp-*
+   * component — the banner says so and the API tab swaps the JS
+   * install for the elements.css imports. */
+  native?: boolean;
 }
-const { title } = Astro.props;
+const { title, native = false } = Astro.props;
 const changelog = getChangelogFor(title);
 
 // MDN-style lifecycle banner (like MDN's Baseline box): every element
 // carries `@status` in its JSDoc; the manifest is the source of truth.
-const status: ElementStatus = getApiFor(title)?.status ?? "wip";
-const STATUS_BANNER: Record<ElementStatus, { tone: string; label: string; text: string }> = {
+const status: ElementStatus | "native" = native ? "native" : (getApiFor(title)?.status ?? "wip");
+const STATUS_BANNER: Record<ElementStatus | "native", { tone: string; label: string; text: string }> = {
+  native: {
+    tone: "neutral",
+    label: "native",
+    text: "Native HTML, styled by elements.css — no component required.",
+  },
   done: {
     tone: "positive",
     label: "done",
@@ -82,12 +91,23 @@ const banner = STATUS_BANNER[status];
   </hp-tab-panel>
 
   <hp-tab-panel value="api" id="api" data-tab-panel="api">
-    <section class="code-install">
-      <h3>Install</h3>
-      <pre><code>bun add @hexpunk/core lit</code></pre>
-      <pre><code>{`import "@hexpunk/core";`}</code></pre>
-    </section>
-    <ComponentApi tagName={title} />
+    {
+      native ? (
+        <section class="code-install">
+          <h3>Install</h3>
+          <pre><code>{`import "@hexpunk/core/tokens.dark.css";
+import "@hexpunk/core/tokens.light.css";
+import "@hexpunk/core/elements.css";`}</code></pre>
+        </section>
+      ) : (
+        <section class="code-install">
+          <h3>Install</h3>
+          <pre><code>bun add @hexpunk/core lit</code></pre>
+          <pre><code>{`import "@hexpunk/core";`}</code></pre>
+        </section>
+      )
+    }
+    {!native && <ComponentApi tagName={title} />}
     <slot name="api" />
   </hp-tab-panel>
 
