@@ -1237,7 +1237,7 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 - `bond-indicator` (`<hp-bond>`) — the small green marker on the shared edge of two bonded atoms.
 - `module-handle` (`<hp-module-handle>`) — hex grip at a molecule's centroid; grabs the whole molecule.
 - `grid-overlay-dot` / `grid-overlay-slot` — the faint markers revealed during drag; not directly authored, rendered by `<hp-grid>`.
-- `tether-arc` (`<hp-tether>`) — the curved bezier connector between two `link-node` dots. Variants: `-idle`, `-hover`, `-active`. Pulsing dot travels along the arc to show liveness. The arc is one rendering mode of `<hp-tether>` — today it is mainly drawn by `<hp-grid>`; non-arc modes are planned. (`<hp-link>` is the inline text link, unrelated to tethers.)
+- `tether-arc` (`<hp-tether>`) — the curved bezier connector between two `link-node` dots. Variants: `-idle`, `-hover`, `-active`. Pulsing dot travels along the arc to show liveness. Today it is mainly drawn by `<hp-grid>`. (`<hp-link>` is the inline text link, unrelated to tethers.)
 - `unfold-source` / `unfold-child` / `unfold-tether` / `unfold-overlay` — the pieces of the unfold pattern. Authored via the `<hp-unfoldable>` wrapper; consumers rarely instantiate them directly.
 
 **Form atoms** (form-associated by default; see § Implementation Notes › Form association):
@@ -1358,7 +1358,6 @@ The hex catalogue is exposed as three `variant`-driven elements (plus the primit
 - **Login screen** — single centred organism, sparse outer slots, animated edge trace on focus.
 - **Admin dashboard** — hex nav rail (anchors + utilities) + rectangular content area with hex anchors at section corners. Optional `<hp-grid>` enabled for drag-rearrangeable widgets.
 - **Game HUD** — hex clusters at all four corners; centre reserved for the play surface. Huge framing `hex-support` cells off-canvas.
-- **Node editor (`<hp-node-editor>`)** — full-canvas graph editor. Invisible grid, draggable molecule nodes, arc-link edges with pulse, side cluster of `hex-utility` controls for arc colour / width / glow / density / pulse-speed. The flagship demonstration of all three Hexpunk spatial primitives at once (grid + bonding + linking).
 
 ### Component property notes
 
@@ -1470,7 +1469,7 @@ Combine the three primitives — invisible grid, molecule bonding, arc links —
 - **Highlighting:** hovering a node fades all other arcs to 30% opacity and accelerates the pulse on its own arcs. This is how a user explores a graph.
 - **Layout:** moving a node animates connected arcs in real time. Bezier control points are recomputed every frame so the curves stay graceful. Modules with many connections feel "spring-loaded."
 
-The node editor is its own template (`<hp-node-editor>`) but the primitives compose anywhere — admin dashboards can render a small relationship graph in a sidebar, game HUDs can use arcs for ability dependencies (skill trees), web onboarding can use arcs to visualize "step A leads to step B."
+The primitives compose anywhere — admin dashboards can render a small relationship graph in a sidebar, game HUDs can use arcs for ability dependencies (skill trees), web onboarding can use arcs to visualize "step A leads to step B."
 
 ### Use cases
 
@@ -1676,10 +1675,6 @@ Element catalogue (one custom element per atom or molecule):
                      One per surface; modules are slotted children.
 <hp-tether>          curve primitive: arc-link between two <hp-link-node> dots.
                      Hosts pulse animation, draw/unwind transitions.
-<hp-graph>           container primitive: manages a set of <hp-tether>s, exposes
-                     selection, hover propagation, density / pulse-speed knobs.
-<hp-node-editor>     template: full graph-editor surface (grid + graph + utility
-                     cluster).
 
 <hp-unfoldable>      wrapper: makes its host hex expandable into a detail molecule.
                      Modes: "in-place" | "spotlight" | "camera-zoom". Manages
@@ -1694,9 +1689,8 @@ Element catalogue (one custom element per atom or molecule):
   - **`layout="spiral"` / `layout="rows"`** opt-in modes for surfaces that don't author per-child `q`/`r`. On first render and on `pack()` calls, the grid sorts every direct child by mask size descending (FFD), then places each at the first free position the chosen strategy returns. `spiral` scans outward from the origin in honeycomb rings — the largest cluster anchors `(0, 0)`, smaller ones nest around it with ≥1-hex gaps, producing a tight roughly-square honeycomb. `rows` scans row-major within a viewport-width-capped q-window — the layout grows as left-to-right rows that wrap downward, ideal for full-page-width surfaces where `spiral`'s square shape leaves too much horizontal space unused. Children publish their actual filled hexes via `data-fill-cells="q,r q,r …"` (`<hp-cluster>` populates this on slotchange); children without it are treated as single-hex. The gap check uses hex-adjacency (the 6 axial-distance-1 neighbours) — not rectangular bbox padding — so non-symmetric clusters leave their empty corners available for neighbours to tuck into. The grid does not auto-repack on resize or slotchange — only on explicit `.pack()` or attribute toggle.
 - **`<hp-module>`** handles pointer / keyboard drag, asks the grid for valid drops, emits a `move` event on successful placement, and a `bond` / `unbond` event when its edges touch / separate from another module. It owns its own centroid handle.
 - **`<hp-tether>`** is a presentational SVG element; pass it source and target `<hp-link-node>` references (or coordinates) and it computes the bezier, draws the stroke + glow, and runs the pulse via Web Animations API (`element.animate(...)` on the dot, not CSS keyframes — easier to control mid-flight).
-- **`<hp-graph>`** owns the set of links and the hover-propagation logic (hovering a node dims unrelated arcs).
 - **`<hp-unfoldable>`** is a host wrapper. Its `source` slot is rendered at rest; its other children are kept in a virtual detail molecule. On trigger it inserts the detail children into a transient `<hp-grid>` neighbourhood adjacent to the source, animates them in (using Web Animations API), and draws the tether via an internal `<hp-tether>`. Cooperates with the host grid to know which slots are free for the bloom.
-- All five cooperate via small Lit reactive controllers (`ReactiveController`) rather than a heavy state library. No Redux, no Zustand, no MobX.
+- They cooperate via small Lit reactive controllers (`ReactiveController`) rather than a heavy state library. No Redux, no Zustand, no MobX.
 
 ### CSS strategy
 
@@ -1761,9 +1755,7 @@ Hexpunk follows an **opt-in SSR** model. Static layout renders on the server via
 **Client-only (renders an empty host server-side, hydrates fully on connect):**
 
 - `<hp-tether>` — SVG bezier curve drawing requires runtime coordinate math.
-- `<hp-graph>` — arc layout, hover propagation, density toggling.
 - `<hp-unfoldable>` — choreography, child stagger, tether wiring.
-- `<hp-node-editor>` — composes the above.
 
 **Authoring rules for SSR-friendly elements:**
 
