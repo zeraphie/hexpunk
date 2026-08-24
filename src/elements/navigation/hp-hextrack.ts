@@ -549,6 +549,11 @@ export class HpHextrack extends LitElement {
             this.state = "focus";
           }
         }}
+        @pointerleave=${() => {
+          if (this.state === "focus") {
+            this.state = "hint";
+          }
+        }}
       >
         <div class="edge" aria-hidden="true"></div>
         ${this.items.map(
