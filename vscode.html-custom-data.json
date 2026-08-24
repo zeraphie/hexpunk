@@ -523,6 +523,28 @@
       ]
     },
     {
+      "name": "hp-hextrack",
+      "description": "Overlay browse rail — category items ride a hexagon silhouette at\nthe host's right edge. `hint` state peeks translucently over the\npage; pointer or arrow keys raise `focus`, which dims the page\nbehind (the page is the preview). Wheel / arrows scrub with a\nmagnetic focal; the focal item expands its subheadings in place.",
+      "attributes": [
+        {
+          "name": "focal",
+          "description": "Id of the item the track should hold focal — typically the\npage the consumer just dived into. Setting it re-centres."
+        },
+        {
+          "name": "state",
+          "description": "Overlay state. `hint` peeks at the edge; `focus` slides in and\nscrims the page. Reflected so consumers can force either.",
+          "values": [
+            {
+              "name": "hint"
+            },
+            {
+              "name": "focus"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "hp-latex",
       "description": "LaTeX math primitive. Render-only.\n\nThe LaTeX source comes from the `value` attribute or the element's\ntext content (attribute wins when both are present). Consumers\nregister a renderer once at startup via `HpLatex.setRenderer(...)`.",
       "attributes": [
@@ -1242,6 +1264,10 @@
         {
           "name": "unordered",
           "description": "When set, children land at a randomly-shuffled subset of the 6\nring positions and stagger in random order (both keyed off the\nsame permutation). Without it, children land in clockwise\nspiral order and stagger in that same order. Mirrors the\nordered / unordered semantics of `<ol>` vs `<ul>`."
+        },
+        {
+          "name": "hover",
+          "description": "When set, pointerenter on the source OPENS the list (it never\ncloses on leave — a summoned menu stays out). Click / Enter /\nSpace keep toggling regardless, which is also the touch and\nkeyboard path, so hover is an accelerant, not a requirement."
         }
       ]
     },

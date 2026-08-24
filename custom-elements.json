@@ -3238,6 +3238,30 @@
             },
             {
               "kind": "method",
+              "name": "ignite",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "clientY",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "One-shot programmatic ignition at viewport coords — the press\neffect without a press or a hold. Lets a consumer make a point\non the page feel alive on its own schedule (an ambient emitter\nis the consumer's timer around this). Same guards as a press:\nGL tier only, silent under reduced motion, and the point must\nbe within the element's reach."
+            },
+            {
+              "kind": "method",
               "name": "wakeLoop",
               "privacy": "private",
               "return": {
@@ -4572,6 +4596,31 @@
                 }
               },
               "description": "Return from a dive to the previous camera."
+            },
+            {
+              "kind": "method",
+              "name": "flyTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord | HTMLElement"
+                  }
+                },
+                {
+                  "name": "zoom",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Fly the camera to a cell — the programmatic travel move.\nTakes a slotted cell element or an axial coord; `zoom` defaults\nto the camera's current zoom, so a bare call is a lateral\nflight. Complements `recenter` (home) and `diveInto` (enter):\nthis is \"go THERE and stay at altitude\"."
             },
             {
               "kind": "field",
@@ -6867,6 +6916,340 @@
           "declaration": {
             "name": "HpToast",
             "module": "src/elements/messaging/hp-toast.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/navigation/hp-hextrack.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Overlay browse rail — category items ride a hexagon silhouette at\nthe host's right edge. `hint` state peeks translucently over the\npage; pointer or arrow keys raise `focus`, which dims the page\nbehind (the page is the preview). Wheel / arrows scrub with a\nmagnetic focal; the focal item expands its subheadings in place.",
+          "name": "HpHextrack",
+          "cssProperties": [
+            {
+              "description": "Rail width (default 380px)",
+              "name": "--hp-hextrack-width"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "items",
+              "type": {
+                "text": "HpHextrackItem[]"
+              },
+              "default": "[]",
+              "description": "The rows, in track order. Data-driven for now; a slotted-item\nform is a later decision."
+            },
+            {
+              "kind": "field",
+              "name": "focal",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Id of the item the track should hold focal — typically the\npage the consumer just dived into. Setting it re-centres.",
+              "attribute": "focal"
+            },
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "\"hint\" | \"focus\""
+              },
+              "default": "\"hint\"",
+              "description": "Overlay state. `hint` peeks at the edge; `focus` slides in and\nscrims the page. Reflected so consumers can force either.",
+              "attribute": "state",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "focusPos",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "vel",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "snapTarget",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "frame",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "lastSettled",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "-1"
+            },
+            {
+              "kind": "field",
+              "name": "subIndex",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "reduced",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "scrubTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Public scrub — used by consumers wiring their own inputs."
+            },
+            {
+              "kind": "method",
+              "name": "emit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "detail",
+                  "type": {
+                    "text": "T"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "focalIndex",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "onWheel",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "onKeydown",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "activateFocal",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "wake",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "tick",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "pathPos",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "[number, number]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "s",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "World position along the silhouette for a path offset. The\nfocal run is vertical; past ±EDGE/2 the path breaks 60° and\nrecedes toward the hexagon's off-screen body."
+            },
+            {
+              "kind": "method",
+              "name": "layoutRows",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Geometry pass — positions are physics-driven, so they ride\ninline transforms the way grid cells ride --hp-x / --hp-y."
+            },
+            {
+              "kind": "method",
+              "name": "onRowClick",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onKidClick",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "type",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "Hint / focus flips. detail: { state }",
+              "name": "hp-hextrack-state"
+            },
+            {
+              "description": "The magnetic focal settled on an item. detail: { id }",
+              "name": "hp-hextrack-focus"
+            },
+            {
+              "description": "The focal item was chosen. detail: { id }",
+              "name": "hp-hextrack-activate"
+            },
+            {
+              "description": "A subheading of the focal item was chosen. detail: { id, sub, index }",
+              "name": "hp-hextrack-sub"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "focal",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Id of the item the track should hold focal — typically the\npage the consumer just dived into. Setting it re-centres.",
+              "fieldName": "focal"
+            },
+            {
+              "name": "state",
+              "type": {
+                "text": "\"hint\" | \"focus\""
+              },
+              "default": "\"hint\"",
+              "description": "Overlay state. `hint` peeks at the edge; `focus` slides in and\nscrims the page. Reflected so consumers can force either.",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "status": "wip",
+          "tagName": "hp-hextrack",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpHextrack",
+          "declaration": {
+            "name": "HpHextrack",
+            "module": "src/elements/navigation/hp-hextrack.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-hextrack",
+          "declaration": {
+            "name": "HpHextrack",
+            "module": "src/elements/navigation/hp-hextrack.ts"
           }
         }
       ]
@@ -10773,6 +11156,17 @@
             },
             {
               "kind": "field",
+              "name": "hover",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, pointerenter on the source OPENS the list (it never\ncloses on leave — a summoned menu stays out). Click / Enter /\nSpace keep toggling regardless, which is also the touch and\nkeyboard path, so hover is an accelerant, not a requirement.",
+              "attribute": "hover",
+              "reflects": true
+            },
+            {
+              "kind": "field",
               "name": "sourceEl",
               "type": {
                 "text": "HTMLElement | null"
@@ -10910,6 +11304,15 @@
               "default": "false",
               "description": "When set, children land at a randomly-shuffled subset of the 6\nring positions and stagger in random order (both keyed off the\nsame permutation). Without it, children land in clockwise\nspiral order and stagger in that same order. Mirrors the\nordered / unordered semantics of `<ol>` vs `<ul>`.",
               "fieldName": "unordered"
+            },
+            {
+              "name": "hover",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, pointerenter on the source OPENS the list (it never\ncloses on leave — a summoned menu stays out). Click / Enter /\nSpace keep toggling regardless, which is also the touch and\nkeyboard path, so hover is an accelerant, not a requirement.",
+              "fieldName": "hover"
             }
           ],
           "superclass": {
