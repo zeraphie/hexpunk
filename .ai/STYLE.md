@@ -104,7 +104,7 @@ The TypeScript + Lit adaptation of the shared style guide (root
 - Unit-test pure logic hard (axial math, packers, parsers) — it's
   the part that can be tested without a browser
 - Component / GL rendering test strategy is an open ADR question
-  (PLAN.hp-grid-smoothness.md Q5) — don't invent one ad hoc
+  (.plan/PLAN.hp-grid-smoothness.md Q5) — don't invent one ad hoc
 - Test behaviour, not implementation; names describe the scenario:
   `"skips hidden children when packing"`
 - No mocks unless hitting a real external service
@@ -172,7 +172,7 @@ The TypeScript + Lit adaptation of the shared style guide (root
 - Keep messages to the subject line — the log should read cleanly
   as a list. A body is the exception, for genuinely non-obvious
   changes, and stays to a few lines (root cause + a
-  `Refs PLAN.<topic>.md` pointer). Long explanations belong in
+  `Refs .plan/PLAN.<topic>.md` pointer). Long explanations belong in
   the ADR, not the log.
 - No trailers (no Co-Authored-By)
 
