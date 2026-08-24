@@ -18,6 +18,7 @@
   "files": [
     "dist",
     "src/styles/elements.css",
+    "src/styles/hex-controls.css",
     "src/styles/hp-base.css",
     "src/styles/hp-latex.css",
     "src/tokens/tokens.dark.css",
