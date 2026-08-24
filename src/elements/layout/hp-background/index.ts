@@ -561,6 +561,23 @@ export class HpBackground extends LitElement {
     this.igniteHeld = false;
   }
 
+  /** One-shot programmatic ignition at viewport coords — the press
+   * effect without a press or a hold. Lets a consumer make a point
+   * on the page feel alive on its own schedule (an ambient emitter
+   * is the consumer's timer around this). Same guards as a press:
+   * GL tier only, silent under reduced motion, and the point must
+   * be within the element's reach. */
+  ignite(clientX: number, clientY: number): void {
+    if (this.fallback || !this.gl || this.pointer.reducedMotion) {
+      return;
+    }
+    if (!this.pointerWithinReach(clientX, clientY)) {
+      return;
+    }
+    this.runners.spawn(clientX + window.scrollX, clientY + window.scrollY, this.hexSize);
+    this.wakeLoop();
+  }
+
   // ── Sim loop ────────────────────────────────────────────────────────
 
   /** Start the sim loop if asleep. The loop supersedes single-frame
