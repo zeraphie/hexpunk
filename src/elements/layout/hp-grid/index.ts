@@ -281,6 +281,32 @@ export class HpGrid extends LitElement {
     this.engine?.surface();
   }
 
+  /** Fly the camera to a cell — the programmatic travel move.
+   * Takes a slotted cell element or an axial coord; `zoom` defaults
+   * to the camera's current zoom, so a bare call is a lateral
+   * flight. Complements `recenter` (home) and `diveInto` (enter):
+   * this is "go THERE and stay at altitude". */
+  flyTo(target: AxialCoord | HTMLElement, zoom?: number): void {
+    if (!this.engine) {
+      return;
+    }
+    let cell: AxialCoord | null = null;
+    if (target instanceof HTMLElement) {
+      const q = Number.parseFloat(target.getAttribute("q") ?? "");
+      const r = Number.parseFloat(target.getAttribute("r") ?? "");
+      if (!Number.isNaN(q) && !Number.isNaN(r)) {
+        cell = { q, r };
+      }
+    } else {
+      cell = target;
+    }
+    if (!cell) {
+      return;
+    }
+    const [wx, wy] = axialToWorld(cell.q, cell.r, this.hexSide);
+    this.engine.flyTo(zoom ?? this.engine.cameraState.z, wx, wy);
+  }
+
   get dived(): boolean {
     return this.engine?.dived ?? false;
   }
