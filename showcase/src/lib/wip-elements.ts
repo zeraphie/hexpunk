@@ -17,6 +17,7 @@ import "../../../src/elements/navigation/hp-menubar.ts";
 import "../../../src/elements/overlays/hp-dialog.ts";
 import "../../../src/elements/overlays/hp-dropdown-menu.ts";
 import "../../../src/elements/overlays/hp-popover.ts";
+import "../../../src/elements/navigation/hp-hextrack.ts";
 import "../../../src/elements/overlays/hp-tooltip.ts";
 import "../../../src/elements/status/hp-badge.ts";
 import "../../../src/elements/unfold/hp-module-handle.ts";
