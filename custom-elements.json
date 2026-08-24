@@ -4583,9 +4583,16 @@
                   "type": {
                     "text": "WorldRect | HTMLElement"
                   }
+                },
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "{ instant?: boolean }"
+                  }
                 }
               ],
-              "description": "Dive the camera into a cell — the hex-becomes-page navigation.\nTakes the slotted cell element (typically straight from\n`hp-grid-activate`'s detail) or a world rect for callers that\ncomputed their own geometry. Consumers wire this up themselves;\nnothing dives automatically."
+              "description": "Dive the camera into a cell — the hex-becomes-page navigation.\nTakes the slotted cell element (typically straight from\n`hp-grid-activate`'s detail) or a world rect for callers that\ncomputed their own geometry — a rect TALLER than the cell makes\nthe dive a readable page: the clamp turns wheel and drag into\nscrolling down it. `instant` restores a dived view (deep link,\nhistory) without the transition. Consumers wire this up\nthemselves; nothing dives automatically."
             },
             {
               "kind": "method",
@@ -4599,6 +4606,25 @@
             },
             {
               "kind": "method",
+              "name": "resolveWorldPoint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "[number, number] | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord | { x: number; y: number } | HTMLElement"
+                  }
+                }
+              ],
+              "description": "A camera destination: a slotted cell element, an axial cell,\nor a raw world point for sub-cell precision (anchor scrolling\ndown a dived page)."
+            },
+            {
+              "kind": "method",
               "name": "flyTo",
               "return": {
                 "type": {
@@ -4609,7 +4635,7 @@
                 {
                   "name": "target",
                   "type": {
-                    "text": "AxialCoord | HTMLElement"
+                    "text": "AxialCoord | { x: number; y: number } | HTMLElement"
                   }
                 },
                 {
@@ -4620,7 +4646,32 @@
                   }
                 }
               ],
-              "description": "Fly the camera to a cell — the programmatic travel move.\nTakes a slotted cell element or an axial coord; `zoom` defaults\nto the camera's current zoom, so a bare call is a lateral\nflight. Complements `recenter` (home) and `diveInto` (enter):\nthis is \"go THERE and stay at altitude\"."
+              "description": "Fly the camera to a cell (or world point) — the programmatic\ntravel move. `zoom` defaults to the current zoom, so a bare\ncall is a lateral flight. Complements `recenter` (home) and\n`diveInto` (enter): this is \"go THERE and stay at altitude\"."
+            },
+            {
+              "kind": "method",
+              "name": "jumpTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord | { x: number; y: number } | HTMLElement"
+                  }
+                },
+                {
+                  "name": "zoom",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Place the camera without animating — restoring state (a deep\nlink, a history entry) rather than performing a transition."
             },
             {
               "kind": "field",
@@ -12502,6 +12553,10 @@
                   "type": {
                     "text": "WorldRect"
                   }
+                },
+                {
+                  "name": "instant",
+                  "default": "false"
                 }
               ]
             },
@@ -14275,9 +14330,13 @@
                   "type": {
                     "text": "WorldRect"
                   }
+                },
+                {
+                  "name": "instant",
+                  "default": "false"
                 }
               ],
-              "description": "Tween the camera onto `rect` and remember where we came from."
+              "description": "Tween the camera onto `rect` and remember where we came from.\n`instant` jumps instead — restoring a dived view (a deep link,\na history entry) is state, not a transition."
             },
             {
               "kind": "method",
