@@ -478,9 +478,12 @@ export class HexEngine {
     this.invalidate();
   }
 
-  diveInto(rect: WorldRect): void {
-    this.diveNav.dive(rect);
+  diveInto(rect: WorldRect, instant = false): void {
+    this.diveNav.dive(rect, instant);
     this.options.onDiveChange?.(true);
+    if (instant) {
+      this.invalidate();
+    }
   }
 
   surface(): void {
