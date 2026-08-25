@@ -1,16 +1,15 @@
 // hp-hextrack.ts — Silhouette-riding browse/select overlay.
 //
-// The osu-song-select move as a select primitive: items ride a
-// HEXAGON silhouette — the flat focal run is the vertical left edge
-// of a pointy-top hexagon whose body sits off-screen right, so rows
+// Browsing as a select primitive: items ride a HEXAGON
+// silhouette — the flat focal run is the vertical left edge of a
+// pointy-top hexagon whose body sits off-screen right, so rows
 // recede up-right / down-right past the 60° vertex breaks. Rows are
-// CONTIGUOUS (no gaps, osu-style) and the rail sizes to the list.
+// CONTIGUOUS (no gaps, shared edges) and the rail sizes to the list.
 //
 // Interaction contract:
 // - wheel scrubs with momentum; a magnetic focal settles the list
 // - hovering a row once motion has SETTLED previews its subheadings
-//   in place (the difficulties pattern); the focal row's subs show
-//   when nothing is previewed
+//   in place; the focal row's subs show when nothing is previewed
 // - clicking a row SELECTS it: the track auto-scrolls it to the
 //   focal, then fires `hp-hextrack-activate` — click is always
 //   selection, never mere scrubbing
@@ -44,7 +43,7 @@ export interface HpHextrackSubDetail {
   index: number;
 }
 
-/** Contiguous row pitch (px) — rows touch, osu-style. */
+/** Contiguous row pitch (px) — rows touch, no gaps. */
 const ROW_H = 46;
 /** Per-subheading height the expansion inserts into the flow. */
 const KID_H = 26;
@@ -187,8 +186,8 @@ export class HpHextrack extends LitElement {
         transform: rotate(30deg);
       }
 
-      /* Contiguous osu-style rows: fixed pitch, shared edges, no
-         gaps. Physics writes transforms directly while scrubbing;
+      /* Contiguous rows: fixed pitch, shared edges, no gaps.
+         Physics writes transforms directly while scrubbing;
          once settled the container transitions them, so preview
          expansion pushes rows smoothly. */
       /* The row's BOX is the group's bounding box — face plus
@@ -218,8 +217,8 @@ export class HpHextrack extends LitElement {
         opacity: 0.5;
         cursor: default;
       }
-      /* PSO2-style plate: an angled panel with a chamfered cut at
-         each end, a bright top edge line, and a darker prow zone
+      /* Angled plate chrome: a panel with a chamfered cut at each
+         end, a bright top edge line, and a darker prow zone
          holding the hex chip — painted with layered gradients so
          the edges follow the clip. Plates sit with a small gap in
          the ROW_H pitch, each its own piece of chrome. */
