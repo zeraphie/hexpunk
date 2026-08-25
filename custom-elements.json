@@ -7183,7 +7183,7 @@
                   }
                 }
               ],
-              "description": "World position along the silhouette for a path offset. The\nfocal run is vertical; past ±EDGE/2 the path breaks 60° and\nrecedes toward the hexagon's off-screen body."
+              "description": "Position along the silhouette for a path offset, in RAIL\ncoordinates (the rail is a centred band, not the full host).\nThe focal run is vertical; past ±EDGE/2 the path breaks 60° and\nrecedes toward the hexagon's off-screen body."
             },
             {
               "kind": "method",
