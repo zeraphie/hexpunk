@@ -245,44 +245,19 @@ export class HpHextrack extends LitElement {
           color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
         );
       }
-      /* Notched edge strips, the PSO2 signature: the pattern is a
-         mask over a solid strip, so every state recolours one
-         custom property. The bottom runs a phase-shifted rhythm so
-         the edges read hand-tooled, not mirrored. */
-      .face::before,
-      .face::after {
+      /* Edge lighting: one solid strip along the top of the plate;
+         every state recolours the one custom property. Patterned
+         trims were tried and rejected — embellishment like that
+         needs a dedicated mechanism, not ad-hoc masks. */
+      .face::before {
         content: "";
         position: absolute;
+        top: 0;
         left: 4px;
         right: 6px;
         height: 2px;
         background: var(--edge);
         pointer-events: none;
-      }
-      .face::before {
-        top: 0;
-        mask-image: repeating-linear-gradient(
-          90deg,
-          #000 0 22px,
-          transparent 22px 26px,
-          #000 26px 34px,
-          transparent 34px 36px,
-          #000 36px 58px,
-          transparent 58px 64px
-        );
-      }
-      .face::after {
-        bottom: 0;
-        height: 1.5px;
-        opacity: 0.75;
-        mask-image: repeating-linear-gradient(
-          90deg,
-          transparent 0 8px,
-          #000 8px 40px,
-          transparent 40px 44px,
-          #000 44px 50px,
-          transparent 50px 62px
-        );
       }
       .row[data-focal] .face {
         --edge: var(--hp-primary-bright);
