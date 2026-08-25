@@ -704,11 +704,33 @@ export class HpHextrack extends LitElement {
      * bottom edge at the same scale, so row and subitems form one
      * seamless hover region with no crack between them. */
     const ownerScale = expandRel !== null ? 1 - Math.min(1, Math.abs(expandRel) / 4.2) * 0.18 : 1;
-    // Clearance is MEASURED from the rendered group (face + kids,
-    // margins and all), scaled — everything below moves completely
-    // clear of it, never by a derived approximation.
+    // Everything below an expanded group moves COMPLETELY below it.
+    // The deficit is computed against reality: the group's rendered
+    // bottom (measured, scaled) versus where the next row's top
+    // would naturally sit — which matters because the silhouette
+    // already compresses vertical pitch past the break. All
+    // following rows shift by the same vertical amount, keeping
+    // their own spacing intact.
     const expandRow = expandIdx >= 0 ? (rows[expandIdx] as HTMLElement | undefined) : undefined;
-    const kidsH = expandRow ? Math.max(0, expandRow.offsetHeight - ROW_H) * ownerScale : 0;
+    let clearDy = 0;
+    if (expandRow && expandRel !== null) {
+      const groupBottom =
+        this.pathPos(expandRel * ROW_H)[1] -
+        (ROW_H * ownerScale) / 2 +
+        expandRow.offsetHeight * ownerScale;
+      let firstRel = Infinity;
+      for (let i = 0; i < this.items.length; i++) {
+        const r = this.relOf(i);
+        if (r > expandRel + 0.01 && r < firstRel) {
+          firstRel = r;
+        }
+      }
+      if (Number.isFinite(firstRel)) {
+        const firstScale = 1 - Math.min(1, Math.abs(firstRel) / 4.2) * 0.18;
+        const firstTop = this.pathPos(firstRel * ROW_H)[1] - (ROW_H * firstScale) / 2;
+        clearDy = Math.max(0, groupBottom - firstTop);
+      }
+    }
     void expandItem;
 
     rows.forEach((row, i) => {
@@ -720,11 +742,8 @@ export class HpHextrack extends LitElement {
       }
       row.style.pointerEvents = "";
       let s = rel * ROW_H;
-      if (expandRel !== null && rel > expandRel + 0.01) {
-        // Everything below an expanded group moves COMPLETELY below
-        // it: the displacement is vertical clearance, path-walked so
-        // the receding segment pays its true cost.
-        s = this.advanceByVertical(s, kidsH);
+      if (expandRel !== null && rel > expandRel + 0.01 && clearDy > 0) {
+        s = this.advanceByVertical(s, clearDy);
       }
       const [x, y] = this.pathPos(s);
       const dist = Math.min(1, Math.abs(rel) / 4.2);
