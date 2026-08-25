@@ -222,6 +222,8 @@ export class HpHextrack extends LitElement {
          the edges follow the clip. Plates sit with a small gap in
          the ROW_H pitch, each its own piece of chrome. */
       .face {
+        --edge: color-mix(in srgb, var(--hp-primary) 55%, transparent);
+        position: relative;
         height: ${ROW_H - 6}px;
         box-sizing: border-box;
         display: flex;
@@ -236,51 +238,72 @@ export class HpHextrack extends LitElement {
           18px 100%,
           0 calc(100% - 18px)
         );
-        background:
-          linear-gradient(
-            to bottom,
-            color-mix(in srgb, var(--hp-primary) 55%, transparent) 0,
-            color-mix(in srgb, var(--hp-primary) 55%, transparent) 1.5px,
-            transparent 1.5px
-          ),
-          linear-gradient(
-            105deg,
-            color-mix(in srgb, var(--hp-primary-container) 40%, var(--hp-surface-container-low)) 0
-              52px,
-            color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
-          );
+        background: linear-gradient(
+          105deg,
+          color-mix(in srgb, var(--hp-primary-container) 40%, var(--hp-surface-container-low)) 0
+            52px,
+          color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
+        );
+      }
+      /* Notched edge strips, the PSO2 signature: the pattern is a
+         mask over a solid strip, so every state recolours one
+         custom property. The bottom runs a phase-shifted rhythm so
+         the edges read hand-tooled, not mirrored. */
+      .face::before,
+      .face::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        right: 6px;
+        height: 2px;
+        background: var(--edge);
+        pointer-events: none;
+      }
+      .face::before {
+        top: 0;
+        mask-image: repeating-linear-gradient(
+          90deg,
+          #000 0 22px,
+          transparent 22px 26px,
+          #000 26px 34px,
+          transparent 34px 36px,
+          #000 36px 58px,
+          transparent 58px 64px
+        );
+      }
+      .face::after {
+        bottom: 0;
+        height: 1.5px;
+        opacity: 0.75;
+        mask-image: repeating-linear-gradient(
+          90deg,
+          transparent 0 8px,
+          #000 8px 40px,
+          transparent 40px 44px,
+          #000 44px 50px,
+          transparent 50px 62px
+        );
       }
       .row[data-focal] .face {
-        background:
-          linear-gradient(
-            to bottom,
-            var(--hp-primary-bright) 0,
-            var(--hp-primary-bright) 2px,
-            transparent 2px
-          ),
-          linear-gradient(
-            105deg,
-            color-mix(in srgb, var(--hp-primary) 42%, var(--hp-surface-container-high)) 0 52px,
-            color-mix(in srgb, var(--hp-surface-container-high) 97%, transparent) 52px
-          );
+        --edge: var(--hp-primary-bright);
+        background: linear-gradient(
+          105deg,
+          color-mix(in srgb, var(--hp-primary) 42%, var(--hp-surface-container-high)) 0 52px,
+          color-mix(in srgb, var(--hp-surface-container-high) 97%, transparent) 52px
+        );
         filter: drop-shadow(0 0 6px color-mix(in srgb, var(--hp-primary-bright) 45%, transparent));
       }
       .row[data-preview]:not([data-focal]) .face {
-        background:
-          linear-gradient(
-            to bottom,
-            var(--hp-secondary) 0,
-            var(--hp-secondary) 1.5px,
-            transparent 1.5px
-          ),
-          linear-gradient(
-            105deg,
-            color-mix(in srgb, var(--hp-secondary-container) 45%, var(--hp-surface-container-low)) 0
-              52px,
-            color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
-          );
+        --edge: var(--hp-secondary);
+        background: linear-gradient(
+          105deg,
+          color-mix(in srgb, var(--hp-secondary-container) 45%, var(--hp-surface-container-low)) 0
+            52px,
+          color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
+        );
       }
       .row[data-ghost] .face {
+        --edge: transparent;
         background: color-mix(in srgb, var(--hp-surface-container-low) 80%, transparent);
       }
       .chip {
