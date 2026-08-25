@@ -191,12 +191,10 @@ export class HpHextrack extends LitElement {
         left: 0;
         top: 0;
         width: 320px;
-        height: ${ROW_H}px;
         box-sizing: border-box;
         display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0 10px;
+        flex-direction: column;
+        align-items: stretch;
         background: color-mix(in srgb, var(--hp-surface-container) 94%, transparent);
         border: 1px solid var(--hp-outline-variant);
         transform-origin: left center;
@@ -217,6 +215,13 @@ export class HpHextrack extends LitElement {
       }
       .row[data-preview]:not([data-focal]) {
         border-color: var(--hp-secondary);
+      }
+      .face {
+        height: ${ROW_H - 2}px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 10px;
       }
       .chip {
         flex: none;
@@ -260,21 +265,15 @@ export class HpHextrack extends LitElement {
         color: var(--hp-secondary);
       }
 
-      /* Subheadings — inserted into the flow beneath their owner. */
+      /* Subheadings live INSIDE the row's rectangle — the group is
+         one box, one border, one hover boundary. */
       .kids {
-        position: absolute;
-        left: 34px;
-        top: 0;
-        width: 286px;
-        display: flex;
+        display: none;
         flex-direction: column;
-        opacity: 0;
-        transition: opacity 180ms ease 80ms;
-        pointer-events: none;
+        margin: 0 0 4px 24px;
       }
-      .kids[data-on] {
-        opacity: 1;
-        pointer-events: auto;
+      .row[data-expand] .kids {
+        display: flex;
       }
       .kid {
         display: flex;
@@ -342,7 +341,6 @@ export class HpHextrack extends LitElement {
     super.disconnectedCallback();
     window.removeEventListener("keydown", this.onKeydown);
     window.removeEventListener("wheel", this.onWheel, { capture: true });
-    window.clearTimeout(this.previewCloseTimer);
     if (this.frame) {
       cancelAnimationFrame(this.frame);
       this.frame = 0;
@@ -620,7 +618,7 @@ export class HpHextrack extends LitElement {
       const focalPop = i === focalIdx && this.settled ? -10 : 0;
       row.style.transform = `translate(${x + focalPop}px, ${y - ROW_H / 2}px) scale(${(1 - dist * 0.3).toFixed(3)})`;
       row.style.opacity = String(1 - dist * 0.55);
-      row.style.zIndex = i === focalIdx ? "2" : "1";
+      row.style.zIndex = i === expandIdx ? "3" : i === focalIdx ? "2" : "1";
       if (i === focalIdx && this.settled) {
         row.setAttribute("data-focal", "");
       } else {
@@ -632,29 +630,12 @@ export class HpHextrack extends LitElement {
         row.removeAttribute("data-preview");
       }
     });
-
-    const kids = this.renderRoot.querySelector<HTMLElement>(".kids");
-    if (kids) {
-      if (expandIdx >= 0 && expandRel !== null) {
-        const [x, y] = this.pathPos(expandRel * ROW_H);
-        const pop = expandIdx === focalIdx && this.settled ? -10 : 0;
-        kids.style.transformOrigin = "left top";
-        kids.style.transform = `translate(${x + pop}px, ${y + (ROW_H / 2) * ownerScale}px) scale(${ownerScale.toFixed(3)})`;
-        kids.setAttribute("data-on", "");
-      } else {
-        kids.removeAttribute("data-on");
-      }
-    }
   }
 
-  /** Hover-intent: the row and its subitems are ONE hover region.
-   * Leaving schedules the close on a grace timer; reaching the kids
-   * (or back to the row) cancels it, so the small geometric seams
-   * between them never collapse the preview mid-travel. */
-  private previewCloseTimer = 0;
-
+  /** The row element IS the hover region: its box contains the
+   * face and the expanded subitems, so one rectangle carries the
+   * whole group and leave only fires at its true boundary. */
   private onRowEnter(i: number): void {
-    window.clearTimeout(this.previewCloseTimer);
     if (this.settled && this.state === "focus" && !this.items[i]?.ghost) {
       if (this.previewIndex !== i) {
         this.previewIndex = i;
@@ -662,26 +643,20 @@ export class HpHextrack extends LitElement {
       }
     }
   }
-  private scheduleGroupLeave(): void {
-    window.clearTimeout(this.previewCloseTimer);
-    this.previewCloseTimer = window.setTimeout(() => {
-      if (this.previewIndex !== null) {
-        this.previewIndex = null;
-        this.requestUpdate();
-      }
-    }, 140);
-  }
-  private onKidsEnter(): void {
-    window.clearTimeout(this.previewCloseTimer);
+  private onRowLeave(i: number): void {
+    if (this.previewIndex === i) {
+      this.previewIndex = null;
+      this.requestUpdate();
+    }
   }
 
-  private onKidClick(index: number): void {
-    const owner = this.expandIndex() >= 0 ? this.items[this.expandIndex()] : undefined;
-    const sub = owner?.subs?.[index];
-    if (!owner || sub === undefined) {
+  private onKidClick(owner: number, index: number): void {
+    const item = this.items[owner];
+    const sub = item?.subs?.[index];
+    if (!item || sub === undefined) {
       return;
     }
-    this.emit<HpHextrackSubDetail>("hp-hextrack-sub", { id: owner.id, sub, index });
+    this.emit<HpHextrackSubDetail>("hp-hextrack-sub", { id: item.id, sub, index });
   }
 
   protected override firstUpdated(): void {
@@ -691,7 +666,6 @@ export class HpHextrack extends LitElement {
   override render() {
     const expandIdx = this.expandIndex();
     this.renderedExpand = expandIdx;
-    const expandItem = expandIdx >= 0 ? this.items[expandIdx] : undefined;
     return html`
       <div class="scrim" @click=${() => (this.state = "hint")}></div>
       <div
@@ -715,27 +689,35 @@ export class HpHextrack extends LitElement {
               <div
                 class="row"
                 ?data-ghost=${item.ghost}
+                ?data-expand=${i === expandIdx}
                 @click=${() => this.select(i)}
                 @pointerenter=${() => this.onRowEnter(i)}
-                @pointerleave=${() => this.scheduleGroupLeave()}
+                @pointerleave=${() => this.onRowLeave(i)}
               >
-                <div class="chip"></div>
-                <div class="meta">
-                  <div class="name">${item.label}</div>
-                  <div class="sub">${item.sub ?? ""}</div>
+                <div class="face">
+                  <div class="chip"></div>
+                  <div class="meta">
+                    <div class="name">${item.label}</div>
+                    <div class="sub">${item.sub ?? ""}</div>
+                  </div>
+                </div>
+                <div class="kids">
+                  ${(item.subs ?? []).map(
+                    (sub, k) =>
+                      html`<div
+                        class="kid"
+                        @click=${(event: Event) => {
+                          event.stopPropagation();
+                          this.onKidClick(i, k);
+                        }}
+                      >
+                        ${sub}
+                      </div>`
+                  )}
                 </div>
               </div>
             `
           )}
-          <div
-            class="kids"
-            @pointerenter=${() => this.onKidsEnter()}
-            @pointerleave=${() => this.scheduleGroupLeave()}
-          >
-            ${(expandItem?.subs ?? []).map(
-              (sub, k) => html`<div class="kid" @click=${() => this.onKidClick(k)}>${sub}</div>`
-            )}
-          </div>
         </div>
         <div class="help">↑↓ browse · ↵ open · click selects · esc away</div>
       </div>
