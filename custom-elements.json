@@ -3238,6 +3238,30 @@
             },
             {
               "kind": "method",
+              "name": "ignite",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "clientX",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "clientY",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "One-shot programmatic ignition at viewport coords — the press\neffect without a press or a hold. Lets a consumer make a point\non the page feel alive on its own schedule (an ambient emitter\nis the consumer's timer around this). Same guards as a press:\nGL tier only, silent under reduced motion, and the point must\nbe within the element's reach."
+            },
+            {
+              "kind": "method",
               "name": "wakeLoop",
               "privacy": "private",
               "return": {
@@ -4559,9 +4583,16 @@
                   "type": {
                     "text": "WorldRect | HTMLElement"
                   }
+                },
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "{ instant?: boolean }"
+                  }
                 }
               ],
-              "description": "Dive the camera into a cell — the hex-becomes-page navigation.\nTakes the slotted cell element (typically straight from\n`hp-grid-activate`'s detail) or a world rect for callers that\ncomputed their own geometry. Consumers wire this up themselves;\nnothing dives automatically."
+              "description": "Dive the camera into a cell — the hex-becomes-page navigation.\nTakes the slotted cell element (typically straight from\n`hp-grid-activate`'s detail) or a world rect for callers that\ncomputed their own geometry — a rect TALLER than the cell makes\nthe dive a readable page: the clamp turns wheel and drag into\nscrolling down it. `instant` restores a dived view (deep link,\nhistory) without the transition. Consumers wire this up\nthemselves; nothing dives automatically."
             },
             {
               "kind": "method",
@@ -4572,6 +4603,75 @@
                 }
               },
               "description": "Return from a dive to the previous camera."
+            },
+            {
+              "kind": "method",
+              "name": "resolveWorldPoint",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "[number, number] | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord | { x: number; y: number } | HTMLElement"
+                  }
+                }
+              ],
+              "description": "A camera destination: a slotted cell element, an axial cell,\nor a raw world point for sub-cell precision (anchor scrolling\ndown a dived page)."
+            },
+            {
+              "kind": "method",
+              "name": "flyTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord | { x: number; y: number } | HTMLElement"
+                  }
+                },
+                {
+                  "name": "zoom",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Fly the camera to a cell (or world point) — the programmatic\ntravel move. `zoom` defaults to the current zoom, so a bare\ncall is a lateral flight. Complements `recenter` (home) and\n`diveInto` (enter): this is \"go THERE and stay at altitude\"."
+            },
+            {
+              "kind": "method",
+              "name": "jumpTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "AxialCoord | { x: number; y: number } | HTMLElement"
+                  }
+                },
+                {
+                  "name": "zoom",
+                  "optional": true,
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Place the camera without animating — restoring state (a deep\nlink, a history entry) rather than performing a transition."
             },
             {
               "kind": "field",
@@ -6867,6 +6967,504 @@
           "declaration": {
             "name": "HpToast",
             "module": "src/elements/messaging/hp-toast.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/navigation/hp-hextrack.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Overlay browse/select rail — items ride a hexagon silhouette at\nthe host's right edge in contiguous rows. Wheel scrubs with a\nmagnetic focal; once settled, hovering a row previews its\nsubheadings in place; clicking a row selects it — the track\nauto-scrolls it focal, then fires the activation. `loop` wraps\nthe list endlessly. `hint` state peeks over the page; pointer or\narrow keys raise `focus`, which dims the page behind.",
+          "name": "HpHextrack",
+          "cssProperties": [
+            {
+              "description": "Rail width (default 380px)",
+              "name": "--hp-hextrack-width"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "items",
+              "type": {
+                "text": "HpHextrackItem[]"
+              },
+              "default": "[]",
+              "description": "The rows, in track order. Data-driven for now; a slotted-item\nform is a later decision."
+            },
+            {
+              "kind": "field",
+              "name": "focal",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Id of the item the track should hold focal — typically the\npage the consumer just dived into. Setting it re-centres.",
+              "attribute": "focal"
+            },
+            {
+              "kind": "field",
+              "name": "loop",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Endless mode: the list wraps around instead of clamping.",
+              "attribute": "loop",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "state",
+              "type": {
+                "text": "\"hint\" | \"focus\""
+              },
+              "default": "\"hint\"",
+              "description": "Overlay state. `hint` peeks at the edge; `focus` slides in and\nscrims the page. Reflected so consumers can force either.",
+              "attribute": "state",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "focusPos",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "vel",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "snapTarget",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "frame",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "lastSettled",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "-1"
+            },
+            {
+              "kind": "field",
+              "name": "settled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "previewIndex",
+              "type": {
+                "text": "number | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "renderedExpand",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "-1"
+            },
+            {
+              "kind": "field",
+              "name": "pendingActivate",
+              "type": {
+                "text": "string | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "railH",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "460"
+            },
+            {
+              "kind": "field",
+              "name": "reduced",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "scrubTo",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Public scrub — consumers wiring their own inputs."
+            },
+            {
+              "kind": "method",
+              "name": "emit",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "type",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "detail",
+                  "type": {
+                    "text": "T"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "nearestIndex",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "description": "Nearest whole slot for the current position, clamped or\nwrapped per mode."
+            },
+            {
+              "kind": "method",
+              "name": "targetFor",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "idx",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Continuous focusPos target that reaches item `idx` the short\nway round (loop) or directly (finite)."
+            },
+            {
+              "kind": "method",
+              "name": "relOf",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "i",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Relative slot of item `i` against the live position — shortest\nway round in loop mode."
+            },
+            {
+              "kind": "method",
+              "name": "expandIndex",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "onWheel",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "onKeydown",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "select",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "idx",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Selection: auto-scroll the item focal, then activate. Click IS\nselection — on the focal it fires at once; elsewhere the\nmagnetic scroll carries it in first."
+            },
+            {
+              "kind": "method",
+              "name": "wake",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "tick",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "advanceByVertical",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "s",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "dy",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Advance a downward path offset until `dy` of VERTICAL space is\nconsumed. On the flat focal run a path step is a vertical step;\npast the break the path recedes at RECEDE_Y per unit, so the\nsame clearance costs proportionally more path. Keeps expanded\ngroups fully clear of everything below them."
+            },
+            {
+              "kind": "method",
+              "name": "pathPos",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "[number, number]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "s",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Position along the silhouette for a path offset, in RAIL\ncoordinates. The focal run is vertical; past ±EDGE/2 the path\nbreaks 60° and recedes toward the hexagon's off-screen body."
+            },
+            {
+              "kind": "method",
+              "name": "layoutRows",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Geometry pass — positions are physics-driven, so they ride\ninline transforms the way grid cells ride --hp-x / --hp-y."
+            },
+            {
+              "kind": "method",
+              "name": "onRowEnter",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "i",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "The row element IS the hover region: its box contains the\nface and the expanded subitems, so one rectangle carries the\nwhole group and leave only fires at its true boundary."
+            },
+            {
+              "kind": "method",
+              "name": "onRowLeave",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "i",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "onKidClick",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "type",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "Hint / focus flips. detail: { state }",
+              "name": "hp-hextrack-state"
+            },
+            {
+              "description": "The magnetic focal settled on an item. detail: { id }",
+              "name": "hp-hextrack-focus"
+            },
+            {
+              "description": "An item was selected (click / Enter), after the auto-scroll lands. detail: { id }",
+              "name": "hp-hextrack-activate"
+            },
+            {
+              "description": "A subheading was chosen. detail: { id, sub, index } — id is the row the subs belong to",
+              "name": "hp-hextrack-sub"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "focal",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Id of the item the track should hold focal — typically the\npage the consumer just dived into. Setting it re-centres.",
+              "fieldName": "focal"
+            },
+            {
+              "name": "loop",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Endless mode: the list wraps around instead of clamping.",
+              "fieldName": "loop"
+            },
+            {
+              "name": "state",
+              "type": {
+                "text": "\"hint\" | \"focus\""
+              },
+              "default": "\"hint\"",
+              "description": "Overlay state. `hint` peeks at the edge; `focus` slides in and\nscrims the page. Reflected so consumers can force either.",
+              "fieldName": "state"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "status": "wip",
+          "tagName": "hp-hextrack",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpHextrack",
+          "declaration": {
+            "name": "HpHextrack",
+            "module": "src/elements/navigation/hp-hextrack.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "hp-hextrack",
+          "declaration": {
+            "name": "HpHextrack",
+            "module": "src/elements/navigation/hp-hextrack.ts"
           }
         }
       ]
@@ -10773,6 +11371,17 @@
             },
             {
               "kind": "field",
+              "name": "hover",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, pointerenter on the source OPENS the list (it never\ncloses on leave — a summoned menu stays out). Click / Enter /\nSpace keep toggling regardless, which is also the touch and\nkeyboard path, so hover is an accelerant, not a requirement.",
+              "attribute": "hover",
+              "reflects": true
+            },
+            {
+              "kind": "field",
               "name": "sourceEl",
               "type": {
                 "text": "HTMLElement | null"
@@ -10910,6 +11519,15 @@
               "default": "false",
               "description": "When set, children land at a randomly-shuffled subset of the 6\nring positions and stagger in random order (both keyed off the\nsame permutation). Without it, children land in clockwise\nspiral order and stagger in that same order. Mirrors the\nordered / unordered semantics of `<ol>` vs `<ul>`.",
               "fieldName": "unordered"
+            },
+            {
+              "name": "hover",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "When set, pointerenter on the source OPENS the list (it never\ncloses on leave — a summoned menu stays out). Click / Enter /\nSpace keep toggling regardless, which is also the touch and\nkeyboard path, so hover is an accelerant, not a requirement.",
+              "fieldName": "hover"
             }
           ],
           "superclass": {
@@ -12099,6 +12717,10 @@
                   "type": {
                     "text": "WorldRect"
                   }
+                },
+                {
+                  "name": "instant",
+                  "default": "false"
                 }
               ]
             },
@@ -12477,6 +13099,46 @@
           "declaration": {
             "name": "HpGridTetherEventDetail",
             "module": "./elements/layout/hp-grid/index.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "axialToWorld",
+          "declaration": {
+            "name": "axialToWorld",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hexHeight",
+          "declaration": {
+            "name": "hexHeight",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hexWidth",
+          "declaration": {
+            "name": "hexWidth",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "seamlessSide",
+          "declaration": {
+            "name": "seamlessSide",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AxialCoord",
+          "declaration": {
+            "name": "AxialCoord",
+            "module": "./lib/spatial/types.js"
           }
         }
       ]
@@ -13872,9 +14534,13 @@
                   "type": {
                     "text": "WorldRect"
                   }
+                },
+                {
+                  "name": "instant",
+                  "default": "false"
                 }
               ],
-              "description": "Tween the camera onto `rect` and remember where we came from."
+              "description": "Tween the camera onto `rect` and remember where we came from.\n`instant` jumps instead — restoring a dived view (a deep link,\na history entry) is state, not a transition."
             },
             {
               "kind": "method",
@@ -16344,6 +17010,61 @@
           "declaration": {
             "name": "hpBase",
             "module": "src/styles/hp-base.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/wip.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpCluster",
+          "declaration": {
+            "name": "HpCluster",
+            "module": "./elements/layout/hp-cluster.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrack",
+          "declaration": {
+            "name": "HpHextrack",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrackActivateDetail",
+          "declaration": {
+            "name": "HpHextrackActivateDetail",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrackItem",
+          "declaration": {
+            "name": "HpHextrackItem",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrackSubDetail",
+          "declaration": {
+            "name": "HpHextrackSubDetail",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpUnfoldList",
+          "declaration": {
+            "name": "HpUnfoldList",
+            "module": "./elements/unfold/hp-unfold-list.js"
           }
         }
       ]

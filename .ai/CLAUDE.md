@@ -10,9 +10,9 @@ zeraphie.github.io/hexpunk). System spec and source of truth:
 Research → design doc → plan → execute, step by step.
 
 1. Substantial work starts as research/discussion and lands in
-   `DESIGN.md` (system decisions) or a `PLAN.<topic>.md` ADR
-   (focused reworks — e.g. `PLAN.hp-grid-smoothness.md`).
-2. Plans derive from those as checkbox steps — `PLAN.md` is the
+   `DESIGN.md` (system decisions) or a `.plan/PLAN.<topic>.md` ADR
+   (focused reworks — e.g. `.plan/PLAN.hp-grid-smoothness.md`).
+2. Plans derive from those as checkbox steps — `.plan/PLAN.md` is the
    canonical roadmap; ADRs carry their own step lists.
 3. Execute one step at a time. After each step:
    - tick the checkbox, run `bun run check` — it typechecks and
@@ -38,7 +38,8 @@ oxlint's — style review is about what tools can't check.
 - `DESIGN.md` — the system spec; every committed decision lives
   here, and only decided work — parked or speculative elements and
   modes stay in PLAN files until they're decided
-- `PLAN.md` — canonical roadmap; `PLAN.*.md` — per-rework ADRs
+- `.plan/` — local-only (gitignored) plans: `PLAN.md` the canonical
+  roadmap, `PLAN.*.md` per-rework ADRs
 - `.ai/STYLE.md` — code style rules
 - `.ai/ANTI-PATTERNS.md` / `.ai/PROMPTS.md` / `.ai/ELEMENTS.md` —
   consumer-facing docs for briefing AI tools that _generate_ hexpunk

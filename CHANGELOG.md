@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-08-25
+
+### Added
+
+- **`<hp-hextrack>` (wip) — the silhouette-riding browse/select rail.** Items ride the left edge of a pointy-top hexagon whose body sits off-screen right: a flat focal run, 60° vertex breaks, contiguous plates receding past them. Wheel scrubs with momentum onto a magnetic focal; hovering a settled row previews its subheadings in place; click is always selection — the track auto-scrolls the row focal, then fires `hp-hextrack-activate`. `loop` makes the list endless. The rail idles as a translucent hint at the host's right edge and raises to focus on pointer or arrow keys, scrimming the page behind it. Plates carry angled chrome — chamfered end cuts, a bright top edge line, a darker prow zone holding the hex chip. Ships from the wip entrypoint, with a showcase page under Navigation.
+- **`@hexpunk/core/wip` entrypoint.** Work-in-progress elements (`hp-cluster`, `hp-hextrack`, `hp-unfold-list`) importable by explicit opt-in without joining the public barrel — unstable by name, on purpose.
+- **`@hexpunk/core/grid` re-exports the lattice math.** `axialToWorld`, `hexWidth`, `hexHeight`, `seamlessSide`, and the `AxialCoord` type, so consumers can compute world positions in hp-grid's own geometry.
+- **`<hp-grid>` public camera API.** `flyTo(target, zoom?)` and `jumpTo(target, zoom?)` accept a slotted cell element, an axial coord, or a raw `{x, y}` world point; `diveInto(target, { instant })` places the camera without animation — deep links and history restores are state, not transitions.
+- **`<hp-unfold-list>` `hover`.** Pointerenter on the source opens the fan (and never closes it); click/Enter keep the toggle for touch and keyboard.
+- **`<hp-background>` public `ignite(x, y)`.** One-shot programmatic ignition at client coordinates — the press handler minus the hold; consumers build ambient emitters with their own timers.
+
+### Fixed
+
+- **Git installs work as a dependency.** `prepare: bun run build` builds the package when consumed as `github:zeraphie/hexpunk#<ref>`, and the build tsconfig no longer requires bun-types (absent in a fresh git-dependency install).
+- **`hex-controls.css` ships in the tarball.** The generated form-control stylesheet was missing from the published `files`.
+
 ## [0.3.0] - 2026-08-24
 
 ### Added

@@ -105,6 +105,13 @@ export class HpUnfoldList extends LitElement {
   @property({ reflect: true, type: Boolean })
   unordered = false;
 
+  /** When set, pointerenter on the source OPENS the list (it never
+   * closes on leave — a summoned menu stays out). Click / Enter /
+   * Space keep toggling regardless, which is also the touch and
+   * keyboard path, so hover is an accelerant, not a requirement. */
+  @property({ reflect: true, type: Boolean })
+  hover = false;
+
   /** Source element bound at slotchange — listened on for click /
    * Enter triggers and mirrored with `aria-pressed`. Owned here so
    * toggling open / close updates it without re-querying. */
@@ -278,6 +285,15 @@ export class HpUnfoldList extends LitElement {
         if (key === "Enter" || key === " ") {
           e.preventDefault();
           this.toggle();
+        }
+      },
+      { signal: ctl.signal }
+    );
+    nextSource.addEventListener(
+      "pointerenter",
+      () => {
+        if (this.hover && !this.open) {
+          this.open = true;
         }
       },
       { signal: ctl.signal }

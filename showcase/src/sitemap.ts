@@ -98,6 +98,7 @@ export const SITEMAP: SitemapNode[] = [
       {
         title: "Navigation",
         children: [
+          { path: "/components/navigation/hp-hextrack", title: "hp-hextrack" },
           { path: "/components/navigation/hp-menubar", title: "hp-menubar" },
           { path: "/components/navigation/hp-navigation-menu", title: "hp-navigation-menu" },
           { path: "/components/navigation/hp-sidebar", title: "hp-sidebar" },
