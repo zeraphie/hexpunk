@@ -357,6 +357,9 @@ export class HpHextrack extends LitElement {
       this.lastSettled = -1;
       this.previewIndex = null;
       this.pendingActivate = null;
+      // A freshly-positioned track IS settled: hover previews and
+      // focal clicks must work before any physics has run.
+      this.settled = true;
       // The rail sizes to the list: enough for the visible span of
       // contiguous rows plus expansion headroom, within reason.
       const wanted = Math.min(this.items.length, VISIBLE_SPAN * 2) * ROW_H + 5 * KID_H + 40;
