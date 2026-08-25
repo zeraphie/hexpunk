@@ -186,6 +186,10 @@ export class HpHextrack extends LitElement {
          gaps. Physics writes transforms directly while scrubbing;
          once settled the container transitions them, so preview
          expansion pushes rows smoothly. */
+      /* The row's BOX is the group's bounding box — face plus
+         expanded subitems — so one boundary carries the hover. The
+         box itself paints nothing; the face and kids keep their own
+         looks. */
       .row {
         position: absolute;
         left: 0;
@@ -195,8 +199,6 @@ export class HpHextrack extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        background: color-mix(in srgb, var(--hp-surface-container) 94%, transparent);
-        border: 1px solid var(--hp-outline-variant);
         transform-origin: left center;
         cursor: pointer;
       }
@@ -209,19 +211,22 @@ export class HpHextrack extends LitElement {
         opacity: 0.5;
         cursor: default;
       }
-      .row[data-focal] {
-        border-color: var(--hp-primary-bright);
-        background: color-mix(in srgb, var(--hp-surface-container-high) 96%, transparent);
-      }
-      .row[data-preview]:not([data-focal]) {
-        border-color: var(--hp-secondary);
-      }
       .face {
-        height: ${ROW_H - 2}px;
+        height: ${ROW_H}px;
+        box-sizing: border-box;
         display: flex;
         align-items: center;
         gap: 10px;
         padding: 0 10px;
+        background: color-mix(in srgb, var(--hp-surface-container) 94%, transparent);
+        border: 1px solid var(--hp-outline-variant);
+      }
+      .row[data-focal] .face {
+        border-color: var(--hp-primary-bright);
+        background: color-mix(in srgb, var(--hp-surface-container-high) 96%, transparent);
+      }
+      .row[data-preview]:not([data-focal]) .face {
+        border-color: var(--hp-secondary);
       }
       .chip {
         flex: none;
