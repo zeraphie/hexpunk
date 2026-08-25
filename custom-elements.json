@@ -13100,6 +13100,46 @@
             "name": "HpGridTetherEventDetail",
             "module": "./elements/layout/hp-grid/index.js"
           }
+        },
+        {
+          "kind": "js",
+          "name": "axialToWorld",
+          "declaration": {
+            "name": "axialToWorld",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hexHeight",
+          "declaration": {
+            "name": "hexHeight",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hexWidth",
+          "declaration": {
+            "name": "hexWidth",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "seamlessSide",
+          "declaration": {
+            "name": "seamlessSide",
+            "module": "./lib/spatial/lattice.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AxialCoord",
+          "declaration": {
+            "name": "AxialCoord",
+            "module": "./lib/spatial/types.js"
+          }
         }
       ]
     },
@@ -16970,6 +17010,61 @@
           "declaration": {
             "name": "hpBase",
             "module": "src/styles/hp-base.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/wip.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "HpCluster",
+          "declaration": {
+            "name": "HpCluster",
+            "module": "./elements/layout/hp-cluster.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrack",
+          "declaration": {
+            "name": "HpHextrack",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrackActivateDetail",
+          "declaration": {
+            "name": "HpHextrackActivateDetail",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrackItem",
+          "declaration": {
+            "name": "HpHextrackItem",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpHextrackSubDetail",
+          "declaration": {
+            "name": "HpHextrackSubDetail",
+            "module": "./elements/navigation/hp-hextrack.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "HpUnfoldList",
+          "declaration": {
+            "name": "HpUnfoldList",
+            "module": "./elements/unfold/hp-unfold-list.js"
           }
         }
       ]
