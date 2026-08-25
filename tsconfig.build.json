@@ -3,6 +3,10 @@
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/**/*.test.ts"],
   "compilerOptions": {
-    "rootDir": "src"
+    "rootDir": "src",
+    // Library sources are browser code: no ambient tool types. The
+    // base config pulls bun-types for tools/, which a consumer's
+    // git-dependency install (prepare) doesn't have.
+    "types": []
   }
 }

@@ -1,0 +1,235 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ComponentDocs from "../../../components/ComponentDocs.astro";
+---
+
+<Layout title="hp-hextrack">
+  <ComponentDocs title="hp-hextrack">
+    <p slot="description">
+      Overlay browse/select rail — the osu-song-select move as a select primitive. Items ride
+      a hexagon silhouette at the host's right edge in contiguous plates: wheel scrubs with
+      momentum and a magnetic focal, hovering a settled row previews its subheadings in
+      place, and clicking a row <em>selects</em> it — the track auto-scrolls it focal, then
+      fires <code>hp-hextrack-activate</code>. The rail idles as a translucent hint;
+      pointer or arrow keys raise focus, which scrims the page behind (the page itself is
+      the preview). <code>loop</code> makes the list endless.
+    </p>
+
+    <hp-demo caption="Browse, preview, select — over a stand-in page">
+      <div class="ht-stage" id="ht-stage">
+        <div class="ht-page">
+          <h3 id="ht-title">aetherblade</h3>
+          <p>
+            A stand-in reading surface. Raise the rail (hover its edge, or press ↓), scrub
+            with the wheel, hover a row to preview its subheadings, click to select — the
+            log below narrates the event stream.
+          </p>
+          <p class="ht-dim">
+            [The consumer decides what selection means: navigation, a value change, both.
+            Here it retitles this panel.]
+          </p>
+        </div>
+        <hp-hextrack id="ht-track"></hp-hextrack>
+      </div>
+      <hp-code slot="code" language="html">{`<script type="module">
+  // wip entrypoint — unstable by name, on purpose
+  import "@hexpunk/core/wip";
+<\/script>
+
+<div class="stage"><!-- position: relative host -->
+  <main><!-- the page the rail overlays --></main>
+  <hp-hextrack id="track"></hp-hextrack>
+</div>
+
+<script>
+  const track = document.getElementById("track");
+  track.items = [
+    { id: "aetherblade", label: "aetherblade", sub: "d&d · class",
+      subs: ["the class", "subclass paths", "balance notes"] },
+    { id: "sanguine", label: "sanguine pact", sub: "d&d",
+      subs: ["the pact", "invocations"] },
+    // …
+  ];
+  track.focal = "aetherblade";
+  track.addEventListener("hp-hextrack-activate", (e) => {
+    // selection: navigate, change value, open — consumer's call
+  });
+  track.addEventListener("hp-hextrack-sub", (e) => {
+    // e.detail = { id, sub, index } — an anchor within the item
+  });
+<\/script>`}</hp-code>
+    </hp-demo>
+
+    <p class="ht-events-note">Event log — newest first.</p>
+    <ol class="ht-events" id="ht-events" aria-live="polite"></ol>
+
+    <Fragment slot="intent">
+      <h2>Selection, not scrubbing</h2>
+      <hp-banner tone="do">
+        Click is always selection: a click on a distant row scrolls it focal first, then
+        activates — the caused action (a navigation, a slide) should finish before the
+        consumer folds the rail back to <code>hint</code>.
+      </hp-banner>
+      <hp-banner tone="do">
+        Feed <code>items</code> the titles of the things themselves and <code>subs</code>
+        their anchor points. The category belongs in <code>sub</code> — it renders only on
+        the focal / previewed row, so repeated categories never drown the titles.
+      </hp-banner>
+      <hp-banner tone="dont">
+        Don't mount it outside a positioned host: the element fills its containing block
+        (<code>position: absolute; inset: 0</code>) and parks its rail band at the host's
+        right edge.
+      </hp-banner>
+
+      <h2>The silhouette</h2>
+      <p>
+        The flat focal run is the vertical left edge of a pointy-top hexagon whose body sits
+        off-screen right — rows recede up-right and down-right past the 60° vertex breaks,
+        pitch compressing honestly along the receding edges. An expanded row (focal or
+        preview) pushes everything below it completely clear, by measured vertical
+        clearance rather than path length.
+      </p>
+
+      <h2>Status</h2>
+      <p>
+        Work in progress, shipped from the opt-in <code>@hexpunk/core/wip</code>
+        entrypoint. Open items: slotted-item form, touch affordances beyond
+        tap-to-focus/tap-to-select, and a focus-trap/ARIA pass.
+      </p>
+    </Fragment>
+  </ComponentDocs>
+</Layout>
+
+<style is:global>
+  .ht-stage {
+    position: relative;
+    height: 30rem;
+    overflow: hidden;
+    background: var(--hp-surface-container-lowest);
+    width: 100%;
+  }
+  .ht-page {
+    max-width: 26rem;
+    padding: 2rem 2.5rem;
+  }
+  .ht-page h3 {
+    font-family: Iceland, "Chakra Petch", sans-serif;
+    font-size: 1.9rem;
+    margin: 0 0 0.75rem;
+    letter-spacing: 0.02em;
+  }
+  .ht-page p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--hp-on-surface-variant);
+    margin: 0 0 0.75rem;
+  }
+  .ht-page .ht-dim {
+    opacity: 0.6;
+    font-size: 0.8rem;
+  }
+  .ht-events-note {
+    margin-block: 0.75rem 0.25rem;
+    font-size: var(--hp-typo-label-sm-font-size);
+    color: var(--hp-on-surface-variant);
+  }
+  .ht-events {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--hp-outline-variant);
+    background: var(--hp-surface-container-lowest);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    min-height: 3.5rem;
+    max-width: 60rem;
+  }
+  .ht-events li {
+    display: flex;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--hp-outline-faint);
+  }
+  .ht-events li:last-child {
+    border-bottom: none;
+  }
+  .ht-events .ht-type {
+    color: var(--hp-primary-bright);
+    min-width: 8.5rem;
+  }
+  .ht-events .ht-detail {
+    color: var(--hp-on-surface-variant);
+  }
+</style>
+
+<script>
+  import type {
+    HpHextrack,
+    HpHextrackActivateDetail,
+    HpHextrackSubDetail,
+  } from "../../../../../src/wip.ts";
+  import { onPageVisit } from "../../../lib/visit.ts";
+
+  const ITEMS = [
+    { id: "aetherblade", label: "aetherblade", sub: "d&d · class", subs: ["the class", "subclass paths", "balance notes"] },
+    { id: "sanguine", label: "sanguine pact", sub: "d&d", subs: ["the pact", "invocations"] },
+    { id: "nihility", label: "oath of nihility", sub: "d&d", subs: ["tenets", "oath spells"] },
+    { id: "merlin", label: "merlin's claw", sub: "d&d", subs: ["the artefact", "attunement"] },
+    { id: "homerules", label: "my home rules", sub: "d&d · rules", subs: ["table law", "variants"] },
+    { id: "freeplay", label: "free play", sub: "no coins", ghost: true },
+  ];
+
+  onPageVisit((signal) => {
+    const track = document.getElementById("ht-track") as HpHextrack | null;
+    if (!track) {
+      return;
+    }
+    const title = document.getElementById("ht-title")!;
+    const events = document.getElementById("ht-events")!;
+
+    const log = (type: string, detail: string): void => {
+      const entry = document.createElement("li");
+      entry.innerHTML = `<span class="ht-type">${type}</span><span class="ht-detail">${detail}</span>`;
+      events.prepend(entry);
+      while (events.children.length > 8) {
+        events.lastElementChild!.remove();
+      }
+    };
+
+    track.items = ITEMS;
+    track.focal = "aetherblade";
+
+    track.addEventListener(
+      "hp-hextrack-activate",
+      (event) => {
+        const { id } = (event as CustomEvent<HpHextrackActivateDetail>).detail;
+        const item = ITEMS.find((entry) => entry.id === id);
+        title.textContent = item?.label ?? id;
+        track.state = "hint";
+        log("activate", `selected ${id}`);
+      },
+      { signal }
+    );
+    track.addEventListener(
+      "hp-hextrack-sub",
+      (event) => {
+        const { id, sub } = (event as CustomEvent<HpHextrackSubDetail>).detail;
+        log("sub", `${id} → #${sub}`);
+      },
+      { signal }
+    );
+    track.addEventListener(
+      "hp-hextrack-focus",
+      (event) => {
+        log("focus", `focal settled on ${(event as CustomEvent<{ id: string }>).detail.id}`);
+      },
+      { signal }
+    );
+    track.addEventListener(
+      "hp-hextrack-state",
+      (event) => {
+        log("state", (event as CustomEvent<{ state: string }>).detail.state);
+      },
+      { signal }
+    );
+  });
+</script>
