@@ -204,7 +204,9 @@ export class HpHextrack extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        transform-origin: left center;
+        /* Top origin: a scaled group grows strictly downward, so
+           clearance math and gapless pitch stay honest. */
+        transform-origin: left top;
         cursor: pointer;
       }
       .items[data-settled] .row {
@@ -224,7 +226,7 @@ export class HpHextrack extends LitElement {
       .face {
         --edge: color-mix(in srgb, var(--hp-primary) 55%, transparent);
         position: relative;
-        height: ${ROW_H - 6}px;
+        height: ${ROW_H}px;
         box-sizing: border-box;
         display: flex;
         align-items: center;
@@ -336,7 +338,7 @@ export class HpHextrack extends LitElement {
       .kids {
         display: none;
         flex-direction: column;
-        margin: 2px 0 4px 30px;
+        margin: 0 0 0 30px;
       }
       .row[data-expand] .kids {
         display: flex;
@@ -345,9 +347,8 @@ export class HpHextrack extends LitElement {
         display: flex;
         align-items: center;
         gap: 8px;
-        height: ${KID_H - 3}px;
+        height: ${KID_H}px;
         box-sizing: border-box;
-        margin-bottom: 3px;
         padding: 0 12px;
         font-size: 0.7rem;
         letter-spacing: 0.08em;
@@ -703,7 +704,12 @@ export class HpHextrack extends LitElement {
      * bottom edge at the same scale, so row and subitems form one
      * seamless hover region with no crack between them. */
     const ownerScale = expandRel !== null ? 1 - Math.min(1, Math.abs(expandRel) / 4.2) * 0.18 : 1;
-    const kidsH = (expandItem?.subs?.length ?? 0) * KID_H * ownerScale;
+    // Clearance is MEASURED from the rendered group (face + kids,
+    // margins and all), scaled — everything below moves completely
+    // clear of it, never by a derived approximation.
+    const expandRow = expandIdx >= 0 ? (rows[expandIdx] as HTMLElement | undefined) : undefined;
+    const kidsH = expandRow ? Math.max(0, expandRow.offsetHeight - ROW_H) * ownerScale : 0;
+    void expandItem;
 
     rows.forEach((row, i) => {
       const rel = this.relOf(i);
@@ -722,8 +728,9 @@ export class HpHextrack extends LitElement {
       }
       const [x, y] = this.pathPos(s);
       const dist = Math.min(1, Math.abs(rel) / 4.2);
+      const scale = 1 - dist * 0.18;
       const focalPop = i === focalIdx && this.settled ? -10 : 0;
-      row.style.transform = `translate(${x + focalPop}px, ${y - ROW_H / 2}px) scale(${(1 - dist * 0.18).toFixed(3)})`;
+      row.style.transform = `translate(${x + focalPop}px, ${(y - (ROW_H * scale) / 2).toFixed(1)}px) scale(${scale.toFixed(3)})`;
       row.style.opacity = String(1 - dist * 0.45);
       row.style.zIndex = i === expandIdx ? "3" : i === focalIdx ? "2" : "1";
       if (i === focalIdx && this.settled) {
