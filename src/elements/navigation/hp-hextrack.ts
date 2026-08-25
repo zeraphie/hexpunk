@@ -115,11 +115,15 @@ export class HpHextrack extends LitElement {
         pointer-events: auto;
       }
 
+      /* The rail is a vertically-centred band, not a full-height
+         column: its hover area matches what the silhouette visibly
+         occupies, so chrome above and below it (and the pointer's
+         way out) stays reachable. */
       .rail {
         position: absolute;
-        top: 0;
+        top: calc(50% - 230px);
         right: 0;
-        bottom: 0;
+        height: 460px;
         width: var(--hp-hextrack-width);
         pointer-events: auto;
         transform: translateX(calc(var(--hp-hextrack-width) - 85px));
@@ -142,6 +146,7 @@ export class HpHextrack extends LitElement {
         height: 216px;
         border-left: 1.5px dashed var(--hp-secondary);
         opacity: 0.5;
+        pointer-events: none;
       }
       .edge::before,
       .edge::after {
@@ -449,11 +454,12 @@ export class HpHextrack extends LitElement {
     }
   };
 
-  /** World position along the silhouette for a path offset. The
-   * focal run is vertical; past ±EDGE/2 the path breaks 60° and
+  /** Position along the silhouette for a path offset, in RAIL
+   * coordinates (the rail is a centred band, not the full host).
+   * The focal run is vertical; past ±EDGE/2 the path breaks 60° and
    * recedes toward the hexagon's off-screen body. */
   private pathPos(s: number): [number, number] {
-    const cy = this.clientHeight / 2;
+    const cy = 230;
     const half = EDGE / 2;
     if (Math.abs(s) <= half) {
       return [54, cy + s];
