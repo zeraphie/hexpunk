@@ -143,6 +143,11 @@ export class HpHextrack extends LitElement {
         position: absolute;
         right: 0;
         width: var(--hp-hextrack-width);
+        /* hp-base zeroes line-height on atom hosts and it inherits
+           into the shadow — a zero line box under .name's
+           overflow:hidden clips every title to nothing. Restore
+           normal text flow for the whole rail. */
+        line-height: 1.45;
         pointer-events: auto;
         transform: translateX(calc(var(--hp-hextrack-width) - 85px));
         opacity: 0.55;
