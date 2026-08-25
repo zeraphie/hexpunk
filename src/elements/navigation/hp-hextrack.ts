@@ -216,22 +216,72 @@ export class HpHextrack extends LitElement {
         opacity: 0.5;
         cursor: default;
       }
+      /* PSO2-style plate: an angled panel with a chamfered cut at
+         each end, a bright top edge line, and a darker prow zone
+         holding the hex chip — painted with layered gradients so
+         the edges follow the clip. Plates sit with a small gap in
+         the ROW_H pitch, each its own piece of chrome. */
       .face {
-        height: ${ROW_H}px;
+        height: ${ROW_H - 6}px;
         box-sizing: border-box;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 0 10px;
-        background: color-mix(in srgb, var(--hp-surface-container) 94%, transparent);
-        border: 1px solid var(--hp-outline-variant);
+        gap: 12px;
+        padding: 0 16px 0 12px;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 16px) 0,
+          100% 16px,
+          100% 100%,
+          18px 100%,
+          0 calc(100% - 18px)
+        );
+        background:
+          linear-gradient(
+            to bottom,
+            color-mix(in srgb, var(--hp-primary) 55%, transparent) 0,
+            color-mix(in srgb, var(--hp-primary) 55%, transparent) 1.5px,
+            transparent 1.5px
+          ),
+          linear-gradient(
+            105deg,
+            color-mix(in srgb, var(--hp-primary-container) 40%, var(--hp-surface-container-low)) 0
+              52px,
+            color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
+          );
       }
       .row[data-focal] .face {
-        border-color: var(--hp-primary-bright);
-        background: color-mix(in srgb, var(--hp-surface-container-high) 96%, transparent);
+        background:
+          linear-gradient(
+            to bottom,
+            var(--hp-primary-bright) 0,
+            var(--hp-primary-bright) 2px,
+            transparent 2px
+          ),
+          linear-gradient(
+            105deg,
+            color-mix(in srgb, var(--hp-primary) 42%, var(--hp-surface-container-high)) 0 52px,
+            color-mix(in srgb, var(--hp-surface-container-high) 97%, transparent) 52px
+          );
+        filter: drop-shadow(0 0 6px color-mix(in srgb, var(--hp-primary-bright) 45%, transparent));
       }
       .row[data-preview]:not([data-focal]) .face {
-        border-color: var(--hp-secondary);
+        background:
+          linear-gradient(
+            to bottom,
+            var(--hp-secondary) 0,
+            var(--hp-secondary) 1.5px,
+            transparent 1.5px
+          ),
+          linear-gradient(
+            105deg,
+            color-mix(in srgb, var(--hp-secondary-container) 45%, var(--hp-surface-container-low)) 0
+              52px,
+            color-mix(in srgb, var(--hp-surface-container) 96%, transparent) 52px
+          );
+      }
+      .row[data-ghost] .face {
+        background: color-mix(in srgb, var(--hp-surface-container-low) 80%, transparent);
       }
       .chip {
         flex: none;
@@ -283,12 +333,12 @@ export class HpHextrack extends LitElement {
         color: var(--hp-secondary);
       }
 
-      /* Subheadings live INSIDE the row's rectangle — the group is
-         one box, one border, one hover boundary. */
+      /* Subheadings: smaller plates hanging off the prow line, a
+         chamfer on the trailing corner, edge lighting on hover. */
       .kids {
         display: none;
         flex-direction: column;
-        margin: 0 0 4px 24px;
+        margin: 2px 0 4px 30px;
       }
       .row[data-expand] .kids {
         display: flex;
@@ -297,20 +347,35 @@ export class HpHextrack extends LitElement {
         display: flex;
         align-items: center;
         gap: 8px;
-        height: ${KID_H}px;
+        height: ${KID_H - 3}px;
         box-sizing: border-box;
-        padding: 0 10px;
+        margin-bottom: 3px;
+        padding: 0 12px;
         font-size: 0.7rem;
         letter-spacing: 0.08em;
-        background: color-mix(in srgb, var(--hp-surface-container-low) 94%, transparent);
-        border: 1px solid var(--hp-outline-faint);
-        border-top: none;
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+        background:
+          linear-gradient(
+            to bottom,
+            color-mix(in srgb, var(--hp-outline) 50%, transparent) 0,
+            color-mix(in srgb, var(--hp-outline) 50%, transparent) 1px,
+            transparent 1px
+          ),
+          color-mix(in srgb, var(--hp-surface-container-low) 94%, transparent);
         color: var(--hp-on-surface-variant);
         cursor: pointer;
       }
       .kid:hover {
         color: var(--hp-on-surface);
-        border-color: var(--hp-outline-variant);
+        background:
+          linear-gradient(
+            to bottom,
+            var(--hp-secondary) 0,
+            var(--hp-secondary) 1.5px,
+            transparent 1.5px
+          ),
+          color-mix(in srgb, var(--hp-surface-container) 96%, transparent);
+        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--hp-secondary) 40%, transparent));
       }
       .kid::before {
         content: "▸";
