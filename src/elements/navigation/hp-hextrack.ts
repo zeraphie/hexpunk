@@ -647,6 +647,27 @@ export class HpHextrack extends LitElement {
     }
   };
 
+  /** Advance a downward path offset until `dy` of VERTICAL space is
+   * consumed. On the flat focal run a path step is a vertical step;
+   * past the break the path recedes at RECEDE_Y per unit, so the
+   * same clearance costs proportionally more path. Keeps expanded
+   * groups fully clear of everything below them. */
+  private advanceByVertical(s: number, dy: number): number {
+    const half = EDGE / 2;
+    let cur = s;
+    let left = dy;
+    if (cur < half) {
+      const room = half - cur;
+      const step = Math.min(room, left);
+      cur += step;
+      left -= step;
+    }
+    if (left > 0) {
+      cur += left / RECEDE_Y;
+    }
+    return cur;
+  }
+
   /** Position along the silhouette for a path offset, in RAIL
    * coordinates. The focal run is vertical; past ±EDGE/2 the path
    * breaks 60° and recedes toward the hexagon's off-screen body. */
@@ -692,8 +713,13 @@ export class HpHextrack extends LitElement {
         return;
       }
       row.style.pointerEvents = "";
-      const push = expandRel !== null && rel > expandRel + 0.01 ? kidsH : 0;
-      const s = rel * ROW_H + push;
+      let s = rel * ROW_H;
+      if (expandRel !== null && rel > expandRel + 0.01) {
+        // Everything below an expanded group moves COMPLETELY below
+        // it: the displacement is vertical clearance, path-walked so
+        // the receding segment pays its true cost.
+        s = this.advanceByVertical(s, kidsH);
+      }
       const [x, y] = this.pathPos(s);
       const dist = Math.min(1, Math.abs(rel) / 4.2);
       const focalPop = i === focalIdx && this.settled ? -10 : 0;
