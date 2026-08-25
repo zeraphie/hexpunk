@@ -42,6 +42,10 @@
       "types": "./dist/types/grid.d.ts",
       "import": "./dist/grid.js"
     },
+    "./wip": {
+      "types": "./dist/types/wip.d.ts",
+      "import": "./dist/wip.js"
+    },
     "./elements.css": "./src/styles/elements.css",
     "./hex-controls.css": "./src/styles/hex-controls.css",
     "./hp-base.css": "./src/styles/hp-base.css",
@@ -54,6 +58,7 @@
   },
   "scripts": {
     "build": "bun run tools/build.ts && bun run types",
+    "prepare": "bun run build",
     "build:showcase": "bun run analyze && cd showcase && bun run build",
     "types": "tsc -p tsconfig.build.json --emitDeclarationOnly --outDir dist/types",
     "typecheck": "tsc --noEmit",

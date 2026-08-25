@@ -19,8 +19,9 @@ const inlineCss: BunPlugin = {
 };
 
 const result = await Bun.build({
-  // One entry per package export: "." and "./grid" (package.json#exports).
-  entrypoints: ["src/index.ts", "src/grid.ts"],
+  // One entry per package export: ".", "./grid", "./wip"
+  // (package.json#exports).
+  entrypoints: ["src/index.ts", "src/grid.ts", "src/wip.ts"],
   outdir: "dist",
   target: "browser",
   format: "esm",

@@ -255,11 +255,14 @@ export class HpGrid extends LitElement {
   /** Dive the camera into a cell — the hex-becomes-page navigation.
    * Takes the slotted cell element (typically straight from
    * `hp-grid-activate`'s detail) or a world rect for callers that
-   * computed their own geometry. Consumers wire this up themselves;
-   * nothing dives automatically. */
-  diveInto(target: WorldRect | HTMLElement): void {
+   * computed their own geometry — a rect TALLER than the cell makes
+   * the dive a readable page: the clamp turns wheel and drag into
+   * scrolling down it. `instant` restores a dived view (deep link,
+   * history) without the transition. Consumers wire this up
+   * themselves; nothing dives automatically. */
+  diveInto(target: WorldRect | HTMLElement, options?: { instant?: boolean }): void {
     if (!(target instanceof HTMLElement)) {
-      this.engine?.diveInto(target);
+      this.engine?.diveInto(target, options?.instant ?? false);
       return;
     }
     const q = Number.parseFloat(target.getAttribute("q") ?? "");
@@ -268,17 +271,59 @@ export class HpGrid extends LitElement {
       return;
     }
     const [cx, cy] = axialToWorld(q, r, this.hexSide);
-    this.engine?.diveInto({
-      cx,
-      cy,
-      w: hexWidth(this.hexSide),
-      h: 2 * this.hexSide,
-    });
+    this.engine?.diveInto(
+      {
+        cx,
+        cy,
+        w: hexWidth(this.hexSide),
+        h: 2 * this.hexSide,
+      },
+      options?.instant ?? false
+    );
   }
 
   /** Return from a dive to the previous camera. */
   surface(): void {
     this.engine?.surface();
+  }
+
+  /** A camera destination: a slotted cell element, an axial cell,
+   * or a raw world point for sub-cell precision (anchor scrolling
+   * down a dived page). */
+  private resolveWorldPoint(
+    target: AxialCoord | { x: number; y: number } | HTMLElement
+  ): [number, number] | null {
+    if (target instanceof HTMLElement) {
+      const q = Number.parseFloat(target.getAttribute("q") ?? "");
+      const r = Number.parseFloat(target.getAttribute("r") ?? "");
+      return Number.isNaN(q) || Number.isNaN(r) ? null : axialToWorld(q, r, this.hexSide);
+    }
+    if ("x" in target && "y" in target) {
+      return [target.x, target.y];
+    }
+    return axialToWorld(target.q, target.r, this.hexSide);
+  }
+
+  /** Fly the camera to a cell (or world point) — the programmatic
+   * travel move. `zoom` defaults to the current zoom, so a bare
+   * call is a lateral flight. Complements `recenter` (home) and
+   * `diveInto` (enter): this is "go THERE and stay at altitude". */
+  flyTo(target: AxialCoord | { x: number; y: number } | HTMLElement, zoom?: number): void {
+    const point = this.engine ? this.resolveWorldPoint(target) : null;
+    if (!point || !this.engine) {
+      return;
+    }
+    this.engine.flyTo(zoom ?? this.engine.cameraState.z, point[0], point[1]);
+  }
+
+  /** Place the camera without animating — restoring state (a deep
+   * link, a history entry) rather than performing a transition. */
+  jumpTo(target: AxialCoord | { x: number; y: number } | HTMLElement, zoom?: number): void {
+    const point = this.engine ? this.resolveWorldPoint(target) : null;
+    if (!point || !this.engine) {
+      return;
+    }
+    this.engine.jumpTo(zoom ?? this.engine.cameraState.z, point[0], point[1]);
   }
 
   get dived(): boolean {

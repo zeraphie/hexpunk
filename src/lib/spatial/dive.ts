@@ -48,8 +48,10 @@ export class DiveController {
     return this.target !== null;
   }
 
-  /** Tween the camera onto `rect` and remember where we came from. */
-  dive(rect: WorldRect): void {
+  /** Tween the camera onto `rect` and remember where we came from.
+   * `instant` jumps instead — restoring a dived view (a deep link,
+   * a history entry) is state, not a transition. */
+  dive(rect: WorldRect, instant = false): void {
     const { camera, viewport } = this.options;
     if (!this.target) {
       this.returnTo = camera.state;
@@ -57,11 +59,15 @@ export class DiveController {
     this.target = rect;
     const { width } = viewport();
     const z = (width * FIT_FRACTION) / rect.w;
-    camera.tweenTo({
-      z,
-      x: width / 2 - rect.cx * z,
-      y: EDGE_PADDING - (rect.cy - rect.h / 2) * z,
-    });
+    const x = width / 2 - rect.cx * z;
+    const y = EDGE_PADDING - (rect.cy - rect.h / 2) * z;
+    if (instant) {
+      camera.z = z;
+      camera.x = x;
+      camera.y = y;
+      return;
+    }
+    camera.tweenTo({ z, x, y });
   }
 
   /** Leave the page, flying back to the pre-dive camera. */
