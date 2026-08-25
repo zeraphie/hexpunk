@@ -7273,6 +7273,31 @@
             },
             {
               "kind": "method",
+              "name": "advanceByVertical",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "s",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "dy",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ],
+              "description": "Advance a downward path offset until `dy` of VERTICAL space is\nconsumed. On the flat focal run a path step is a vertical step;\npast the break the path recedes at RECEDE_Y per unit, so the\nsame clearance costs proportionally more path. Keeps expanded\ngroups fully clear of everything below them."
+            },
+            {
+              "kind": "method",
               "name": "pathPos",
               "privacy": "private",
               "return": {
