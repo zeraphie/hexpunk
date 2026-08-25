@@ -524,11 +524,15 @@
     },
     {
       "name": "hp-hextrack",
-      "description": "Overlay browse rail — category items ride a hexagon silhouette at\nthe host's right edge. `hint` state peeks translucently over the\npage; pointer or arrow keys raise `focus`, which dims the page\nbehind (the page is the preview). Wheel / arrows scrub with a\nmagnetic focal; the focal item expands its subheadings in place.",
+      "description": "Overlay browse/select rail — items ride a hexagon silhouette at\nthe host's right edge in contiguous rows. Wheel scrubs with a\nmagnetic focal; once settled, hovering a row previews its\nsubheadings in place; clicking a row selects it — the track\nauto-scrolls it focal, then fires the activation. `loop` wraps\nthe list endlessly. `hint` state peeks over the page; pointer or\narrow keys raise `focus`, which dims the page behind.",
       "attributes": [
         {
           "name": "focal",
           "description": "Id of the item the track should hold focal — typically the\npage the consumer just dived into. Setting it re-centres."
+        },
+        {
+          "name": "loop",
+          "description": "Endless mode: the list wraps around instead of clamping."
         },
         {
           "name": "state",

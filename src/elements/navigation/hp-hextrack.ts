@@ -1,14 +1,24 @@
-// hp-hextrack.ts — Silhouette-riding browse overlay.
+// hp-hextrack.ts — Silhouette-riding browse/select overlay.
 //
-// The osu-song-select move for a dived page: an overlay rail at the
-// host's right edge where the current category's items ride a
+// The osu-song-select move as a select primitive: items ride a
 // HEXAGON silhouette — the flat focal run is the vertical left edge
-// of a pointy-top hexagon whose body sits off-screen right, so items
-// recede up-right / down-right past the 60° vertex breaks. The rail
-// idles as a translucent HINT; pointer or keys bring it to FOCUS,
-// which scrims the page behind (the page itself is the preview).
-// Scrolling scrubs with momentum and a magnetic focal; the focal
-// item reveals its subheadings in place — the difficulties pattern.
+// of a pointy-top hexagon whose body sits off-screen right, so rows
+// recede up-right / down-right past the 60° vertex breaks. Rows are
+// CONTIGUOUS (no gaps, osu-style) and the rail sizes to the list.
+//
+// Interaction contract:
+// - wheel scrubs with momentum; a magnetic focal settles the list
+// - hovering a row once motion has SETTLED previews its subheadings
+//   in place (the difficulties pattern); the focal row's subs show
+//   when nothing is previewed
+// - clicking a row SELECTS it: the track auto-scrolls it to the
+//   focal, then fires `hp-hextrack-activate` — click is always
+//   selection, never mere scrubbing
+// - `loop` makes the list endless (wraps); without it the ends clamp
+//
+// The rail idles as a translucent HINT at the host's right edge;
+// pointer or arrow keys raise FOCUS, which scrims the page behind
+// (the page itself is the preview). Esc folds back to hint.
 
 import { LitElement, css, html, type PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators.js";
@@ -19,9 +29,9 @@ export interface HpHextrackItem {
   id: string;
   label: string;
   sub?: string;
-  /** Inert row — listed but not activatable (future slots etc). */
+  /** Inert row — listed but not selectable (future slots etc). */
   ghost?: boolean;
-  /** Subheadings revealed when the item is focal. */
+  /** Subheadings revealed on focal / hover preview. */
   subs?: string[];
 }
 
@@ -34,29 +44,32 @@ export interface HpHextrackSubDetail {
   index: number;
 }
 
-/** Length of the flat focal run (px) — the silhouette's vertical
- * edge; breaks at ±half into the receding edges. */
+/** Contiguous row pitch (px) — rows touch, osu-style. */
+const ROW_H = 46;
+/** Per-subheading height the expansion inserts into the flow. */
+const KID_H = 26;
+/** Length of the flat focal run — the silhouette's vertical edge. */
 const EDGE = 216;
-/** Item spacing along the path at rest. */
-const SPACING = 62;
-/** Extra path length the focal expansion inserts per subheading. */
-const SUB_PUSH = 30;
 /** Receding-edge direction past a break: 30° from horizontal, the
  * honest continuation of a pointy-top hexagon's left edge. */
 const RECEDE_X = 0.866;
 const RECEDE_Y = 0.5;
+/** Rows beyond this relative distance are hidden. */
+const VISIBLE_SPAN = 6;
 
 /**
- * Overlay browse rail — category items ride a hexagon silhouette at
- * the host's right edge. `hint` state peeks translucently over the
- * page; pointer or arrow keys raise `focus`, which dims the page
- * behind (the page is the preview). Wheel / arrows scrub with a
- * magnetic focal; the focal item expands its subheadings in place.
+ * Overlay browse/select rail — items ride a hexagon silhouette at
+ * the host's right edge in contiguous rows. Wheel scrubs with a
+ * magnetic focal; once settled, hovering a row previews its
+ * subheadings in place; clicking a row selects it — the track
+ * auto-scrolls it focal, then fires the activation. `loop` wraps
+ * the list endlessly. `hint` state peeks over the page; pointer or
+ * arrow keys raise `focus`, which dims the page behind.
  *
  * @fires hp-hextrack-state - Hint / focus flips. detail: { state }
  * @fires hp-hextrack-focus - The magnetic focal settled on an item. detail: { id }
- * @fires hp-hextrack-activate - The focal item was chosen. detail: { id }
- * @fires hp-hextrack-sub - A subheading of the focal item was chosen. detail: { id, sub, index }
+ * @fires hp-hextrack-activate - An item was selected (click / Enter), after the auto-scroll lands. detail: { id }
+ * @fires hp-hextrack-sub - A subheading was chosen. detail: { id, sub, index } — id is the row the subs belong to
  *
  * @cssproperty --hp-hextrack-width - Rail width (default 380px)
  * @status wip
@@ -73,6 +86,10 @@ export class HpHextrack extends LitElement {
   @property()
   focal = "";
 
+  /** Endless mode: the list wraps around instead of clamping. */
+  @property({ reflect: true, type: Boolean })
+  loop = false;
+
   /** Overlay state. `hint` peeks at the edge; `focus` slides in and
    * scrims the page. Reflected so consumers can force either. */
   @property({ reflect: true })
@@ -83,7 +100,11 @@ export class HpHextrack extends LitElement {
   private snapTarget: number | null = null;
   private frame = 0;
   private lastSettled = -1;
-  private subIndex = 0;
+  private settled = false;
+  private previewIndex: number | null = null;
+  private renderedExpand = -1;
+  private pendingActivate: string | null = null;
+  private railH = 460;
   private readonly reduced =
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -115,15 +136,12 @@ export class HpHextrack extends LitElement {
         pointer-events: auto;
       }
 
-      /* The rail is a vertically-centred band, not a full-height
-         column: its hover area matches what the silhouette visibly
-         occupies, so chrome above and below it (and the pointer's
-         way out) stays reachable. */
+      /* The rail is a vertically-centred band sized to the list, so
+         its hover area matches what the silhouette occupies and the
+         chrome around it stays reachable. */
       .rail {
         position: absolute;
-        top: calc(50% - 230px);
         right: 0;
-        height: 460px;
         width: var(--hp-hextrack-width);
         pointer-events: auto;
         transform: translateX(calc(var(--hp-hextrack-width) - 85px));
@@ -137,15 +155,13 @@ export class HpHextrack extends LitElement {
         opacity: 1;
       }
 
-      /* The silhouette's visible edge — vertical focal run with the
-         receding directions dashed past the breaks. */
       .edge {
         position: absolute;
         left: 54px;
         top: calc(50% - 108px);
         height: 216px;
         border-left: 1.5px dashed var(--hp-secondary);
-        opacity: 0.5;
+        opacity: 0.35;
         pointer-events: none;
       }
       .edge::before,
@@ -166,20 +182,30 @@ export class HpHextrack extends LitElement {
         transform: rotate(30deg);
       }
 
+      /* Contiguous osu-style rows: fixed pitch, shared edges, no
+         gaps. Physics writes transforms directly while scrubbing;
+         once settled the container transitions them, so preview
+         expansion pushes rows smoothly. */
       .row {
         position: absolute;
         left: 0;
         top: 0;
         width: 320px;
+        height: ${ROW_H}px;
+        box-sizing: border-box;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 8px 10px;
-        background: color-mix(in srgb, var(--hp-surface-container) 92%, transparent);
+        padding: 0 10px;
+        background: color-mix(in srgb, var(--hp-surface-container) 94%, transparent);
         border: 1px solid var(--hp-outline-variant);
         transform-origin: left center;
-        transition: border-color 160ms ease;
         cursor: pointer;
+      }
+      .items[data-settled] .row {
+        transition:
+          transform 220ms cubic-bezier(0.3, 0.9, 0.3, 1),
+          opacity 220ms ease;
       }
       .row[data-ghost] {
         opacity: 0.5;
@@ -188,6 +214,9 @@ export class HpHextrack extends LitElement {
       .row[data-focal] {
         border-color: var(--hp-primary-bright);
         background: color-mix(in srgb, var(--hp-surface-container-high) 96%, transparent);
+      }
+      .row[data-preview]:not([data-focal]) {
+        border-color: var(--hp-secondary);
       }
       .chip {
         flex: none;
@@ -206,6 +235,9 @@ export class HpHextrack extends LitElement {
       }
       .row[data-focal] .chip {
         background: var(--hp-primary-bright);
+      }
+      .row[data-preview]:not([data-focal]) .chip {
+        background: var(--hp-secondary);
       }
       .meta {
         min-width: 0;
@@ -228,16 +260,16 @@ export class HpHextrack extends LitElement {
         color: var(--hp-secondary);
       }
 
+      /* Subheadings — inserted into the flow beneath their owner. */
       .kids {
         position: absolute;
-        left: 88px;
+        left: 34px;
         top: 0;
         width: 286px;
         display: flex;
         flex-direction: column;
-        gap: 4px;
         opacity: 0;
-        transition: opacity 200ms ease 120ms;
+        transition: opacity 180ms ease 80ms;
         pointer-events: none;
       }
       .kids[data-on] {
@@ -248,27 +280,34 @@ export class HpHextrack extends LitElement {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 5px 10px;
+        height: ${KID_H}px;
+        box-sizing: border-box;
+        padding: 0 10px;
         font-size: 0.7rem;
         letter-spacing: 0.08em;
-        background: color-mix(in srgb, var(--hp-surface-container-low) 92%, transparent);
+        background: color-mix(in srgb, var(--hp-surface-container-low) 94%, transparent);
         border: 1px solid var(--hp-outline-faint);
+        border-top: none;
         color: var(--hp-on-surface-variant);
         cursor: pointer;
       }
-      .kid[data-active] {
-        border-color: var(--hp-secondary);
+      .kid:hover {
         color: var(--hp-on-surface);
+        border-color: var(--hp-outline-variant);
       }
-      .kid[data-active]::before {
+      .kid::before {
         content: "▸";
         color: var(--hp-secondary);
+        opacity: 0;
+      }
+      .kid:hover::before {
+        opacity: 1;
       }
 
       .help {
         position: absolute;
         right: 16px;
-        bottom: 14px;
+        bottom: -26px;
         font-size: 0.62rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
@@ -276,6 +315,7 @@ export class HpHextrack extends LitElement {
         opacity: 0;
         transition: opacity 200ms ease;
         pointer-events: none;
+        white-space: nowrap;
       }
       :host([state="focus"]) .help {
         opacity: 0.65;
@@ -284,7 +324,8 @@ export class HpHextrack extends LitElement {
       @media (prefers-reduced-motion: reduce) {
         .rail,
         .scrim,
-        .kids {
+        .kids,
+        .items[data-settled] .row {
           transition: none;
         }
       }
@@ -314,7 +355,12 @@ export class HpHextrack extends LitElement {
       this.vel = 0;
       this.snapTarget = null;
       this.lastSettled = -1;
-      this.subIndex = 0;
+      this.previewIndex = null;
+      this.pendingActivate = null;
+      // The rail sizes to the list: enough for the visible span of
+      // contiguous rows plus expansion headroom, within reason.
+      const wanted = Math.min(this.items.length, VISIBLE_SPAN * 2) * ROW_H + 5 * KID_H + 40;
+      this.railH = Math.max(220, Math.min(520, wanted));
     }
   }
 
@@ -325,11 +371,11 @@ export class HpHextrack extends LitElement {
     this.layoutRows();
   }
 
-  /** Public scrub — used by consumers wiring their own inputs. */
+  /** Public scrub — consumers wiring their own inputs. */
   scrubTo(id: string): void {
     const idx = this.items.findIndex((item) => item.id === id);
     if (idx >= 0) {
-      this.snapTarget = idx;
+      this.snapTarget = this.targetFor(idx);
       this.wake();
     }
   }
@@ -338,8 +384,54 @@ export class HpHextrack extends LitElement {
     this.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
   }
 
-  private focalIndex(): number {
-    return Math.max(0, Math.min(this.items.length - 1, Math.round(this.focusPos)));
+  /** Nearest whole slot for the current position, clamped or
+   * wrapped per mode. */
+  private nearestIndex(): number {
+    const n = this.items.length;
+    if (n === 0) {
+      return 0;
+    }
+    if (this.loop) {
+      return ((Math.round(this.focusPos) % n) + n) % n;
+    }
+    return Math.max(0, Math.min(n - 1, Math.round(this.focusPos)));
+  }
+
+  /** Continuous focusPos target that reaches item `idx` the short
+   * way round (loop) or directly (finite). */
+  private targetFor(idx: number): number {
+    if (!this.loop) {
+      return idx;
+    }
+    const n = this.items.length;
+    let rel = (((idx - this.focusPos) % n) + n) % n;
+    if (rel > n / 2) {
+      rel -= n;
+    }
+    return this.focusPos + rel;
+  }
+
+  /** Relative slot of item `i` against the live position — shortest
+   * way round in loop mode. */
+  private relOf(i: number): number {
+    const n = this.items.length;
+    let rel = i - this.focusPos;
+    if (this.loop && n > 0) {
+      rel = ((rel % n) + n) % n;
+      if (rel > n / 2) {
+        rel -= n;
+      }
+    }
+    return rel;
+  }
+
+  private expandIndex(): number {
+    if (!this.settled) {
+      return -1;
+    }
+    const idx = this.previewIndex ?? this.nearestIndex();
+    const item = this.items[idx];
+    return item && !item.ghost && (item.subs?.length ?? 0) > 0 ? idx : -1;
   }
 
   private readonly onWheel = (event: WheelEvent): void => {
@@ -351,6 +443,8 @@ export class HpHextrack extends LitElement {
     const notch = event.deltaMode === 1 ? 1 : Math.min(3, Math.abs(event.deltaY) / 100);
     this.vel += Math.sign(event.deltaY) * 0.16 * notch;
     this.snapTarget = null;
+    this.pendingActivate = null;
+    this.previewIndex = null;
     this.wake();
   };
 
@@ -363,44 +457,47 @@ export class HpHextrack extends LitElement {
       return;
     }
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      // Arrows raise the rail from its hint — the keyboard entry the
-      // hover path can't provide.
       event.preventDefault();
       if (this.state === "hint") {
         this.state = "focus";
       }
-      this.snapTarget = Math.max(
-        0,
-        Math.min(this.items.length - 1, this.focalIndex() + (event.key === "ArrowDown" ? 1 : -1))
-      );
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      const base = this.snapTarget ?? this.focusPos;
+      const raw = Math.round(base) + step;
+      this.snapTarget = this.loop ? raw : Math.max(0, Math.min(this.items.length - 1, raw));
+      this.pendingActivate = null;
+      this.previewIndex = null;
       this.wake();
       return;
     }
     if (this.state !== "focus") {
       return;
     }
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-      const subs = this.items[this.focalIndex()]?.subs ?? [];
-      if (subs.length) {
-        this.subIndex = Math.max(
-          0,
-          Math.min(subs.length - 1, this.subIndex + (event.key === "ArrowRight" ? 1 : -1))
-        );
-        this.layoutRows();
-      }
-      return;
-    }
     if (event.key === "Enter") {
-      this.activateFocal();
+      this.select(this.nearestIndex());
     }
   };
 
-  private activateFocal(): void {
-    const item = this.items[this.focalIndex()];
+  /** Selection: auto-scroll the item focal, then activate. Click IS
+   * selection — on the focal it fires at once; elsewhere the
+   * magnetic scroll carries it in first. */
+  private select(idx: number): void {
+    const item = this.items[idx];
     if (!item || item.ghost) {
       return;
     }
-    this.emit<HpHextrackActivateDetail>("hp-hextrack-activate", { id: item.id });
+    if (this.state === "hint") {
+      this.state = "focus";
+      return;
+    }
+    this.previewIndex = null;
+    if (idx === this.nearestIndex() && this.settled) {
+      this.emit<HpHextrackActivateDetail>("hp-hextrack-activate", { id: item.id });
+      return;
+    }
+    this.pendingActivate = item.id;
+    this.snapTarget = this.targetFor(idx);
+    this.wake();
   }
 
   private wake(): void {
@@ -426,8 +523,7 @@ export class HpHextrack extends LitElement {
       this.vel *= 0.9;
       moving = true;
     } else {
-      // Magnetic focal: settle on the nearest whole slot.
-      const nearest = this.focalIndex();
+      const nearest = this.loop ? Math.round(this.focusPos) : this.nearestIndex();
       if (Math.abs(nearest - this.focusPos) > 0.003) {
         this.focusPos += (nearest - this.focusPos) * 0.18;
         moving = true;
@@ -435,31 +531,44 @@ export class HpHextrack extends LitElement {
         this.focusPos = nearest;
       }
     }
-    this.focusPos = Math.max(-0.4, Math.min(this.items.length - 0.6, this.focusPos));
+    if (!this.loop) {
+      this.focusPos = Math.max(-0.4, Math.min(this.items.length - 0.6, this.focusPos));
+    }
+    this.settled = !moving && this.snapTarget === null;
     this.layoutRows();
     if (moving) {
       this.frame = requestAnimationFrame(this.tick);
     } else {
-      const settled = this.focalIndex();
-      if (settled !== this.lastSettled) {
-        this.lastSettled = settled;
-        this.subIndex = 0;
-        const item = this.items[settled];
+      const settledIdx = this.nearestIndex();
+      if (settledIdx !== this.lastSettled) {
+        this.lastSettled = settledIdx;
+        const item = this.items[settledIdx];
         if (item) {
           this.emit("hp-hextrack-focus", { id: item.id });
         }
-        // The kid list belongs to the settled item — re-render it.
+      }
+      if (this.pendingActivate !== null) {
+        const item = this.items[settledIdx];
+        if (item && item.id === this.pendingActivate) {
+          this.pendingActivate = null;
+          this.emit<HpHextrackActivateDetail>("hp-hextrack-activate", { id: item.id });
+        } else {
+          this.pendingActivate = null;
+        }
+      }
+      // Expansion may differ once settled — re-render kids if the
+      // owner changed.
+      if (this.expandIndex() !== this.renderedExpand) {
         this.requestUpdate();
       }
     }
   };
 
   /** Position along the silhouette for a path offset, in RAIL
-   * coordinates (the rail is a centred band, not the full host).
-   * The focal run is vertical; past ±EDGE/2 the path breaks 60° and
-   * recedes toward the hexagon's off-screen body. */
+   * coordinates. The focal run is vertical; past ±EDGE/2 the path
+   * breaks 60° and recedes toward the hexagon's off-screen body. */
   private pathPos(s: number): [number, number] {
-    const cy = 230;
+    const cy = this.railH / 2;
     const half = EDGE / 2;
     if (Math.abs(s) <= half) {
       return [54, cy + s];
@@ -474,70 +583,80 @@ export class HpHextrack extends LitElement {
    * inline transforms the way grid cells ride --hp-x / --hp-y. */
   private layoutRows(): void {
     const rows = this.renderRoot.querySelectorAll<HTMLElement>(".row");
-    const focalIdx = this.focalIndex();
-    const focal = this.items[focalIdx];
-    const settled = Math.abs(this.focusPos - focalIdx) < 0.12;
+    const itemsEl = this.renderRoot.querySelector<HTMLElement>(".items");
+    if (itemsEl) {
+      if (this.settled) {
+        itemsEl.setAttribute("data-settled", "");
+      } else {
+        itemsEl.removeAttribute("data-settled");
+      }
+    }
+    const focalIdx = this.nearestIndex();
+    const expandIdx = this.expandIndex();
+    const expandItem = expandIdx >= 0 ? this.items[expandIdx] : undefined;
+    const kidsH = (expandItem?.subs?.length ?? 0) * KID_H;
+    const expandRel = expandIdx >= 0 ? this.relOf(expandIdx) : null;
+
     rows.forEach((row, i) => {
-      const rel = i - this.focusPos;
-      const kidCount = focal?.subs?.length ?? 0;
-      const push = i > focalIdx ? (settled ? kidCount * SUB_PUSH : 0) : 0;
-      const s = rel * SPACING + push + (rel > 0 ? 14 : rel < 0 ? -14 : 0);
+      const rel = this.relOf(i);
+      if (Math.abs(rel) > VISIBLE_SPAN) {
+        row.style.opacity = "0";
+        row.style.pointerEvents = "none";
+        return;
+      }
+      row.style.pointerEvents = "";
+      const push = expandRel !== null && rel > expandRel + 0.01 ? kidsH : 0;
+      const s = rel * ROW_H + push;
       const [x, y] = this.pathPos(s);
-      const dist = Math.min(1, Math.abs(rel) / 3.2);
-      row.style.transform = `translate(${x}px, ${y - 20}px) scale(${(1 - dist * 0.34).toFixed(3)})`;
+      const dist = Math.min(1, Math.abs(rel) / 4.2);
+      const focalPop = i === focalIdx && this.settled ? -10 : 0;
+      row.style.transform = `translate(${x + focalPop}px, ${y - ROW_H / 2}px) scale(${(1 - dist * 0.3).toFixed(3)})`;
       row.style.opacity = String(1 - dist * 0.55);
       row.style.zIndex = i === focalIdx ? "2" : "1";
-      if (i === focalIdx && settled) {
+      if (i === focalIdx && this.settled) {
         row.setAttribute("data-focal", "");
       } else {
         row.removeAttribute("data-focal");
       }
+      if (i === expandIdx && expandIdx !== focalIdx) {
+        row.setAttribute("data-preview", "");
+      } else {
+        row.removeAttribute("data-preview");
+      }
     });
+
     const kids = this.renderRoot.querySelector<HTMLElement>(".kids");
     if (kids) {
-      if (settled && (focal?.subs?.length ?? 0) > 0 && !focal?.ghost) {
-        const [x, y] = this.pathPos(0);
-        kids.style.transform = `translate(${x - 54}px, ${y + 22}px)`;
+      if (expandIdx >= 0 && expandRel !== null) {
+        const [x, y] = this.pathPos(expandRel * ROW_H);
+        kids.style.transform = `translate(${x}px, ${y + ROW_H / 2}px)`;
         kids.setAttribute("data-on", "");
       } else {
         kids.removeAttribute("data-on");
       }
-      kids.querySelectorAll<HTMLElement>(".kid").forEach((kid, k) => {
-        if (k === this.subIndex) {
-          kid.setAttribute("data-active", "");
-        } else {
-          kid.removeAttribute("data-active");
-        }
-      });
     }
   }
 
-  private onRowClick(index: number): void {
-    const item = this.items[index];
-    if (!item || item.ghost) {
-      return;
+  private onRowEnter(i: number): void {
+    if (this.settled && this.state === "focus" && !this.items[i]?.ghost) {
+      this.previewIndex = i;
+      this.requestUpdate();
     }
-    if (this.state === "hint") {
-      this.state = "focus";
-      return;
-    }
-    if (index === this.focalIndex()) {
-      this.activateFocal();
-    } else {
-      this.snapTarget = index;
-      this.wake();
+  }
+  private onRowLeave(i: number): void {
+    if (this.previewIndex === i) {
+      this.previewIndex = null;
+      this.requestUpdate();
     }
   }
 
   private onKidClick(index: number): void {
-    const item = this.items[this.focalIndex()];
-    const sub = item?.subs?.[index];
-    if (!item || sub === undefined) {
+    const owner = this.expandIndex() >= 0 ? this.items[this.expandIndex()] : undefined;
+    const sub = owner?.subs?.[index];
+    if (!owner || sub === undefined) {
       return;
     }
-    this.subIndex = index;
-    this.layoutRows();
-    this.emit<HpHextrackSubDetail>("hp-hextrack-sub", { id: item.id, sub, index });
+    this.emit<HpHextrackSubDetail>("hp-hextrack-sub", { id: owner.id, sub, index });
   }
 
   protected override firstUpdated(): void {
@@ -545,11 +664,14 @@ export class HpHextrack extends LitElement {
   }
 
   override render() {
-    const focal = this.items[this.focalIndex()];
+    const expandIdx = this.expandIndex();
+    this.renderedExpand = expandIdx;
+    const expandItem = expandIdx >= 0 ? this.items[expandIdx] : undefined;
     return html`
       <div class="scrim" @click=${() => (this.state = "hint")}></div>
       <div
         class="rail"
+        style="top: calc(50% - ${this.railH / 2}px); height: ${this.railH}px;"
         @pointerenter=${() => {
           if (this.state === "hint") {
             this.state = "focus";
@@ -562,23 +684,31 @@ export class HpHextrack extends LitElement {
         }}
       >
         <div class="edge" aria-hidden="true"></div>
-        ${this.items.map(
-          (item, i) => html`
-            <div class="row" ?data-ghost=${item.ghost} @click=${() => this.onRowClick(i)}>
-              <div class="chip"></div>
-              <div class="meta">
-                <div class="name">${item.label}</div>
-                <div class="sub">${item.sub ?? ""}</div>
+        <div class="items">
+          ${this.items.map(
+            (item, i) => html`
+              <div
+                class="row"
+                ?data-ghost=${item.ghost}
+                @click=${() => this.select(i)}
+                @pointerenter=${() => this.onRowEnter(i)}
+                @pointerleave=${() => this.onRowLeave(i)}
+              >
+                <div class="chip"></div>
+                <div class="meta">
+                  <div class="name">${item.label}</div>
+                  <div class="sub">${item.sub ?? ""}</div>
+                </div>
               </div>
-            </div>
-          `
-        )}
-        <div class="kids">
-          ${(focal?.subs ?? []).map(
-            (sub, k) => html`<div class="kid" @click=${() => this.onKidClick(k)}>${sub}</div>`
+            `
           )}
+          <div class="kids">
+            ${(expandItem?.subs ?? []).map(
+              (sub, k) => html`<div class="kid" @click=${() => this.onKidClick(k)}>${sub}</div>`
+            )}
+          </div>
         </div>
-        <div class="help">↑↓ browse · ←→ sections · ↵ open · esc away</div>
+        <div class="help">↑↓ browse · ↵ open · click selects · esc away</div>
       </div>
     `;
   }
