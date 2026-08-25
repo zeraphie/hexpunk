@@ -731,7 +731,8 @@ export class HpHextrack extends LitElement {
       const scale = 1 - dist * 0.18;
       const focalPop = i === focalIdx && this.settled ? -10 : 0;
       row.style.transform = `translate(${x + focalPop}px, ${(y - (ROW_H * scale) / 2).toFixed(1)}px) scale(${scale.toFixed(3)})`;
-      row.style.opacity = String(1 - dist * 0.45);
+      // Selection and preview always read at full strength.
+      row.style.opacity = i === focalIdx || i === expandIdx ? "1" : String(1 - dist * 0.45);
       row.style.zIndex = i === expandIdx ? "3" : i === focalIdx ? "2" : "1";
       if (i === focalIdx && this.settled) {
         row.setAttribute("data-focal", "");
