@@ -252,8 +252,11 @@ export class HpHextrack extends LitElement {
       .meta {
         min-width: 0;
       }
+      /* Titles carry the list — every row must answer "which one is
+         this" at a glance. The category sub is context, shown only
+         on the row under inspection (focal or hover preview). */
       .name {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 700;
         letter-spacing: 0.06em;
         white-space: nowrap;
@@ -261,10 +264,15 @@ export class HpHextrack extends LitElement {
         text-overflow: ellipsis;
       }
       .sub {
+        display: none;
         font-size: 0.62rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--hp-on-surface-variant);
+      }
+      .row[data-focal] .sub,
+      .row[data-preview] .sub {
+        display: block;
       }
       .row[data-focal] .sub {
         color: var(--hp-secondary);
@@ -605,7 +613,7 @@ export class HpHextrack extends LitElement {
     /* The owner row is scaled by distance; its kids ride the SCALED
      * bottom edge at the same scale, so row and subitems form one
      * seamless hover region with no crack between them. */
-    const ownerScale = expandRel !== null ? 1 - Math.min(1, Math.abs(expandRel) / 4.2) * 0.3 : 1;
+    const ownerScale = expandRel !== null ? 1 - Math.min(1, Math.abs(expandRel) / 4.2) * 0.18 : 1;
     const kidsH = (expandItem?.subs?.length ?? 0) * KID_H * ownerScale;
 
     rows.forEach((row, i) => {
@@ -621,8 +629,8 @@ export class HpHextrack extends LitElement {
       const [x, y] = this.pathPos(s);
       const dist = Math.min(1, Math.abs(rel) / 4.2);
       const focalPop = i === focalIdx && this.settled ? -10 : 0;
-      row.style.transform = `translate(${x + focalPop}px, ${y - ROW_H / 2}px) scale(${(1 - dist * 0.3).toFixed(3)})`;
-      row.style.opacity = String(1 - dist * 0.55);
+      row.style.transform = `translate(${x + focalPop}px, ${y - ROW_H / 2}px) scale(${(1 - dist * 0.18).toFixed(3)})`;
+      row.style.opacity = String(1 - dist * 0.45);
       row.style.zIndex = i === expandIdx ? "3" : i === focalIdx ? "2" : "1";
       if (i === focalIdx && this.settled) {
         row.setAttribute("data-focal", "");
