@@ -7317,7 +7317,8 @@
                     "text": "number"
                   }
                 }
-              ]
+              ],
+              "description": "The row element IS the hover region: its box contains the\nface and the expanded subitems, so one rectangle carries the\nwhole group and leave only fires at its true boundary."
             },
             {
               "kind": "method",
@@ -7347,6 +7348,12 @@
                 }
               },
               "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "number"
+                  }
+                },
                 {
                   "name": "index",
                   "type": {
