@@ -18,7 +18,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     <hp-demo caption="Browse, preview, select — over a stand-in page">
       <div class="ht-stage" id="ht-stage">
         <div class="ht-page">
-          <h3 id="ht-title">aetherblade</h3>
+          <h3 id="ht-title">relay-07</h3>
           <p>
             A stand-in reading surface. Raise the rail (hover its edge, or press ↓), scrub
             with the wheel, hover a row to preview its subheadings, click to select — the
@@ -44,13 +44,13 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
 <script>
   const track = document.getElementById("track");
   track.items = [
-    { id: "aetherblade", label: "aetherblade", sub: "d&d · class",
-      subs: ["the class", "subclass paths", "balance notes"] },
-    { id: "sanguine", label: "sanguine pact", sub: "d&d",
-      subs: ["the pact", "invocations"] },
+    { id: "relay-07", label: "relay-07", sub: "mesh uplink",
+      subs: ["overview", "peers", "logs"] },
+    { id: "sentry-k", label: "sentry-k", sub: "watchdog",
+      subs: ["scan policy", "alerts"] },
     // …
   ];
-  track.focal = "aetherblade";
+  track.focal = "relay-07";
   track.addEventListener("hp-hextrack-activate", (e) => {
     // selection: navigate, change value, open — consumer's call
   });
@@ -170,12 +170,12 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
   import { onPageVisit } from "../../../lib/visit.ts";
 
   const ITEMS = [
-    { id: "aetherblade", label: "aetherblade", sub: "d&d · class", subs: ["the class", "subclass paths", "balance notes"] },
-    { id: "sanguine", label: "sanguine pact", sub: "d&d", subs: ["the pact", "invocations"] },
-    { id: "nihility", label: "oath of nihility", sub: "d&d", subs: ["tenets", "oath spells"] },
-    { id: "merlin", label: "merlin's claw", sub: "d&d", subs: ["the artefact", "attunement"] },
-    { id: "homerules", label: "my home rules", sub: "d&d · rules", subs: ["table law", "variants"] },
-    { id: "freeplay", label: "free play", sub: "no coins", ghost: true },
+    { id: "relay-07", label: "relay-07", sub: "mesh uplink", subs: ["overview", "peers", "logs"] },
+    { id: "sentry-k", label: "sentry-k", sub: "watchdog", subs: ["scan policy", "alerts"] },
+    { id: "archive-3", label: "archive-3", sub: "cold storage", subs: ["shards", "consent"] },
+    { id: "node-2f", label: "node-2f", sub: "peer", subs: ["latency", "routes"] },
+    { id: "node-71", label: "node-71", sub: "peer · jitter", subs: ["latency", "diagnostics"] },
+    { id: "node-55", label: "node-55", sub: "dormant", ghost: true },
   ];
 
   onPageVisit((signal) => {
@@ -196,7 +196,7 @@ import ComponentDocs from "../../../components/ComponentDocs.astro";
     };
 
     track.items = ITEMS;
-    track.focal = "aetherblade";
+    track.focal = "relay-07";
 
     track.addEventListener(
       "hp-hextrack-activate",
