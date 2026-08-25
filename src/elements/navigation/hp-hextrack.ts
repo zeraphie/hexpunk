@@ -342,6 +342,7 @@ export class HpHextrack extends LitElement {
     super.disconnectedCallback();
     window.removeEventListener("keydown", this.onKeydown);
     window.removeEventListener("wheel", this.onWheel, { capture: true });
+    window.clearTimeout(this.previewCloseTimer);
     if (this.frame) {
       cancelAnimationFrame(this.frame);
       this.frame = 0;
@@ -597,8 +598,12 @@ export class HpHextrack extends LitElement {
     const focalIdx = this.nearestIndex();
     const expandIdx = this.expandIndex();
     const expandItem = expandIdx >= 0 ? this.items[expandIdx] : undefined;
-    const kidsH = (expandItem?.subs?.length ?? 0) * KID_H;
     const expandRel = expandIdx >= 0 ? this.relOf(expandIdx) : null;
+    /* The owner row is scaled by distance; its kids ride the SCALED
+     * bottom edge at the same scale, so row and subitems form one
+     * seamless hover region with no crack between them. */
+    const ownerScale = expandRel !== null ? 1 - Math.min(1, Math.abs(expandRel) / 4.2) * 0.3 : 1;
+    const kidsH = (expandItem?.subs?.length ?? 0) * KID_H * ownerScale;
 
     rows.forEach((row, i) => {
       const rel = this.relOf(i);
@@ -632,7 +637,9 @@ export class HpHextrack extends LitElement {
     if (kids) {
       if (expandIdx >= 0 && expandRel !== null) {
         const [x, y] = this.pathPos(expandRel * ROW_H);
-        kids.style.transform = `translate(${x}px, ${y + ROW_H / 2}px)`;
+        const pop = expandIdx === focalIdx && this.settled ? -10 : 0;
+        kids.style.transformOrigin = "left top";
+        kids.style.transform = `translate(${x + pop}px, ${y + (ROW_H / 2) * ownerScale}px) scale(${ownerScale.toFixed(3)})`;
         kids.setAttribute("data-on", "");
       } else {
         kids.removeAttribute("data-on");
@@ -640,17 +647,32 @@ export class HpHextrack extends LitElement {
     }
   }
 
+  /** Hover-intent: the row and its subitems are ONE hover region.
+   * Leaving schedules the close on a grace timer; reaching the kids
+   * (or back to the row) cancels it, so the small geometric seams
+   * between them never collapse the preview mid-travel. */
+  private previewCloseTimer = 0;
+
   private onRowEnter(i: number): void {
+    window.clearTimeout(this.previewCloseTimer);
     if (this.settled && this.state === "focus" && !this.items[i]?.ghost) {
-      this.previewIndex = i;
-      this.requestUpdate();
+      if (this.previewIndex !== i) {
+        this.previewIndex = i;
+        this.requestUpdate();
+      }
     }
   }
-  private onRowLeave(i: number): void {
-    if (this.previewIndex === i) {
-      this.previewIndex = null;
-      this.requestUpdate();
-    }
+  private scheduleGroupLeave(): void {
+    window.clearTimeout(this.previewCloseTimer);
+    this.previewCloseTimer = window.setTimeout(() => {
+      if (this.previewIndex !== null) {
+        this.previewIndex = null;
+        this.requestUpdate();
+      }
+    }, 140);
+  }
+  private onKidsEnter(): void {
+    window.clearTimeout(this.previewCloseTimer);
   }
 
   private onKidClick(index: number): void {
@@ -695,7 +717,7 @@ export class HpHextrack extends LitElement {
                 ?data-ghost=${item.ghost}
                 @click=${() => this.select(i)}
                 @pointerenter=${() => this.onRowEnter(i)}
-                @pointerleave=${() => this.onRowLeave(i)}
+                @pointerleave=${() => this.scheduleGroupLeave()}
               >
                 <div class="chip"></div>
                 <div class="meta">
@@ -705,7 +727,11 @@ export class HpHextrack extends LitElement {
               </div>
             `
           )}
-          <div class="kids">
+          <div
+            class="kids"
+            @pointerenter=${() => this.onKidsEnter()}
+            @pointerleave=${() => this.scheduleGroupLeave()}
+          >
             ${(expandItem?.subs ?? []).map(
               (sub, k) => html`<div class="kid" @click=${() => this.onKidClick(k)}>${sub}</div>`
             )}
