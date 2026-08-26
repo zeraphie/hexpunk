@@ -126,24 +126,26 @@ export class HpBadge extends LitElement {
       <hp-cell variant="content" size="sm" tone=${this.tone} ?active=${this.active}>
         <slot></slot>
       </hp-cell>
-      ${this.dismissible
-        ? html`
-            <button
-              class="dismiss"
-              type="button"
-              part="dismiss"
-              aria-label="Dismiss"
-              ?disabled=${this.disabled}
-              @click=${this.handleDismiss}
-              @keydown=${this.handleDismissKey}
-            >
-              <svg viewBox="0 0 10 10" aria-hidden="true">
-                <line x1="2" y1="2" x2="8" y2="8"></line>
-                <line x1="8" y1="2" x2="2" y2="8"></line>
-              </svg>
-            </button>
-          `
-        : ""}
+      ${
+        this.dismissible
+          ? html`
+              <button
+                class="dismiss"
+                type="button"
+                part="dismiss"
+                aria-label="Dismiss"
+                ?disabled=${this.disabled}
+                @click=${this.handleDismiss}
+                @keydown=${this.handleDismissKey}
+              >
+                <svg viewBox="0 0 10 10" aria-hidden="true">
+                  <line x1="2" y1="2" x2="8" y2="8"></line>
+                  <line x1="8" y1="2" x2="2" y2="8"></line>
+                </svg>
+              </button>
+            `
+          : ""
+      }
     `;
   }
 }

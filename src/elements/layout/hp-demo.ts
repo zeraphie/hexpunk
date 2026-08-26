@@ -279,36 +279,42 @@ export class HpDemo extends LitElement {
         <slot></slot>
       </div>
       <div class="actions" part="actions">
-        ${this.noThemeToggle
-          ? ""
-          : html`
-              <button
-                class="theme"
-                type="button"
-                aria-label=${`Switch preview to ${effective === "light" ? "dark" : "light"} theme`}
-                @click=${this.handleThemeClick}
-              >
-                ${effective === "light"
-                  ? html`<svg viewBox="0 0 24 24" aria-hidden="true">
-                      <circle cx="12" cy="12" r="4"></circle>
-                      <path d="M12 2v2"></path>
-                      <path d="M12 20v2"></path>
-                      <path d="m4.93 4.93 1.41 1.41"></path>
-                      <path d="m17.66 17.66 1.41 1.41"></path>
-                      <path d="M2 12h2"></path>
-                      <path d="M20 12h2"></path>
-                      <path d="m6.34 17.66-1.41 1.41"></path>
-                      <path d="m19.07 4.93-1.41 1.41"></path>
-                    </svg>`
-                  : html`<svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>`}
-                ${effective}
-              </button>
-            `}
-        ${this.noCopy
-          ? ""
-          : html`<hp-copy class="copy" .value=${this._codeText}>Copy code</hp-copy>`}
+        ${
+          this.noThemeToggle
+            ? ""
+            : html`
+                <button
+                  class="theme"
+                  type="button"
+                  aria-label=${`Switch preview to ${effective === "light" ? "dark" : "light"} theme`}
+                  @click=${this.handleThemeClick}
+                >
+                  ${
+                    effective === "light"
+                      ? html`<svg viewBox="0 0 24 24" aria-hidden="true">
+                          <circle cx="12" cy="12" r="4"></circle>
+                          <path d="M12 2v2"></path>
+                          <path d="M12 20v2"></path>
+                          <path d="m4.93 4.93 1.41 1.41"></path>
+                          <path d="m17.66 17.66 1.41 1.41"></path>
+                          <path d="M2 12h2"></path>
+                          <path d="M20 12h2"></path>
+                          <path d="m6.34 17.66-1.41 1.41"></path>
+                          <path d="m19.07 4.93-1.41 1.41"></path>
+                        </svg>`
+                      : html`<svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>`
+                  }
+                  ${effective}
+                </button>
+              `
+        }
+        ${
+          this.noCopy
+            ? ""
+            : html`<hp-copy class="copy" .value=${this._codeText}>Copy code</hp-copy>`
+        }
       </div>
       <div class="code" part="code">
         <slot name="code" @slotchange=${this.handleCodeSlotChange}></slot>

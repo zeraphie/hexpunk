@@ -18,6 +18,10 @@ const inlineCss: BunPlugin = {
   },
 };
 
+// Bun.build never cleans its outdir, so stale chunks from previous
+// builds would ship in the package and shadow the real graph.
+await Bun.$`rm -rf dist`.quiet();
+
 const result = await Bun.build({
   // One entry per package export: ".", "./grid", "./wip"
   // (package.json#exports).
@@ -25,7 +29,7 @@ const result = await Bun.build({
   outdir: "dist",
   target: "browser",
   format: "esm",
-  external: ["lit", "lit/*"],
+  external: ["lit", "lit/*", "pixi.js"],
   splitting: true,
   sourcemap: "external",
   plugins: [inlineCss],

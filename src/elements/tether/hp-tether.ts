@@ -854,8 +854,9 @@ export class HpTether extends LitElement {
  </marker>
  `}
         </defs>
-        ${d
-          ? svg`
+        ${
+          d
+            ? svg`
  <path
  class="glow"
  d=${d}
@@ -869,7 +870,8 @@ export class HpTether extends LitElement {
  marker-end=${this.directed ? `url(#${arrowId})` : ""}
  />
  `
-          : ""}
+            : ""
+        }
       </svg>
     `;
   }
