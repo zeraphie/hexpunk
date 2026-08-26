@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-08-26
+
+### Fixed
+
+- **The pixi field tier loads again in consumers.** The published dist bundled pixi.js into split chunks, and Bun's code-splitter emitted a renamed binding (`extensions2`) in the shared chunk without ever declaring it — the dynamically imported field engine rejected silently, so consumers ran on DOM tiers only with nothing but an uncaught promise to show for it. pixi.js is now external, like lit: it's a declared dependency, and consumers bundle it once, properly. Found by izelya.me — dogfooding pressure working as intended.
+- **Builds clean `dist/` first.** `Bun.build` never removes stale outputs, so chunks from previous builds accumulated on disk and could ship in the package or shadow the real module graph for linked consumers.
+
+### Internal
+
+- **Everything current.** lit 3.3, pixi 8.20, @lit-labs/ssr 4, @custom-elements-manifest/analyzer 0.11 (byte-identical manifest output), TypeScript 6 (`allowImportingTsExtensions` is now explicit — TS 6 stopped tolerating the showcase's `.ts`-suffixed imports without it), oxfmt 0.65 / oxlint 1.80. The showcase rides Astro 7 (Vite 8 + rolldown) with shiki 4.4 and KaTeX 0.18 — persistent-document navigation verified intact.
+
 ## [0.3.1] - 2026-08-25
 
 ### Added
