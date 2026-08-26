@@ -31,12 +31,12 @@ Canonical prompts for generating Hexpunk UIs with an AI design tool (Claude Desi
 Hexpunk is used as the design system for a Tauri/Lit/Rust quest-tracking app. The domain maps to Hexpunk primitives 1:1:
 
 | Quest concept                | Hexpunk primitive                                             |
-| ---------------------------- | ------------------------------------------------------------- | ---- | -------- |
+| ---------------------------- | ------------------------------------------------------------- |
 | Quest card                   | `<hp-cell variant="action">` or `<hp-deco variant="content">` |
 | Quest chapter                | bonded molecule of quests                                     |
 | Quest prerequisite           | arc-link between quest hexes                                  |
 | Quest detail view            | `<hp-unfoldable>` (spotlight mode)                            |
-| Quest status                 | `<hp-status tone="positive                                    | warn | error">` |
+| Quest status                 | `<hp-status tone="positive\|warn\|error">`                    |
 | Player profile               | `<hp-cell variant="anchor">`                                  |
 | Settings / filter / sort     | `<hp-cell variant="utility">` cluster                         |
 | Skill tree / progression map | `<hp-graph>` with arc-links                                   |
