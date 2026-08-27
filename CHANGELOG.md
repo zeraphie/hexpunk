@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-08-27
+
+### Added
+
+- **`hp-hextrack` marks the subheadings a consumer has on screen.** New `currentSubs` property — indices into the focal item's `subs` — renders `data-current` on those kid plates, styled like `:hover` (hover is a pointer state, current is a content state, and both may be true at once). Indices rather than labels because a document may repeat a heading. The element supplies the mechanism; the consumer decides what "on screen" means. Asked for by izelya.me's journal, where a paginated spread shows several headings at a time.
+
 ## [0.3.2] - 2026-08-26
 
 ### Fixed

@@ -85,6 +85,14 @@ export class HpHextrack extends LitElement {
   @property()
   focal = "";
 
+  /** Indices of the subheadings the consumer considers CURRENT —
+   * on screen right now. Plural by design: a paginated or tall
+   * page can show several at once. Indices, not labels, because a
+   * document may repeat a heading; the consumer owns what
+   * "current" means. */
+  @property({ attribute: false })
+  currentSubs: number[] = [];
+
   /** Endless mode: the list wraps around instead of clamping. */
   @property({ reflect: true, type: Boolean })
   loop = false;
@@ -363,7 +371,11 @@ export class HpHextrack extends LitElement {
         color: var(--hp-on-surface-variant);
         cursor: pointer;
       }
-      .kid:hover {
+      /* Current (on screen now) reads like hover: the difference is
+         who decided — the pointer, or the content. Both can be true
+         on the same plate. */
+      .kid:hover,
+      .kid[data-current] {
         color: var(--hp-on-surface);
         background:
           linear-gradient(
@@ -380,7 +392,8 @@ export class HpHextrack extends LitElement {
         color: var(--hp-secondary);
         opacity: 0;
       }
-      .kid:hover::before {
+      .kid:hover::before,
+      .kid[data-current]::before {
         opacity: 1;
       }
 
@@ -839,6 +852,7 @@ export class HpHextrack extends LitElement {
                     (sub, k) =>
                       html`<div
                         class="kid"
+                        ?data-current=${this.currentSubs.includes(k)}
                         @click=${(event: Event) => {
                           event.stopPropagation();
                           this.onKidClick(i, k);
