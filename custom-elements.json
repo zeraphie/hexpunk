@@ -7007,6 +7007,15 @@
             },
             {
               "kind": "field",
+              "name": "currentSubs",
+              "type": {
+                "text": "number[]"
+              },
+              "default": "[]",
+              "description": "Indices of the subheadings the consumer considers CURRENT —\non screen right now. Plural by design: a paginated or tall\npage can show several at once. Indices, not labels, because a\ndocument may repeat a heading; the consumer owns what\n\"current\" means."
+            },
+            {
+              "kind": "field",
               "name": "loop",
               "type": {
                 "text": "boolean"
