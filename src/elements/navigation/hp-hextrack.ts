@@ -812,6 +812,11 @@ export class HpHextrack extends LitElement {
   override render() {
     const expandIdx = this.expandIndex();
     this.renderedExpand = expandIdx;
+    // currentSubs indexes the subs of the item the consumer named
+    // FOCAL — the page it has open. Not the scrub position: browsing
+    // away must not drag another post's marks along, and a hover
+    // preview must not borrow them either.
+    const currentIdx = this.items.findIndex((item) => item.id === this.focal);
     return html`
       <div class="scrim" @click=${() => (this.state = "hint")}></div>
       <div
@@ -852,7 +857,7 @@ export class HpHextrack extends LitElement {
                     (sub, k) =>
                       html`<div
                         class="kid"
-                        ?data-current=${this.currentSubs.includes(k)}
+                        ?data-current=${i === currentIdx && this.currentSubs.includes(k)}
                         @click=${(event: Event) => {
                           event.stopPropagation();
                           this.onKidClick(i, k);
