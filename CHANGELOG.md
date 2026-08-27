@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-08-27
+
+### Fixed
+
+- **`currentSubs` marks only the focal item's subheadings.** The index match ran against every row, so each one lit its first N kids — invisible while a single row is expanded, wrong the moment another row previewed its subs. It is now bound to the item named by `focal` (the page the consumer has open), not to the scrub position, so browsing the rail away from that page no longer drags its marks along.
+
 ## [0.3.3] - 2026-08-27
 
 ### Added
