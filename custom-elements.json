@@ -7007,6 +7007,15 @@
             },
             {
               "kind": "field",
+              "name": "currentSubs",
+              "type": {
+                "text": "string[]"
+              },
+              "default": "[]",
+              "description": "Subheadings the consumer considers CURRENT — on screen right\nnow. Plural by design: a paginated or tall page can show\nseveral at once. Matched by label against the focal item's\nsubs; the consumer owns what \"current\" means."
+            },
+            {
+              "kind": "field",
               "name": "loop",
               "type": {
                 "text": "boolean"
