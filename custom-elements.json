@@ -7009,10 +7009,10 @@
               "kind": "field",
               "name": "currentSubs",
               "type": {
-                "text": "string[]"
+                "text": "number[]"
               },
               "default": "[]",
-              "description": "Subheadings the consumer considers CURRENT — on screen right\nnow. Plural by design: a paginated or tall page can show\nseveral at once. Matched by label against the focal item's\nsubs; the consumer owns what \"current\" means."
+              "description": "Indices of the subheadings the consumer considers CURRENT —\non screen right now. Plural by design: a paginated or tall\npage can show several at once. Indices, not labels, because a\ndocument may repeat a heading; the consumer owns what\n\"current\" means."
             },
             {
               "kind": "field",

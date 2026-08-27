@@ -85,12 +85,13 @@ export class HpHextrack extends LitElement {
   @property()
   focal = "";
 
-  /** Subheadings the consumer considers CURRENT — on screen right
-   * now. Plural by design: a paginated or tall page can show
-   * several at once. Matched by label against the focal item's
-   * subs; the consumer owns what "current" means. */
+  /** Indices of the subheadings the consumer considers CURRENT —
+   * on screen right now. Plural by design: a paginated or tall
+   * page can show several at once. Indices, not labels, because a
+   * document may repeat a heading; the consumer owns what
+   * "current" means. */
   @property({ attribute: false })
-  currentSubs: string[] = [];
+  currentSubs: number[] = [];
 
   /** Endless mode: the list wraps around instead of clamping. */
   @property({ reflect: true, type: Boolean })
@@ -851,7 +852,7 @@ export class HpHextrack extends LitElement {
                     (sub, k) =>
                       html`<div
                         class="kid"
-                        ?data-current=${this.currentSubs.includes(sub)}
+                        ?data-current=${this.currentSubs.includes(k)}
                         @click=${(event: Event) => {
                           event.stopPropagation();
                           this.onKidClick(i, k);
